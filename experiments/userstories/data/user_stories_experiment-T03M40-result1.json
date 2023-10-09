@@ -1,0 +1,1553 @@
+[
+  {
+    "experiment": "c:\\code\\ai\\experiments\\userstories\\user_stories_experiment.py",
+    "version": "",
+    "time": "2023-10-09 06:19:07.832550",
+    "model": "gpt-4",
+    "temperature": 0.3,
+    "tokens": 2048,
+    "top": 1,
+    "freq": 0,
+    "pres": 0
+  },
+  [
+    {
+      "title": "User posts a note",
+      "body": "1.  Eric writes a short note to be shared with his followers.\n2.  After posting the note, he notices a spelling error. He edits the note and re-posts it.\n3.  Later, Eric decides that the information in the note is incorrect. He deletes the note.\n"
+    },
+    {
+      "testableElement": [
+        "user",
+        "note creation",
+        "note sharing",
+        "note editing",
+        "note re-posting",
+        "note deletion"
+      ]
+    },
+    {
+      "title": "Reading a user's recent posts",
+      "body": "1.  Iris finds a comment by Sam on one of her photos funny. She'd like to read more posts by Sam.\n2.  Iris reads the latest notes by Sam. She also reviews his latest photos.\n"
+    },
+    {
+      "testableElement": [
+        "user profile",
+        "comments",
+        "photos",
+        "user posts",
+        "latest notes",
+        "latest photos"
+      ]
+    },
+    {
+      "title": "Following a person",
+      "body": "1.  Delano meets Beth at a company meeting. They are both user interface designers. He finds her ideas interesting.\n2.  Delano follows Beth on their company social network.\n3.  Beth posts a photo from a whiteboarding session at a company retreat.\n4.  Delano sees the photo in his inbox stream.\n5.  Ted, Delano's coworker, wants to find new people to follow. He looks at the list of people that Delano follows. He finds Beth in the list, reads her stream, enjoys it, and decides to follow her, too.\n6.  Beth posts frequently. Delano is having a hard time reading his inbox stream because Beth's activities drown out everyone else's. He stops following Beth.\n"
+    },
+    {
+      "testableElement": [
+        "user profile",
+        "follow functionality",
+        "posting a photo",
+        "inbox stream",
+        "visibility of photo in inbox stream",
+        "list of people a user follows",
+        "reading a user's stream",
+        "frequency of posts",
+        "unfollow functionality"
+      ]
+    },
+    {
+      "title": "Read Social Stream",
+      "body": "1.  Jake is bored at work. He checks his social inbox stream to see what his friends, family, and coworkers are up to.\n2.  Jake sees in his social stream a note by Tammy about her new apartment. Tammy is his friend.\n3.  Jake sees in his social stream a photo by Edith from her concert last night. Jake follows Edith but Edith doesn't know Jake. Edith has thousands of followers.\n4.  Jake sees in his social stream a video from Damon. Damon and Jake are both in the \"Boxing Fans\" group. Damon posted the video to the group.\n5.  Jake sees in his social stream a sound file from Carol. Carol is Jake's wife. The sound file is a reminder to stop for groceries after work. Carol posted the sound file only for Jake.\n6.  Jake sees in his social stream that his friend Tammy has added a new friend, Denise. Jake remembers Denise from high school. Jake requests to add Denise as a friend, too.\n"
+    },
+    {
+      "testableElement": [
+        "social inbox stream",
+        "friends",
+        "family",
+        "coworkers",
+        "notes",
+        "photos",
+        "followers",
+        "videos",
+        "groups",
+        "sound files",
+        "wife",
+        "private posts",
+        "friend requests",
+        "high school acquaintances",
+        "new friend notifications"
+      ]
+    },
+    {
+      "title": "Integration: Adding recommendations to bespoke software",
+      "body": "1.  James maintains an application for managing architectural designs\n2.  Maggie, a senior architect would like to recommend many of the better designs\n3.  James uses an existing liking service which allows him to post any recommendations, to provide this\n4.  This service also allows James to present existing likes for the design in question\n5.  Maggie gets to like specific designs, and her followers see these as do viewers of these designs\n6.  James achieves this with a simple inclusion on the associated web page, but could have chosen a more detailed integration if greater control was needed over the user interface\n"
+    },
+    {
+      "testableElement": [
+        "application for managing architectural designs",
+        "recommendation feature",
+        "liking service",
+        "posting recommendations",
+        "presenting existing likes",
+        "user interaction with specific designs",
+        "followers viewing likes",
+        "viewers of designs seeing likes",
+        "web page inclusion",
+        "detailed integration",
+        "user interface control"
+      ]
+    },
+    {
+      "title": "Integration: Adding comments to bespoke software",
+      "body": "1.  Maria, an IT Architect, has been tasked with encouraging better collaboration on the development of her companies Industrial Processes\n2.  As these processes are tightly controlled (though generally visible) an associated discussion and evangelisation capability is required\n3.  Maria integrates with an existing comment capability to store and retrieve comments rather than redeveloping\n4.  May-Ling sees the comment area with the Processes and suggests changes, as she herself does not have rights to update\n5.  The process owner gets a notification that someone has commented on this Process\n6.  Followers of both the Process owner and May-Ling will see this comment event\n7.  Maria achieves this with a simple inclusion on the associated web page, but could have chosen a more detailed integration if greater control was needed over the user interface\n"
+    },
+    {
+      "testableElement": [
+        "IT Architect user role",
+        "Industrial Processes",
+        "visibility of Industrial Processes",
+        "discussion capability",
+        "evangelisation capability",
+        "integration with existing comment capability",
+        "storage of comments",
+        "retrieval of comments",
+        "comment area visibility",
+        "user rights to update Industrial Processes",
+        "process owner",
+        "notifications",
+        "comment event visibility for followers",
+        "web page inclusion",
+        "detailed integration",
+        "user interface control"
+      ]
+    },
+    {
+      "title": "Direct Messaging",
+      "body": "1.  Kyle wants to tell Lisa something privately.\n2.  Kyle sends her a message that no one else can view.\n3.  Lisa is notified she has a message.\n4.  Lisa reads the message and responds privately.\n"
+    },
+    {
+      "testableElement": [
+        "user1 private message",
+        "message visibility",
+        "user2 message notification",
+        "user2 message reading",
+        "user2 private response"
+      ]
+    },
+    {
+      "title": "User profile management",
+      "body": "1.  Kim creates a personal profile with her name, avatar picture, and home town.\n2.  Kim updates her profile to include her job title, phone number and company name.\n3.  Kim reconsiders her personal privacy boundaries; she updates her profile to remove her phone number.\n"
+    },
+    {
+      "testableElement": [
+        "user profile creation",
+        "name input",
+        "avatar picture input",
+        "home town input",
+        "profile update",
+        "job title input",
+        "phone number input",
+        "company name input",
+        "profile privacy settings",
+        "phone number removal"
+      ]
+    },
+    {
+      "title": "User posts a note with embedded media",
+      "body": "1.  Samantha is writing a post directed at her students about how to get started in programming Lovelace, and she had seen her friend Helen's video recently\n2.  Below the first paragraph, Samantha embeds Helen's video, then writes several more paragraphs on how to apply those concepts to their first homework assignment.\n"
+    },
+    {
+      "testableElement": [
+        "user",
+        "post creation",
+        "directed post",
+        "embedded media",
+        "multiple paragraph writing",
+        "homework assignment"
+      ]
+    },
+    {
+      "title": "User posts a file",
+      "body": "1.  Maria uploads a photo of her car and shares it with her friends.\n2.  Maria decides that the picture is too big and crops it to just show the car. She uploads a new version to replace the original.\n3.  Maria realizes the photo includes her license plate number, which she would rather not share for privacy reasons. She deletes the photo.\n"
+    },
+    {
+      "testableElement": [
+        "photo upload",
+        "photo sharing",
+        "photo cropping",
+        "photo replacement",
+        "photo deletion",
+        "privacy settings"
+      ]
+    },
+    {
+      "title": "Managed profiles",
+      "body": "1.  All students going to a school or university or every employee of a company get a profile page\n2.  Some data there they cannot edit ( e.g. name, photo, class ), some elements they can ( e.g.. interests )\n3.  After authenticating to the system the student can change his interests, add links to his other external identities if he wishes, change his telephone number ( requires verification... )\n4.  The student can also specify how public their information can be - should the profile picture and name, only be visible to university staff and students, or only to other universities, or be completely public?\n5.  Human Resources on the other hand can edit key identifying information about their employee, student, .\u2026\n"
+    },
+    {
+      "testableElement": [
+        "profile page",
+        "non-editable data",
+        "editable data",
+        "authentication",
+        "interests",
+        "external identities",
+        "telephone number",
+        "verification",
+        "privacy settings",
+        "visibility to university staff and students",
+        "visibility to other universities",
+        "public visibility",
+        "Human Resources editing access",
+        "key identifying information"
+      ]
+    },
+    {
+      "title": "Organizing content",
+      "body": "1.  John records himself playing a song.\n2.  He creates a folder called \"Me on guitar\".\n3.  He adds the recording to that folder.\n4.  Erica looks at John's list of folders. She finds \"Me on tuba\", \"Singing in the shower\", and \"Me on guitar\".\n5.  Erica looks at all the song files in \"Me on guitar\". She downloads and listens to John's song.\n6.  John realizes he was actually playing the tuba, not the guitar. He removes the song from \"Me on guitar\" and adds it to \"Me on tuba\".\n7.  John realizes he doesn't play guitar at all. He deletes the \"Me on guitar\" folder.\n"
+    },
+    {
+      "testableElement": [
+        "recording",
+        "creating a folder",
+        "adding content to a folder",
+        "viewing another user's list of folders",
+        "finding a specific folder",
+        "viewing content in a folder",
+        "downloading content",
+        "listening to downloaded content",
+        "removing content from a folder",
+        "adding content to a different folder",
+        "deleting a folder"
+      ]
+    },
+    {
+      "title": "Adding friends",
+      "body": "1.  Jeremy finds the profile for his roommate Tammy. He requests to add her as a friend.\n2.  Tammy approves Jeremy's request.\n3.  Tammy posts a photo of her dog. Jeremy sees the photo in his inbox stream.\n4.  Jeremy shares Ming's video. Tammy sees the video in her inbox stream.\n5.  Ike wants to know who Tammy knows. He looks at her friends list. He sees her friends, including Jeremy.\n6.  Tammy and Jeremy have a fight. Tammy moves out of the apartment. She unfriends Jeremy.\n"
+    },
+    {
+      "testableElement": [
+        "user profile",
+        "friend request",
+        "friend approval",
+        "photo post",
+        "inbox stream",
+        "photo visibility",
+        "video share",
+        "video visibility",
+        "friends list",
+        "friends list visibility",
+        "unfriend function"
+      ]
+    },
+    {
+      "title": "Groups",
+      "body": "1.  Roger creates a group for his neighbours called \"Canyon Street Neighbours\".\n2.  Roger edits the group to include a description of its goals: \"Getting to know each other\". He also adds an avatar picture showing the view down the middle of the street.\n3.  Roger invites his neighbours Edna, Damon, Phyllis and Carlos to join the group.\n4.  Edna, Carlos and Damon join the group.\n5.  Edna posts a photo of trashcans on the sidewalk with the caption \"Let's keep these at least 5 feet from the curb, please!\"\n6.  Damon sees the photo in his inbox stream.\n7.  Carlos looks at the list of posts to the group. He sees Edna's photo in the list.\n8.  Damon looks at the list of members of the group. He sees himself, Edna, Carlos and Roger.\n9.  Tammy looks at the list of groups Carlos is a member of. She sees the \"Canyon Street Neighbours\" group, among others.\n10.  Damon and Carlos have angry arguments that are posted to the group. Edna tires of the drama and leaves the group.\n11.  Roger decides the group is hurting the neighbourhood, not helping it. He deletes the group.\n"
+    },
+    {
+      "testableElement": [
+        "group creation",
+        "group editing",
+        "group name",
+        "group description",
+        "group avatar",
+        "group invitation",
+        "group joining",
+        "posting to group",
+        "inbox stream",
+        "group posts list",
+        "group members list",
+        "user's groups list",
+        "leaving group",
+        "group deletion"
+      ]
+    },
+    {
+      "title": "Contact lists",
+      "body": "1.  Jill creates a list of people she knows well, called \"Close friends\".\n2.  Jill adds Tammy, Carlos, Ike and Jeremy to her \"Close friends\" list. None of the friends know each other.\n3.  Jill looks at the list of people in her \"Close friends\" list. She reconsiders and removes Carlos from her \"Close friends\" list. They are friends, but not close.\n4.  Jill posts a note to her \"Close friends\" list. \"I wanted to let you know that my husband Bill and I are separating.\"\n5.  Tammy, Ike and Jeremy see Jill's note in their inbox streams.\n6.  Jill looks at her list of contact lists. She sees \"Close friends\", \"Family\", \"Coworkers\", and \"School play 2011\".\n7.  Jill deletes the \"School play 2011\" list because she no longer uses it.\n"
+    },
+    {
+      "testableElement": [
+        "user creation of contact list",
+        "adding users to contact list",
+        "viewing users in contact list",
+        "removing users from contact list",
+        "posting notes to contact list",
+        "visibility of notes in user's inbox streams",
+        "viewing list of contact lists",
+        "deleting contact list"
+      ]
+    },
+    {
+      "title": "Responses",
+      "body": "1.  Alexa posts a short video which is distributed to the inbox streams of her followers.\n2.  Ben thinks it's a good video. He indicates to Alexa and others that he \"likes\" the video.\n3.  Charles posts a comment on the video. \"This is hilarious!\"\n4.  Denise indicates that she \"likes\" Charles's comment.\n5.  Edgar post a comment on the video: \"This sucks! Boo!\" He thinks better of the sentiment and deletes the comment.\n6.  Felicia indicates that she \"likes\" the video. She watches again and realizes that Alexa is making some pretty mean jokes about another friend. She indicates that she doesn't, actually, \"like\" the video.\n7.  Ginny shares the video with her own followers. \u201cCheck out this great video by my friend Alexa!\u201d\n"
+    },
+    {
+      "testableElement": [
+        "video posting",
+        "video distribution",
+        "inbox streams",
+        "like video function",
+        "comment posting",
+        "like comment function",
+        "comment deletion",
+        "video rewatch",
+        "video dislike function",
+        "video sharing",
+        "followers"
+      ]
+    },
+    {
+      "title": "Extensible activity types",
+      "body": "1.  Helen tries a new social game called \"Monkeyshines\". She shares her social API credentials and endpoint information with the application.\n2.  Helen plays Monkeyshines. In the game, she collects 100 bananas, which is a new personal high score.\n3.  The game asks if she'd like to share this information with her social network. She agrees.\n4.  Her followers on the social network are notified that Helen collected 100 bananas.\n5.  Isaac looks at Helen's recent activities. He sees that she has posted several photos, shared a nacho recipe by a friend, and has collected 100 bananas.\n"
+    },
+    {
+      "testableElement": [
+        "social game",
+        "social API credentials",
+        "endpoint information",
+        "gameplay",
+        "score collection",
+        "score sharing",
+        "social network notifications",
+        "follower notifications",
+        "activity viewing",
+        "photo posting",
+        "recipe sharing",
+        "activity posting"
+      ]
+    },
+    {
+      "title": "Person tagging",
+      "body": "1.  Eric sees a photo posted by Dora from a recent event\n2.  Eric recognizes their mutual friend Cassie in the photo\n3.  Eric tags Cassie in the photo with the specific location of Cassie's face in the photo\n4.  Dora sees Eric's person-tag but realizes he tagged the wrong Cassie, so she corrects the tag to the correct Cassie\n5.  Cassie sees the photo and decides she would rather not be tagged in a photo of her holding a bottle of beer, so she removes the tag\n"
+    },
+    {
+      "testableElement": [
+        "photo viewing",
+        "photo posting",
+        "photo recognition",
+        "person tagging",
+        "tag location",
+        "tag correction",
+        "tag removal",
+        "notification of tag",
+        "user privacy"
+      ]
+    },
+    {
+      "title": "Location tagging",
+      "body": "1.  Cassie receives a notification that she has been tagged in a photo posted by Dora\n2.  Cassie views the photo and recognizes the photo was taken at Starbucks, so adds the location of the photo\n3.  Dora sees that Cassie added the location, but notices she tagged the wrong Starbucks, so she updates the location to the correct Starbucks\n4.  Dora later reflects on the photo and realizes she doesn't want to admit to having drank a coffee from Starbucks, so she removes the location tag from the photo\n"
+    },
+    {
+      "testableElement": [
+        "notifications",
+        "photo tagging",
+        "photo viewing",
+        "location tagging",
+        "location viewing",
+        "location updating",
+        "location removal"
+      ]
+    },
+    {
+      "title": "Answering a question",
+      "body": "1.  Erica posts a question to a social collaboration platform.\n2.  Julia sees the question and responds with a suggested solution.\n3.  Elise sees both the original question and the response from Julia in her activity stream and recommends the answer provided by Julia.\n4.  Erica gets an notified about activity on her question. She reads Julia's response and selects it as \"answering\" her question.\n"
+    },
+    {
+      "testableElement": [
+        "post question",
+        "view question",
+        "respond to question",
+        "view response",
+        "activity stream",
+        "recommend answer",
+        "notification",
+        "read response",
+        "select response as answer"
+      ]
+    },
+    {
+      "title": "Browsing the Friendship Graph",
+      "body": "1.  Samwise is looking for new contacts (for a surprise party, new business, your guess)\n2.  Samwise is browsing his list of contacts.\n3.  Alissa has previously allowed Samwise to see her list of contact.\n4.  Samwise also browses the list of Alissa (his contact).\n"
+    },
+    {
+      "testableElement": [
+        "user's ability to look for new contacts",
+        "user's ability to browse own contact list",
+        "user permissions for other users to see their contact list",
+        "user's ability to browse contact list of another user"
+      ]
+    },
+    {
+      "title": "Two CEOs Follow Each other",
+      "body": "1.  James meets Carly at a golf club. They are both CEOs. They can think of some good synergies between their companies.\n2.  They exchange cards ( which contain their global identifiers tied to their Company Social Web Platform )\n3.  Carly as she is driven home after the event enters James' identifier into her Social Web UI and finds the public information about James, his company, and others in her network who know him.\n4.  Carly reads James' latest blog entries\n5.  She is confident she has the right information, follows him, and send him a hello message.\n6.  James the next day opens his Social Web Inbox. He finds Carly's message, the info on her public profile and the NASDAQ info about her company.\n7.  James follows Carly back.\n"
+    },
+    {
+      "testableElement": [
+        "global identifiers",
+        "Company Social Web Platform",
+        "Social Web UI",
+        "public information retrieval",
+        "network connections",
+        "blog entries",
+        "follow function",
+        "message sending",
+        "Social Web Inbox",
+        "public profile",
+        "NASDAQ info retrieval"
+      ]
+    },
+    {
+      "title": "Follow a neighbourhood group",
+      "body": "1.  Joe, Jane and their children move into a new house and Joe brings his personal server to the new house, and switches it on by plugging it into the wall and connecting it to the fibre optic cable.\n2.  The server sets up the DNS so that all Joe's previous contents are now available at the same URLs as in his previous house, meaning that his social network is back online.\n3.  One of Jane's friends notices their new geo-location over the web and introduces them to Jack, one of Joe's neighbours.\n4.  Jack and Joe accept the friend of a friend (foaf) invitation and Jack comes by the next day to say hello.\n5.  Jack adds the family to the neighbourhood group ( stored somewhere ), and sends Joe a hello message welcoming him to the group.\n6.  Joe receives the hello message the next day, visits the group, and leaves an introductory message for his neighbours.\n7.  On that group Jane discovers that there is a collective barbecue the next weekend and leaves time in the calendar for the family to go there with the family.\n8.  After the barbecue Joe connects up directly with some of the neighbours he ended up in longer conversations with.\n9.  These closer friend relations gives those neighbours more access to each others plans, allowing them for example to organise taking kids to school on a rotary basis.\n"
+    },
+    {
+      "testableElement": [
+        "personal server",
+        "server power source",
+        "fibre optic cable",
+        "DNS setup",
+        "content availability",
+        "URL consistency",
+        "social network",
+        "geo-location detection",
+        "friend introduction",
+        "friend of a friend invitation",
+        "neighbourhood group",
+        "group addition",
+        "message sending",
+        "message receiving",
+        "group visit",
+        "message leaving",
+        "event discovery",
+        "calendar scheduling",
+        "direct connection",
+        "friend relations",
+        "access level",
+        "plan organisation"
+      ]
+    },
+    {
+      "title": "Co-operation between NGOs",
+      "body": "1.  Three NGOs are working in different ways on the topic of Global Warming (GW). Members meet at a conference at which they decide to co-operate on their research\n2.  Each NGO adds the others NGOs GW group to their GW group.\n3.  The members of each NGO can now see content posted by the others to their servers and can comment on it, etc, as if they formed part of the same NGO\n4.  As they explore the topic they discover that their work is completed nicely with that work from a university and meteorological project with access to satellite data\n5.  They add those two groups to their GW group and can now co-operate with those players on specific topics too, gaining access to scientific reports and data from the University, and historical as well as currentl data from the satellite\n"
+    },
+    {
+      "testableElement": [
+        "NGOs",
+        "Global Warming group",
+        "Conference",
+        "Co-operation",
+        "Adding other NGOs to GW group",
+        "Content visibility",
+        "Content commenting",
+        "Exploration of topic",
+        "University group",
+        "Meteorological project group",
+        "Adding new groups to GW group",
+        "Co-operation with new groups",
+        "Access to scientific reports",
+        "Access to data from University",
+        "Access to historical data from satellite",
+        "Access to current data from satellite"
+      ]
+    },
+    {
+      "title": "Product issue reports",
+      "body": "1.  Each product a company makes has its own URL which can be read off the product. From that URL the user can find the history of the product, from creation to the present.\n2.  Only the current buyer and the company has access to that page\n3.  A user finds a problem with his product and goes to his Product page. There he can open a new bug report.\n4.  He can upload pictures of the problem, descriptions, and discuss with the Technical Support Staff\n5.  The Technical Support Staff or the User can add new people to the discussion, eg. technical experts, parts manufacturers, sales people, legal, etc...\n6.  New members can then contribute to the discussion bringing their expertise to bear.\n"
+    },
+    {
+      "testableElement": [
+        "product URL",
+        "product history",
+        "access control",
+        "current buyer",
+        "company",
+        "Product page",
+        "bug report",
+        "picture upload",
+        "problem description",
+        "discussion",
+        "Technical Support Staff",
+        "add new people",
+        "technical experts",
+        "parts manufacturers",
+        "sales people",
+        "legal",
+        "contribution to discussion",
+        "expertise"
+      ]
+    },
+    {
+      "title": "Group Coordination",
+      "body": "1.  Jacky, Joe, Joan and Jim agree to meet in the city.\n2.  While converging towards each other they can observe the progress of their peers.\n3.  As Joan has found a nice cafe and proposes a new meeting point there\n4.  The friends agree and adapt their routes\n5.  Joe observes that Jacky is taking a very similar route and adapts his route to meet her earlier.\n6.  The friends meet at the new meeting point.\n"
+    },
+    {
+      "testableElement": [
+        "group creation",
+        "user location tracking",
+        "progress observation",
+        "meeting point proposal",
+        "meeting point agreement",
+        "route adaptation",
+        "route similarity detection",
+        "early meeting adaptation",
+        "meeting at new point"
+      ]
+    },
+    {
+      "title": "General social network client",
+      "body": "1.  Conchita is an iOS developer. She creates a native iOS social client.\n2.  Denise downloads Conchita's application to her iPhone. She starts the program and shares her authentication credentials and the social API endpoints for her social network server.\n3.  Conchita's application determines the version of the social API that the server implements. The application only uses API calls that are defined in that version.\n4.  Denise can then do any of the tasks indicated by the above user stories that Conchita's software supports.\n"
+    },
+    {
+      "testableElement": [
+        "iOS development",
+        "native iOS social client",
+        "application download",
+        "application start",
+        "authentication credentials",
+        "social API endpoints",
+        "social network server",
+        "API version determination",
+        "API calls",
+        "task execution",
+        "software support"
+      ]
+    },
+    {
+      "title": "Developing a Smart client",
+      "body": "1.  Conchita is an iOS and Android developer. She creates a native social client iFoaf that allows people to explore friends of friends networks across the world.\n2.  She developed a version for blind people, one for people with sight problems, and one very elegant version.\n3.  The application only consumes data published by the server and interacts using the Social Web API. This is what allows her to refine the UI needs for the particular groups of disabilities in question.\n"
+    },
+    {
+      "testableElement": [
+        "iOS compatibility",
+        "Android compatibility",
+        "native social client iFoaf",
+        "friends of friends networks",
+        "version for blind people",
+        "version for people with sight problems",
+        "elegant version",
+        "data consumption from server",
+        "interaction with Social Web API",
+        "UI refinement for groups of disabilities"
+      ]
+    },
+    {
+      "title": "Using a Smart Client",
+      "body": "1.  Jillian downloads iFoaf to her smart phone, starts the program, enters her identity, and authenticates herself to her home server. The client gets her profile data and initiates the application with data taken from her Social Web Server and her client\n2.  The Application asks Jillian if she wishes to add people found in the smart phone address book to one of her already published groups or a new one. Denise publishes them to a new group, to categorise later\n3.  As Jillian is an EFF advocate she travels a lot, and so do many of the people she is in contact with. So she often does not know what time it is for the person she wants to call. But she has convinced 50% of her friends to have their own home servers with Social Web compliant APIs.\n4.  Jillian uses iFoaf to call people. If the person she wishes to call publishes her time zone info, Jillian can know if it is advisable to call them. Jillian always gets the latest phone number people are using, and never has out of date phone numbers.\n5.  As Jillian travels iFoaf can let her know what friends of hers happen to be in the same town. She can quickly message them to say hello.\n6.  Any messages Jillian sends travels over an encrypted channel directly to her friends computer, so Jillian knows that her messages are never read by anyone else than their intended recipients.\n7.  Jillian's server also allows traffic over Tor, to allow her to communicate with people in politically sensitive positions.\n"
+    },
+    {
+      "testableElement": [
+        "iFoaf download",
+        "iFoaf start",
+        "identity entry",
+        "authentication",
+        "home server",
+        "profile data retrieval",
+        "application initiation",
+        "Social Web Server",
+        "client",
+        "address book integration",
+        "group addition",
+        "group creation",
+        "EFF advocate status",
+        "travel status",
+        "contact's travel status",
+        "home servers",
+        "Social Web compliant APIs",
+        "iFoaf calling feature",
+        "time zone information publishing",
+        "phone number update",
+        "location-based friend notification",
+        "messaging feature",
+        "encrypted channel",
+        "message recipient",
+        "Tor traffic"
+      ]
+    },
+    {
+      "title": "Dedicated hardware",
+      "body": "1.  Clarence creates a new bathroom scale.\n2.  Dianne buys one of Clarence's scales. She shares her authentication credentials and the social API endpoints for her social network server.\n3.  Dianne weighs herself on her bathroom scale and reaches a new personal weight record. She presses a button on the scale to share the reading with her followers.\n4.  Dianne's followers receive a notice that Dianne has reached a new personal weight record.\n"
+    },
+    {
+      "testableElement": [
+        "creation of new bathroom scale",
+        "purchase of bathroom scale",
+        "sharing of authentication credentials",
+        "sharing of social API endpoints",
+        "weighing function on bathroom scale",
+        "new personal weight record",
+        "button on scale to share weight reading",
+        "sharing of weight reading",
+        "receiving notice of new personal weight record"
+      ]
+    },
+    {
+      "title": "Social network analysis",
+      "body": "1.  Abel provides a Web site that suggest new friends for social network users using triadic closure.\n2.  Beatrice shares her authentication credentials and the social API endpoints for her social network server.\n3.  Abel's software retrieves a list of all of Beatrice's friends.\n4.  For each of Beatrice's friends, Abel's software retrieves that friend's list of friends.\n5.  Abel's software calculates the count of incoming edges for all people in Beatrice's two-level social network.\n6.  Abel's software shows Beatrice a list of the top 5 people sorted by incoming edge count that she may want to friend or follow.\n7.  Beatrice notices that this is list is of her ex-boyfriends, and deletes her data from Abel's site so they don't stalk her\n"
+    },
+    {
+      "testableElement": [
+        "Web site functionality",
+        "Friend suggestion feature",
+        "Triadic closure algorithm",
+        "Authentication credentials",
+        "Social API endpoints",
+        "Data retrieval",
+        "Friend list retrieval",
+        "Two-level social network",
+        "Incoming edge count calculation",
+        "Top 5 people list",
+        "Sorting by incoming edge count",
+        "Friend or follow suggestion",
+        "Data deletion",
+        "Privacy settings"
+      ]
+    },
+    {
+      "title": "New social network service",
+      "body": "1.  Noor creates a new video-sharing social network service.\n2.  Noor implements the social API on her service.\n3.  Noor puts instructions on how to provide credentials and social API endpoints to client software on her Web site.\n4.  Zoe uses Noor's video-sharing service. She has a third-party client on her Android tablet. She also uses a friend-suggester Web application.\n"
+    },
+    {
+      "testableElement": [
+        "video-sharing social network service",
+        "social API",
+        "instructions",
+        "credentials",
+        "social API endpoints",
+        "client software",
+        "Web site",
+        "third-party client",
+        "Android tablet",
+        "friend-suggester Web application"
+      ]
+    },
+    {
+      "title": "Integration: New social capability with zero cost",
+      "body": "1.  Hussam has developed a new lightweight dynamic content evaluation system that values content according to the the associated 'trending' of the keywords at various popular social sites at that point and time\n2.  He can do this for any content as long as it provides textual content for him to work with\n3.  Hussam registers his service with a Social Platform provider\n4.  David manages a simple presentation-document management system that already uses the Social Platform to provide liking and commenting\n5.  David selects to enable Hussams service for his system (using his application-admin capability on the Social Platform)\n6.  Davids users now see an additional capability in the presentation management system that allows them to evaluate presentations for 'trendiness'\n7.  Hussams evaluation system provides this using only the data that is made available to the Social Platform\n"
+    },
+    {
+      "testableElement": [
+        "lightweight dynamic content evaluation system",
+        "content valuation",
+        "trending keywords",
+        "popular social sites",
+        "textual content",
+        "service registration",
+        "Social Platform provider",
+        "presentation-document management system",
+        "liking feature",
+        "commenting feature",
+        "application-admin capability",
+        "additional capability in presentation management system",
+        "trendiness evaluation",
+        "data availability to the Social Platform"
+      ]
+    },
+    {
+      "title": "Integration: Exposing Social data to an appropriate few",
+      "body": "1.  Mark has integrated Commenting, Liking and Badging capabilities to his Sales-Lead management system with minimal effort\n2.  Many of these Sales leads are confidential and Mark's management system allows for the provision of appropriate access control\n3.  The communication of this access control to the Social Platform means these restrictions are recognised wherever this content is used\n"
+    },
+    {
+      "testableElement": [
+        "Integration of Commenting",
+        "Integration of Liking",
+        "Integration of Badging",
+        "Sales-Lead management system",
+        "Effort for integration",
+        "Confidentiality of Sales leads",
+        "Access control provision",
+        "Communication of access control to Social Platform",
+        "Recognition of restrictions on content"
+      ]
+    },
+    {
+      "title": "Integration: Bringing tools together",
+      "body": "1.  Lorenzo, Karen and Kazuko are working on a proposal for a revolutionary new silicon doping process.\n2.  They bring a number of tools (research lookup, discussion, diagrams, feeds) together in a single place, limiting access to only themselves for now\n3.  John and Siobhan have developed some of these tools which can work entirely independently, knowing only the 'place' (with appropriate name etc.) where their tool is being applied.\n"
+    },
+    {
+      "testableElement": [
+        "proposal creation",
+        "silicon doping process",
+        "research lookup tool",
+        "discussion tool",
+        "diagrams tool",
+        "feeds tool",
+        "tool integration",
+        "access limitation",
+        "user",
+        "user1",
+        "user2",
+        "tool development",
+        "tool independence",
+        "place identification"
+      ]
+    },
+    {
+      "title": "Offering asparagus",
+      "body": "1.  Farmer MacDonald advertises the availability of 100 cases of asparagus on his farm profile\n2.  Alice demands 20 cases\n3.  Bob demands 40 cases\n4.  Farmer approves Alice's demand of 20\n5.  Farmer replies to Bob's demand that he has only 20 cases left\n6.  Bob approves modified demand with 20 cases\n"
+    },
+    {
+      "testableElement": [
+        "farmer profile",
+        "advertise availability",
+        "asparagus cases",
+        "user demand",
+        "demand approval",
+        "demand modification",
+        "demand reply",
+        "remaining asparagus cases"
+      ]
+    },
+    {
+      "title": "Demanding help with the harvest",
+      "body": "1.  Farmer MacDonald advertises demand for 5 people helping with harvesting asparagus on given 10 days\n2.  Alice offers help on 6 of those days\n3.  Bob offers help on all 10 days\n4.  Farmer approves Alice's offer of help on 6 days\n5.  Farmer replies to Bob's offer that he still needs help only on 4 days\n6.  Bob approves modified offer for 4 days\n"
+    },
+    {
+      "testableElement": [
+        "advertisement of demand",
+        "number of people required",
+        "type of work",
+        "number of days",
+        "offer to help",
+        "number of days offered",
+        "approval of offer",
+        "reply to offer",
+        "modified offer",
+        "approval of modified offer"
+      ]
+    },
+    {
+      "title": "Adding regrets for next telecon",
+      "body": "1.  Kevin marks that he will not participate in next WG telecon\n"
+    },
+    {
+      "testableElement": [
+        "user",
+        "marking participation status",
+        "next WG telecon"
+      ]
+    },
+    {
+      "title": "Assigning roles during meeting",
+      "body": "1.  Telecon starts\n2.  Ann assigns herself as a chair\n3.  Lloyd assigns himself as a scribe\n"
+    },
+    {
+      "testableElement": [
+        "telecon start",
+        "user self-assignment",
+        "chair role assignment",
+        "scribe role assignment"
+      ]
+    },
+    {
+      "title": "Reply in a discussion",
+      "body": "1.  Henry posts a reply to discussion started by Tantek\n"
+    },
+    {
+      "testableElement": [
+        "user1 posts",
+        "reply",
+        "discussion",
+        "user2 starts discussion"
+      ]
+    },
+    {
+      "title": "Respond to pool to choose meeting dates",
+      "body": "1.  Arnaud creates pool to pick dates for next f2f providing certain possible dates\n2.  elf replies to this pool picking few of the dates according to his availability\n"
+    },
+    {
+      "testableElement": [
+        "user creation of pool",
+        "providing possible dates",
+        "reply to pool",
+        "date selection",
+        "user availability"
+      ]
+    },
+    {
+      "title": "Creating new action for a product",
+      "body": "1.  Tantek creates new action 'review microformats' on Activity Streams 2.0 product using default due date\n2.  Tantek moves default due date a week later\n"
+    },
+    {
+      "testableElement": [
+        "user",
+        "new action creation",
+        "action name",
+        "product",
+        "default due date",
+        "moving due date"
+      ]
+    },
+    {
+      "title": "Completing an action",
+      "body": "1.  Sandro completes action 'organize videoconf equipment for next f2f'\n2.  Sandro adds references (URI) of each piece of equipment tracked in university inventory system\n"
+    },
+    {
+      "testableElement": [
+        "action completion",
+        "adding references",
+        "URI",
+        "equipment tracking",
+        "university inventory system"
+      ]
+    },
+    {
+      "title": "Invited member request workflow",
+      "body": "1.  Michael requests joining WG as Invited Expert\n2.  Arnaud ok request\n3.  Tantek objects leaving comment\n4.  Evan ok request\n5.  Evan replies to comment from Tantek's objection\n6.  Tantek ok request overwriting his objection\n"
+    },
+    {
+      "testableElement": [
+        "user request to join",
+        "user status as Invited Expert",
+        "user approval of request",
+        "user objection to request",
+        "user comment on objection",
+        "user reply to comment",
+        "user overwrite of previous objection"
+      ]
+    },
+    {
+      "title": "Public Working Draft release workflow",
+      "body": "1.  James starts motion for releasing new version of AS2.0 public drafts\n2.  Harry ok it and request publishing from W3C webmaster\n3.  W3C webmaster runs validations and finds errors\n4.  James updates draft fixing validation errors\n5.  W3C webmaster publishes new drafts\n"
+    },
+    {
+      "testableElement": [
+        "user initiation of release motion",
+        "new version of AS2.0 public drafts",
+        "user approval",
+        "publishing request to W3C webmaster",
+        "W3C webmaster validation",
+        "validation errors",
+        "draft updates",
+        "error fixing",
+        "publishing of new drafts"
+      ]
+    },
+    {
+      "title": "Requesting telecon bridge",
+      "body": "1.  Larry requests telecon bridge for 6 people on Feb, 15th 2015 14:00UTC lasting 2 hours\n"
+    },
+    {
+      "testableElement": [
+        "user",
+        "telecon bridge request",
+        "number of participants",
+        "date of telecon",
+        "time of telecon",
+        "duration of telecon"
+      ]
+    },
+    {
+      "title": "Voting on accepting User Stories",
+      "body": "1.  Evan creates voting pool for a collection of User Stories, ending in two weeks\n2.  Erik votes on some of them\n3.  Aaron also votes on some of proposed stories\n4.  Erik, after re-reading some stories adjusts his vote\n"
+    },
+    {
+      "testableElement": [
+        "user story creation",
+        "voting pool creation",
+        "voting pool duration",
+        "voting on user stories",
+        "multiple users voting",
+        "vote adjustment"
+      ]
+    },
+    {
+      "title": "Creating new grouping of User Stories",
+      "body": "1.  Tantek creates new grouping of User Stories called 'IndieWeb'\n2.  Tantek adds two of existing stories to that grouping\n3.  Tantek creates two more stories in a way that automatically adds them to this grouping\n4.  Tantek changes his mind and removes one of the previously added User Stories from this grouping\n"
+    },
+    {
+      "testableElement": [
+        "user",
+        "creating new grouping of User Stories",
+        "naming grouping of User Stories",
+        "adding existing User Stories to grouping",
+        "creating new User Stories within grouping",
+        "automatic addition of new User Stories to grouping",
+        "removing User Stories from grouping"
+      ]
+    },
+    {
+      "title": "Blocking a User",
+      "body": "1.  Kat share some posts publically\n2.  Rachel comments negatively on Kat's posts\n3.  Kat blocks Rachel from commenting on her posts\n"
+    },
+    {
+      "testableElement": [
+        "public posts",
+        "comments on posts",
+        "negative comments",
+        "blocking a user",
+        "blocked user's ability to comment"
+      ]
+    },
+    {
+      "title": "Hiding Content from a User",
+      "body": "1.  Sam is fed up of Joe's posts, but doesn't want to offend Joe\n2.  Sam chooses to hide Joe's posts so they never appear, without blocking or unfollowing Joe\n"
+    },
+    {
+      "testableElement": [
+        "user1",
+        "user2",
+        "posts",
+        "hide posts feature",
+        "offend user",
+        "blocking user",
+        "unfollowing user"
+      ]
+    },
+    {
+      "title": "Hiding Content by Topic",
+      "body": "1.  It's the World Cup and everyone in Sam's social feed is talking about football; Sam doesn't care about football\n2.  Sam hides all content that mentions 'football'\n"
+    },
+    {
+      "testableElement": [
+        "social feed",
+        "content",
+        "hiding content",
+        "topic filter",
+        "user"
+      ]
+    },
+    {
+      "title": "Separation of Domain",
+      "body": "1.  Nancy wants to join a political discussion group but is afraid her involvement could have negative effects on her other activities.\n2.  Nancy selects to use a distinguished identity within this group that cannot be linked to other identities of her\n3.  Bob who knows Nancy under her discussion and her family identities is not aware of the connection between the two.\n4.  Nancy mentions her appearance at a given event in the discussion group.\n5.  When later she discusses about the same event in her family domain, she is made aware of this before the mention is published. (Potential unintended inference)\n6.  Nancy now selectively decides that Bob may know of the interconnection between the two identities, but will be informed, of Nancy's wish to keep them seperated in general.\n7.  When Bob inadvertedly mentions Nancies appearance within the family domain, and is made aware of the indiscretion before his mention is published.\n8.  Bob decides to respect Nancy's wish and rephrases his mention, leaving out the treacherous detail.\n"
+    },
+    {
+      "testableElement": [
+        "joining a group",
+        "user fear of negative effects",
+        "use of distinguished identity",
+        "linking identities",
+        "awareness of identity connection",
+        "mentioning an event",
+        "discussion in different domains",
+        "notification before publishing a mention",
+        "selective decision on identity interconnection",
+        "informing about user's wish",
+        "inadvertent mention",
+        "awareness of indiscretion before publishing",
+        "respecting user's wish",
+        "rephrasing a mention",
+        "leaving out details"
+      ]
+    },
+    {
+      "title": "Close account",
+      "body": "1.  Bob has been using the platform for a while and has done several posts and photo uploads\n2.  Bob has a friend Alice who can see Bob's posts and photos he has shared with her\n3.  Bob decides he doesn't like his account any more and uses the \"Close account\" feature\n4.  Alice signs in and cannot any more see Bob's posts or photos since they have been removed\n"
+    },
+    {
+      "testableElement": [
+        "user account",
+        "user posts",
+        "user photo uploads",
+        "visibility of posts",
+        "visibility of photo uploads",
+        "friendship connection",
+        "Close account feature",
+        "sign in",
+        "removal of posts",
+        "removal of photo uploads"
+      ]
+    },
+    {
+      "title": "Comment on content",
+      "body": "1.  Alice publishes a post writing about how awesome Python is\n2.  Bob likes PHP. He comments on the post by Alice highlighting how awesome PHP is\n3.  George, following Alice, comments also highlighting the benefits of Ruby\n4.  Bob later realizes PHP is bad and deletes his comment\n"
+    },
+    {
+      "testableElement": [
+        "publish post",
+        "post content",
+        "like post",
+        "comment on post",
+        "delete comment",
+        "follow user"
+      ]
+    },
+    {
+      "title": "Profile tags",
+      "body": "1.  Bob signs up to the platform. He likes PHP and adds to his \"Profile tags\" the tag #PHP. Bob wants other people to see this information so he has it as public.\n2.  George, who doesn't know Bob, is interested in PHP and searches for content relating to the tag #PHP\n3.  George sees a list of people tagging themselves with #PHP and clicks the profile of Bob\n4.  Bob later decides PHP is bad and removes the tag #PHP from his profile\n"
+    },
+    {
+      "testableElement": [
+        "user sign up",
+        "profile tags addition",
+        "public visibility of profile tags",
+        "content search functionality",
+        "tag-based user listing",
+        "profile access",
+        "profile tags removal"
+      ]
+    },
+    {
+      "title": "Search content with hashtags",
+      "body": "1.  Alice is interested in the W3C and uses the search by typing in #W3C\n2.  Alice sees a #W3C hashtag stream listing content that other users have created containing the hashtag #W3C\n"
+    },
+    {
+      "testableElement": [
+        "search function",
+        "hashtag input",
+        "hashtag stream",
+        "content display",
+        "user-generated content"
+      ]
+    },
+    {
+      "title": "Subscribe to hashtags",
+      "body": "1.  Alice is interested in the W3C and uses the search by typing in #W3C\n2.  Alice decides she likes W3C so much she clicks the \"Subscribe\" button\n3.  Alice now sees the contents tagged with #W3C in her combined stream and in her \"Followed hashtags\" stream\n4.  After a while Alice decides there are too many posts tagged with #W3C in her stream and unsubscribes from the #W3C hashtag\n"
+    },
+    {
+      "testableElement": [
+        "search function",
+        "typing",
+        "hashtags",
+        "Subscribe button",
+        "user subscription",
+        "content visibility",
+        "combined stream",
+        "Followed hashtags stream",
+        "unsubscribing",
+        "post volume"
+      ]
+    },
+    {
+      "title": "Mentioning other users",
+      "body": "1.  Bob is writing a post about social networks and thinks his contact Alice would enjoy it too\n2.  Bob uses the \"Mentions\" Alice in the post (using @+name notation)\n3.  Alice gets a notification that she has been mentioned and visits the post\n4.  Alice decides she doesn't want to be mentioned in this post and can click \"Unmention\" that removes the link to her profile from the post\n"
+    },
+    {
+      "testableElement": [
+        "writing a post",
+        "mentions feature",
+        "@+name notation",
+        "notification",
+        "visiting the post",
+        "unmention feature",
+        "removing link to profile"
+      ]
+    },
+    {
+      "title": "Posting polls",
+      "body": "1.  George has a dilemma - he is not sure if he should learn Python, PHP or Ruby. George creates a public poll asking his contacts which they would suggest\n2.  George adds 3 answers to the poll, \"Python\", \"PHP\", \"Ruby\"\n3.  George tags the poll with the hashtag #programming\n4.  Alice who follows George sees the poll in her stream\n5.  Bob who doesn't follow George sees the poll while searching for content relating to #programming\n6.  Later George decides PHP is bad and removes the option to answer \"PHP\" in the poll\n"
+    },
+    {
+      "testableElement": [
+        "user profile",
+        "poll creation",
+        "adding answers to poll",
+        "tagging poll with hashtag",
+        "visibility of poll in follower's stream",
+        "visibility of poll in non-follower's search results",
+        "removing answer option from poll"
+      ]
+    },
+    {
+      "title": "Answering polls",
+      "body": "1.  George has posted a poll with the options \"Python\", \"PHP\" and \"Ruby\"\n2.  Alice, who follows George, answers \"Python\"\n3.  Bob, who does not follow George, but found the post using the hashtag search, answers \"PHP\"\n4.  Bob later decides PHP is bad and changes his answer to \"Ruby\"\n5.  Wendy, who follows George, likes JavaScript. She cannot answer Javascript since it is not an option in the poll. She writes a comment asking George to add it as an option\n6.  George adds JavaScript as an option\n7.  Wendy answers the JavaScript option in the poll\n"
+    },
+    {
+      "testableElement": [
+        "poll creation",
+        "poll options",
+        "following users",
+        "poll response",
+        "hashtag search",
+        "changing poll response",
+        "comments",
+        "adding poll options",
+        "updated poll options"
+      ]
+    },
+    {
+      "title": "Reshare posts",
+      "body": "1.  Bob has posted a public post relating to JavaScript\n2.  Wendy likes JavaScript and reshares the post\n3.  Wendy later decides the post was not very good and removes the reshare\n"
+    },
+    {
+      "testableElement": [
+        "public post",
+        "post content",
+        "reshare post",
+        "remove reshare"
+      ]
+    },
+    {
+      "title": "Like content",
+      "body": "1.  Alice posts a post relating to PHP\n2.  Bob likes PHP so he likes Alice's post\n3.  Bob later decides PHP is bad and removes the like\n"
+    },
+    {
+      "testableElement": [
+        "user post",
+        "post content",
+        "like post",
+        "user preference",
+        "remove like"
+      ]
+    },
+    {
+      "title": "Participate in content",
+      "body": "1.  Alice posts a post relating to PHP\n2.  George is interested in the post and wants to get notified of changes, so he creates a participation by clicking the \"Participate\" button. This ensures he will be notified of new comments\n3.  Bob likes PHP and comments on the post. He is now participating in the post and receives notifications\n4.  Wendy thinks the post is a good one and likes it. She is now participating in the post and receives notifications\n5.  Bob later decides PHP is bad and removes the comment from the post. He is no longer participating in the post\n6.  George later thinks he is getting too many notifications from the post and removes his participation\n7.  Wendy later thinks that the post is not good after all and removes the like on the post. She is no longer participating in it\n8.  Alice posted the post so she is always participating in it\n"
+    },
+    {
+      "testableElement": [
+        "post creation",
+        "post content",
+        "participation creation",
+        "notification system",
+        "commenting on a post",
+        "liking a post",
+        "participation through commenting",
+        "participation through liking",
+        "removal of comments",
+        "removal of likes",
+        "removal of participation",
+        "persistent participation of post creator"
+      ]
+    },
+    {
+      "title": "Content location tagging",
+      "body": "1.  Bob is visiting Dublin. He likes it and wants his contacts to know he is posting from Dublin\n2.  Bob clicks the \"Add location\" icon and his browser will attempt to retrieve his location\n3.  Bob chooses \"Dublin\" from the list of locations suggested and posts the post\n4.  Alice is following Bob and reads his post. She sees the post as \"Posted from Dublin\"\n5.  Bob later decides Dublin is a bad place and removes the location from the post\n"
+    },
+    {
+      "testableElement": [
+        "user location",
+        "Add location icon",
+        "browser location retrieval",
+        "list of suggested locations",
+        "location selection",
+        "post creation",
+        "follower view of post",
+        "location display on post",
+        "location removal from post"
+      ]
+    },
+    {
+      "title": "Remove comments from my content",
+      "body": "1.  Bob posts a post relating to PHP\n2.  Alice hates PHP. She lets her opinions known to Bob as a comment in the post\n3.  Bob likes PHP and finds the comment by Alice unwelcoming. He deletes the comment\n"
+    },
+    {
+      "testableElement": [
+        "user post",
+        "post content",
+        "user comment",
+        "comment content",
+        "delete comment function"
+      ]
+    },
+    {
+      "title": "Report content",
+      "body": "1.  Alices hates PHP and posts a post relating to PHP using very foul language\n2.  Bob finds the post distasteful and wants to report it. He clicks the report button\n3.  The administrator who runs the server Alice is using to post receives a notification\n4.  The administrator decides that the content should be removed and removes the post\n"
+    },
+    {
+      "testableElement": [
+        "user post",
+        "post content",
+        "report button",
+        "report function",
+        "administrator notification",
+        "content removal"
+      ]
+    },
+    {
+      "title": "Contest content report",
+      "body": "1.  Kat posts a video containing a song she composed\n2.  Bill is jealous of Kat and reports Kat's video for copyright violation\n3.  Kat is alerted to Bill's claim and can respond\n4.  Kat responds that Bill's claim is false\n5.  The server administrator receives notifications and contacts Kat and Bill to ask for further evidience, to resolve the situation appropriately\n"
+    },
+    {
+      "testableElement": [
+        "video posting",
+        "song composition",
+        "content reporting",
+        "copyright violation",
+        "user alerts",
+        "user response",
+        "server administrator notifications",
+        "user contact",
+        "evidence request",
+        "conflict resolution"
+      ]
+    },
+    {
+      "title": "Report a User",
+      "body": "1.  Dan sends abusive messages to Pete, Liz, Jack and Jill\n2.  Pete reports Dan to the site administrator\n3.  Pete easily includes links to all of the abusive messages with the report\n4.  Liz reports Dan to the site administrator\n5.  Jack is hesitant about reporting Dan. Jack sees that Dan has already been reported by other users. Jack decides to support them by reporting Dan\n6.  Jill reports individually each of Dan's abusive messages\n7.  The site administrator receives notifications for each report\n8.  The site administrator can easily see the connection between Jill's content reports and the other user reports\n9.  The site administrator decides to suspend Dan's account and does so\n10.  Dan creates a new account 'Dan2', and resumes abusing Pete, Liz, Jack and Jill\n11.  Pete reports Dan2 and is able to indicate Dan2 is the same as Dan\n12.  The site administrator receives notifications and acts accordingly\n"
+    },
+    {
+      "testableElement": [
+        "sending messages",
+        "abusive messages",
+        "reporting a user",
+        "including links in a report",
+        "viewing reported users",
+        "reporting individual messages",
+        "receiving notifications",
+        "viewing connections between reports",
+        "suspending an account",
+        "creating a new account",
+        "indicating a user is the same as another",
+        "acting on notifications"
+      ]
+    },
+    {
+      "title": "Invite friends to an event",
+      "body": "1.  Quentin RSVP 'yes' to invitation for API Days Berlin 2015\n2.  Quentin invites Jane, Jonas and Jill to that event\n3.  Quentin realizes that Jill went for a honey moon so he cancels the invitation for her\n4.  Jonas RSVP 'yes' to invitation and Quentin receives notification\n"
+    },
+    {
+      "testableElement": [
+        "RSVP functionality",
+        "Event invitation",
+        "Multiple invitations",
+        "Invitation cancellation",
+        "Notification on RSVP"
+      ]
+    },
+    {
+      "title": "Reshare friend's ridesharing demand",
+      "body": "1.  Daniel posts on a wall of his online profile demand to share ride London -> Paris on 16-02-2015\n2.  Gwen publishes an offer to share ride with 2 other people when she will drive London -> Paris on 16-02-2015\n3.  Nadia re-shares Daniel's demand in two groups London Urban Gardeners and Paris Scuba Divers\n4.  Gwen finds this re-share of Daniel's demand in Paris Scuba Divers group, and replies with a link to her offer\n"
+    },
+    {
+      "testableElement": [
+        "online profile",
+        "ride sharing demand post",
+        "ride sharing offer post",
+        "resharing post",
+        "groups",
+        "user interaction",
+        "post visibility",
+        "post reply",
+        "link in reply"
+      ]
+    },
+    {
+      "title": "Invite another user",
+      "body": "1.  Alice has a friend who is not yet using the platform. She thinks he would like it\n2.  Alice uses the invite functionality to send an email invitation to Bob. In the invitation Alice specifies Bob should be automatically added once signed up to her Friends -contact list\n3.  Bob signs up with the link provided and is able to see Alice's content in her Friends -list\n"
+    },
+    {
+      "testableElement": [
+        "user registration",
+        "invite functionality",
+        "email invitation",
+        "automatic addition to Friends list",
+        "visibility of user's content",
+        "Friends list"
+      ]
+    },
+    {
+      "title": "Define visibility of contact lists",
+      "body": "1.  Alice has a contact list called Friends. She allows these contacts to see who else is in this list\n2.  Bob is in Alice's Friends -list. He can see who else is in the Friends -list\n3.  Bob has a contact list called PHP Users. He does not want people in the list to see who else is in the list\n4.  Alice is in Bob's list PHP Users. She cannot see who else is in the list\n"
+    },
+    {
+      "testableElement": [
+        "contact list creation",
+        "contact list visibility settings",
+        "user's ability to see contact list members",
+        "contact list membership",
+        "visibility restriction enforcement"
+      ]
+    },
+    {
+      "title": "Private Sharing",
+      "body": "1.  Ian wants to share a file with Jan\n2.  Ian posts the file file to his site with it set to only show to Jan.\n3.  Jan receives a notice that Ian has shared a file with her.\n4.  Jan views the file and decides to leave a thank you comment on the file for Ian\n"
+    },
+    {
+      "testableElement": [
+        "file sharing",
+        "privacy settings",
+        "user site",
+        "file visibility",
+        "notifications",
+        "file viewing",
+        "comments"
+      ]
+    },
+    {
+      "title": "Contact Info",
+      "body": "1.  Milo just moved and wants to share his new phone number and address.\n2.  Milo views his Contact List and decides to share this information with only his \"Close Friends\" list which includes Olivia and Patrick.\n3.  Olivia opens her contact list and sees that she has Milo's phone number.\n4.  Patrick opens his contact list and sees that Milo updated his address and decides that this should overwrite the old address info from his contact list.\n5.  Quinn opens her contact list but sees that she does not have Milo's phone number.\n6.  Quinn requests Milo's contact info.\n7.  Milo is notified that Quinn has requested access to his contact info.\n8.  Milo decides to only share his phone number with Quinn and not his address.\n"
+    },
+    {
+      "testableElement": [
+        "user profile",
+        "contact list",
+        "sharing contact info",
+        "viewing contact info",
+        "updating contact info",
+        "requesting contact info",
+        "notifications",
+        "access control"
+      ]
+    },
+    {
+      "title": "Group Messaging",
+      "body": "1.  Sergey wants to write Paula, Damien and Doreen about current issues.\n2.  Sergey is answering to several individual messages from each one, merging several individual conversations.\n3.  Sergey composes a message, selects the recipients and submits individually encrypted messages.\n4.  Paula, Damien and Doreen receive a notification of such received message.\n5.  Paula and Doreen write their answer together and send it together to Damien and Sergey. Both senders keep an individual copy of the sent message.\n6.  Damien writes an answer to Paula and Doreen only.\n7.  Paula answers Damien and Doreen, asking to make the message available to Sergey.\n8.  Doreen supports this request.\n9.  Damien gives his consent and adds Sergey to the messages audience.\n10.  Sergey unpublishes his initial message.\n11.  Paula, Damien and Doreen only have access to their answers and side conversation.\n"
+    },
+    {
+      "testableElement": [
+        "writing message",
+        "multiple recipients",
+        "individual messages",
+        "merging conversations",
+        "composing message",
+        "selecting recipients",
+        "submitting encrypted messages",
+        "receiving notifications",
+        "writing answer together",
+        "sending message together",
+        "keeping individual copy of sent message",
+        "writing answer to specific users",
+        "request to make message available to another user",
+        "supporting request",
+        "adding user to message audience",
+        "unpublishing message",
+        "access to answers",
+        "access to side conversation"
+      ]
+    },
+    {
+      "title": "RSVP and Check-in to event",
+      "body": "1.  Alice publishes an event.\n2.  Bob promises to come to the event and sends a RSVP request.\n3.  Alice confirms Bob's request.\n4.  Bob is reminded of the event and has already another obligation. Bob removes his RSVP.\n5.  C\u00e9cile promises to come to the event and sends a RSVP request.\n6.  Alice confirms C\u00e9cile's request.\n7.  C\u00e9cile checks-in at the event once it's happening to prove she took part.\n"
+    },
+    {
+      "testableElement": [
+        "publish event",
+        "send RSVP request",
+        "confirm RSVP request",
+        "event reminder",
+        "remove RSVP",
+        "check-in at event"
+      ]
+    },
+    {
+      "title": "Fork from and Request Merge of Remote Content",
+      "body": "1.  Yung publishes a piece of text and asks for comments.\n2.  Frank comments inline and subsumes his annotations below, too.\n3.  Frank forks the text and makes some local changes, to support his arguments.\n4.  Yung receives a notification of the fork, because their domains vouched for each other.\n5.  Frank sends a Merge Request to Yung.\n6.  Yung receives a notification of the Merge Request.\n7.  Yung comments to the text changes inline and subsumes her arguments in the general comment stream, too.\n8.  Frank receives a notification of her comments and refines some arguments.\n9.  Yung receives a notification of the changes and accepts the Merge Request.\n"
+    },
+    {
+      "testableElement": [
+        "publish text",
+        "ask for comments",
+        "comment inline",
+        "subsume annotations",
+        "fork text",
+        "make local changes",
+        "receive notification of fork",
+        "domains vouching for each other",
+        "send Merge Request",
+        "receive notification of Merge Request",
+        "comment to text changes",
+        "general comment stream",
+        "receive notification of comments",
+        "refine arguments",
+        "receive notification of changes",
+        "accept Merge Request"
+      ]
+    },
+    {
+      "title": "Using custom types of Activity",
+      "body": "1.  Ben wants to use custom Activity type: Earned\n2.  Ben defines Earned as specialization of a core type: Achieve\n3.  Nina subscribes to Ben's stream with Achieve type of activities\n4.  Nine also now also receives from her subscription Earned type of activities\n"
+    },
+    {
+      "testableElement": [
+        "custom Activity type",
+        "core type",
+        "subscription",
+        "stream",
+        "user",
+        "user1",
+        "Achieve type of activities",
+        "Earned type of activities"
+      ]
+    },
+    {
+      "title": "Receiving earned Badge",
+      "body": "1.  Sunny completes and online course 'Linked Data in Practice' at LD-Ninjas\n2.  LD-Ninjas generates a Badge 'Linked Data Explorer' for Sunny\n3.  Sunny accepts this Badge and stores it in her Personal Data Store\n"
+    },
+    {
+      "testableElement": [
+        "online course completion",
+        "badge generation",
+        "badge acceptance",
+        "personal data store"
+      ]
+    },
+    {
+      "title": "Displaying earned Badge",
+      "body": "1.  Sunny joins W3C Credentials CG\n2.  Sunny chooses to display 'Linked Data Explorer' Badge earned from LD-Ninjas in her group profile\n3.  elf visits Sunny's profile at W3C Credentials CG and sees 'Linked Data Explorer' Badge\n"
+    },
+    {
+      "testableElement": [
+        "user registration",
+        "badge display selection",
+        "group profile",
+        "badge visibility to other users",
+        "user profile visit"
+      ]
+    },
+    {
+      "title": "Photo sharing with event attendees",
+      "body": "1.  Ben creates an event\n2.  10 people who have never connected before RSVP to the event, including Zak\n3.  Afterwards Zak posts his photos from the event, and makes them visible only to people who RSVPed to Ben's event\n"
+    },
+    {
+      "testableElement": [
+        "event creation",
+        "RSVP functionality",
+        "number of attendees",
+        "user connectivity",
+        "photo posting",
+        "photo visibility settings",
+        "event attendee verification"
+      ]
+    },
+    {
+      "title": "Tagging a Post",
+      "body": "1.  Bob posts some Poetry on his site.\n2.  Charlie sees Bob's post and thinks it should be classified as under Poetry.\n3.  Charlie tags the post as Poetry.\n4.  Bob is notified of this suggestion and agrees to tag the post as Poetry.\n5.  Bob adds the tag Poetry to several other posts.\n6.  Dave visits Bob's site and views all posts tagged Poetry\n"
+    },
+    {
+      "testableElement": [
+        "user post",
+        "post visibility",
+        "tag suggestion",
+        "notification",
+        "tag acceptance",
+        "tag addition",
+        "multiple post tagging",
+        "post viewing",
+        "tagged post visibility"
+      ]
+    },
+    {
+      "title": "Liking And Showing Likes",
+      "body": "1.  Aurora publishes a post\n2.  Buffy approves of the post so she \"likes\" it on her own site\n3.  Aurora receives a notification that Buffy liked the post\n4.  Aurora looks at the post and sees an increased count of likes\n5.  Aurora looks at who liked her post, and sees Buffy in the list of likes\n6.  later Buffy changes her mind so she removes the \"like\" from her own site\n7.  Aurora's post shows a decreased count of likes\n8.  Buffy looks at who liked Amber's post, and does not see herself listed there\n"
+    },
+    {
+      "testableElement": [
+        "post publishing",
+        "liking a post",
+        "notifications",
+        "like count increase",
+        "viewing list of likes",
+        "removing a like",
+        "like count decrease",
+        "absence from list of likes"
+      ]
+    },
+    {
+      "title": "RSVPs invitations comments to an event",
+      "body": "Summary keywords: event, RSVP tracking/maybe/yes/no/delete, comment, invitation (or invite)/accept\n1.  Cleopatra publishes a public event\n2.  Dawn sees the event and is interested, so she saves the event / replies as tracking it\n3.  Cleopatra is notified that Dawn is tracking the event\n4.  Cleopatra looks at the event and sees an increased count of people who are tracking the event\n5.  Cleopatra looks at who is tracking the event and sees Buffy in the list of trackers\n6.  Dawn decides she might be able to make it, and changes her RSVP to a maybe\n7.  Cleopatra is notified that Dawn might attend the event\n8.  Cleopatra looks at the event and sees an increased count of people who are might attend (and decreased count of tracking)\n9.  Cleopatra looks at who might attend the event and sees Buffy in the list of maybes\n10.  Dawn invites her friend Eve to also consider going to the event\n11.  Eve is notified of Dawn's invitation and excited about going with Dawn, immediately replies to invitation and event with RSVP yes\n12.  Cleopatra is notified that Eve is attending the event\n13.  Cleopatra looks at the event and sees an increased count of people who are attending\n14.  Cleopatra looks at who will attend the event and sees Eve in the list of attendees\n15.  Dawn is notified of Eve's RSVP yes in reply to her invitation\n16.  Dawn views Eve's RSVP and sees that Eve also put a smiley :) in her RSVP\n17.  Dawn commits to going to the event and changes her RSVP to yes\n18.  Eve is notified that Dawn, the person that invited her, is attending the event\n19.  Eve looks at the event and sees an increased count of people who are attending (and decreased count of maybes)\n20.  Eve looks at who will attend the event and sees Dawn in the list of attendees\n21.  Eve is excited to go to the event and posts a comment\n22.  Eve looks at the event and sees that her comment has shown up on the event\n23.  Cleopatra and Dawn are notified that Eve has commented on the event\n24.  Dawn posts a like of Eve's comment\n25.  Dawn looks at Eve's comment and sees herself and her like\n26.  Dawn looks at Eve's comment on the event and sees herself and her like\n27.  Eve realizes she has a conflict and changes her RSVP to no\n28.  Eve looks at the event and sees a decreased count of people who are attending\n29.  Eve looks at who has declined and sees herself in the list of declines\n30.  Dawn is notified of Eve's updated RSVP to no in reply to her invitation\n31.  Dawn does not want to go without Eve and changes her RSVP to no\n32.  Dawn looks at the event and sees a decreased count of people who are attending\n33.  Dawn looks at who has declined and sees herself and Eve in the list of declines\n34.  Eve decides she does not want the event in her history, so she deletes her RSVP\n35.  Eve looks at the event and sees a decreased count of people who are not attending\n36.  Eve looks at who has declined and does not see herself in the list of declines\n37.  Dawn comments on the event saying she maybe interested in similar events in the future\n38.  Dawn looks at the event and sees her comment, and Eve's comment since she didn't delete it\n39.  Dawn replies to Eve's comment and says maybe next time\n40.  Eve is notified of Dawn's reply to her comment\n41.  Eve decides to update her comment\n42.  Dawn is notified of Eve's updated comment\n43.  Eve decides to delete her comment instead\n44.  Dawn still sees both her reply to Eve's comment, and the context of Eve's comment, both on Dawn's own site, because she chose to keep context of her replies.\n"
+    },
+    {
+      "testableElement": [
+        "publish event",
+        "view event",
+        "save event",
+        "track event",
+        "event notifications",
+        "event tracking count",
+        "list of event trackers",
+        "change RSVP status",
+        "RSVP notifications",
+        "RSVP count",
+        "list of RSVP statuses",
+        "send event invitation",
+        "invitation notifications",
+        "accept invitation",
+        "list of event attendees",
+        "view RSVP",
+        "RSVP comments",
+        "post event comment",
+        "comment notifications",
+        "view event comment",
+        "like event comment",
+        "view comment likes",
+        "delete RSVP",
+        "list of declined RSVPs",
+        "delete event comment",
+        "view deleted comment",
+        "update event comment",
+        "comment update notifications",
+        "keep context of replies"
+      ]
+    },
+    {
+      "title": "Comments And Showing Comments",
+      "body": "1.  Flora publishes a post\n2.  Gemma comments on the post using her own site\n3.  Flora receives a notification that Gemma commented on the post\n4.  Flora looks at the post and sees an increased count of comments\n5.  Flora looks at the comments on her post, and sees Gemma's comment\n6.  later Gemma changes her mind so she deletes the comment\n7.  Flora's post shows a decreased count of comments\n8.  Gemma looks at the comments on Flora's post, and does not see her comment listed there\n"
+    },
+    {
+      "testableElement": [
+        "publish post",
+        "comment on post",
+        "receive notification",
+        "view post",
+        "count of comments",
+        "view comments",
+        "delete comment",
+        "decrease in comment count",
+        "absence of deleted comment"
+      ]
+    },
+    {
+      "title": "Share content with single individuals",
+      "body": "1.  Bob posts a dirty joke and makes it visible only to Carl.\n2.  Alice, which is following Bob, don't see the joke in her inbox stream, nor in Bob's wall\n"
+    },
+    {
+      "testableElement": [
+        "content posting",
+        "content visibility settings",
+        "content visibility for specific user",
+        "inbox stream content",
+        "user wall content",
+        "user following"
+      ]
+    },
+    {
+      "title": "Profile visibility",
+      "body": "1.  Alice creates a profile for her business as a paid \"dominatrix\".\n2.  She makes this profile available to some of her selected customers (who do not have accounts on her server), but it cannot be seen by the boss at her day job at her church.\n"
+    },
+    {
+      "testableElement": [
+        "profile creation",
+        "business profile",
+        "paid user status",
+        "profile visibility settings",
+        "selected customers",
+        "non-account holders access",
+        "restricted visibility"
+      ]
+    },
+    {
+      "title": "Chat rooms",
+      "body": "1.  Jim creates a chatroom and provides access to Bill and Mary, neither of whom have accounts on Jim's server.\n"
+    },
+    {
+      "testableElement": [
+        "chatroom creation",
+        "access provision",
+        "user without account",
+        "server"
+      ]
+    },
+    {
+      "title": "Creating web pages",
+      "body": "1.  Bob create a webpage and makes it visible to Amelia.\n2.  Ruth visits the webpage and gets permission denied.\n3.  Amelia visits the webpage and can see it perfectly.\n"
+    },
+    {
+      "testableElement": [
+        "webpage creation",
+        "visibility settings",
+        "webpage visit",
+        "permission settings",
+        "webpage visibility for user",
+        "webpage visibility for user1"
+      ]
+    },
+    {
+      "title": "Moving of identities",
+      "body": "1.  Bob's service provider (abc.com.z) shuts down abruptly leaving him in a lurch.\n2.  He creates a new account at xyz.com.z from a thumb drive where his account was backed up.\n3.  He sends a post to all his friends - who are still friends with him.\n4.  He doesn't have to make friends with his friends all over again just because he changed servers.\n5.  He can also still see the photo on Alice's server.\n6.  Alice did nothing to change Bob's identity from abc.com.z to xyz.com.z on the photo - because it is visible to \"Bob\"."
+    },
+    {
+      "testableElement": [
+        "service provider shutdown",
+        "account creation",
+        "account backup",
+        "post sending",
+        "friendship maintenance",
+        "server change",
+        "photo visibility",
+        "identity change"
+      ]
+    }
+  ]
+]
