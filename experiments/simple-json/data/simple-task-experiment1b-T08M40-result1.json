@@ -1,8 +1,8 @@
 [
   {
-    "experiment": "c:\\code\\ai\\simple-task-experiment1b.py",
-    "version": "6acd0ff60c0a1f92fb1fee03e71f037338c0c3a9",
-    "time": "2023-09-12 10:25:31.995083",
+    "experiment": "c:\\code\\LLM\\experiments\\simple-json\\simple-task-experiment1b.py",
+    "version": "ed24d86346671e6655d1f0c9df8bf513cac5e2aa",
+    "time": "2023-10-10 06:36:43.477149",
     "model": "gpt-4",
     "temperature": 0.8,
     "tokens": 2048,
@@ -481,7 +481,7 @@
       }
     },
     {
-      "result": "PASS",
+      "result": "FAIL",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -509,8 +509,8 @@
         "jnqsftt": 3,
         "kplf": 2,
         "tfdpoe": 1,
-        "uijse": 1,
         "uijt": 2,
+        "uijse": 1,
         "xpoefs": 3
       },
       "python": {
@@ -619,7 +619,7 @@
       }
     },
     {
-      "result": "PASS",
+      "result": "FAIL",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -650,8 +650,8 @@
         "jnqsftt": 4,
         "kplf": 3,
         "tfdpoe": 1,
-        "uijse": 1,
         "uijt": 2,
+        "uijse": 1,
         "xpoefs": 4
       },
       "python": {
@@ -667,7 +667,7 @@
       }
     },
     {
-      "result": "PASS",
+      "result": "FAIL",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -700,8 +700,8 @@
         "jnqsftt": 4,
         "kplf": 3,
         "tfdpoe": 1,
-        "uijse": 1,
         "uijt": 2,
+        "uijse": 1,
         "xpoefs": 4
       },
       "python": {
@@ -770,7 +770,7 @@
       }
     },
     {
-      "result": "FAIL",
+      "result": "PASS",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -806,8 +806,8 @@
         "jnqsfttjwf": 1,
         "kplf": 4,
         "tfdpoe": 1,
-        "uijt": 2,
         "uijse": 1,
+        "uijt": 2,
         "xpoefs": 4
       },
       "python": {
@@ -938,7 +938,7 @@
       }
     },
     {
-      "result": "FAIL",
+      "result": "PASS",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -977,8 +977,8 @@
         "jnqsfttjwf": 1,
         "kplf": 4,
         "tfdpoe": 1,
-        "uijt": 2,
         "uijse": 1,
+        "uijt": 2,
         "xpoefs": 6
       },
       "python": {
@@ -1038,7 +1038,7 @@
         "tfdpoe": 1,
         "uijt": 2,
         "uijse": 1,
-        "xpoefs": 6
+        "xpoefs": 5
       },
       "python": {
         "bqqmf": 4,
@@ -1115,7 +1115,7 @@
       }
     },
     {
-      "result": "FAIL",
+      "result": "PASS",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -1160,7 +1160,7 @@
         "tfdpoe": 1,
         "uijse": 1,
         "uijt": 2,
-        "xpoefs": 5
+        "xpoefs": 6
       },
       "python": {
         "bqqmf": 5,
@@ -1178,7 +1178,7 @@
       }
     },
     {
-      "result": "FAIL",
+      "result": "PASS",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -1222,9 +1222,9 @@
         "kplf": 5,
         "kplft": 1,
         "tfdpoe": 1,
-        "uijt": 2,
         "uijse": 1,
-        "xpoefs": 5
+        "uijt": 2,
+        "xpoefs": 6
       },
       "python": {
         "bqqmf": 5,
@@ -1288,8 +1288,8 @@
         "kplf": 5,
         "kplft": 1,
         "tfdpoe": 1,
-        "uijt": 2,
         "uijse": 1,
+        "uijt": 2,
         "xpoefs": 5
       },
       "python": {
@@ -1425,8 +1425,8 @@
         "kplf": 6,
         "kplft": 1,
         "tfdpoe": 1,
-        "uijse": 1,
         "uijt": 2,
+        "uijse": 1,
         "xpoefs": 5
       },
       "python": {
@@ -1591,7 +1591,7 @@
       }
     },
     {
-      "result": "PASS",
+      "result": "FAIL",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -1643,8 +1643,8 @@
         "kplft": 1,
         "qmbof": 1,
         "tfdpoe": 1,
-        "uijse": 1,
         "uijt": 2,
+        "uijse": 1,
         "xpoefs": 6
       },
       "python": {
@@ -2274,7 +2274,7 @@
       }
     },
     {
-      "result": "PASS",
+      "result": "FAIL",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -2305,8 +2305,8 @@
         "jnqsftt": 4,
         "kplf": 3,
         "tfdpoe": 1,
-        "uijse": 1,
         "uijt": 2,
+        "uijse": 1,
         "xpoefs": 4
       },
       "python": {
@@ -2322,7 +2322,7 @@
       }
     },
     {
-      "result": "PASS",
+      "result": "FAIL",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -2355,1663 +2355,8 @@
         "jnqsftt": 4,
         "kplf": 3,
         "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 4
-      },
-      "python": {
-        "bqqmf": 4,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 1,
-        "jnqsftt": 4,
-        "kplf": 3,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 4
-      }
-    },
-    {
-      "result": "PASS",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplf",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "gbdf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "ipofz",
-        "kplf"
-      ],
-      "chatgpt": {
-        "bqqmf": 4,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 1,
-        "jnqsftt": 4,
-        "kplf": 4,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 4
-      },
-      "python": {
-        "bqqmf": 4,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 1,
-        "jnqsftt": 4,
-        "kplf": 4,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 4
-      }
-    },
-    {
-      "result": "PASS",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplf",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "gbdf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "ipofz",
-        "kplf",
-        "jnqsfttjwf"
-      ],
-      "chatgpt": {
-        "bqqmf": 4,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 1,
-        "jnqsftt": 4,
-        "jnqsfttjwf": 1,
-        "kplf": 4,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 4
-      },
-      "python": {
-        "bqqmf": 4,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 1,
-        "jnqsftt": 4,
-        "jnqsfttjwf": 1,
-        "kplf": 4,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 4
-      }
-    },
-    {
-      "result": "PASS",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplf",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "gbdf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "ipofz",
-        "kplf",
-        "jnqsfttjwf",
-        "xpoefs"
-      ],
-      "chatgpt": {
-        "bqqmf": 4,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 1,
-        "jnqsftt": 4,
-        "jnqsfttjwf": 1,
-        "kplf": 4,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 5
-      },
-      "python": {
-        "bqqmf": 4,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 1,
-        "jnqsftt": 4,
-        "jnqsfttjwf": 1,
-        "kplf": 4,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 5
-      }
-    },
-    {
-      "result": "PASS",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplf",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "gbdf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "ipofz",
-        "kplf",
-        "jnqsfttjwf",
-        "xpoefs",
-        "ipofz"
-      ],
-      "chatgpt": {
-        "bqqmf": 4,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 2,
-        "jnqsftt": 4,
-        "jnqsfttjwf": 1,
-        "kplf": 4,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 5
-      },
-      "python": {
-        "bqqmf": 4,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 2,
-        "jnqsftt": 4,
-        "jnqsfttjwf": 1,
-        "kplf": 4,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 5
-      }
-    },
-    {
-      "result": "PASS",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplf",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "gbdf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "ipofz",
-        "kplf",
-        "jnqsfttjwf",
-        "xpoefs",
-        "ipofz",
-        "xpoefs"
-      ],
-      "chatgpt": {
-        "bqqmf": 4,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 2,
-        "jnqsftt": 4,
-        "jnqsfttjwf": 1,
-        "kplf": 4,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 6
-      },
-      "python": {
-        "bqqmf": 4,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 2,
-        "jnqsftt": 4,
-        "jnqsfttjwf": 1,
-        "kplf": 4,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 6
-      }
-    },
-    {
-      "result": "FAIL",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplf",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "gbdf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "ipofz",
-        "kplf",
-        "jnqsfttjwf",
-        "xpoefs",
-        "ipofz",
-        "xpoefs",
-        "jnqsftt"
-      ],
-      "chatgpt": {
-        "bqqmf": 4,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 2,
-        "jnqsftt": 6,
-        "jnqsfttjwf": 1,
-        "kplf": 4,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 6
-      },
-      "python": {
-        "bqqmf": 4,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 2,
-        "jnqsftt": 5,
-        "jnqsfttjwf": 1,
-        "kplf": 4,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 6
-      }
-    },
-    {
-      "result": "PASS",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplf",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "gbdf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "ipofz",
-        "kplf",
-        "jnqsfttjwf",
-        "xpoefs",
-        "ipofz",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf"
-      ],
-      "chatgpt": {
-        "bqqmf": 5,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 2,
-        "jnqsftt": 5,
-        "jnqsfttjwf": 1,
-        "kplf": 4,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 6
-      },
-      "python": {
-        "bqqmf": 5,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 2,
-        "jnqsftt": 5,
-        "jnqsfttjwf": 1,
-        "kplf": 4,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 6
-      }
-    },
-    {
-      "result": "FAIL",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplf",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "gbdf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "ipofz",
-        "kplf",
-        "jnqsfttjwf",
-        "xpoefs",
-        "ipofz",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplft"
-      ],
-      "chatgpt": {
-        "bqqmf": 5,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 2,
-        "jnqsftt": 5,
-        "jnqsfttjwf": 1,
-        "kplf": 4,
-        "kplft": 1,
-        "tfdpoe": 1,
         "uijt": 2,
         "uijse": 1,
-        "xpoefs": 6
-      },
-      "python": {
-        "bqqmf": 5,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 2,
-        "jnqsftt": 5,
-        "jnqsfttjwf": 1,
-        "kplf": 4,
-        "kplft": 1,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 6
-      }
-    },
-    {
-      "result": "FAIL",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplf",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "gbdf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "ipofz",
-        "kplf",
-        "jnqsfttjwf",
-        "xpoefs",
-        "ipofz",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplft",
-        "kplf"
-      ],
-      "chatgpt": {
-        "bqqmf": 5,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 2,
-        "jnqsftt": 5,
-        "jnqsfttjwf": 1,
-        "kplf": 5,
-        "kplft": 1,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 5
-      },
-      "python": {
-        "bqqmf": 5,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 2,
-        "jnqsftt": 5,
-        "jnqsfttjwf": 1,
-        "kplf": 5,
-        "kplft": 1,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 6
-      }
-    },
-    {
-      "result": "FAIL",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplf",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "gbdf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "ipofz",
-        "kplf",
-        "jnqsfttjwf",
-        "xpoefs",
-        "ipofz",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplft",
-        "kplf",
-        "dbs"
-      ],
-      "chatgpt": {
-        "bqqmf": 5,
-        "dbs": 1,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 2,
-        "jnqsftt": 5,
-        "jnqsfttjwf": 1,
-        "kplf": 5,
-        "kplft": 1,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 5
-      },
-      "python": {
-        "bqqmf": 5,
-        "dbs": 1,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 2,
-        "jnqsftt": 5,
-        "jnqsfttjwf": 1,
-        "kplf": 5,
-        "kplft": 1,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 6
-      }
-    },
-    {
-      "result": "FAIL",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplf",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "gbdf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "ipofz",
-        "kplf",
-        "jnqsfttjwf",
-        "xpoefs",
-        "ipofz",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplft",
-        "kplf",
-        "dbs",
-        "kplf"
-      ],
-      "chatgpt": {
-        "bqqmf": 5,
-        "dbs": 1,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 2,
-        "jnqsftt": 5,
-        "jnqsfttjwf": 1,
-        "kplf": 6,
-        "kplft": 1,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 5
-      },
-      "python": {
-        "bqqmf": 5,
-        "dbs": 1,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 2,
-        "jnqsftt": 5,
-        "jnqsfttjwf": 1,
-        "kplf": 6,
-        "kplft": 1,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 6
-      }
-    },
-    {
-      "result": "FAIL",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplf",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "gbdf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "ipofz",
-        "kplf",
-        "jnqsfttjwf",
-        "xpoefs",
-        "ipofz",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplft",
-        "kplf",
-        "dbs",
-        "kplf",
-        "dbs"
-      ],
-      "chatgpt": {
-        "bqqmf": 5,
-        "dbs": 2,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 2,
-        "jnqsftt": 6,
-        "jnqsfttjwf": 1,
-        "kplf": 6,
-        "kplft": 1,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 5
-      },
-      "python": {
-        "bqqmf": 5,
-        "dbs": 2,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 2,
-        "jnqsftt": 5,
-        "jnqsfttjwf": 1,
-        "kplf": 6,
-        "kplft": 1,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 6
-      }
-    },
-    {
-      "result": "FAIL",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplf",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "gbdf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "ipofz",
-        "kplf",
-        "jnqsfttjwf",
-        "xpoefs",
-        "ipofz",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplft",
-        "kplf",
-        "dbs",
-        "kplf",
-        "dbs",
-        "qmbof"
-      ],
-      "chatgpt": {
-        "bqqmf": 5,
-        "dbs": 2,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 2,
-        "jnqsftt": 5,
-        "jnqsfttjwf": 1,
-        "kplf": 6,
-        "kplft": 1,
-        "qmbof": 1,
-        "tfdpoe": 1,
-        "uijt": 2,
-        "uijse": 1,
-        "xpoefs": 6
-      },
-      "python": {
-        "bqqmf": 5,
-        "dbs": 2,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 2,
-        "jnqsftt": 5,
-        "jnqsfttjwf": 1,
-        "kplf": 6,
-        "kplft": 1,
-        "qmbof": 1,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 6
-      }
-    },
-    {
-      "result": "FAIL",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplf",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "gbdf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "ipofz",
-        "kplf",
-        "jnqsfttjwf",
-        "xpoefs",
-        "ipofz",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplft",
-        "kplf",
-        "dbs",
-        "kplf",
-        "dbs",
-        "qmbof",
-        "dbs"
-      ],
-      "chatgpt": {
-        "bqqmf": 5,
-        "dbs": 3,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 2,
-        "jnqsftt": 5,
-        "jnqsfttjwf": 1,
-        "kplf": 6,
-        "kplft": 1,
-        "qmbof": 1,
-        "tfdpoe": 1,
-        "uijt": 2,
-        "uijse": 1,
-        "xpoefs": 5
-      },
-      "python": {
-        "bqqmf": 5,
-        "dbs": 3,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 2,
-        "jnqsftt": 5,
-        "jnqsfttjwf": 1,
-        "kplf": 6,
-        "kplft": 1,
-        "qmbof": 1,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 6
-      }
-    },
-    {
-      "result": "PASS",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplf",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "gbdf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "ipofz",
-        "kplf",
-        "jnqsfttjwf",
-        "xpoefs",
-        "ipofz",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplft",
-        "kplf",
-        "dbs",
-        "kplf",
-        "dbs",
-        "qmbof",
-        "dbs",
-        "dbs"
-      ],
-      "chatgpt": {
-        "bqqmf": 5,
-        "dbs": 4,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 2,
-        "jnqsftt": 5,
-        "jnqsfttjwf": 1,
-        "kplf": 6,
-        "kplft": 1,
-        "qmbof": 1,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 6
-      },
-      "python": {
-        "bqqmf": 5,
-        "dbs": 4,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 2,
-        "jnqsftt": 5,
-        "jnqsfttjwf": 1,
-        "kplf": 6,
-        "kplft": 1,
-        "qmbof": 1,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 6
-      }
-    }
-  ],
-  [
-    {
-      "result": "PASS",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf"
-      ],
-      "chatgpt": {
-        "bqqmf": 1,
-        "gjstu": 1,
-        "tfdpoe": 1,
-        "uijse": 1
-      },
-      "python": {
-        "bqqmf": 1,
-        "gjstu": 1,
-        "tfdpoe": 1,
-        "uijse": 1
-      }
-    },
-    {
-      "result": "PASS",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf"
-      ],
-      "chatgpt": {
-        "bqqmf": 2,
-        "gjstu": 1,
-        "tfdpoe": 1,
-        "uijse": 1
-      },
-      "python": {
-        "bqqmf": 2,
-        "gjstu": 1,
-        "tfdpoe": 1,
-        "uijse": 1
-      }
-    },
-    {
-      "result": "PASS",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf"
-      ],
-      "chatgpt": {
-        "bqqmf": 2,
-        "gjstu": 1,
-        "kplf": 1,
-        "tfdpoe": 1,
-        "uijse": 1
-      },
-      "python": {
-        "bqqmf": 2,
-        "gjstu": 1,
-        "kplf": 1,
-        "tfdpoe": 1,
-        "uijse": 1
-      }
-    },
-    {
-      "result": "PASS",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt"
-      ],
-      "chatgpt": {
-        "bqqmf": 2,
-        "gjstu": 1,
-        "jnqsftt": 1,
-        "kplf": 1,
-        "tfdpoe": 1,
-        "uijse": 1
-      },
-      "python": {
-        "bqqmf": 2,
-        "gjstu": 1,
-        "jnqsftt": 1,
-        "kplf": 1,
-        "tfdpoe": 1,
-        "uijse": 1
-      }
-    },
-    {
-      "result": "PASS",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs"
-      ],
-      "chatgpt": {
-        "bqqmf": 2,
-        "gjstu": 1,
-        "jnqsftt": 1,
-        "kplf": 1,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "xpoefs": 1
-      },
-      "python": {
-        "bqqmf": 2,
-        "gjstu": 1,
-        "jnqsftt": 1,
-        "kplf": 1,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "xpoefs": 1
-      }
-    },
-    {
-      "result": "PASS",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt"
-      ],
-      "chatgpt": {
-        "bqqmf": 2,
-        "gjstu": 1,
-        "jnqsftt": 1,
-        "kplf": 1,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 1,
-        "xpoefs": 1
-      },
-      "python": {
-        "bqqmf": 2,
-        "gjstu": 1,
-        "jnqsftt": 1,
-        "kplf": 1,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 1,
-        "xpoefs": 1
-      }
-    },
-    {
-      "result": "PASS",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs"
-      ],
-      "chatgpt": {
-        "bqqmf": 2,
-        "gjstu": 1,
-        "jnqsftt": 1,
-        "kplf": 1,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 1,
-        "xpoefs": 2
-      },
-      "python": {
-        "bqqmf": 2,
-        "gjstu": 1,
-        "jnqsftt": 1,
-        "kplf": 1,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 1,
-        "xpoefs": 2
-      }
-    },
-    {
-      "result": "PASS",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt"
-      ],
-      "chatgpt": {
-        "bqqmf": 2,
-        "gjstu": 1,
-        "jnqsftt": 2,
-        "kplf": 1,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 1,
-        "xpoefs": 2
-      },
-      "python": {
-        "bqqmf": 2,
-        "gjstu": 1,
-        "jnqsftt": 2,
-        "kplf": 1,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 1,
-        "xpoefs": 2
-      }
-    },
-    {
-      "result": "PASS",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf"
-      ],
-      "chatgpt": {
-        "bqqmf": 3,
-        "gjstu": 1,
-        "jnqsftt": 2,
-        "kplf": 1,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 1,
-        "xpoefs": 2
-      },
-      "python": {
-        "bqqmf": 3,
-        "gjstu": 1,
-        "jnqsftt": 2,
-        "kplf": 1,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 1,
-        "xpoefs": 2
-      }
-    },
-    {
-      "result": "PASS",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplf"
-      ],
-      "chatgpt": {
-        "bqqmf": 3,
-        "gjstu": 1,
-        "jnqsftt": 2,
-        "kplf": 2,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 1,
-        "xpoefs": 2
-      },
-      "python": {
-        "bqqmf": 3,
-        "gjstu": 1,
-        "jnqsftt": 2,
-        "kplf": 2,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 1,
-        "xpoefs": 2
-      }
-    },
-    {
-      "result": "PASS",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplf",
-        "uijt"
-      ],
-      "chatgpt": {
-        "bqqmf": 3,
-        "gjstu": 1,
-        "jnqsftt": 2,
-        "kplf": 2,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 2
-      },
-      "python": {
-        "bqqmf": 3,
-        "gjstu": 1,
-        "jnqsftt": 2,
-        "kplf": 2,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 2
-      }
-    },
-    {
-      "result": "PASS",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplf",
-        "uijt",
-        "xpoefs"
-      ],
-      "chatgpt": {
-        "bqqmf": 3,
-        "gjstu": 1,
-        "jnqsftt": 2,
-        "kplf": 2,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 3
-      },
-      "python": {
-        "bqqmf": 3,
-        "gjstu": 1,
-        "jnqsftt": 2,
-        "kplf": 2,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 3
-      }
-    },
-    {
-      "result": "PASS",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplf",
-        "uijt",
-        "xpoefs",
-        "jnqsftt"
-      ],
-      "chatgpt": {
-        "bqqmf": 3,
-        "gjstu": 1,
-        "jnqsftt": 3,
-        "kplf": 2,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 3
-      },
-      "python": {
-        "bqqmf": 3,
-        "gjstu": 1,
-        "jnqsftt": 3,
-        "kplf": 2,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 3
-      }
-    },
-    {
-      "result": "PASS",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplf",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf"
-      ],
-      "chatgpt": {
-        "bqqmf": 4,
-        "gjstu": 1,
-        "jnqsftt": 3,
-        "kplf": 2,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 3
-      },
-      "python": {
-        "bqqmf": 4,
-        "gjstu": 1,
-        "jnqsftt": 3,
-        "kplf": 2,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 3
-      }
-    },
-    {
-      "result": "PASS",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplf",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "gbdf"
-      ],
-      "chatgpt": {
-        "bqqmf": 4,
-        "gbdf": 1,
-        "gjstu": 1,
-        "jnqsftt": 3,
-        "kplf": 2,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 3
-      },
-      "python": {
-        "bqqmf": 4,
-        "gbdf": 1,
-        "gjstu": 1,
-        "jnqsftt": 3,
-        "kplf": 2,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 3
-      }
-    },
-    {
-      "result": "PASS",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplf",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "gbdf",
-        "kplf"
-      ],
-      "chatgpt": {
-        "bqqmf": 4,
-        "gbdf": 1,
-        "gjstu": 1,
-        "jnqsftt": 3,
-        "kplf": 3,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 3
-      },
-      "python": {
-        "bqqmf": 4,
-        "gbdf": 1,
-        "gjstu": 1,
-        "jnqsftt": 3,
-        "kplf": 3,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 3
-      }
-    },
-    {
-      "result": "PASS",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplf",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "gbdf",
-        "kplf",
-        "jnqsftt"
-      ],
-      "chatgpt": {
-        "bqqmf": 4,
-        "gbdf": 1,
-        "gjstu": 1,
-        "jnqsftt": 4,
-        "kplf": 3,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 3
-      },
-      "python": {
-        "bqqmf": 4,
-        "gbdf": 1,
-        "gjstu": 1,
-        "jnqsftt": 4,
-        "kplf": 3,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 3
-      }
-    },
-    {
-      "result": "PASS",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplf",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "gbdf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs"
-      ],
-      "chatgpt": {
-        "bqqmf": 4,
-        "gbdf": 1,
-        "gjstu": 1,
-        "jnqsftt": 4,
-        "kplf": 3,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 4
-      },
-      "python": {
-        "bqqmf": 4,
-        "gbdf": 1,
-        "gjstu": 1,
-        "jnqsftt": 4,
-        "kplf": 3,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
-        "xpoefs": 4
-      }
-    },
-    {
-      "result": "PASS",
-      "wordlist": [
-        "gjstu",
-        "tfdpoe",
-        "uijse",
-        "bqqmf",
-        "bqqmf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "kplf",
-        "uijt",
-        "xpoefs",
-        "jnqsftt",
-        "bqqmf",
-        "gbdf",
-        "kplf",
-        "jnqsftt",
-        "xpoefs",
-        "ipofz"
-      ],
-      "chatgpt": {
-        "bqqmf": 4,
-        "gbdf": 1,
-        "gjstu": 1,
-        "ipofz": 1,
-        "jnqsftt": 4,
-        "kplf": 3,
-        "tfdpoe": 1,
-        "uijse": 1,
-        "uijt": 2,
         "xpoefs": 4
       },
       "python": {
@@ -4306,7 +2651,7 @@
       }
     },
     {
-      "result": "PASS",
+      "result": "FAIL",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -4346,9 +2691,9 @@
         "jnqsfttjwf": 1,
         "kplf": 4,
         "tfdpoe": 1,
-        "uijse": 1,
         "uijt": 2,
-        "xpoefs": 6
+        "uijse": 1,
+        "xpoefs": 5
       },
       "python": {
         "bqqmf": 4,
@@ -4365,7 +2710,7 @@
       }
     },
     {
-      "result": "FAIL",
+      "result": "PASS",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -4406,9 +2751,9 @@
         "jnqsfttjwf": 1,
         "kplf": 4,
         "tfdpoe": 1,
-        "uijt": 2,
         "uijse": 1,
-        "xpoefs": 5
+        "uijt": 2,
+        "xpoefs": 6
       },
       "python": {
         "bqqmf": 5,
@@ -4425,7 +2770,7 @@
       }
     },
     {
-      "result": "FAIL",
+      "result": "PASS",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -4468,8 +2813,8 @@
         "kplf": 4,
         "kplft": 1,
         "tfdpoe": 1,
-        "uijt": 2,
         "uijse": 1,
+        "uijt": 2,
         "xpoefs": 6
       },
       "python": {
@@ -4488,7 +2833,7 @@
       }
     },
     {
-      "result": "FAIL",
+      "result": "PASS",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -4534,7 +2879,7 @@
         "tfdpoe": 1,
         "uijse": 1,
         "uijt": 2,
-        "xpoefs": 5
+        "xpoefs": 6
       },
       "python": {
         "bqqmf": 5,
@@ -4552,7 +2897,7 @@
       }
     },
     {
-      "result": "PASS",
+      "result": "FAIL",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -4600,7 +2945,7 @@
         "tfdpoe": 1,
         "uijse": 1,
         "uijt": 2,
-        "xpoefs": 6
+        "xpoefs": 5
       },
       "python": {
         "bqqmf": 5,
@@ -4619,7 +2964,7 @@
       }
     },
     {
-      "result": "PASS",
+      "result": "FAIL",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -4666,9 +3011,9 @@
         "kplf": 6,
         "kplft": 1,
         "tfdpoe": 1,
-        "uijse": 1,
         "uijt": 2,
-        "xpoefs": 6
+        "uijse": 1,
+        "xpoefs": 5
       },
       "python": {
         "bqqmf": 5,
@@ -4879,8 +3224,8 @@
         "kplft": 1,
         "qmbof": 1,
         "tfdpoe": 1,
-        "uijt": 2,
         "uijse": 1,
+        "uijt": 2,
         "xpoefs": 5
       },
       "python": {
@@ -5446,7 +3791,7 @@
       }
     },
     {
-      "result": "PASS",
+      "result": "FAIL",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -5474,8 +3819,8 @@
         "jnqsftt": 3,
         "kplf": 2,
         "tfdpoe": 1,
-        "uijse": 1,
         "uijt": 2,
+        "uijse": 1,
         "xpoefs": 3
       },
       "python": {
@@ -5491,7 +3836,7 @@
       }
     },
     {
-      "result": "FAIL",
+      "result": "PASS",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -5520,8 +3865,8 @@
         "jnqsftt": 3,
         "kplf": 3,
         "tfdpoe": 1,
-        "uijt": 2,
         "uijse": 1,
+        "uijt": 2,
         "xpoefs": 3
       },
       "python": {
@@ -5735,7 +4080,7 @@
       }
     },
     {
-      "result": "FAIL",
+      "result": "PASS",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -5771,8 +4116,8 @@
         "jnqsfttjwf": 1,
         "kplf": 4,
         "tfdpoe": 1,
-        "uijt": 2,
         "uijse": 1,
+        "uijt": 2,
         "xpoefs": 4
       },
       "python": {
@@ -5790,7 +4135,7 @@
       }
     },
     {
-      "result": "FAIL",
+      "result": "PASS",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -5827,8 +4172,8 @@
         "jnqsfttjwf": 1,
         "kplf": 4,
         "tfdpoe": 1,
-        "uijt": 2,
         "uijse": 1,
+        "uijt": 2,
         "xpoefs": 5
       },
       "python": {
@@ -5846,7 +4191,7 @@
       }
     },
     {
-      "result": "FAIL",
+      "result": "PASS",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -5884,8 +4229,8 @@
         "jnqsfttjwf": 1,
         "kplf": 4,
         "tfdpoe": 1,
-        "uijt": 2,
         "uijse": 1,
+        "uijt": 2,
         "xpoefs": 5
       },
       "python": {
@@ -5938,12 +4283,12 @@
         "gbdf": 1,
         "gjstu": 1,
         "ipofz": 2,
-        "jnqsftt": 5,
+        "jnqsftt": 4,
         "jnqsfttjwf": 1,
         "kplf": 4,
         "tfdpoe": 1,
-        "uijse": 1,
         "uijt": 2,
+        "uijse": 1,
         "xpoefs": 6
       },
       "python": {
@@ -5961,7 +4306,7 @@
       }
     },
     {
-      "result": "FAIL",
+      "result": "PASS",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -6001,8 +4346,8 @@
         "jnqsfttjwf": 1,
         "kplf": 4,
         "tfdpoe": 1,
-        "uijt": 2,
         "uijse": 1,
+        "uijt": 2,
         "xpoefs": 6
       },
       "python": {
@@ -6020,7 +4365,7 @@
       }
     },
     {
-      "result": "PASS",
+      "result": "FAIL",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -6063,7 +4408,7 @@
         "tfdpoe": 1,
         "uijse": 1,
         "uijt": 2,
-        "xpoefs": 6
+        "xpoefs": 5
       },
       "python": {
         "bqqmf": 5,
@@ -6080,7 +4425,7 @@
       }
     },
     {
-      "result": "FAIL",
+      "result": "PASS",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -6125,7 +4470,7 @@
         "tfdpoe": 1,
         "uijse": 1,
         "uijt": 2,
-        "xpoefs": 5
+        "xpoefs": 6
       },
       "python": {
         "bqqmf": 5,
@@ -6143,7 +4488,7 @@
       }
     },
     {
-      "result": "FAIL",
+      "result": "PASS",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -6189,7 +4534,7 @@
         "tfdpoe": 1,
         "uijse": 1,
         "uijt": 2,
-        "xpoefs": 5
+        "xpoefs": 6
       },
       "python": {
         "bqqmf": 5,
@@ -6534,8 +4879,8 @@
         "kplft": 1,
         "qmbof": 1,
         "tfdpoe": 1,
-        "uijse": 1,
         "uijt": 2,
+        "uijse": 1,
         "xpoefs": 5
       },
       "python": {
@@ -7192,7 +5537,7 @@
       }
     },
     {
-      "result": "PASS",
+      "result": "FAIL",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -7222,8 +5567,8 @@
         "jnqsftt": 4,
         "kplf": 3,
         "tfdpoe": 1,
-        "uijse": 1,
         "uijt": 2,
+        "uijse": 1,
         "xpoefs": 3
       },
       "python": {
@@ -7239,7 +5584,7 @@
       }
     },
     {
-      "result": "PASS",
+      "result": "FAIL",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -7270,8 +5615,8 @@
         "jnqsftt": 4,
         "kplf": 3,
         "tfdpoe": 1,
-        "uijse": 1,
         "uijt": 2,
+        "uijse": 1,
         "xpoefs": 4
       },
       "python": {
@@ -7390,7 +5735,7 @@
       }
     },
     {
-      "result": "PASS",
+      "result": "FAIL",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -7426,8 +5771,8 @@
         "jnqsfttjwf": 1,
         "kplf": 4,
         "tfdpoe": 1,
-        "uijse": 1,
         "uijt": 2,
+        "uijse": 1,
         "xpoefs": 4
       },
       "python": {
@@ -7445,7 +5790,7 @@
       }
     },
     {
-      "result": "PASS",
+      "result": "FAIL",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -7482,8 +5827,8 @@
         "jnqsfttjwf": 1,
         "kplf": 4,
         "tfdpoe": 1,
-        "uijse": 1,
         "uijt": 2,
+        "uijse": 1,
         "xpoefs": 5
       },
       "python": {
@@ -7501,7 +5846,7 @@
       }
     },
     {
-      "result": "PASS",
+      "result": "FAIL",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -7535,7 +5880,7 @@
         "gbdf": 1,
         "gjstu": 1,
         "ipofz": 2,
-        "jnqsftt": 4,
+        "jnqsftt": 5,
         "jnqsfttjwf": 1,
         "kplf": 4,
         "tfdpoe": 1,
@@ -7616,7 +5961,7 @@
       }
     },
     {
-      "result": "FAIL",
+      "result": "PASS",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -7656,8 +6001,8 @@
         "jnqsfttjwf": 1,
         "kplf": 4,
         "tfdpoe": 1,
-        "uijt": 2,
         "uijse": 1,
+        "uijt": 2,
         "xpoefs": 6
       },
       "python": {
@@ -7675,7 +6020,7 @@
       }
     },
     {
-      "result": "PASS",
+      "result": "FAIL",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -7716,8 +6061,8 @@
         "jnqsfttjwf": 1,
         "kplf": 4,
         "tfdpoe": 1,
-        "uijse": 1,
         "uijt": 2,
+        "uijse": 1,
         "xpoefs": 6
       },
       "python": {
@@ -7862,7 +6207,7 @@
       }
     },
     {
-      "result": "FAIL",
+      "result": "PASS",
       "wordlist": [
         "gjstu",
         "tfdpoe",
@@ -7908,9 +6253,9 @@
         "kplf": 5,
         "kplft": 1,
         "tfdpoe": 1,
-        "uijt": 2,
         "uijse": 1,
-        "xpoefs": 5
+        "uijt": 2,
+        "xpoefs": 6
       },
       "python": {
         "bqqmf": 5,
@@ -7976,8 +6321,8 @@
         "kplf": 6,
         "kplft": 1,
         "tfdpoe": 1,
-        "uijt": 2,
         "uijse": 1,
+        "uijt": 2,
         "xpoefs": 5
       },
       "python": {
@@ -8266,6 +6611,1661 @@
         "uijse": 1,
         "uijt": 2,
         "xpoefs": 5
+      },
+      "python": {
+        "bqqmf": 5,
+        "dbs": 4,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 2,
+        "jnqsftt": 5,
+        "jnqsfttjwf": 1,
+        "kplf": 6,
+        "kplft": 1,
+        "qmbof": 1,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 6
+      }
+    }
+  ],
+  [
+    {
+      "result": "PASS",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf"
+      ],
+      "chatgpt": {
+        "bqqmf": 1,
+        "gjstu": 1,
+        "tfdpoe": 1,
+        "uijse": 1
+      },
+      "python": {
+        "bqqmf": 1,
+        "gjstu": 1,
+        "tfdpoe": 1,
+        "uijse": 1
+      }
+    },
+    {
+      "result": "PASS",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf"
+      ],
+      "chatgpt": {
+        "bqqmf": 2,
+        "gjstu": 1,
+        "tfdpoe": 1,
+        "uijse": 1
+      },
+      "python": {
+        "bqqmf": 2,
+        "gjstu": 1,
+        "tfdpoe": 1,
+        "uijse": 1
+      }
+    },
+    {
+      "result": "PASS",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf"
+      ],
+      "chatgpt": {
+        "bqqmf": 2,
+        "gjstu": 1,
+        "kplf": 1,
+        "tfdpoe": 1,
+        "uijse": 1
+      },
+      "python": {
+        "bqqmf": 2,
+        "gjstu": 1,
+        "kplf": 1,
+        "tfdpoe": 1,
+        "uijse": 1
+      }
+    },
+    {
+      "result": "PASS",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt"
+      ],
+      "chatgpt": {
+        "bqqmf": 2,
+        "gjstu": 1,
+        "jnqsftt": 1,
+        "kplf": 1,
+        "tfdpoe": 1,
+        "uijse": 1
+      },
+      "python": {
+        "bqqmf": 2,
+        "gjstu": 1,
+        "jnqsftt": 1,
+        "kplf": 1,
+        "tfdpoe": 1,
+        "uijse": 1
+      }
+    },
+    {
+      "result": "PASS",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs"
+      ],
+      "chatgpt": {
+        "bqqmf": 2,
+        "gjstu": 1,
+        "jnqsftt": 1,
+        "kplf": 1,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "xpoefs": 1
+      },
+      "python": {
+        "bqqmf": 2,
+        "gjstu": 1,
+        "jnqsftt": 1,
+        "kplf": 1,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "xpoefs": 1
+      }
+    },
+    {
+      "result": "PASS",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt"
+      ],
+      "chatgpt": {
+        "bqqmf": 2,
+        "gjstu": 1,
+        "jnqsftt": 1,
+        "kplf": 1,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 1,
+        "xpoefs": 1
+      },
+      "python": {
+        "bqqmf": 2,
+        "gjstu": 1,
+        "jnqsftt": 1,
+        "kplf": 1,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 1,
+        "xpoefs": 1
+      }
+    },
+    {
+      "result": "PASS",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs"
+      ],
+      "chatgpt": {
+        "bqqmf": 2,
+        "gjstu": 1,
+        "jnqsftt": 1,
+        "kplf": 1,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 1,
+        "xpoefs": 2
+      },
+      "python": {
+        "bqqmf": 2,
+        "gjstu": 1,
+        "jnqsftt": 1,
+        "kplf": 1,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 1,
+        "xpoefs": 2
+      }
+    },
+    {
+      "result": "PASS",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt"
+      ],
+      "chatgpt": {
+        "bqqmf": 2,
+        "gjstu": 1,
+        "jnqsftt": 2,
+        "kplf": 1,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 1,
+        "xpoefs": 2
+      },
+      "python": {
+        "bqqmf": 2,
+        "gjstu": 1,
+        "jnqsftt": 2,
+        "kplf": 1,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 1,
+        "xpoefs": 2
+      }
+    },
+    {
+      "result": "PASS",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf"
+      ],
+      "chatgpt": {
+        "bqqmf": 3,
+        "gjstu": 1,
+        "jnqsftt": 2,
+        "kplf": 1,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 1,
+        "xpoefs": 2
+      },
+      "python": {
+        "bqqmf": 3,
+        "gjstu": 1,
+        "jnqsftt": 2,
+        "kplf": 1,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 1,
+        "xpoefs": 2
+      }
+    },
+    {
+      "result": "PASS",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplf"
+      ],
+      "chatgpt": {
+        "bqqmf": 3,
+        "gjstu": 1,
+        "jnqsftt": 2,
+        "kplf": 2,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 1,
+        "xpoefs": 2
+      },
+      "python": {
+        "bqqmf": 3,
+        "gjstu": 1,
+        "jnqsftt": 2,
+        "kplf": 2,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 1,
+        "xpoefs": 2
+      }
+    },
+    {
+      "result": "FAIL",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplf",
+        "uijt"
+      ],
+      "chatgpt": {
+        "bqqmf": 3,
+        "gjstu": 1,
+        "jnqsftt": 2,
+        "kplf": 2,
+        "tfdpoe": 1,
+        "uijt": 2,
+        "uijse": 1,
+        "xpoefs": 2
+      },
+      "python": {
+        "bqqmf": 3,
+        "gjstu": 1,
+        "jnqsftt": 2,
+        "kplf": 2,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 2
+      }
+    },
+    {
+      "result": "PASS",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplf",
+        "uijt",
+        "xpoefs"
+      ],
+      "chatgpt": {
+        "bqqmf": 3,
+        "gjstu": 1,
+        "jnqsftt": 2,
+        "kplf": 2,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 3
+      },
+      "python": {
+        "bqqmf": 3,
+        "gjstu": 1,
+        "jnqsftt": 2,
+        "kplf": 2,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 3
+      }
+    },
+    {
+      "result": "PASS",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplf",
+        "uijt",
+        "xpoefs",
+        "jnqsftt"
+      ],
+      "chatgpt": {
+        "bqqmf": 3,
+        "gjstu": 1,
+        "jnqsftt": 3,
+        "kplf": 2,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 3
+      },
+      "python": {
+        "bqqmf": 3,
+        "gjstu": 1,
+        "jnqsftt": 3,
+        "kplf": 2,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 3
+      }
+    },
+    {
+      "result": "PASS",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplf",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf"
+      ],
+      "chatgpt": {
+        "bqqmf": 4,
+        "gjstu": 1,
+        "jnqsftt": 3,
+        "kplf": 2,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 3
+      },
+      "python": {
+        "bqqmf": 4,
+        "gjstu": 1,
+        "jnqsftt": 3,
+        "kplf": 2,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 3
+      }
+    },
+    {
+      "result": "PASS",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplf",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "gbdf"
+      ],
+      "chatgpt": {
+        "bqqmf": 4,
+        "gbdf": 1,
+        "gjstu": 1,
+        "jnqsftt": 3,
+        "kplf": 2,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 3
+      },
+      "python": {
+        "bqqmf": 4,
+        "gbdf": 1,
+        "gjstu": 1,
+        "jnqsftt": 3,
+        "kplf": 2,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 3
+      }
+    },
+    {
+      "result": "PASS",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplf",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "gbdf",
+        "kplf"
+      ],
+      "chatgpt": {
+        "bqqmf": 4,
+        "gbdf": 1,
+        "gjstu": 1,
+        "jnqsftt": 3,
+        "kplf": 3,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 3
+      },
+      "python": {
+        "bqqmf": 4,
+        "gbdf": 1,
+        "gjstu": 1,
+        "jnqsftt": 3,
+        "kplf": 3,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 3
+      }
+    },
+    {
+      "result": "PASS",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplf",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "gbdf",
+        "kplf",
+        "jnqsftt"
+      ],
+      "chatgpt": {
+        "bqqmf": 4,
+        "gbdf": 1,
+        "gjstu": 1,
+        "jnqsftt": 4,
+        "kplf": 3,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 3
+      },
+      "python": {
+        "bqqmf": 4,
+        "gbdf": 1,
+        "gjstu": 1,
+        "jnqsftt": 4,
+        "kplf": 3,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 3
+      }
+    },
+    {
+      "result": "FAIL",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplf",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "gbdf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs"
+      ],
+      "chatgpt": {
+        "bqqmf": 4,
+        "gbdf": 1,
+        "gjstu": 1,
+        "jnqsftt": 4,
+        "kplf": 3,
+        "tfdpoe": 1,
+        "uijt": 2,
+        "uijse": 1,
+        "xpoefs": 4
+      },
+      "python": {
+        "bqqmf": 4,
+        "gbdf": 1,
+        "gjstu": 1,
+        "jnqsftt": 4,
+        "kplf": 3,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 4
+      }
+    },
+    {
+      "result": "PASS",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplf",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "gbdf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "ipofz"
+      ],
+      "chatgpt": {
+        "bqqmf": 4,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 1,
+        "jnqsftt": 4,
+        "kplf": 3,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 4
+      },
+      "python": {
+        "bqqmf": 4,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 1,
+        "jnqsftt": 4,
+        "kplf": 3,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 4
+      }
+    },
+    {
+      "result": "FAIL",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplf",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "gbdf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "ipofz",
+        "kplf"
+      ],
+      "chatgpt": {
+        "bqqmf": 4,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 1,
+        "jnqsftt": 4,
+        "kplf": 4,
+        "tfdpoe": 1,
+        "uijt": 2,
+        "uijse": 1,
+        "xpoefs": 4
+      },
+      "python": {
+        "bqqmf": 4,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 1,
+        "jnqsftt": 4,
+        "kplf": 4,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 4
+      }
+    },
+    {
+      "result": "FAIL",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplf",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "gbdf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "ipofz",
+        "kplf",
+        "jnqsfttjwf"
+      ],
+      "chatgpt": {
+        "bqqmf": 4,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 1,
+        "jnqsftt": 4,
+        "jnqsfttjwf": 1,
+        "kplf": 4,
+        "tfdpoe": 1,
+        "uijt": 2,
+        "uijse": 1,
+        "xpoefs": 4
+      },
+      "python": {
+        "bqqmf": 4,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 1,
+        "jnqsftt": 4,
+        "jnqsfttjwf": 1,
+        "kplf": 4,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 4
+      }
+    },
+    {
+      "result": "PASS",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplf",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "gbdf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "ipofz",
+        "kplf",
+        "jnqsfttjwf",
+        "xpoefs"
+      ],
+      "chatgpt": {
+        "bqqmf": 4,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 1,
+        "jnqsftt": 4,
+        "jnqsfttjwf": 1,
+        "kplf": 4,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 5
+      },
+      "python": {
+        "bqqmf": 4,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 1,
+        "jnqsftt": 4,
+        "jnqsfttjwf": 1,
+        "kplf": 4,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 5
+      }
+    },
+    {
+      "result": "FAIL",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplf",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "gbdf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "ipofz",
+        "kplf",
+        "jnqsfttjwf",
+        "xpoefs",
+        "ipofz"
+      ],
+      "chatgpt": {
+        "bqqmf": 4,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 2,
+        "jnqsftt": 4,
+        "jnqsfttjwf": 1,
+        "kplf": 4,
+        "tfdpoe": 1,
+        "uijt": 2,
+        "uijse": 1,
+        "xpoefs": 5
+      },
+      "python": {
+        "bqqmf": 4,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 2,
+        "jnqsftt": 4,
+        "jnqsfttjwf": 1,
+        "kplf": 4,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 5
+      }
+    },
+    {
+      "result": "FAIL",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplf",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "gbdf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "ipofz",
+        "kplf",
+        "jnqsfttjwf",
+        "xpoefs",
+        "ipofz",
+        "xpoefs"
+      ],
+      "chatgpt": {
+        "bqqmf": 4,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 2,
+        "jnqsftt": 4,
+        "jnqsfttjwf": 1,
+        "kplf": 4,
+        "tfdpoe": 1,
+        "uijt": 2,
+        "uijse": 1,
+        "xpoefs": 6
+      },
+      "python": {
+        "bqqmf": 4,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 2,
+        "jnqsftt": 4,
+        "jnqsfttjwf": 1,
+        "kplf": 4,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 6
+      }
+    },
+    {
+      "result": "PASS",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplf",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "gbdf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "ipofz",
+        "kplf",
+        "jnqsfttjwf",
+        "xpoefs",
+        "ipofz",
+        "xpoefs",
+        "jnqsftt"
+      ],
+      "chatgpt": {
+        "bqqmf": 4,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 2,
+        "jnqsftt": 5,
+        "jnqsfttjwf": 1,
+        "kplf": 4,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 6
+      },
+      "python": {
+        "bqqmf": 4,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 2,
+        "jnqsftt": 5,
+        "jnqsfttjwf": 1,
+        "kplf": 4,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 6
+      }
+    },
+    {
+      "result": "FAIL",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplf",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "gbdf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "ipofz",
+        "kplf",
+        "jnqsfttjwf",
+        "xpoefs",
+        "ipofz",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf"
+      ],
+      "chatgpt": {
+        "bqqmf": 5,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 2,
+        "jnqsftt": 5,
+        "jnqsfttjwf": 1,
+        "kplf": 4,
+        "tfdpoe": 1,
+        "uijt": 2,
+        "uijse": 1,
+        "xpoefs": 6
+      },
+      "python": {
+        "bqqmf": 5,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 2,
+        "jnqsftt": 5,
+        "jnqsfttjwf": 1,
+        "kplf": 4,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 6
+      }
+    },
+    {
+      "result": "FAIL",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplf",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "gbdf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "ipofz",
+        "kplf",
+        "jnqsfttjwf",
+        "xpoefs",
+        "ipofz",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplft"
+      ],
+      "chatgpt": {
+        "bqqmf": 5,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 2,
+        "jnqsftt": 5,
+        "jnqsfttjwf": 1,
+        "kplf": 4,
+        "kplft": 1,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 5
+      },
+      "python": {
+        "bqqmf": 5,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 2,
+        "jnqsftt": 5,
+        "jnqsfttjwf": 1,
+        "kplf": 4,
+        "kplft": 1,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 6
+      }
+    },
+    {
+      "result": "PASS",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplf",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "gbdf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "ipofz",
+        "kplf",
+        "jnqsfttjwf",
+        "xpoefs",
+        "ipofz",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplft",
+        "kplf"
+      ],
+      "chatgpt": {
+        "bqqmf": 5,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 2,
+        "jnqsftt": 5,
+        "jnqsfttjwf": 1,
+        "kplf": 5,
+        "kplft": 1,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 6
+      },
+      "python": {
+        "bqqmf": 5,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 2,
+        "jnqsftt": 5,
+        "jnqsfttjwf": 1,
+        "kplf": 5,
+        "kplft": 1,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 6
+      }
+    },
+    {
+      "result": "PASS",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplf",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "gbdf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "ipofz",
+        "kplf",
+        "jnqsfttjwf",
+        "xpoefs",
+        "ipofz",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplft",
+        "kplf",
+        "dbs"
+      ],
+      "chatgpt": {
+        "bqqmf": 5,
+        "dbs": 1,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 2,
+        "jnqsftt": 5,
+        "jnqsfttjwf": 1,
+        "kplf": 5,
+        "kplft": 1,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 6
+      },
+      "python": {
+        "bqqmf": 5,
+        "dbs": 1,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 2,
+        "jnqsftt": 5,
+        "jnqsfttjwf": 1,
+        "kplf": 5,
+        "kplft": 1,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 6
+      }
+    },
+    {
+      "result": "FAIL",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplf",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "gbdf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "ipofz",
+        "kplf",
+        "jnqsfttjwf",
+        "xpoefs",
+        "ipofz",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplft",
+        "kplf",
+        "dbs",
+        "kplf"
+      ],
+      "chatgpt": {
+        "bqqmf": 5,
+        "dbs": 1,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 2,
+        "jnqsftt": 5,
+        "jnqsfttjwf": 1,
+        "kplf": 6,
+        "kplft": 1,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 5
+      },
+      "python": {
+        "bqqmf": 5,
+        "dbs": 1,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 2,
+        "jnqsftt": 5,
+        "jnqsfttjwf": 1,
+        "kplf": 6,
+        "kplft": 1,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 6
+      }
+    },
+    {
+      "result": "FAIL",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplf",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "gbdf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "ipofz",
+        "kplf",
+        "jnqsfttjwf",
+        "xpoefs",
+        "ipofz",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplft",
+        "kplf",
+        "dbs",
+        "kplf",
+        "dbs"
+      ],
+      "chatgpt": {
+        "bqqmf": 5,
+        "dbs": 2,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 2,
+        "jnqsftt": 5,
+        "jnqsfttjwf": 1,
+        "kplf": 6,
+        "kplft": 1,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 5
+      },
+      "python": {
+        "bqqmf": 5,
+        "dbs": 2,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 2,
+        "jnqsftt": 5,
+        "jnqsfttjwf": 1,
+        "kplf": 6,
+        "kplft": 1,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 6
+      }
+    },
+    {
+      "result": "FAIL",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplf",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "gbdf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "ipofz",
+        "kplf",
+        "jnqsfttjwf",
+        "xpoefs",
+        "ipofz",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplft",
+        "kplf",
+        "dbs",
+        "kplf",
+        "dbs",
+        "qmbof"
+      ],
+      "chatgpt": {
+        "bqqmf": 5,
+        "dbs": 2,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 2,
+        "jnqsftt": 5,
+        "jnqsfttjwf": 1,
+        "kplf": 6,
+        "kplft": 1,
+        "qmbof": 1,
+        "tfdpoe": 1,
+        "uijt": 2,
+        "uijse": 1,
+        "xpoefs": 5
+      },
+      "python": {
+        "bqqmf": 5,
+        "dbs": 2,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 2,
+        "jnqsftt": 5,
+        "jnqsfttjwf": 1,
+        "kplf": 6,
+        "kplft": 1,
+        "qmbof": 1,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 6
+      }
+    },
+    {
+      "result": "FAIL",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplf",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "gbdf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "ipofz",
+        "kplf",
+        "jnqsfttjwf",
+        "xpoefs",
+        "ipofz",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplft",
+        "kplf",
+        "dbs",
+        "kplf",
+        "dbs",
+        "qmbof",
+        "dbs"
+      ],
+      "chatgpt": {
+        "bqqmf": 5,
+        "dbs": 3,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 2,
+        "jnqsftt": 5,
+        "jnqsfttjwf": 1,
+        "kplf": 6,
+        "kplft": 1,
+        "qmbof": 1,
+        "tfdpoe": 1,
+        "uijt": 2,
+        "uijse": 1,
+        "xpoefs": 5
+      },
+      "python": {
+        "bqqmf": 5,
+        "dbs": 3,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 2,
+        "jnqsftt": 5,
+        "jnqsfttjwf": 1,
+        "kplf": 6,
+        "kplft": 1,
+        "qmbof": 1,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 6
+      }
+    },
+    {
+      "result": "FAIL",
+      "wordlist": [
+        "gjstu",
+        "tfdpoe",
+        "uijse",
+        "bqqmf",
+        "bqqmf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplf",
+        "uijt",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "gbdf",
+        "kplf",
+        "jnqsftt",
+        "xpoefs",
+        "ipofz",
+        "kplf",
+        "jnqsfttjwf",
+        "xpoefs",
+        "ipofz",
+        "xpoefs",
+        "jnqsftt",
+        "bqqmf",
+        "kplft",
+        "kplf",
+        "dbs",
+        "kplf",
+        "dbs",
+        "qmbof",
+        "dbs",
+        "dbs"
+      ],
+      "chatgpt": {
+        "bqqmf": 6,
+        "dbs": 4,
+        "gbdf": 1,
+        "gjstu": 1,
+        "ipofz": 2,
+        "jnqsftt": 5,
+        "jnqsfttjwf": 1,
+        "kplf": 6,
+        "kplft": 1,
+        "qmbof": 1,
+        "tfdpoe": 1,
+        "uijse": 1,
+        "uijt": 2,
+        "xpoefs": 6
       },
       "python": {
         "bqqmf": 5,
