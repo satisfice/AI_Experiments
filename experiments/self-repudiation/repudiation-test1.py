@@ -181,9 +181,9 @@ for block in blocks:
         }
     ]
     
-    for trial in range(0,1):
+    for trial in range(0,10):
         print(trial+1)
-        answers.append(experiment(version, mongo_collection, parameters))
+        answers.append(experiment(version, col, parameters))
         time.sleep(5)
         with open(filename,"wt") as f:
             print(json.dumps(answers,indent=2),file=f)
