@@ -7,7 +7,7 @@ The protocol is to ask it to do a testing-like task and then simply asking a cri
 The problem is presented via the OpenAI API, ten times per configuration. The configurations are:
 
 |ID|model|temperature|tokens|
-|---|---|---|
+|---|---|---|---|
 |1|GPT3.5|0.3|2048|
 |2|GPT3.5|0.5|2048|
 |3|GPT3.5|0.8|2048|
