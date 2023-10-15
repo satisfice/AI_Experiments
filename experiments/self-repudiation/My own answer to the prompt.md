@@ -41,6 +41,7 @@ Obviously, this spec covers just one little part of a bigger system, so it is no
   - If an account is reactivated, does another three-year window begin?
 
 - The “grace period” doesn’t sound like a grace period, but rather just the final 6 months of the 3-year account life. Am I understanding that correctly?
+  (NOTE: As it happens I read the spec wrong. The grace period starts after the 3-year term. This is why questions are a good thing. BTW, reading ChatGPT output clued me in that I may have been mistaken.)
 
 - Is the ability to reactivate the account only available in the last three months of the 3-year cycle?
 
@@ -48,7 +49,8 @@ Obviously, this spec covers just one little part of a bigger system, so it is no
 
 - Is the reminder message sent in only one way or multiple ways?
 
-- The expiration dated and end of the grace period appear to be the same thing. Am I understanding that correctly?
+- The expiration date and end of the grace period appear to be the same thing. Am I understanding that correctly?
+  (NOTE: As it happens I read the spec wrong. The grace period starts after the 3-year term. This is why questions are a good thing. BTW, reading ChatGPT output clued me in that I may have been mistaken.)
 
 - You say you are implementing the “account renewal reminder feature.” Does that mean that the account expiration and deletion process is an existing feature that appears to be working as you want it to?
 
