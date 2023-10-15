@@ -9,11 +9,9 @@ The problem is presented via the OpenAI API, ten times per configuration. The co
 |ID|model|temperature|tokens|
 |---|---|---|---|
 |1|GPT3.5|0.3|2048|
-|2|GPT3.5|0.5|2048|
 |3|GPT3.5|0.8|2048|
 |4|GPT3.5|1.3|2048|
 |5|GPT4.0|0.3|2048|
-|6|GPT4.0|0.5|2048|
 |7|GPT4.0|0.8|2048|
 |8|GPT4.0|1.3|2048|
 
