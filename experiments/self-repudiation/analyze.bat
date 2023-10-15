@@ -1,0 +1,1 @@
+jq -r ". as $original | keys | .[] as $index | ($original[$index][0]?.answer.choices[0].message | (\"\n------------\" + ($index | tostring) + \"----------------\"),.content),($original[$index][1]?.answer.choices[0].message | (\"\n-------------------------\"),.content)" %1
