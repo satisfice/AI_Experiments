@@ -1,0 +1,15 @@
+- Giraffe
+- Platypus
+- Komodo Dragon
+- Red Panda
+- Axolotl
+- Quokka
+- Okapi
+- Pangolin
+- Narwhal
+- Capybara
+- Echidna
+- Fennec Fox
+- Tasmanian Devil
+- Toucan
+- Aye-aye

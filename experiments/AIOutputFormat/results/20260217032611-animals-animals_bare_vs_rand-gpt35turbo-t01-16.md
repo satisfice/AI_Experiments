@@ -1,0 +1,10 @@
+- Dog
+- Cat
+- Elephant
+- Lion
+- Giraffe
+- Wolf
+- Tiger
+- Bear
+- Horse
+- Penguin

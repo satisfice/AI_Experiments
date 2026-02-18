@@ -1,0 +1,20 @@
+Elephant  
+Tiger  
+Kangaroo  
+Penguin  
+Giraffe  
+Cheetah  
+Hippopotamus  
+Penguin  
+Koala  
+Lemur  
+Raccoon  
+Siberian Husky  
+Sloth  
+Ocelot  
+Armadillo  
+Frog  
+Salamander  
+Beaver  
+Porcupine  
+Dolphin

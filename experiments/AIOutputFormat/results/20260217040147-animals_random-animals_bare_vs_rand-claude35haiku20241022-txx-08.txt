@@ -1,0 +1,20 @@
+Elephant
+Giraffe
+Cheetah
+Zebra
+Kangaroo
+Penguin
+Dolphin
+Koala
+Tiger
+Panda
+Octopus
+Rhinoceros
+Platypus
+Flamingo
+Sloth
+Hippo
+Lemur
+Komodo Dragon
+Chameleon
+Axolotl

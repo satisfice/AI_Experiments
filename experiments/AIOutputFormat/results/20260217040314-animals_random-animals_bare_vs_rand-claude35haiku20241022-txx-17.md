@@ -1,0 +1,15 @@
+- Zebra
+- Koala
+- Octopus
+- Platypus
+- Jaguar
+- Komodo Dragon
+- Axolotl
+- Fennec Fox
+- Pangolin
+- Red Panda
+- Tardigrade
+- Narwhal
+- Capybara
+- Quokka
+- Echidna

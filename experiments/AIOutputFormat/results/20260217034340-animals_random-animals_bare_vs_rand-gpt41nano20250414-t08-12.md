@@ -1,0 +1,20 @@
+- Red Fox  
+- Bengal Tiger  
+- Blue Heron  
+- African Elephant  
+- Snow Leopard  
+- Green Iguana  
+- Emperor Penguin  
+- Golden Eagle  
+- Australian Kangaroo  
+- Green Sea Turtle  
+- Arctic Fox  
+- Komodo Dragon  
+- Malamute Dog  
+- Zebra Finch  
+- Giraffe  
+- Honey Bee  
+- Mountain Gorilla  
+- Red Panda  
+- African Grey Parrot  
+- Lamprey

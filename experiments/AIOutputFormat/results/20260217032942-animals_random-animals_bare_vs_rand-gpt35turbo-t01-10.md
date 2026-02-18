@@ -1,0 +1,10 @@
+- Tiger
+- Elephant
+- Giraffe
+- Kangaroo
+- Zebra
+- Jellyfish
+- Platypus
+- Chimpanzee
+- Rhino
+- Cheetah

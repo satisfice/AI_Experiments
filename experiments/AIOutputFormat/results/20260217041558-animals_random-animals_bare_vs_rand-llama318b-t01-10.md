@@ -1,0 +1,10 @@
+* Cheetah
+* Quail
+* Narwhal
+* Mongoose
+* Ostrich
+* Platypus
+* Raccoon
+* Meerkat
+* Lemur 
+* Badger

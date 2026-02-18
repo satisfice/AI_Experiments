@@ -1,0 +1,21 @@
+# Animal Names
+- Platypus
+- Red Panda
+- Axolotl
+- Fennec Fox
+- Quokka
+- Narwhal
+- Pangolin
+- Capybara
+- Okapi
+- Tardigrade
+- Echidna
+- Komodo Dragon
+- Mantis Shrimp
+- Blobfish
+- Aye-Aye
+- Leafcutter Ant
+- Geoduck
+- Kakapo
+- Frilled Shark
+- Star-Nosed Mole
