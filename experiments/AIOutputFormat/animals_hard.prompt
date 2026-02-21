@@ -1,0 +1,3 @@
+I want, for testing purposes, a list of names of animals. I do not want a description, explanation, or any additional data, offer of further help; nothing like "here's the list"; just a list of the raw results in the requested format.
+
+Irrespective of the output format, the data should be returned as one animal per line item, with no extra punctuation or characters except those absolutely necessary to support the requested format.

@@ -1,0 +1,24 @@
+{
+  "ollama": {
+    "supports_temperature": true,
+    "models": {
+      "llama": "llama3.1:8b",
+      "gemma": "gemma3:12b"
+    }
+  },
+  "anthropic": {
+    "supports_temperature": false,
+    "models": {
+      "haiku": "claude-haiku-4-5-20251001",
+      "sonnet35": "claude-3-5-sonnet-20241022",
+      "opus": "claude-3-opus-20250219"
+    }
+  },
+  "openai": {
+    "supports_temperature": true,
+    "models": {
+      "gpt4": "gpt-4.1-nano-2025-04-14",
+      "gpt35turbo": "gpt-3.5-turbo"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+I want, for testing purposes, a list of random names of animals. A random list of animals is a selection in which each item from the population of known animals has an equal chance of selection.
+
+I do not want a description, explanation, or any additional data, offer of further help; nothing like "here's the list"; just a list of the raw results in the requested format.
+
+Irrespective of the output format, the data should be returned as one animal per line item, with no extra punctuation or characters except those absolutely necessary to support the requested format.
+
+
+
