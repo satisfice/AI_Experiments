@@ -1,0 +1,229 @@
+# LARC - LLM Aggregated Retrieval Consistency Tests
+
+This directory contains tools for testing LLM consistency in retrieving and identifying noun phrases from text.
+
+## Prerequisites
+
+- Python 3.x
+- MongoDB running at localhost:27017 (default)
+- Required Python packages: pymongo, pydantic
+
+## Programs
+
+### 1. larc.py - Core LLM Consistency Test (Ollama)
+
+Tests how consistently an LLM can identify and retrieve noun phrases from source text.
+
+**Usage:**
+```bash
+python larc.py --config <config_file>
+```
+
+**Or with individual arguments:**
+```bash
+python larc.py \
+  --source-file <text_file> \
+  --survey-prompt-file <prompt_file> \
+  --presence-prompt-file <presence_file> \
+  --model llama3.1:8b \
+  --temperature 0.7 \
+  --trials 10 \
+  --testid "test_name" \
+  --testset "test_set_name" \
+  --description "test_description"
+```
+
+**Arguments:**
+- `--config`: JSON config file with all settings (overrides other arguments)
+- `--source-file`: File containing source text to analyze
+- `--survey-prompt-file`: File containing survey prompt template
+- `--presence-prompt-file`: File containing presence check prompt template
+- `--model`: LLM model name (default: llama3.1:8b)
+- `--temperature`: Temperature for generation (default: 0.7)
+- `--testid`: Identifier for this test (default: N/A)
+- `--description`: Test description (default: N/A)
+- `--testset`: Test set name (default: N/A)
+- `--trials`: Number of trials to run (default: 10)
+- `--mongo-uri`: MongoDB connection URI (default: mongodb://localhost:27017/)
+- `--continue`: Continue from saved state file (pkl format)
+- `--output-file`: File to save results JSON
+- `--report`: Generate HTML report automatically after completion
+
+**Example:**
+```bash
+python larc.py --report --config experiments/run_configs/llama-synthetic-soft-10-T0.json
+```
+
+### 2. larc-openai.py - LLM Consistency Test (OpenAI)
+
+Same as larc.py but uses OpenAI API instead of Ollama.
+
+**Usage and Arguments:**
+Same as larc.py - the command-line interface is identical.
+
+**Example:**
+```bash
+python larc-openai.py --config experiments/run_configs/openai-config.json
+```
+
+### 3. larc-report.py - HTML Report Generator
+
+Generates an interactive HTML report from test results stored in MongoDB.
+
+**Usage:**
+```bash
+python larc-report.py --test-run-id <test_run_id> --output-file <output.htm>
+```
+
+Or with file-based input:
+```bash
+python larc-report.py \
+  --text-file <source.txt> \
+  --phrases-file <phrases.json> \
+  --max-count <number> \
+  --output-file <output.htm>
+```
+
+**Arguments:**
+- `--test-run-id`: Test run ID from MongoDB (fetches data automatically)
+- `--text-file`: Source text file (required if not using --test-run-id)
+- `--phrases-file`: JSON file with phrases to highlight
+- `--max-count`: Maximum count value for determining perfect matches
+- `--output-file`: Output HTML file path
+- `--title`: Title for the HTML document (default: "Highlighted Text")
+- `--mongo-uri`: MongoDB connection URI (default: mongodb://localhost:27017/)
+
+**Example:**
+```bash
+python larc-report.py --test-run-id abc123def456 --output-file report.htm
+```
+
+### 4. list-experiments.py - Experiment Management
+
+Lists all experiments from MongoDB and provides utilities for managing them.
+
+**Usage:**
+
+List all experiments:
+```bash
+python list-experiments.py
+```
+
+Remove an experiment by row number:
+```bash
+python list-experiments.py --rm <row_number>
+```
+
+Generate HTML report for a single experiment:
+```bash
+python list-experiments.py --report <row_number>
+```
+
+Generate HTML reports for all completed experiments:
+```bash
+python list-experiments.py --reportall
+```
+
+**Arguments:**
+- `--mongo-uri`: MongoDB connection URI (default: mongodb://localhost:27017/)
+- `--rm`: Remove experiment at specified row number
+- `--report`: Generate HTML report for experiment at row number
+- `--reportall`: Generate HTML reports for all completed experiments
+
+### 5. make-sheet.py - Configuration File Management
+
+Converts between JSON configuration files and spreadsheet formats (CSV and HTML).
+
+**Usage:**
+
+Convert config directory to CSV spreadsheet:
+```bash
+python make-sheet.py --config-dir experiments/run_configs --output configs.csv
+```
+
+Convert config directory to HTML spreadsheet:
+```bash
+python make-sheet.py --config-dir experiments/run_configs --html --output configs.html
+```
+
+Convert CSV back to JSON config files:
+```bash
+python make-sheet.py --reverse configs.csv experiments/run_configs
+```
+
+**Arguments:**
+- `--config-dir`: Directory containing JSON config files (default: experiments/run_configs)
+- `--output`: Output file path (default: configs.csv)
+- `--html`: Generate HTML output instead of CSV
+- `--reverse`: Convert spreadsheet back to config files: `--reverse <spreadsheet.csv> <output_dir>`
+
+### 6. np-create.py - Test Data Generator
+
+Generates random noun phrases and sentences for testing purposes.
+
+**Usage:**
+```bash
+python np-create.py
+```
+
+**Output:**
+- Generates 10 random sentences
+- Lists all noun phrases found in the sentences
+- Marks phrases with asterisks (*) if they're missing from the text (potential hallucinations)
+
+This script has no command-line arguments and is mainly used for testing and generating test data.
+
+### 7. runtests.bat - Batch Test Runner (Windows)
+
+Batch file that runs multiple test configurations sequentially.
+
+**Usage:**
+```bash
+runtests.bat
+```
+
+**Current tests:**
+- llama-synthetic-soft-10-T0.json
+- llama-synthetic-hard-10-T4.json
+- llama-synthetic-hard-10-T8.json
+
+To modify which tests run, edit the file and add/remove lines with the test configurations.
+
+## Workflow Example
+
+1. Create test configuration files in `experiments/run_configs/`:
+```bash
+python make-sheet.py --config-dir experiments/run_configs --output current_configs.csv
+# Edit current_configs.csv as needed
+python make-sheet.py --reverse current_configs.csv experiments/run_configs
+```
+
+2. Run a test:
+```bash
+python larc.py --config experiments/run_configs/my-test.json --report
+```
+
+3. View results in MongoDB or as HTML report:
+```bash
+python list-experiments.py --reportall
+```
+
+4. Analyze results:
+```bash
+python make-sheet.py --config-dir experiments/run_configs --html --output results.html
+```
+
+## Output Locations
+
+- **MongoDB**: Results stored in ARC database with collections per test set
+- **HTML Reports**: `experiments/run_reports/` directory
+- **Result Files**: Specified with `--output-file` argument (JSON format)
+- **Configuration Spreadsheets**: Specified with `--output` argument
+
+## Database
+
+All test results are stored in MongoDB. Make sure MongoDB is running before starting tests.
+
+**Database name:** ARC
+**Collections:** Named after test sets (configurable per test)
+**Logging database:** HTTP_logging (stores API call logs)
