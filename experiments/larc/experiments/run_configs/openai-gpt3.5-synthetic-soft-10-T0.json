@@ -1,0 +1,12 @@
+{
+  "testid": "openai-gpt3.5-synthetic-soft-10-T0",
+  "testset": "LARC_Synthetic Text",
+  "description": "synthetic text",
+  "source_file": "experiments/sets/nounphrases/texts/synthetic.txt",
+  "survey_prompt_file": "experiments/sets/nounphrases/surveyprompts/soft.txt",
+  "presence_prompt_file": "experiments/sets/nounphrases/presenceprompts/soft.txt",
+  "model": "gpt-3.5-turbo",
+  "temperature": 0,
+  "trials": 10,
+  "mongo-uri": "mongodb://localhost:27017/"
+}

@@ -1,0 +1,12 @@
+{
+  "testid": "openai-gpt4.1-recipes-10-soft-T0",
+  "testset": "LARC_ingredients",
+  "description": "retrieving ingredients from a recipe",
+  "source_file": "experiments/sets/ingredients/texts/recipes.txt",
+  "survey_prompt_file": "experiments/sets/ingredients/surveyprompts/soft.txt",
+  "presence_prompt_file": "experiments/sets/ingredients/presenceprompts/soft.txt",
+  "model": "gpt-4.1-2025-04-14",
+  "temperature": 0,
+  "trials": 10,
+  "mongo-uri": "mongodb://localhost:27017/"
+}

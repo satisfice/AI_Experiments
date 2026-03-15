@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Results: apriel-synthetic-hard-10-T8</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .content {
+            white-space: pre-wrap;
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .legend {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #e9e9e9;
+            border-radius: 5px;
+        }
+        .legend-item {
+            display: inline-block;
+            margin-right: 20px;
+            margin-bottom: 10px;
+        }
+        .legend-color {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+        .highlight {
+            cursor: help;
+            position: relative;
+        }
+        .highlight .popup {
+            visibility: hidden;
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 6px;
+            white-space: nowrap;
+            z-index: 1000;
+            font-size: 14px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .highlight .popup::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+        .highlight:hover .popup {
+            visibility: visible;
+        }
+        h1 {
+            color: #333;
+        }
+        h2 {
+            color: #555;
+            margin-top: 40px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .metadata-table {
+            max-width: 600px;
+            margin: 20px 0;
+        }
+        .metadata-table td:first-child {
+            font-weight: bold;
+            text-align: right;
+            padding-right: 20px;
+            width: 250px;
+        }
+        .data-table th {
+            cursor: pointer;
+            user-select: none;
+        }
+        .data-table th:hover {
+            background-color: #45a049;
+        }
+        .collapsible {
+            background-color: #e9e9e9;
+            color: #333;
+            cursor: pointer;
+            padding: 15px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        .collapsible:hover {
+            background-color: #ddd;
+        }
+        .collapsible:after {
+            content: '\25BC'; /* Down arrow */
+            float: right;
+            margin-left: 5px;
+        }
+        .collapsible.active:after {
+            content: '\25B2'; /* Up arrow */
+        }
+        .collapsible-content {
+            padding: 0 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+            background-color: #f9f9f9;
+            border-left: 3px solid #4CAF50;
+            margin-bottom: 20px;
+        }
+        .prompt-section {
+            padding: 15px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            background-color: white;
+            border-radius: 3px;
+            margin: 10px 0;
+        }
+        .prompt-label {
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Results: apriel-synthetic-hard-10-T8</h1>
+
+    <div class="legend">
+        <strong>Legend:</strong>
+        <div class="legend-item">
+            <span class="legend-color" style="background-color: green;"></span>
+            <span>Perfect match (count = 10, repudiation = 0)</span>
+        </div>
+        <div class="legend-item">
+            <span class="legend-color" style="background-color: yellow;"></span>
+            <span>Incomplete match (count &lt; 10, repudiation = 0)</span>
+        </div>
+        <div class="legend-item">
+            <span class="legend-color" style="background-color: orange;"></span>
+            <span>Repudiated match (repudiation &gt; 0)</span>
+        </div>
+    </div>
+    <button class="collapsible">Show Prompts Used in This Test</button>
+    <div class="collapsible-content">
+        <div class="prompt-section">
+            <div class="prompt-label">Survey Prompt Template:</div>
+            You are a professional grammarian. You know that a noun phrase is a group of two or more words headed by a noun that includes modifiers. Any noun phrase could be replaced by a pronoun without breaking the grammar of the sentence. A noun phrase may be nested within another noun phrase, as in &quot;the only man in the house who didn&#x27;t have a hat.&quot; This includes the nouns: man, house, and hat. The whole phrase is a noun phrase. But so is &quot;only man&quot; &quot;man in the house&quot; &quot;only man in the house&quot; &quot;a hat.&quot;
+
+List every unique noun and noun phrase in the following text below the line of dashes. Answer in the form of a JSON array of strings with no other commentary. Include both nouns and noun phrases in the same array. Use the key &#x27;results&#x27; for that array:
+
+--------------------------------
+        </div>
+        <div class="prompt-section">
+            <div class="prompt-label">Presence Check Prompt Template:</div>
+            You are a professional grammarian. You know that a noun phrase is a group of two or more words headed by a noun that includes modifiers. Any noun phrase could be replaced by a pronoun without breaking the grammar of the sentence. A noun phrase may be nested within another noun phrase, as in &quot;the only man in the house who didn&#x27;t have a hat.&quot; This includes the nouns: man, house, and hat. The whole phrase is a noun phrase. But so is &quot;only man&quot; &quot;man in the house&quot; &quot;only man in the house&quot; &quot;a hat.&quot;
+
+Please tell me if the word or phrase &quot;{item}&quot; is ever used as a noun or noun phrase in the text below the line of dashes. Answer in the form of a JSON object with one key: &#x27;exists&#x27;, which should be true or false:
+
+--------------------------------
+        </div>
+    </div>
+
+    <div class="content">
+<span class="highlight" style="background-color: orange;">Lizards that have fish without hamsters that are fast are more important than lizards that have birds with fish with birds.<span class="popup">Phrase: lizards that have fish without hamsters that are fast are more important than lizards that have birds with fish with birds. | Count: 1, Repudiation: 10</span></span> <span class="highlight" style="background-color: orange;">Cats without fish that have dogs that have fish are equally important as small and big fish without hamsters.<span class="popup">Phrase: cats without fish that have dogs that have fish are equally important as small and big fish without hamsters. | Count: 2, Repudiation: 5</span></span> Certainly, <span class="highlight" style="background-color: orange;">fast and big cats without small and colorful birds<span class="popup">Phrase: fast and big cats without small and colorful birds | Count: 7, Repudiation: 3</span></span> are <span class="highlight" style="background-color: orange;">pretty cool<span class="popup">Phrase: pretty cool | Count: 1, Repudiation: 10</span></span>. <span class="highlight" style="background-color: orange;">Dogs without hamsters that have dogs that have hamsters are equally important as small and colorful hamsters that have cats without birds.<span class="popup">Phrase: dogs without hamsters that have dogs that have hamsters are equally important as small and colorful hamsters that have cats without birds. | Count: 1, Repudiation: 7</span></span> <span class="highlight" style="background-color: orange;">Big and colorful hamsters that have hamsters with <span class="popup">Phrase: big and colorful hamsters that have hamsters with lizards | Count: 4, Repudiation: 6</span></span><span class="highlight" style="background-color: orange;">lizards are better than cats with fish that have lizards that have birds<span class="popup">Phrase: lizards are better than cats with fish that have lizards that have birds | Count: 1, Repudiation: 10</span></span>. <span class="highlight" style="background-color: orange;">Playful and fast lizards with hamsters that are fast are better than lizards that have cats with hamsters with fish.<span class="popup">Phrase: playful and fast lizards with hamsters that are fast are better than lizards that have cats with hamsters with fish. | Count: 1, Repudiation: 8</span></span> <span class="highlight" style="background-color: orange;">Small and fast lizards that have small and big dogs are less effective than slow and fast hamsters with playful and fast fish.<span class="popup">Phrase: small and fast lizards that have small and big dogs are less effective than slow and fast hamsters with playful and fast fish. | Count: 1, Repudiation: 7</span></span> <span class="highlight" style="background-color: orange;">Dogs without cats without playful and fast fish<span class="popup">Phrase: dogs without cats without playful and fast fish | Count: 7, Repudiation: 7</span></span> are <span class="highlight" style="background-color: orange;">less effective than lizards that are fast that are big.<span class="popup">Phrase: less effective than lizards that are fast that are big. | Count: 1, Repudiation: 10</span></span> Certainly, <span class="highlight" style="background-color: orange;">cats without birds that have lizards that are colorful<span class="popup">Phrase: cats without birds that have lizards that are colorful | Count: 7, Repudiation: 6</span></span> are <span class="highlight" style="background-color: orange;">pretty cool<span class="popup">Phrase: pretty cool | Count: 1, Repudiation: 10</span></span>. <span class="highlight" style="background-color: orange;">Dogs with fish with lizards with hamsters<span class="popup">Phrase: dogs with fish with lizards with hamsters | Count: 3, Repudiation: 6</span></span> are more important than <span class="highlight" style="background-color: orange;">birds with lizards with birds that have cats.<span class="popup">Phrase: birds with lizards with birds that have cats. | Count: 1, Repudiation: 7</span></span>
+    </div>
+    <h2>Missing Phrases (Hallucination?)</h2>
+    <i>NOTE: Matching logic is case insensitive but does not account for punctuation.</i>
+    <table>
+        <thead>
+            <tr>
+                <th>Phrase</th>
+                <th>Count</th>
+                <th>Repudiation Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>birds with lizards with hamsters</td>
+                <td>1</td>
+                <td>9</td>
+            </tr>
+            <tr>
+                <td>dog with fish</td>
+                <td>1</td>
+                <td>10</td>
+            </tr>
+            <tr>
+                <td>hamsters that are fast (again)</td>
+                <td>1</td>
+                <td>9</td>
+            </tr>
+            <tr>
+                <td>small and fast lizards with hamsters that are fast</td>
+                <td>1</td>
+                <td>6</td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>Test Summary</h2>
+    <table class="metadata-table">
+        <tr>
+            <td>Test Run ID</td>
+            <td>724fba54af2c497b9c0ee57865d4662b</td>
+        </tr>
+        <tr>
+            <td>Time Completed</td>
+            <td>2025-10-08 13:00:38 UTC</td>
+        </tr>
+        <tr>
+            <td>Test</td>
+            <td>apriel-synthetic-hard-10-T8</td>
+        </tr>
+        <tr>
+            <td>Model</td>
+            <td>hf.co/bartowski/ServiceNow-AI_Apriel-1.5-15b-Thinker-GGUF:Q4_K_M</td>
+        </tr>
+        <tr>
+            <td>Temperature</td>
+            <td>0.8</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="height: 10px;"></td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font-weight: bold; background-color: #e9e9e9; text-align: left;">General Performance</td>
+        </tr>
+        <tr>
+            <td>Size of Text (estimated tokens)</td>
+            <td>280</td>
+        </tr>
+        <tr>
+            <td>Total Prompts</td>
+            <td>930</td>
+        </tr>
+        <tr>
+            <td>Run Time (mm:ss start to end)</td>
+            <td>103:24</td>
+        </tr>
+        <tr>
+            <td>API Time (mm:ss)</td>
+            <td>103:23</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="height: 10px;"></td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font-weight: bold; background-color: #e9e9e9; text-align: left;">Survey Prompt Performance</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Load Duration (seconds)</td>
+            <td>0.058</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Prompt Eval Duration (seconds)</td>
+            <td>0.004</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Eval Duration (seconds)</td>
+            <td>29.801</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Prompt Eval Count</td>
+            <td>414.00</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Eval Count</td>
+            <td>245.40</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="height: 10px;"></td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font-weight: bold; background-color: #e9e9e9; text-align: left;">Presence Prompt Performance</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Load Duration (seconds)</td>
+            <td>0.058</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Prompt Eval Duration (seconds)</td>
+            <td>0.008</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Eval Duration (seconds)</td>
+            <td>6.349</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Prompt Eval Count</td>
+            <td>418.27</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Eval Count</td>
+            <td>9.00</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="height: 10px;"></td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font-weight: bold; background-color: #e9e9e9; text-align: left;">Results</td>
+        </tr>
+        <tr>
+            <td>Total unique items</td>
+            <td>92</td>
+        </tr>
+        <tr>
+            <td>Total items counted</td>
+            <td>229</td>
+        </tr>
+        <tr>
+            <td>Trials</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="height: 10px;"></td>
+        </tr>
+        <tr>
+            <td>Repudiated Presence %</td>
+            <td>69.78</td>
+        </tr>
+        <tr>
+            <td>Miss Rate %</td>
+            <td>75.11</td>
+        </tr>
+        <tr>
+            <td>Ambivalence %</td>
+            <td>98.91 (91/92)</td>
+        </tr>
+    </table>
+
+    <h2>Results Visualization</h2>
+    <div style="height: 400px; margin-bottom: 30px;">
+        <canvas id="resultsChart"></canvas>
+    </div>
+
+    <div style="height: 500px; margin-bottom: 30px;">
+        <canvas id="bubbleChart"></canvas>
+    </div>
+
+    <h2>Detailed Results</h2>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th onclick="sortTable(0)">Phrase ▼</th>
+                <th onclick="sortTable(1)">Identified ▼</th>
+                <th onclick="sortTable(2)">Repudiated Presence ▼</th>
+            </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>and</td>
+            <td>1</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td>are more important than lizards that have birds with fish with birds.</td>
+            <td>2</td>
+            <td>9</td>
+        </tr>
+        <tr>
+            <td>big and colorful hamsters</td>
+            <td>1</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>big and colorful hamsters that have hamsters with lizards</td>
+            <td>4</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>big cats</td>
+            <td>1</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>big cats without small and colorful birds</td>
+            <td>2</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>big dogs</td>
+            <td>1</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>big fish</td>
+            <td>1</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>birds</td>
+            <td>6</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>birds with fish with birds</td>
+            <td>2</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>birds with lizards with birds that have cats</td>
+            <td>3</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td>birds with lizards with birds that have cats.</td>
+            <td>1</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>birds with lizards with hamsters</td>
+            <td>1</td>
+            <td>9</td>
+        </tr>
+        <tr>
+            <td>cats</td>
+            <td>6</td>
+            <td>2</td>
+        </tr>
+        <tr>
+            <td>cats with fish</td>
+            <td>1</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td>cats with fish that have lizards that have birds</td>
+            <td>5</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>cats with hamsters</td>
+            <td>1</td>
+            <td>9</td>
+        </tr>
+        <tr>
+            <td>cats without birds</td>
+            <td>1</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>cats without birds that have lizards that are colorful</td>
+            <td>7</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>cats without fish</td>
+            <td>1</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>cats without fish that have dogs that have fish</td>
+            <td>7</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>cats without fish that have dogs that have fish are equally important as small and big fish without hamsters.</td>
+            <td>2</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>cats without small and colorful birds</td>
+            <td>1</td>
+            <td>9</td>
+        </tr>
+        <tr>
+            <td>dog with fish</td>
+            <td>1</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td>dogs</td>
+            <td>6</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>dogs that have fish</td>
+            <td>2</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>dogs with fish with lizards with hamsters</td>
+            <td>3</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>dogs without cats</td>
+            <td>1</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>dogs without cats without playful and fast fish</td>
+            <td>7</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>dogs without hamsters</td>
+            <td>1</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td>dogs without hamsters that have dogs that have hamsters</td>
+            <td>3</td>
+            <td>9</td>
+        </tr>
+        <tr>
+            <td>dogs without hamsters that have dogs that have hamsters are equally important as small and colorful hamsters that have cats without birds.</td>
+            <td>1</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>equally important as small and colorful hamsters that have cats without birds.</td>
+            <td>1</td>
+            <td>9</td>
+        </tr>
+        <tr>
+            <td>fast</td>
+            <td>5</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td>fast and big cats without small and colorful birds</td>
+            <td>7</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>fast fish</td>
+            <td>1</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>fish</td>
+            <td>6</td>
+            <td>2</td>
+        </tr>
+        <tr>
+            <td>fish that have dogs</td>
+            <td>1</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td>fish that have dogs that have fish</td>
+            <td>1</td>
+            <td>9</td>
+        </tr>
+        <tr>
+            <td>fish that have lizards</td>
+            <td>1</td>
+            <td>9</td>
+        </tr>
+        <tr>
+            <td>fish with birds</td>
+            <td>1</td>
+            <td>9</td>
+        </tr>
+        <tr>
+            <td>fish without hamsters</td>
+            <td>1</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>fish without hamsters that are fast</td>
+            <td>1</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td>hamsters</td>
+            <td>8</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>hamsters that are fast</td>
+            <td>3</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>hamsters that are fast (again)</td>
+            <td>1</td>
+            <td>9</td>
+        </tr>
+        <tr>
+            <td>hamsters that have cats without birds</td>
+            <td>1</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td>hamsters with lizards</td>
+            <td>1</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>have fish without hamsters</td>
+            <td>1</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td>have fish without hamsters that are fast</td>
+            <td>1</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td>less effective than lizards that are fast that are big.</td>
+            <td>1</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td>lizards</td>
+            <td>10</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>lizards are better than cats with fish that have lizards that have birds</td>
+            <td>1</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td>lizards that are fast that are big</td>
+            <td>6</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>lizards that are fast that are big.</td>
+            <td>1</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td>lizards that have birds</td>
+            <td>2</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>lizards that have birds with fish with birds</td>
+            <td>3</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>lizards that have cats with hamsters with fish</td>
+            <td>5</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>lizards that have cats with hamsters with fish.</td>
+            <td>1</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>lizards that have fish without hamsters that are fast</td>
+            <td>2</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>lizards that have fish without hamsters that are fast are more important than lizards that have birds with fish with birds.</td>
+            <td>1</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td>lizards with hamsters</td>
+            <td>1</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>more important than lizards that have birds with fish with birds.</td>
+            <td>1</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td>playful and fast fish</td>
+            <td>2</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>playful and fast lizards</td>
+            <td>2</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>playful and fast lizards with hamsters that are fast</td>
+            <td>6</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td>playful and fast lizards with hamsters that are fast are better than lizards that have cats with hamsters with fish.</td>
+            <td>1</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td>pretty cool</td>
+            <td>1</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td>slow and fast hamsters</td>
+            <td>1</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>slow and fast hamsters with playful and fast fish</td>
+            <td>4</td>
+            <td>9</td>
+        </tr>
+        <tr>
+            <td>slow and fast hamsters with playful and fast fish.</td>
+            <td>1</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>small and big dogs</td>
+            <td>3</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>small and big fish</td>
+            <td>4</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>small and big fish without hamsters</td>
+            <td>7</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>small and big fish without hamsters.</td>
+            <td>1</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>small and colorful birds</td>
+            <td>2</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>small and colorful hamsters that have cats without birds</td>
+            <td>3</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>small and fast lizards that have small and big dogs</td>
+            <td>6</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>small and fast lizards that have small and big dogs are less effective than slow and fast hamsters with playful and fast fish.</td>
+            <td>1</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>small and fast lizards with hamsters that are fast</td>
+            <td>1</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>that are fast</td>
+            <td>1</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td>that have birds with fish with birds</td>
+            <td>1</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td>that have fish</td>
+            <td>1</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td>that have fish without hamsters that are fast</td>
+            <td>9</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td>with</td>
+            <td>1</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td>with fish</td>
+            <td>1</td>
+            <td>9</td>
+        </tr>
+        <tr>
+            <td>without</td>
+            <td>2</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td>without fish that have dogs that have fish</td>
+            <td>2</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td>without fish that have dogs that have fish are equally important as small and big fish without hamsters.</td>
+            <td>1</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td>without hamsters</td>
+            <td>2</td>
+            <td>9</td>
+        </tr>
+        <tr>
+            <td>without hamsters that are fast</td>
+            <td>1</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td>without hamsters.</td>
+            <td>1</td>
+            <td>9</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <script>
+    function sortTable(columnIndex) {
+        const table = document.querySelector('.data-table');
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+
+        rows.sort((a, b) => {
+            const aValue = a.cells[columnIndex].textContent;
+            const bValue = b.cells[columnIndex].textContent;
+
+            // Check if numeric
+            const aNum = parseFloat(aValue);
+            const bNum = parseFloat(bValue);
+
+            if (!isNaN(aNum) && !isNaN(bNum)) {
+                return bNum - aNum; // Descending for numbers
+            } else {
+                return aValue.localeCompare(bValue); // Ascending for text
+            }
+        });
+
+        rows.forEach(row => tbody.appendChild(row));
+    }
+
+    // Initialize chart
+    const ctx = document.getElementById('resultsChart');
+    if (ctx) {
+        const chartLabels = ["lizards", "that have fish without hamster...", "hamsters", "cats without birds that have l...", "cats without fish that have do...", "dogs without cats without play...", "fast and big cats without smal...", "small and big fish without ham...", "birds", "cats", "dogs", "fish", "lizards that are fast that are...", "playful and fast lizards with ...", "small and fast lizards that ha...", "cats with fish that have lizar...", "fast", "lizards that have cats with ha...", "big and colorful hamsters that...", "slow and fast hamsters with pl...", "small and big fish", "birds with lizards with birds ...", "dogs with fish with lizards wi...", "dogs without hamsters that hav...", "hamsters that are fast", "lizards that have birds with f...", "small and big dogs", "small and colorful hamsters th...", "are more important than lizard...", "big cats without small and col...", "birds with fish with birds", "cats without fish that have do...", "dogs that have fish", "lizards that have birds", "lizards that have fish without...", "playful and fast fish", "playful and fast lizards", "small and colorful birds", "without", "without fish that have dogs th...", "without hamsters", "and", "big and colorful hamsters", "big cats", "big dogs", "big fish", "birds with lizards with birds ...", "birds with lizards with hamste...", "cats with fish", "cats with hamsters", "cats without birds", "cats without fish", "cats without small and colorfu...", "dog with fish", "dogs without cats", "dogs without hamsters", "dogs without hamsters that hav...", "equally important as small and...", "fast fish", "fish that have dogs", "fish that have dogs that have ...", "fish that have lizards", "fish with birds", "fish without hamsters", "fish without hamsters that are...", "hamsters that are fast (again)", "hamsters that have cats withou...", "hamsters with lizards", "have fish without hamsters", "have fish without hamsters tha...", "less effective than lizards th...", "lizards are better than cats w...", "lizards that are fast that are...", "lizards that have cats with ha...", "lizards that have fish without...", "lizards with hamsters", "more important than lizards th...", "playful and fast lizards with ...", "pretty cool", "slow and fast hamsters", "slow and fast hamsters with pl...", "small and big fish without ham...", "small and fast lizards that ha...", "small and fast lizards with ha...", "that are fast", "that have birds with fish with...", "that have fish", "with", "with fish", "without fish that have dogs th...", "without hamsters that are fast", "without hamsters."];
+        const chartCounts = [10, 9, 8, 7, 7, 7, 7, 7, 6, 6, 6, 6, 6, 6, 6, 5, 5, 5, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+        const chartRepudiations = [0, 8, 1, 6, 7, 7, 3, 6, 3, 2, 3, 2, 4, 10, 6, 7, 10, 4, 6, 9, 4, 8, 6, 9, 4, 5, 5, 7, 9, 5, 7, 5, 7, 5, 5, 6, 5, 4, 10, 8, 9, 10, 5, 5, 7, 4, 7, 9, 8, 9, 7, 6, 9, 10, 7, 8, 7, 9, 5, 10, 9, 9, 9, 4, 8, 9, 8, 5, 10, 10, 10, 10, 8, 6, 10, 4, 8, 8, 10, 7, 7, 5, 7, 6, 10, 10, 10, 10, 9, 10, 8, 9];
+
+        console.log('Chart data loaded:', {
+            labels: chartLabels.length,
+            counts: chartCounts.length,
+            repudiations: chartRepudiations.length
+        });
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'Count (Identified)',
+                    data: chartCounts,
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Repudiation Count',
+                    data: chartRepudiations,
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Count'
+                        },
+                        grid: {
+                            display: false
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Phrases (sorted by count, highest first)'
+                        },
+                        ticks: {
+                            display: false
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Phrase Identification and Repudiation'
+                    }
+                }
+            }
+        });
+    }
+
+    // Initialize bubble chart
+    const bubbleCtx = document.getElementById('bubbleChart');
+    if (bubbleCtx) {
+        const bubbleData = [{"x": 1, "y": 10, "r": 20.0, "phrases": ["and", "dog with fish", "fish that have dogs", "have fish without hamsters", "have fish without hamsters that are fast", "less effective than lizards that are fast that are big.", "lizards are better than cats with fish that have lizards that have birds", "lizards that have fish without hamsters that are fast are more important than lizards that have birds with fish with birds.", "pretty cool", "that are fast", "that have birds with fish with birds", "that have fish", "with", "without fish that have dogs that have fish are equally important as small and big fish without hamsters."], "count": 14}, {"x": 2, "y": 9, "r": 7.559289460184544, "phrases": ["are more important than lizards that have birds with fish with birds.", "without hamsters"], "count": 2}, {"x": 1, "y": 5, "r": 11.952286093343936, "phrases": ["big and colorful hamsters", "big cats", "fast fish", "hamsters with lizards", "small and big fish without hamsters."], "count": 5}, {"x": 4, "y": 6, "r": 5.3452248382484875, "phrases": ["big and colorful hamsters that have hamsters with lizards"], "count": 1}, {"x": 2, "y": 5, "r": 11.952286093343936, "phrases": ["big cats without small and colorful birds", "cats without fish that have dogs that have fish are equally important as small and big fish without hamsters.", "lizards that have birds", "lizards that have fish without hamsters that are fast", "playful and fast lizards"], "count": 5}, {"x": 1, "y": 7, "r": 15.118578920369089, "phrases": ["big dogs", "birds with lizards with birds that have cats.", "cats without birds", "dogs without cats", "dogs without hamsters that have dogs that have hamsters are equally important as small and colorful hamsters that have cats without birds.", "slow and fast hamsters", "slow and fast hamsters with playful and fast fish.", "small and fast lizards that have small and big dogs are less effective than slow and fast hamsters with playful and fast fish."], "count": 8}, {"x": 1, "y": 4, "r": 9.258200997725513, "phrases": ["big fish", "fish without hamsters", "lizards with hamsters"], "count": 3}, {"x": 6, "y": 3, "r": 7.559289460184544, "phrases": ["birds", "dogs"], "count": 2}, {"x": 2, "y": 7, "r": 7.559289460184544, "phrases": ["birds with fish with birds", "dogs that have fish"], "count": 2}, {"x": 3, "y": 8, "r": 5.3452248382484875, "phrases": ["birds with lizards with birds that have cats"], "count": 1}, {"x": 1, "y": 9, "r": 16.903085094570333, "phrases": ["birds with lizards with hamsters", "cats with hamsters", "cats without small and colorful birds", "equally important as small and colorful hamsters that have cats without birds.", "fish that have dogs that have fish", "fish that have lizards", "fish with birds", "hamsters that are fast (again)", "with fish", "without hamsters."], "count": 10}, {"x": 6, "y": 2, "r": 7.559289460184544, "phrases": ["cats", "fish"], "count": 2}, {"x": 1, "y": 8, "r": 15.118578920369089, "phrases": ["cats with fish", "dogs without hamsters", "fish without hamsters that are fast", "hamsters that have cats without birds", "lizards that are fast that are big.", "more important than lizards that have birds with fish with birds.", "playful and fast lizards with hamsters that are fast are better than lizards that have cats with hamsters with fish.", "without hamsters that are fast"], "count": 8}, {"x": 5, "y": 7, "r": 5.3452248382484875, "phrases": ["cats with fish that have lizards that have birds"], "count": 1}, {"x": 7, "y": 6, "r": 7.559289460184544, "phrases": ["cats without birds that have lizards that are colorful", "small and big fish without hamsters"], "count": 2}, {"x": 1, "y": 6, "r": 9.258200997725513, "phrases": ["cats without fish", "lizards that have cats with hamsters with fish.", "small and fast lizards with hamsters that are fast"], "count": 3}, {"x": 7, "y": 7, "r": 7.559289460184544, "phrases": ["cats without fish that have dogs that have fish", "dogs without cats without playful and fast fish"], "count": 2}, {"x": 3, "y": 6, "r": 5.3452248382484875, "phrases": ["dogs with fish with lizards with hamsters"], "count": 1}, {"x": 3, "y": 9, "r": 5.3452248382484875, "phrases": ["dogs without hamsters that have dogs that have hamsters"], "count": 1}, {"x": 5, "y": 10, "r": 5.3452248382484875, "phrases": ["fast"], "count": 1}, {"x": 7, "y": 3, "r": 5.3452248382484875, "phrases": ["fast and big cats without small and colorful birds"], "count": 1}, {"x": 8, "y": 1, "r": 5.3452248382484875, "phrases": ["hamsters"], "count": 1}, {"x": 3, "y": 4, "r": 5.3452248382484875, "phrases": ["hamsters that are fast"], "count": 1}, {"x": 10, "y": 0, "r": 5.3452248382484875, "phrases": ["lizards"], "count": 1}, {"x": 6, "y": 4, "r": 5.3452248382484875, "phrases": ["lizards that are fast that are big"], "count": 1}, {"x": 3, "y": 5, "r": 7.559289460184544, "phrases": ["lizards that have birds with fish with birds", "small and big dogs"], "count": 2}, {"x": 5, "y": 4, "r": 5.3452248382484875, "phrases": ["lizards that have cats with hamsters with fish"], "count": 1}, {"x": 2, "y": 6, "r": 5.3452248382484875, "phrases": ["playful and fast fish"], "count": 1}, {"x": 6, "y": 10, "r": 5.3452248382484875, "phrases": ["playful and fast lizards with hamsters that are fast"], "count": 1}, {"x": 4, "y": 9, "r": 5.3452248382484875, "phrases": ["slow and fast hamsters with playful and fast fish"], "count": 1}, {"x": 4, "y": 4, "r": 5.3452248382484875, "phrases": ["small and big fish"], "count": 1}, {"x": 2, "y": 4, "r": 5.3452248382484875, "phrases": ["small and colorful birds"], "count": 1}, {"x": 3, "y": 7, "r": 5.3452248382484875, "phrases": ["small and colorful hamsters that have cats without birds"], "count": 1}, {"x": 6, "y": 6, "r": 5.3452248382484875, "phrases": ["small and fast lizards that have small and big dogs"], "count": 1}, {"x": 9, "y": 8, "r": 5.3452248382484875, "phrases": ["that have fish without hamsters that are fast"], "count": 1}, {"x": 2, "y": 10, "r": 5.3452248382484875, "phrases": ["without"], "count": 1}, {"x": 2, "y": 8, "r": 5.3452248382484875, "phrases": ["without fish that have dogs that have fish"], "count": 1}];
+
+        console.log('Bubble data loaded:', bubbleData.length, 'unique coordinate pairs');
+
+        new Chart(bubbleCtx, {
+            type: 'bubble',
+            data: {
+                datasets: [{
+                    label: 'Phrases',
+                    data: bubbleData,
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgb(75, 192, 192)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Repudiated Presence'
+                        },
+                        ticks: {
+                            stepSize: 1
+                        }
+                    },
+                    x: {
+                        beginAtZero: true,
+                        reverse: true,
+                        title: {
+                            display: true,
+                            text: 'Identified Count'
+                        },
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Phrase Distribution by Identification and Repudiation'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const point = context.raw;
+                                const phrases = point.phrases || [];
+                                const lines = [
+                                    `Identified: ${point.x}`,
+                                    `Repudiated: ${point.y}`,
+                                    `Number of phrases: ${point.count}`,
+                                    '',
+                                    'Phrases:'
+                                ];
+
+                                // Add first 10 phrases, truncate if more
+                                const maxPhrases = 10;
+                                phrases.slice(0, maxPhrases).forEach(p => {
+                                    lines.push(`  - ${p.substring(0, 50)}${p.length > 50 ? '...' : ''}`);
+                                });
+
+                                if (phrases.length > maxPhrases) {
+                                    lines.push(`  ... and ${phrases.length - maxPhrases} more`);
+                                }
+
+                                return lines;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Add click handlers for collapsible sections
+    document.addEventListener('DOMContentLoaded', function() {
+        const collapsibles = document.getElementsByClassName('collapsible');
+        for (let i = 0; i < collapsibles.length; i++) {
+            collapsibles[i].addEventListener('click', function() {
+                this.classList.toggle('active');
+                const content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                }
+            });
+        }
+    });
+    </script>
+</body>
+</html>

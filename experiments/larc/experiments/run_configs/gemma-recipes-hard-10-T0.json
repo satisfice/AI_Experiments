@@ -1,0 +1,12 @@
+{
+  "testid": "gemma-recipes-hard-10-T0",
+  "testset": "LARC_ingredients",
+  "description": "retrieving ingredients from a recipe",
+  "source_file": "experiments/sets/ingredients/texts/recipes.txt",
+  "survey_prompt_file": "experiments/sets/ingredients/surveyprompts/hard.txt",
+  "presence_prompt_file": "experiments/sets/ingredients/presenceprompts/hard.txt",
+  "model": "gemma3:12b",
+  "temperature": 0,
+  "trials": 10,
+  "mongo-uri": "mongodb://localhost:27017/"
+}

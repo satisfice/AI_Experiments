@@ -1,0 +1,12 @@
+{
+  "testid": "openai-gpt3.5-recipes-10-hard-T8",
+  "testset": "LARC_ingredients",
+  "description": "retrieving ingredients from a recipe",
+  "source_file": "experiments/sets/ingredients/texts/recipes.txt",
+  "survey_prompt_file": "experiments/sets/ingredients/surveyprompts/hard.txt",
+  "presence_prompt_file": "experiments/sets/ingredients/presenceprompts/hard.txt",
+  "model": "gpt-3.5-turbo",
+  "temperature": 0.8,
+  "trials": 10,
+  "mongo-uri": "mongodb://localhost:27017/"
+}

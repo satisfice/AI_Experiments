@@ -1,0 +1,3 @@
+List every unique noun and noun phrase in the following text below the line of dashes. Answer in the form of a JSON array of strings with no other commentary. Include both nouns and noun phrases in the same array. Use the key 'results' for that array:
+
+--------------------------------

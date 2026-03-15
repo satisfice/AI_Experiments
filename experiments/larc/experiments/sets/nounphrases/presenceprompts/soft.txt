@@ -1,0 +1,4 @@
+Please tell me if the word or phrase "{item}" is ever used as a noun or noun phrase in the text below the line of dashes. Answer in the form of a JSON object with one key: 'exists', which should be true or false:
+
+--------------------------------
+

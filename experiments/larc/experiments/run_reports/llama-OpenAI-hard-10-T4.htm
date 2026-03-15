@@ -1,0 +1,2097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Results: llama-OpenAI-hard-10-T4</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .content {
+            white-space: pre-wrap;
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .legend {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #e9e9e9;
+            border-radius: 5px;
+        }
+        .legend-item {
+            display: inline-block;
+            margin-right: 20px;
+            margin-bottom: 10px;
+        }
+        .legend-color {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+        .highlight {
+            cursor: help;
+            position: relative;
+        }
+        .highlight .popup {
+            visibility: hidden;
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 6px;
+            white-space: nowrap;
+            z-index: 1000;
+            font-size: 14px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .highlight .popup::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+        .highlight:hover .popup {
+            visibility: visible;
+        }
+        h1 {
+            color: #333;
+        }
+        h2 {
+            color: #555;
+            margin-top: 40px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .metadata-table {
+            max-width: 600px;
+            margin: 20px 0;
+        }
+        .metadata-table td:first-child {
+            font-weight: bold;
+            text-align: right;
+            padding-right: 20px;
+            width: 250px;
+        }
+        .data-table th {
+            cursor: pointer;
+            user-select: none;
+        }
+        .data-table th:hover {
+            background-color: #45a049;
+        }
+        .collapsible {
+            background-color: #e9e9e9;
+            color: #333;
+            cursor: pointer;
+            padding: 15px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        .collapsible:hover {
+            background-color: #ddd;
+        }
+        .collapsible:after {
+            content: '\25BC'; /* Down arrow */
+            float: right;
+            margin-left: 5px;
+        }
+        .collapsible.active:after {
+            content: '\25B2'; /* Up arrow */
+        }
+        .collapsible-content {
+            padding: 0 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+            background-color: #f9f9f9;
+            border-left: 3px solid #4CAF50;
+            margin-bottom: 20px;
+        }
+        .prompt-section {
+            padding: 15px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            background-color: white;
+            border-radius: 3px;
+            margin: 10px 0;
+        }
+        .prompt-label {
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Results: llama-OpenAI-hard-10-T4</h1>
+
+    <div class="legend">
+        <strong>Legend:</strong>
+        <div class="legend-item">
+            <span class="legend-color" style="background-color: green;"></span>
+            <span>Perfect match (count = 10, repudiation = 0)</span>
+        </div>
+        <div class="legend-item">
+            <span class="legend-color" style="background-color: yellow;"></span>
+            <span>Incomplete match (count &lt; 10, repudiation = 0)</span>
+        </div>
+        <div class="legend-item">
+            <span class="legend-color" style="background-color: orange;"></span>
+            <span>Repudiated match (repudiation &gt; 0)</span>
+        </div>
+    </div>
+    <button class="collapsible">Show Prompts Used in This Test</button>
+    <div class="collapsible-content">
+        <div class="prompt-section">
+            <div class="prompt-label">Survey Prompt Template:</div>
+            You are a professional grammarian. You know that a noun phrase is a group of two or more words headed by a noun that includes modifiers. Any noun phrase could be replaced by a pronoun without breaking the grammar of the sentence. A noun phrase may be nested within another noun phrase, as in &quot;the only man in the house who didn&#x27;t have a hat.&quot; This includes the nouns: man, house, and hat. The whole phrase is a noun phrase. But so is &quot;only man&quot; &quot;man in the house&quot; &quot;only man in the house&quot; &quot;a hat.&quot;
+
+List every unique noun and noun phrase in the following text below the line of dashes. Answer in the form of a JSON array of strings with no other commentary. Include both nouns and noun phrases in the same array. Use the key &#x27;results&#x27; for that array:
+
+--------------------------------
+        </div>
+        <div class="prompt-section">
+            <div class="prompt-label">Presence Check Prompt Template:</div>
+            You are a professional grammarian. You know that a noun phrase is a group of two or more words headed by a noun that includes modifiers. Any noun phrase could be replaced by a pronoun without breaking the grammar of the sentence. A noun phrase may be nested within another noun phrase, as in &quot;the only man in the house who didn&#x27;t have a hat.&quot; This includes the nouns: man, house, and hat. The whole phrase is a noun phrase. But so is &quot;only man&quot; &quot;man in the house&quot; &quot;only man in the house&quot; &quot;a hat.&quot;
+
+Please tell me if the word or phrase &quot;{item}&quot; is ever used as a noun or noun phrase in the text below the line of dashes. Answer in the form of a JSON object with one key: &#x27;exists&#x27;, which should be true or false:
+
+--------------------------------
+        </div>
+    </div>
+
+    <div class="content">
+Our <span class="highlight" style="background-color: yellow;">mission<span class="popup">Phrase: mission | Count: 9, Repudiation: 0</span></span> is to ensure that <span class="highlight" style="background-color: orange;">artificial general intelligence<span class="popup">Phrase: artificial general intelligence | Count: 10, Repudiation: 1</span></span> benefits all of <span class="highlight" style="background-color: green;">humanity<span class="popup">Phrase: humanity | Count: 10, Repudiation: 0</span></span>. As <span class="highlight" style="background-color: yellow;">part<span class="popup">Phrase: part | Count: 6, Repudiation: 0</span></span> of our <span class="highlight" style="background-color: yellow;">mission<span class="popup">Phrase: mission | Count: 9, Repudiation: 0</span></span>, we want to transparently communicate <span class="highlight" style="background-color: yellow;">progress<span class="popup">Phrase: progress | Count: 1, Repudiation: 0</span></span> on how <span class="highlight" style="background-color: orange;">AI<span class="popup">Phrase: ai | Count: 2, Repudiation: 10</span></span><span class="highlight" style="background-color: yellow;"> models<span class="popup">Phrase: ai models | Count: 9, Repudiation: 0</span></span> can help <span class="highlight" style="background-color: yellow;">people in the real world<span class="popup">Phrase: people in the real world | Count: 1, Repudiation: 0</span></span>. That’s why we’re introducing <span class="highlight" style="background-color: orange;">GDPval<span class="popup">Phrase: gdpval | Count: 10, Repudiation: 5</span></span>: a new <span class="highlight" style="background-color: green;">evaluation<span class="popup">Phrase: evaluation | Count: 10, Repudiation: 0</span></span> designed to help us track how well our <span class="highlight" style="background-color: yellow;">models and others<span class="popup">Phrase: models and others | Count: 1, Repudiation: 0</span></span> perform on <span class="highlight" style="background-color: yellow;">economically valuable, real-world tasks<span class="popup">Phrase: economically valuable, real-world tasks | Count: 1, Repudiation: 0</span></span>. We call this <span class="highlight" style="background-color: green;">evaluation<span class="popup">Phrase: evaluation | Count: 10, Repudiation: 0</span></span> <span class="highlight" style="background-color: orange;">GDPval<span class="popup">Phrase: gdpval | Count: 10, Repudiation: 5</span></span> because we started with the <span class="highlight" style="background-color: yellow;">concept of Gross Domestic Product (GDP)<span class="popup">Phrase: concept of gross domestic product (gdp) | Count: 5, Repudiation: 0</span></span> as a <span class="highlight" style="background-color: yellow;">key economic indicator<span class="popup">Phrase: key economic indicator | Count: 8, Repudiation: 0</span></span> and drew <span class="highlight" style="background-color: yellow;">task<span class="popup">Phrase: task | Count: 1, Repudiation: 0</span></span><span class="highlight" style="background-color: green;">s<span class="popup">Phrase: tasks | Count: 10, Repudiation: 0</span></span> from the <span class="highlight" style="background-color: yellow;">key occupations<span class="popup">Phrase: key occupations | Count: 1, Repudiation: 0</span></span> in the <span class="highlight" style="background-color: yellow;">industries that contribute most to GDP<span class="popup">Phrase: industries that contribute most to gdp | Count: 1, Repudiation: 0</span></span>.
+
+<span class="highlight" style="background-color: yellow;">People<span class="popup">Phrase: people | Count: 9, Repudiation: 0</span></span> often speculate about <span class="highlight" style="background-color: orange;">AI<span class="popup">Phrase: ai | Count: 2, Repudiation: 10</span></span>’s <span class="highlight" style="background-color: yellow;">broader impact on society<span class="popup">Phrase: broader impact on society | Count: 1, Repudiation: 0</span></span>, but the clearest way to understand its <span class="highlight" style="background-color: orange;">potential<span class="popup">Phrase: potential | Count: 4, Repudiation: 6</span></span> is by looking at what <span class="highlight" style="background-color: yellow;">models<span class="popup">Phrase: models | Count: 9, Repudiation: 0</span></span> are already capable of doing. <span class="highlight" style="background-color: orange;">History shows<span class="popup">Phrase: history shows | Count: 1, Repudiation: 5</span></span> that <span class="highlight" style="background-color: yellow;">major technologies<span class="popup">Phrase: major technologies | Count: 1, Repudiation: 0</span></span>—from the <span class="highlight" style="background-color: green;">internet<span class="popup">Phrase: internet | Count: 10, Repudiation: 0</span></span> to <span class="highlight" style="background-color: green;">smartphones<span class="popup">Phrase: smartphones | Count: 10, Repudiation: 0</span></span>—took more than a <span class="highlight" style="background-color: yellow;">decade<span class="popup">Phrase: decade | Count: 1, Repudiation: 0</span></span> to go from <span class="highlight" style="background-color: yellow;">invention<span class="popup">Phrase: invention | Count: 9, Repudiation: 0</span></span> to <span class="highlight" style="background-color: yellow;">widespread adoption<span class="popup">Phrase: widespread adoption | Count: 8, Repudiation: 0</span></span>. <span class="highlight" style="background-color: yellow;">Evaluations<span class="popup">Phrase: evaluations | Count: 6, Repudiation: 0</span></span> like <span class="highlight" style="background-color: orange;">GDPval<span class="popup">Phrase: gdpval | Count: 10, Repudiation: 5</span></span> help ground <span class="highlight" style="background-color: yellow;">conversations about <span class="popup">Phrase: conversations about future ai improvements | Count: 1, Repudiation: 0</span></span><span class="highlight" style="background-color: yellow;">future <span class="popup">Phrase: future ai improvements in evidence rather than guesswork | Count: 1, Repudiation: 0</span></span><span class="highlight" style="background-color: orange;">AI<span class="popup">Phrase: ai | Count: 2, Repudiation: 10</span></span><span class="highlight" style="background-color: yellow;"> improvements in evidence rather than guesswork<span class="popup">Phrase: future ai improvements in evidence rather than guesswork | Count: 1, Repudiation: 0</span></span>, and can help us track <span class="highlight" style="background-color: yellow;">model improvement over time<span class="popup">Phrase: model improvement over time | Count: 2, Repudiation: 0</span></span>.
+
+<span class="highlight" style="background-color: yellow;">Previous <span class="popup">Phrase: previous ai evaluations like challenging academic tests and competitive coding challenges | Count: 1, Repudiation: 0</span></span><span class="highlight" style="background-color: orange;">AI<span class="popup">Phrase: ai | Count: 2, Repudiation: 10</span></span><span class="highlight" style="background-color: yellow;"> evaluations like challenging academic tests and competitive coding challenges<span class="popup">Phrase: previous ai evaluations like challenging academic tests and competitive coding challenges | Count: 1, Repudiation: 0</span></span> have been essential in pushing the <span class="highlight" style="background-color: yellow;">boundaries of model reasoning capabilities<span class="popup">Phrase: boundaries of model reasoning capabilities | Count: 4, Repudiation: 0</span></span>, but they often fall short of the kind of <span class="highlight" style="background-color: yellow;">tasks that many people handle in their everyday work<span class="popup">Phrase: tasks that many people handle in their everyday work | Count: 1, Repudiation: 0</span></span>.
+
+<span class="highlight" style="background-color: yellow;">To bridge this gap<span class="popup">Phrase: to bridge this gap | Count: 1, Repudiation: 0</span></span>, we’ve been developing <span class="highlight" style="background-color: yellow;">evaluations that measure increasingly realistic and economically relevant capabilities<span class="popup">Phrase: evaluations that measure increasingly realistic and economically relevant capabilities | Count: 1, Repudiation: 0</span></span>. This <span class="highlight" style="background-color: yellow;">progression<span class="popup">Phrase: progression | Count: 8, Repudiation: 0</span></span> has moved from <span class="highlight" style="background-color: yellow;">classic academic benchmarks like <span class="popup">Phrase: classic academic benchmarks like mmlu (exam-style questions across dozens of subjects) | Count: 1, Repudiation: 0</span></span><span class="highlight" style="background-color: orange;">MMLU<span class="popup">Phrase: mmlu | Count: 10, Repudiation: 1</span></span><span class="highlight" style="background-color: yellow;"> (exam-style questions across dozens of <span class="popup">Phrase: classic academic benchmarks like mmlu (exam-style questions across dozens of subjects) | Count: 1, Repudiation: 0</span></span><span class="highlight" style="background-color: orange;">subjects<span class="popup">Phrase: subjects | Count: 1, Repudiation: 1</span></span><span class="highlight" style="background-color: yellow;">)<span class="popup">Phrase: classic academic benchmarks like mmlu (exam-style questions across dozens of subjects) | Count: 1, Repudiation: 0</span></span>, to more <span class="highlight" style="background-color: yellow;">applied evaluations like SWE-Bench (software engineering bug-fixing tasks)<span class="popup">Phrase: applied evaluations like swe-bench (software engineering bug-fixing tasks) | Count: 1, Repudiation: 0</span></span>, <span class="highlight" style="background-color: yellow;">MLE-Bench<span class="popup">Phrase: mle-bench | Count: 3, Repudiation: 0</span></span> (<span class="highlight" style="background-color: yellow;">machine learning engineering tasks<span class="popup">Phrase: machine learning engineering tasks | Count: 3, Repudiation: 0</span></span> such as <span class="highlight" style="background-color: yellow;">model tr<span class="popup">Phrase: model training and analysis | Count: 2, Repudiation: 0</span></span><span class="highlight" style="background-color: orange;">ai<span class="popup">Phrase: ai | Count: 2, Repudiation: 10</span></span><span class="highlight" style="background-color: yellow;">ning and analysis<span class="popup">Phrase: model training and analysis | Count: 2, Repudiation: 0</span></span>), and <span class="highlight" style="background-color: yellow;">Paper-Bench<span class="popup">Phrase: paper-bench | Count: 6, Repudiation: 0</span></span> (<span class="highlight" style="background-color: yellow;">scientific reasoning and critique on research papers<span class="popup">Phrase: scientific reasoning and critique on research papers | Count: 4, Repudiation: 0</span></span>), and more recently to <span class="highlight" style="background-color: yellow;">market-based evaluations like SWE-Lancer (freelance software engineering projects based on real payouts)<span class="popup">Phrase: market-based evaluations like swe-lancer (freelance software engineering projects based on real payouts) | Count: 1, Repudiation: 0</span></span>.
+
+<span class="highlight" style="background-color: orange;">GDPval is the next step in that progression<span class="popup">Phrase: gdpval is the next step in that progression | Count: 3, Repudiation: 8</span></span>. It measures <span class="highlight" style="background-color: yellow;">model performance on tasks drawn directly from the real-world knowledge work of experienced professionals across a wide range of occupations and sectors<span class="popup">Phrase: model performance on tasks drawn directly from the real-world knowledge work of experienced professionals across a wide range of occupations and sectors | Count: 2, Repudiation: 0</span></span>, providing a clearer <span class="highlight" style="background-color: yellow;">picture<span class="popup">Phrase: picture | Count: 1, Repudiation: 0</span></span> on how <span class="highlight" style="background-color: yellow;">models<span class="popup">Phrase: models | Count: 9, Repudiation: 0</span></span> perform on <span class="highlight" style="background-color: yellow;">economically valuable tasks<span class="popup">Phrase: economically valuable tasks | Count: 8, Repudiation: 0</span></span>. Evaluating <span class="highlight" style="background-color: yellow;">models<span class="popup">Phrase: models | Count: 9, Repudiation: 0</span></span> on <span class="highlight" style="background-color: yellow;">realistic occupational tasks<span class="popup">Phrase: realistic occupational tasks | Count: 1, Repudiation: 0</span></span> helps us understand not just how well they perform in the <span class="highlight" style="background-color: yellow;">lab<span class="popup">Phrase: lab | Count: 9, Repudiation: 0</span></span>, but how they might <span class="highlight" style="background-color: yellow;">support people in the work they do every day<span class="popup">Phrase: support people in the work they do every day | Count: 1, Repudiation: 0</span></span>. 
+
+<span class="highlight" style="background-color: yellow;">What <span class="popup">Phrase: what gdpval measures | Count: 1, Repudiation: 0</span></span><span class="highlight" style="background-color: orange;">GDPval<span class="popup">Phrase: gdpval | Count: 10, Repudiation: 5</span></span><span class="highlight" style="background-color: yellow;"> measures<span class="popup">Phrase: what gdpval measures | Count: 1, Repudiation: 0</span></span>
+<span class="highlight" style="background-color: orange;">GDPval<span class="popup">Phrase: gdpval | Count: 10, Repudiation: 5</span></span>, the <span class="highlight" style="background-color: yellow;">first <span class="popup">Phrase: first version | Count: 1, Repudiation: 0</span></span><span class="highlight" style="background-color: yellow;">version of this evaluation<span class="popup">Phrase: version of this evaluation | Count: 4, Repudiation: 0</span></span>, <span class="highlight" style="background-color: yellow;">spans 44 <span class="popup">Phrase: spans 44 occupations | Count: 1, Repudiation: 0</span></span><span class="highlight" style="background-color: yellow;">occupations selected from the top 9 industries contributing to U.S. GDP<span class="popup">Phrase: occupations selected from the top 9 industries contributing to u.s. gdp | Count: 4, Repudiation: 0</span></span>. The <span class="highlight" style="background-color: orange;">GDPval<span class="popup">Phrase: gdpval | Count: 10, Repudiation: 5</span></span><span class="highlight" style="background-color: yellow;"> full set includes 1,320 specialized tasks (220 in the gold open-sourced set)<span class="popup">Phrase: gdpval full set includes 1,320 specialized tasks (220 in the gold open-sourced set) | Count: 1, Repudiation: 0</span></span>, <span class="highlight" style="background-color: yellow;">each meticulously crafted and vetted by experienced professionals with over 14 years of experience on average from these fields<span class="popup">Phrase: each meticulously crafted and vetted by experienced professionals with over 14 years of experience on average from these fields | Count: 1, Repudiation: 0</span></span>. <span class="highlight" style="background-color: yellow;">Every task is based on real work products, such as a legal brief, an engineering blueprint, a customer support conversation, or a nursing care plan<span class="popup">Phrase: every task is based on real work products, such as a legal brief, an engineering blueprint, a customer support conversation, or a nursing care plan | Count: 1, Repudiation: 0</span></span>.
+
+<span class="highlight" style="background-color: orange;">GDPval is distinctive both in its realism and diversity of tasks being evaluated<span class="popup">Phrase: gdpval is distinctive both in its realism and diversity of tasks being evaluated | Count: 3, Repudiation: 4</span></span>. Unlike other <span class="highlight" style="background-color: yellow;">evaluations<span class="popup">Phrase: evaluations | Count: 6, Repudiation: 0</span></span> tied to <span class="highlight" style="background-color: yellow;">economic value<span class="popup">Phrase: economic value | Count: 3, Repudiation: 0</span></span> which concentrate on <span class="highlight" style="background-color: yellow;">specific dom<span class="popup">Phrase: specific domains | Count: 1, Repudiation: 0</span></span><span class="highlight" style="background-color: orange;">ai<span class="popup">Phrase: ai | Count: 2, Repudiation: 10</span></span><span class="highlight" style="background-color: yellow;">ns<span class="popup">Phrase: specific domains | Count: 1, Repudiation: 0</span></span> (e.g., <span class="highlight" style="background-color: green;">SWE-Lancer<span class="popup">Phrase: swe-lancer | Count: 10, Repudiation: 0</span></span>), <span class="highlight" style="background-color: orange;">GDPval<span class="popup">Phrase: gdpval | Count: 10, Repudiation: 5</span></span> covers <span class="highlight" style="background-color: yellow;">many tasks and occupations<span class="popup">Phrase: many tasks and occupations | Count: 1, Repudiation: 0</span></span>. And unlike <span class="highlight" style="background-color: yellow;">benchmarks which involve synthetically creating tasks in the style of an academic exam or test (e.g., Humanity’s Last Exam or <span class="popup">Phrase: benchmarks which involve synthetically creating tasks in the style of an academic exam or test (e.g., humanity’s last exam or mmlu) | Count: 1, Repudiation: 0</span></span><span class="highlight" style="background-color: orange;">MMLU<span class="popup">Phrase: mmlu | Count: 10, Repudiation: 1</span></span><span class="highlight" style="background-color: yellow;">)<span class="popup">Phrase: benchmarks which involve synthetically creating tasks in the style of an academic exam or test (e.g., humanity’s last exam or mmlu) | Count: 1, Repudiation: 0</span></span>, <span class="highlight" style="background-color: orange;">GDPval focuses on tasks based on deliverables that are either an actual piece of work or product that exists today or are a similarly constructed piece of work product<span class="popup">Phrase: gdpval focuses on tasks based on deliverables that are either an actual piece of work or product that exists today or are a similarly constructed piece of work product | Count: 2, Repudiation: 4</span></span>. 
+
+Unlike <span class="highlight" style="background-color: yellow;">traditional benchmarks<span class="popup">Phrase: traditional benchmarks | Count: 7, Repudiation: 0</span></span>, <span class="highlight" style="background-color: orange;">GDPval<span class="popup">Phrase: gdpval | Count: 10, Repudiation: 5</span></span><span class="highlight" style="background-color: yellow;"> tasks are not simple text prompts<span class="popup">Phrase: gdpval tasks are not simple text prompts | Count: 1, Repudiation: 0</span></span>. They come with <span class="highlight" style="background-color: yellow;">reference files and context, and the expected deliverables span documents, slides, diagrams, spreadsheets, and multimedia<span class="popup">Phrase: reference files and context, and the expected deliverables span documents, slides, diagrams, spreadsheets, and multimedia | Count: 1, Repudiation: 0</span></span>. <span class="highlight" style="background-color: yellow;">This realism makes <span class="popup">Phrase: this realism makes gdpval a more realistic test of how models might support professionals | Count: 1, Repudiation: 0</span></span><span class="highlight" style="background-color: orange;">GDPval<span class="popup">Phrase: gdpval | Count: 10, Repudiation: 5</span></span><span class="highlight" style="background-color: yellow;"> a more realistic test of how models might support professionals<span class="popup">Phrase: this realism makes gdpval a more realistic test of how models might support professionals | Count: 1, Repudiation: 0</span></span>.
+
+<span class="highlight" style="background-color: orange;">GDPval is an early step that doesn’t reflect the full nuance of many economic tasks<span class="popup">Phrase: gdpval is an early step that doesn’t reflect the full nuance of many economic tasks | Count: 4, Repudiation: 10</span></span>. While it <span class="highlight" style="background-color: yellow;">spans 44 occupations<span class="popup">Phrase: spans 44 occupations | Count: 1, Repudiation: 0</span></span> and hundreds of <span class="highlight" style="background-color: yellow;">knowledge work<span class="popup">Phrase: knowledge work | Count: 3, Repudiation: 0</span></span> <span class="highlight" style="background-color: yellow;">task<span class="popup">Phrase: task | Count: 1, Repudiation: 0</span></span><span class="highlight" style="background-color: green;">s<span class="popup">Phrase: tasks | Count: 10, Repudiation: 0</span></span>, it is limited to <span class="highlight" style="background-color: yellow;">one-shot evaluations<span class="popup">Phrase: one-shot evaluations | Count: 3, Repudiation: 0</span></span>, so it doesn’t capture cases where a model would need to build <span class="highlight" style="background-color: yellow;">context<span class="popup">Phrase: context | Count: 2, Repudiation: 0</span></span> or improve through multiple <span class="highlight" style="background-color: yellow;">drafts<span class="popup">Phrase: drafts | Count: 1, Repudiation: 0</span></span>. <span class="highlight" style="background-color: orange;">Future versions will extend to more interactive workflows and context-rich tasks to better reflect the complexity of real-world knowledge work<span class="popup">Phrase: future versions will extend to more interactive workflows and context-rich tasks to better reflect the complexity of real-world knowledge work | Count: 3, Repudiation: 5</span></span> (see more in our <span class="highlight" style="background-color: orange;">Limitations section below<span class="popup">Phrase: limitations section below | Count: 1, Repudiation: 1</span></span>).
+
+<span class="highlight" style="background-color: yellow;">How we chose occupations<span class="popup">Phrase: how we chose occupations | Count: 4, Repudiation: 0</span></span>
+<span class="highlight" style="background-color: orange;">GDPval covers tasks across 9 industries and 44 occupations, and future versions will continue to expand coverage<span class="popup">Phrase: gdpval covers tasks across 9 industries and 44 occupations, and future versions will continue to expand coverage | Count: 1, Repudiation: 1</span></span>. The initial <span class="highlight" style="background-color: yellow;">9 industries were chosen based on those contributing over 5% to U.S. GDP, as determined by data from the Federal Reserve Bank of St. Louis<span class="popup">Phrase: 9 industries were chosen based on those contributing over 5% to u.s. gdp, as determined by data from the federal reserve bank of st. louis | Count: 1, Repudiation: 0</span></span>. Then, we selected the 5 <span class="highlight" style="background-color: yellow;">occupations within each industry<span class="popup">Phrase: occupations within each industry | Count: 1, Repudiation: 0</span></span> that contribute most to <span class="highlight" style="background-color: yellow;">total wages and compensation<span class="popup">Phrase: total wages and compensation | Count: 1, Repudiation: 0</span></span> and are predominantly <span class="highlight" style="background-color: yellow;">knowledge work occupations<span class="popup">Phrase: knowledge work occupations | Count: 4, Repudiation: 0</span></span>, using <span class="highlight" style="background-color: yellow;">wage and employment data from the May 2024 US Bureau of Labor Statistics (<span class="popup">Phrase: wage and employment data from the may 2024 us bureau of labor statistics (bls) occupational employment report⁠(opens in a new window) | Count: 1, Repudiation: 0</span></span><span class="highlight" style="background-color: orange;">BLS<span class="popup">Phrase: bls | Count: 1, Repudiation: 10</span></span><span class="highlight" style="background-color: yellow;">) occupational employment report⁠(opens in a new window)<span class="popup">Phrase: wage and employment data from the may 2024 us bureau of labor statistics (bls) occupational employment report⁠(opens in a new window) | Count: 1, Repudiation: 0</span></span>. To determine if the <span class="highlight" style="background-color: green;">occupations<span class="popup">Phrase: occupations | Count: 10, Repudiation: 0</span></span> were predominantly <span class="highlight" style="background-color: yellow;">knowledge work<span class="popup">Phrase: knowledge work | Count: 3, Repudiation: 0</span></span>, we used <span class="highlight" style="background-color: yellow;">task data from <span class="popup">Phrase: task data from o*net | Count: 4, Repudiation: 0</span></span><span class="highlight" style="background-color: orange;">O*NET⁠(opens in a new window), a database of U.S. occupational information sponsored by the U.S. Department of Labor<span class="popup">Phrase: o*net⁠(opens in a new window), a database of u.s. occupational information sponsored by the u.s. department of labor | Count: 1, Repudiation: 1</span></span>. We classified whether each <span class="highlight" style="background-color: yellow;">task<span class="popup">Phrase: task | Count: 1, Repudiation: 0</span></span> for each occupation in <span class="highlight" style="background-color: orange;">O*NET<span class="popup">Phrase: o*net | Count: 9, Repudiation: 1</span></span> was <span class="highlight" style="background-color: orange;">knowledge work or physical work/manual labor (requiring actions to be taken in the physical world)<span class="popup">Phrase: knowledge work or physical work/manual labor (requiring actions to be taken in the physical world) | Count: 1, Repudiation: 1</span></span>. <span class="highlight" style="background-color: yellow;">An <span class="popup">Phrase: an occupation qualified overall as “predominantly knowledge work” if at least 60% of its component tasks were classified as not involving physical work or manual labor | Count: 1, Repudiation: 0</span></span><span class="highlight" style="background-color: orange;">occupation qualified overall as “predominantly knowledge work” if at least 60% of its component tasks were classified as not involving physical work or manual labor<span class="popup">Phrase: occupation qualified overall as “predominantly knowledge work” if at least 60% of its component tasks were classified as not involving physical work or manual labor | Count: 1, Repudiation: 1</span></span>. We chose this <span class="highlight" style="background-color: yellow;">60% <span class="popup">Phrase: 60% threshold | Count: 5, Repudiation: 0</span></span><span class="highlight" style="background-color: orange;">threshold<span class="popup">Phrase: threshold | Count: 1, Repudiation: 1</span></span> as a <span class="highlight" style="background-color: yellow;">starting point for the <span class="popup">Phrase: starting point for the first version of gdpval | Count: 1, Repudiation: 0</span></span><span class="highlight" style="background-color: orange;">first version of GDPval, focusing on occupations where AI could have the highest impact on real-world productivity<span class="popup">Phrase: first version of gdpval, focusing on occupations where ai could have the highest impact on real-world productivity | Count: 1, Repudiation: 1</span></span>. 
+
+This process yielded <span class="highlight" style="background-color: yellow;">44 occupations<span class="popup">Phrase: 44 occupations | Count: 2, Repudiation: 0</span></span> for inclusion.
+    </div>
+    <h2>Missing Phrases (Hallucination?)</h2>
+    <i>NOTE: Matching logic is case insensitive but does not account for punctuation.</i>
+    <table>
+        <thead>
+            <tr>
+                <th>Phrase</th>
+                <th>Count</th>
+                <th>Repudiation Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>ai impact on real-world productivity</td>
+                <td>1</td>
+                <td>2</td>
+            </tr>
+            <tr>
+                <td>ai&#x27;s potential</td>
+                <td>1</td>
+                <td>1</td>
+            </tr>
+            <tr>
+                <td>bls occupational employment report</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>daily work</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>difference between gdpval and other evaluations tied to economic value</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>each task is based on real work products</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>economically value which concentrate on specific domains</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>gdpval measures model performance</td>
+                <td>1</td>
+                <td>1</td>
+            </tr>
+            <tr>
+                <td>gdpval progression</td>
+                <td>1</td>
+                <td>1</td>
+            </tr>
+            <tr>
+                <td>gdpval realism and diversity of tasks being evaluated</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>gdpval version</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>humanity&#x27;s last exam</td>
+                <td>2</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>humankind</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>humany&#x27;s last exam</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>humility&#x27;s last exam</td>
+                <td>1</td>
+                <td>4</td>
+            </tr>
+            <tr>
+                <td>occupations across 9 industries and 44 occupations</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>occupations contributing most to total wages and compensation</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>occupations selected from top 9 industries contributing to u.s. gdp</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>specially crafted tasks</td>
+                <td>2</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>task data from o*net was classified as knowledge work or physical work/manual labor</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>task data from o*net was knowledge work or physical work/manual labor</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>u.s. bureau of labor statistics (bls) occupational employment report</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>veterans</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>Test Summary</h2>
+    <table class="metadata-table">
+        <tr>
+            <td>Test Run ID</td>
+            <td>6b35f1a2e49243e7a36316f6d5d95dee</td>
+        </tr>
+        <tr>
+            <td>Time Completed</td>
+            <td>2025-10-06 03:13:09 UTC</td>
+        </tr>
+        <tr>
+            <td>Test</td>
+            <td>llama-OpenAI-hard-10-T4</td>
+        </tr>
+        <tr>
+            <td>Model</td>
+            <td>llama3.1:8b</td>
+        </tr>
+        <tr>
+            <td>Temperature</td>
+            <td>0.4</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="height: 10px;"></td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font-weight: bold; background-color: #e9e9e9; text-align: left;">General Performance</td>
+        </tr>
+        <tr>
+            <td>Size of Text (estimated tokens)</td>
+            <td>1410</td>
+        </tr>
+        <tr>
+            <td>Total Prompts</td>
+            <td>2790</td>
+        </tr>
+        <tr>
+            <td>Run Time (mm:ss start to end)</td>
+            <td>269:30</td>
+        </tr>
+        <tr>
+            <td>API Time (mm:ss)</td>
+            <td>269:24</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="height: 10px;"></td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font-weight: bold; background-color: #e9e9e9; text-align: left;">Survey Prompt Performance</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Load Duration (seconds)</td>
+            <td>0.052</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Prompt Eval Duration (seconds)</td>
+            <td>0.366</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Eval Duration (seconds)</td>
+            <td>104.452</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Prompt Eval Count</td>
+            <td>1257.00</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Eval Count</td>
+            <td>673.90</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="height: 10px;"></td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font-weight: bold; background-color: #e9e9e9; text-align: left;">Presence Prompt Performance</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Load Duration (seconds)</td>
+            <td>0.050</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Prompt Eval Duration (seconds)</td>
+            <td>3.685</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Eval Duration (seconds)</td>
+            <td>1.700</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Prompt Eval Count</td>
+            <td>1260.38</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Eval Count</td>
+            <td>8.62</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="height: 10px;"></td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font-weight: bold; background-color: #e9e9e9; text-align: left;">Results</td>
+        </tr>
+        <tr>
+            <td>Total unique items</td>
+            <td>278</td>
+        </tr>
+        <tr>
+            <td>Total items counted</td>
+            <td>912</td>
+        </tr>
+        <tr>
+            <td>Trials</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="height: 10px;"></td>
+        </tr>
+        <tr>
+            <td>Repudiated Presence %</td>
+            <td>3.71</td>
+        </tr>
+        <tr>
+            <td>Miss Rate %</td>
+            <td>67.19</td>
+        </tr>
+        <tr>
+            <td>Ambivalence %</td>
+            <td>96.04 (267/278)</td>
+        </tr>
+    </table>
+
+    <h2>Results Visualization</h2>
+    <div style="height: 400px; margin-bottom: 30px;">
+        <canvas id="resultsChart"></canvas>
+    </div>
+
+    <div style="height: 500px; margin-bottom: 30px;">
+        <canvas id="bubbleChart"></canvas>
+    </div>
+
+    <h2>Detailed Results</h2>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th onclick="sortTable(0)">Phrase ▼</th>
+                <th onclick="sortTable(1)">Identified ▼</th>
+                <th onclick="sortTable(2)">Repudiated Presence ▼</th>
+            </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>44 occupations</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>60%</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>60% threshold</td>
+            <td>5</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>9 industries were chosen based on those contributing over 5% to u.s. gdp, as determined by data from the federal reserve bank of st. louis</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>academic benchmarks</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>academic exam or test</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>academic tests</td>
+            <td>9</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>actions to be taken in the physical world</td>
+            <td>5</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>actual piece of work or product</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>adoption</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>ai</td>
+            <td>2</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td>ai could have the highest impact on real-world productivity</td>
+            <td>1</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>ai impact on real-world productivity</td>
+            <td>1</td>
+            <td>2</td>
+        </tr>
+        <tr>
+            <td>ai models</td>
+            <td>9</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>ai&#x27;s potential</td>
+            <td>1</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>an occupation qualified overall as “predominantly knowledge work” if at least 60% of its component tasks were classified as not involving physical work or manual labor</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>analysis</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>applied evaluations</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>applied evaluations like swe-bench (software engineering bug-fixing tasks)</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>artificial general intelligence</td>
+            <td>10</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>benchmarks</td>
+            <td>7</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>benchmarks which involve synthetically creating tasks in the style of an academic exam or test</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>benchmarks which involve synthetically creating tasks in the style of an academic exam or test (e.g., humanity’s last exam or mmlu)</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>bls</td>
+            <td>1</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td>bls occupational employment report</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>boundaries of model reasoning capabilities</td>
+            <td>4</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>broader impact</td>
+            <td>6</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>broader impact on society</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>bureau of labor statistics (bls)</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>classic academic benchmarks</td>
+            <td>3</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>classic academic benchmarks like mmlu (exam-style questions across dozens of subjects)</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>competitive coding challenges</td>
+            <td>9</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>complexity of real-world knowledge work</td>
+            <td>5</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>component tasks</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>concept</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>concept of gross domestic product (gdp)</td>
+            <td>5</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>context</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>context, and the expected deliverables span documents, slides, diagrams, spreadsheets, and multimedia</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>context-rich tasks</td>
+            <td>6</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>conversations</td>
+            <td>6</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>conversations about future ai improvements</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>critique on research papers</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>customer support conversation</td>
+            <td>9</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>daily work</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>data</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>data from the federal reserve bank of st. louis</td>
+            <td>3</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>data from the may 2024 us bureau of labor statistics (bls)</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>database</td>
+            <td>1</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>database of u.s. occupational information</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>database of u.s. occupational information sponsored by the u.s. department of labor</td>
+            <td>4</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>day</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>decade</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>deliverables</td>
+            <td>6</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>deliverables span documents, slides, diagrams, spreadsheets, and multimedia</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>deliverables that are either an actual piece of work or product</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>diagrams</td>
+            <td>7</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>difference between gdpval and other evaluations tied to economic value</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>diversity of tasks</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>documents</td>
+            <td>7</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>domains</td>
+            <td>7</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>dozens of subjects</td>
+            <td>8</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>drafts</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>each meticulously crafted and vetted by experienced professionals with over 14 years of experience on average from these fields</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>each task is based on real work products</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>early step</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>economic indicator</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>economic tasks</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>economic value</td>
+            <td>3</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>economically valuable tasks</td>
+            <td>8</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>economically valuable, real-world tasks</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>economically value which concentrate on specific domains</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>engineering blueprint</td>
+            <td>9</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>evaluation</td>
+            <td>10</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>evaluations</td>
+            <td>6</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>evaluations that measure increasingly realistic and economically relevant capabilities</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>every task is based on real work products, such as a legal brief, an engineering blueprint, a customer support conversation, or a nursing care plan</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>everyday work</td>
+            <td>9</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>evidence</td>
+            <td>10</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>exam-style questions</td>
+            <td>9</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>expected deliverables</td>
+            <td>3</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>experienced professionals</td>
+            <td>4</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>experienced professionals with over 14 years of experience on average from these fields</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>federal reserve bank of st. louis</td>
+            <td>7</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>fields</td>
+            <td>3</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>first version</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>first version of gdpval</td>
+            <td>3</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>first version of gdpval, focusing on occupations where ai could have the highest impact on real-world productivity</td>
+            <td>1</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>freelance software engineering projects</td>
+            <td>6</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>freelance software engineering projects based on real payouts</td>
+            <td>3</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>future ai improvements</td>
+            <td>8</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>future ai improvements in evidence rather than guesswork</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>future versions</td>
+            <td>3</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>future versions will extend to more interactive workflows and context-rich tasks</td>
+            <td>2</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>future versions will extend to more interactive workflows and context-rich tasks to better reflect the complexity of real-world knowledge work</td>
+            <td>3</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>gap</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>gdp</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>gdpval</td>
+            <td>10</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>gdpval covers tasks across 9 industries and 44 occupations, and future versions will continue to expand coverage</td>
+            <td>1</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>gdpval focuses on tasks based on deliverables that are either an actual piece of work or product that exists today or are a similarly constructed piece of work product</td>
+            <td>2</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>gdpval full set</td>
+            <td>3</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>gdpval full set includes 1,320 specialized tasks (220 in the gold open-sourced set)</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>gdpval is an early step</td>
+            <td>1</td>
+            <td>2</td>
+        </tr>
+        <tr>
+            <td>gdpval is an early step that doesn’t reflect the full nuance of many economic tasks</td>
+            <td>4</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td>gdpval is distinctive</td>
+            <td>1</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td>gdpval is distinctive both in its realism and diversity of tasks being evaluated</td>
+            <td>3</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>gdpval is the next step in that progression</td>
+            <td>3</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td>gdpval measures</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>gdpval measures model performance</td>
+            <td>1</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>gdpval progression</td>
+            <td>1</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>gdpval realism and diversity of tasks being evaluated</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>gdpval tasks</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>gdpval tasks are not simple text prompts</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>gdpval version</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>gold open-sourced set</td>
+            <td>9</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>gross domestic product</td>
+            <td>3</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>gross domestic product (gdp)</td>
+            <td>3</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>guesswork</td>
+            <td>10</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>highest impact on real-world productivity</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>history</td>
+            <td>9</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>history shows</td>
+            <td>1</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>how we chose occupations</td>
+            <td>4</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>humanity</td>
+            <td>10</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>humanity&#x27;s last exam</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>humanity’s last exam</td>
+            <td>4</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>humanity’s last exam or mmlu</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>humankind</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>humany&#x27;s last exam</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>humility&#x27;s last exam</td>
+            <td>1</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>impact on society</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>industries</td>
+            <td>9</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>industries and 44 occupations</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>industries contributing to u.s. gdp</td>
+            <td>4</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>industries that contribute most to gdp</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>interactive workflows</td>
+            <td>5</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>internet</td>
+            <td>10</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>invention</td>
+            <td>9</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>its realism and diversity of tasks being evaluated</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>key economic indicator</td>
+            <td>8</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>key occupations</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>knowledge work</td>
+            <td>3</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>knowledge work occupations</td>
+            <td>4</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>knowledge work of experienced professionals</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>knowledge work or physical work/manual labor</td>
+            <td>6</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>knowledge work or physical work/manual labor (requiring actions to be taken in the physical world)</td>
+            <td>1</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>lab</td>
+            <td>9</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>legal brief</td>
+            <td>9</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>limitations section</td>
+            <td>4</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>limitations section below</td>
+            <td>1</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>machine learning engineering tasks</td>
+            <td>3</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>major technologies</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>many tasks and occupations</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>market-based evaluations</td>
+            <td>9</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>market-based evaluations like swe-lancer (freelance software engineering projects based on real payouts)</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>mission</td>
+            <td>9</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>mle-bench</td>
+            <td>3</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>mmlu</td>
+            <td>10</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>model improvement</td>
+            <td>7</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>model improvement over time</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>model performance</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>model performance on tasks drawn directly from the real-world knowledge work of experienced professionals across a wide range of occupations and sectors</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>model reasoning capabilities</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>model training</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>model training and analysis</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>models</td>
+            <td>9</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>models and others</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>multimedia</td>
+            <td>7</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>nuance of many economic tasks</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>nursing care plan</td>
+            <td>9</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>o*net</td>
+            <td>9</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>o*net⁠(opens in a new window), a database of u.s. occupational information sponsored by the u.s. department of labor</td>
+            <td>1</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>occupation qualified overall as “predominantly knowledge work” if at least 60% of its component tasks were classified as not involving physical work or manual labor</td>
+            <td>1</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>occupational employment report</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>occupations</td>
+            <td>10</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>occupations across 9 industries and 44 occupations</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>occupations and sectors</td>
+            <td>4</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>occupations contributing most to total wages and compensation</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>occupations selected from the top 9 industries contributing to u.s. gdp</td>
+            <td>4</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>occupations selected from top 9 industries contributing to u.s. gdp</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>occupations within each industry</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>one-shot evaluations</td>
+            <td>3</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>others</td>
+            <td>4</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>paper-bench</td>
+            <td>6</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>part</td>
+            <td>6</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>people</td>
+            <td>9</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>people in the real world</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>people in the work they do every day</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>physical work/manual labor</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>physical world</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>picture</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>piece of work</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>piece of work or product</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>potential</td>
+            <td>4</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>previous ai evaluations</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>previous ai evaluations like challenging academic tests and competitive coding challenges</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>product</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>professionals</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>progress</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>progression</td>
+            <td>8</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>real payouts</td>
+            <td>6</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>real work products</td>
+            <td>4</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>real world</td>
+            <td>8</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>real-world knowledge work</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>realism</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>realism and diversity of tasks being evaluated</td>
+            <td>4</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>realism makes gdpval a more realistic test of how models might support professionals</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>realistic occupational tasks</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>realistic test of how models might support professionals</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>reasoning capabilities</td>
+            <td>4</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>reference files</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>reference files and context</td>
+            <td>6</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>reference files and context, and the expected deliverables span documents, slides, diagrams, spreadsheets, and multimedia</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>requiring actions to be taken in the physical world</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>research papers</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>scientific reasoning</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>scientific reasoning and critique on research papers</td>
+            <td>4</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>sectors</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>selected from the top 9 industries contributing to u.s. gdp</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>simple text prompts</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>slides</td>
+            <td>7</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>smartphones</td>
+            <td>10</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>society</td>
+            <td>9</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>software engineering bug-fixing tasks</td>
+            <td>9</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>spans 44 occupations</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>specialized tasks</td>
+            <td>8</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>specially crafted tasks</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>specific domains</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>spreadsheets</td>
+            <td>7</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>starting point</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>starting point for the first version of gdpval</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>subjects</td>
+            <td>1</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>support</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>support people in the work they do every day</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>swe-bench</td>
+            <td>10</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>swe-lancer</td>
+            <td>10</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>synthetically creating tasks in the style of an academic exam or test</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>task</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>task data</td>
+            <td>3</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>task data from o*net</td>
+            <td>4</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>task data from o*net was classified as knowledge work or physical work/manual labor</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>task data from o*net was knowledge work or physical work/manual labor</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>task is based on real work products</td>
+            <td>3</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>tasks</td>
+            <td>10</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>tasks based on deliverables that are either an actual piece of work or product that exists today</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>tasks based on deliverables that are either an actual piece of work or product that exists today or are a similarly constructed piece of work product</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>tasks being evaluated</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>tasks drawn directly from the real-world knowledge work of experienced professionals</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>tasks in the style of an academic exam or test</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>tasks that many people handle in their everyday work</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>technologies</td>
+            <td>10</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>text prompts</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>this realism makes gdpval a more realistic test of how models might support professionals</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>threshold</td>
+            <td>1</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>time</td>
+            <td>7</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>to bridge this gap</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>top 9 industries</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>total wages and compensation</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>traditional benchmarks</td>
+            <td>7</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>u.s. bureau of labor statistics (bls) occupational employment report</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>u.s. department of labor</td>
+            <td>4</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>u.s. gdp</td>
+            <td>9</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>u.s. occupational information</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>u.s. occupational information sponsored by the u.s. department of labor</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>us bureau of labor statistics</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>us bureau of labor statistics (bls)</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>us bureau of labor statistics (bls) occupational employment report</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>version</td>
+            <td>3</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>version of gdpval</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>version of this evaluation</td>
+            <td>4</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>veterans</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>wage and employment data</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>wage and employment data from the may 2024 us bureau of labor statistics (bls) occupational employment report</td>
+            <td>3</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>wage and employment data from the may 2024 us bureau of labor statistics (bls) occupational employment report⁠(opens in a new window)</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>wages and compensation</td>
+            <td>4</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>what gdpval measures</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>widespread adoption</td>
+            <td>8</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>work</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>work they do every day</td>
+            <td>5</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>world</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <script>
+    function sortTable(columnIndex) {
+        const table = document.querySelector('.data-table');
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+
+        rows.sort((a, b) => {
+            const aValue = a.cells[columnIndex].textContent;
+            const bValue = b.cells[columnIndex].textContent;
+
+            // Check if numeric
+            const aNum = parseFloat(aValue);
+            const bNum = parseFloat(bValue);
+
+            if (!isNaN(aNum) && !isNaN(bNum)) {
+                return bNum - aNum; // Descending for numbers
+            } else {
+                return aValue.localeCompare(bValue); // Ascending for text
+            }
+        });
+
+        rows.forEach(row => tbody.appendChild(row));
+    }
+
+    // Initialize chart
+    const ctx = document.getElementById('resultsChart');
+    if (ctx) {
+        const chartLabels = ["artificial general intelligenc...", "evaluation", "evidence", "gdpval", "guesswork", "humanity", "internet", "mmlu", "occupations", "smartphones", "swe-bench", "swe-lancer", "tasks", "technologies", "academic tests", "ai models", "competitive coding challenges", "customer support conversation", "engineering blueprint", "everyday work", "exam-style questions", "gold open-sourced set", "history", "industries", "invention", "lab", "legal brief", "market-based evaluations", "mission", "models", "nursing care plan", "o*net", "people", "society", "software engineering bug-fixin...", "u.s. gdp", "dozens of subjects", "economically valuable tasks", "future ai improvements", "key economic indicator", "progression", "real world", "specialized tasks", "widespread adoption", "benchmarks", "diagrams", "documents", "domains", "federal reserve bank of st. lo...", "model improvement", "multimedia", "slides", "spreadsheets", "time", "traditional benchmarks", "broader impact", "context-rich tasks", "conversations", "deliverables", "evaluations", "freelance software engineering...", "knowledge work or physical wor...", "paper-bench", "part", "real payouts", "reference files and context", "60% threshold", "actions to be taken in the phy...", "complexity of real-world knowl...", "concept of gross domestic prod...", "interactive workflows", "work they do every day", "boundaries of model reasoning ...", "database of u.s. occupational ...", "experienced professionals", "gdpval is an early step that d...", "how we chose occupations", "humanity\u2019s last exam", "industries contributing to u.s...", "knowledge work occupations", "limitations section", "occupations and sectors", "occupations selected from the ...", "others", "potential", "real work products", "realism and diversity of tasks...", "reasoning capabilities", "scientific reasoning and criti...", "task data from o*net", "u.s. department of labor", "version of this evaluation", "wages and compensation", "classic academic benchmarks", "data from the federal reserve ...", "economic value", "expected deliverables", "fields", "first version of gdpval", "freelance software engineering...", "future versions", "future versions will extend to...", "gdpval full set", "gdpval is distinctive both in ...", "gdpval is the next step in tha...", "gross domestic product", "gross domestic product (gdp)", "knowledge work", "machine learning engineering t...", "mle-bench", "one-shot evaluations", "task data", "task is based on real work pro...", "version", "wage and employment data from ...", "44 occupations", "ai", "context", "deliverables span documents, s...", "experienced professionals with...", "future versions will extend to...", "gdpval focuses on tasks based ...", "humanity's last exam", "model improvement over time", "model performance on tasks dra...", "model training and analysis", "people in the work they do eve...", "physical work/manual labor", "previous ai evaluations", "professionals", "real-world knowledge work", "reference files", "scientific reasoning", "sectors", "specially crafted tasks", "text prompts", "u.s. occupational information ...", "us bureau of labor statistics ...", "wage and employment data", "60%", "9 industries were chosen based...", "academic benchmarks", "academic exam or test", "actual piece of work or produc...", "adoption", "ai could have the highest impa...", "ai impact on real-world produc...", "ai's potential", "an occupation qualified overal...", "analysis", "applied evaluations", "applied evaluations like swe-b...", "benchmarks which involve synth...", "benchmarks which involve synth...", "bls", "bls occupational employment re...", "broader impact on society", "bureau of labor statistics (bl...", "classic academic benchmarks li...", "component tasks", "concept", "context, and the expected deli...", "conversations about future ai ...", "critique on research papers", "daily work", "data", "data from the may 2024 us bure...", "database", "database of u.s. occupational ...", "day", "decade", "deliverables that are either a...", "difference between gdpval and ...", "diversity of tasks", "drafts", "each meticulously crafted and ...", "each task is based on real wor...", "early step", "economic indicator", "economic tasks", "economically valuable, real-wo...", "economically value which conce...", "evaluations that measure incre...", "every task is based on real wo...", "first version", "first version of gdpval, focus...", "future ai improvements in evid...", "gap", "gdp", "gdpval covers tasks across 9 i...", "gdpval full set includes 1,320...", "gdpval is an early step", "gdpval is distinctive", "gdpval measures", "gdpval measures model performa...", "gdpval progression", "gdpval realism and diversity o...", "gdpval tasks", "gdpval tasks are not simple te...", "gdpval version", "highest impact on real-world p...", "history shows", "humanity\u2019s last exam or mmlu", "humankind", "humany's last exam", "humility's last exam", "impact on society", "industries and 44 occupations", "industries that contribute mos...", "its realism and diversity of t...", "key occupations", "knowledge work of experienced ...", "knowledge work or physical wor...", "limitations section below", "major technologies", "many tasks and occupations", "market-based evaluations like ...", "model performance", "model reasoning capabilities", "model training", "models and others", "nuance of many economic tasks", "o*net\u2060(opens in a new window),...", "occupation qualified overall a...", "occupational employment report", "occupations across 9 industrie...", "occupations contributing most ...", "occupations selected from top ...", "occupations within each indust...", "people in the real world", "physical world", "picture", "piece of work", "piece of work or product", "previous ai evaluations like c...", "product", "progress", "realism", "realism makes gdpval a more re...", "realistic occupational tasks", "realistic test of how models m...", "reference files and context, a...", "requiring actions to be taken ...", "research papers", "selected from the top 9 indust...", "simple text prompts", "spans 44 occupations", "specific domains", "starting point", "starting point for the first v...", "subjects", "support", "support people in the work the...", "synthetically creating tasks i...", "task", "task data from o*net was class...", "task data from o*net was knowl...", "tasks based on deliverables th...", "tasks based on deliverables th...", "tasks being evaluated", "tasks drawn directly from the ...", "tasks in the style of an acade...", "tasks that many people handle ...", "this realism makes gdpval a mo...", "threshold", "to bridge this gap", "top 9 industries", "total wages and compensation", "u.s. bureau of labor statistic...", "u.s. occupational information", "us bureau of labor statistics", "us bureau of labor statistics ...", "version of gdpval", "veterans", "wage and employment data from ...", "what gdpval measures", "work", "world"];
+        const chartCounts = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 8, 8, 8, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 5, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+        const chartRepudiations = [1, 0, 0, 5, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 4, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 1, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 2, 1, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 8, 0, 1, 1, 0, 0, 0, 0, 0, 5, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+        console.log('Chart data loaded:', {
+            labels: chartLabels.length,
+            counts: chartCounts.length,
+            repudiations: chartRepudiations.length
+        });
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'Count (Identified)',
+                    data: chartCounts,
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Repudiation Count',
+                    data: chartRepudiations,
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Count'
+                        },
+                        grid: {
+                            display: false
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Phrases (sorted by count, highest first)'
+                        },
+                        ticks: {
+                            display: false
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Phrase Identification and Repudiation'
+                    }
+                }
+            }
+        });
+    }
+
+    // Initialize bubble chart
+    const bubbleCtx = document.getElementById('bubbleChart');
+    if (bubbleCtx) {
+        const bubbleData = [{"x": 2, "y": 0, "r": 8.366600265340756, "phrases": ["44 occupations", "context", "deliverables span documents, slides, diagrams, spreadsheets, and multimedia", "experienced professionals with over 14 years of experience on average from these fields", "humanity's last exam", "model improvement over time", "model performance on tasks drawn directly from the real-world knowledge work of experienced professionals across a wide range of occupations and sectors", "model training and analysis", "people in the work they do every day", "physical work/manual labor", "previous ai evaluations", "professionals", "real-world knowledge work", "reference files", "scientific reasoning", "sectors", "specially crafted tasks", "text prompts", "u.s. occupational information sponsored by the u.s. department of labor", "us bureau of labor statistics (bls)", "wage and employment data"], "count": 21}, {"x": 1, "y": 0, "r": 20.0, "phrases": ["60%", "9 industries were chosen based on those contributing over 5% to u.s. gdp, as determined by data from the federal reserve bank of st. louis", "academic benchmarks", "academic exam or test", "actual piece of work or product", "adoption", "an occupation qualified overall as \u201cpredominantly knowledge work\u201d if at least 60% of its component tasks were classified as not involving physical work or manual labor", "analysis", "applied evaluations", "applied evaluations like swe-bench (software engineering bug-fixing tasks)", "benchmarks which involve synthetically creating tasks in the style of an academic exam or test", "benchmarks which involve synthetically creating tasks in the style of an academic exam or test (e.g., humanity\u2019s last exam or mmlu)", "bls occupational employment report", "broader impact on society", "bureau of labor statistics (bls)", "classic academic benchmarks like mmlu (exam-style questions across dozens of subjects)", "component tasks", "concept", "context, and the expected deliverables span documents, slides, diagrams, spreadsheets, and multimedia", "conversations about future ai improvements", "critique on research papers", "daily work", "data", "data from the may 2024 us bureau of labor statistics (bls)", "database of u.s. occupational information", "day", "decade", "deliverables that are either an actual piece of work or product", "difference between gdpval and other evaluations tied to economic value", "diversity of tasks", "drafts", "each meticulously crafted and vetted by experienced professionals with over 14 years of experience on average from these fields", "each task is based on real work products", "early step", "economic indicator", "economic tasks", "economically valuable, real-world tasks", "economically value which concentrate on specific domains", "evaluations that measure increasingly realistic and economically relevant capabilities", "every task is based on real work products, such as a legal brief, an engineering blueprint, a customer support conversation, or a nursing care plan", "first version", "future ai improvements in evidence rather than guesswork", "gap", "gdp", "gdpval full set includes 1,320 specialized tasks (220 in the gold open-sourced set)", "gdpval measures", "gdpval realism and diversity of tasks being evaluated", "gdpval tasks", "gdpval tasks are not simple text prompts", "gdpval version", "highest impact on real-world productivity", "humanity\u2019s last exam or mmlu", "humankind", "humany's last exam", "impact on society", "industries and 44 occupations", "industries that contribute most to gdp", "its realism and diversity of tasks being evaluated", "key occupations", "knowledge work of experienced professionals", "major technologies", "many tasks and occupations", "market-based evaluations like swe-lancer (freelance software engineering projects based on real payouts)", "model performance", "model reasoning capabilities", "model training", "models and others", "nuance of many economic tasks", "occupational employment report", "occupations across 9 industries and 44 occupations", "occupations contributing most to total wages and compensation", "occupations selected from top 9 industries contributing to u.s. gdp", "occupations within each industry", "people in the real world", "physical world", "picture", "piece of work", "piece of work or product", "previous ai evaluations like challenging academic tests and competitive coding challenges", "product", "progress", "realism", "realism makes gdpval a more realistic test of how models might support professionals", "realistic occupational tasks", "realistic test of how models might support professionals", "reference files and context, and the expected deliverables span documents, slides, diagrams, spreadsheets, and multimedia", "requiring actions to be taken in the physical world", "research papers", "selected from the top 9 industries contributing to u.s. gdp", "simple text prompts", "spans 44 occupations", "specific domains", "starting point", "starting point for the first version of gdpval", "support", "support people in the work they do every day", "synthetically creating tasks in the style of an academic exam or test", "task", "task data from o*net was classified as knowledge work or physical work/manual labor", "task data from o*net was knowledge work or physical work/manual labor", "tasks based on deliverables that are either an actual piece of work or product that exists today", "tasks based on deliverables that are either an actual piece of work or product that exists today or are a similarly constructed piece of work product", "tasks being evaluated", "tasks drawn directly from the real-world knowledge work of experienced professionals", "tasks in the style of an academic exam or test", "tasks that many people handle in their everyday work", "this realism makes gdpval a more realistic test of how models might support professionals", "to bridge this gap", "top 9 industries", "total wages and compensation", "u.s. bureau of labor statistics (bls) occupational employment report", "u.s. occupational information", "us bureau of labor statistics", "us bureau of labor statistics (bls) occupational employment report", "version of gdpval", "veterans", "wage and employment data from the may 2024 us bureau of labor statistics (bls) occupational employment report\u2060(opens in a new window)", "what gdpval measures", "work", "world"], "count": 120}, {"x": 5, "y": 0, "r": 4.47213595499958, "phrases": ["60% threshold", "actions to be taken in the physical world", "complexity of real-world knowledge work", "concept of gross domestic product (gdp)", "interactive workflows", "work they do every day"], "count": 6}, {"x": 9, "y": 0, "r": 8.366600265340756, "phrases": ["academic tests", "ai models", "competitive coding challenges", "customer support conversation", "engineering blueprint", "everyday work", "exam-style questions", "gold open-sourced set", "history", "industries", "invention", "lab", "legal brief", "market-based evaluations", "mission", "models", "nursing care plan", "people", "society", "software engineering bug-fixing tasks", "u.s. gdp"], "count": 21}, {"x": 2, "y": 10, "r": 3, "phrases": ["ai"], "count": 1}, {"x": 1, "y": 4, "r": 3, "phrases": ["ai could have the highest impact on real-world productivity", "humility's last exam"], "count": 2}, {"x": 1, "y": 2, "r": 3, "phrases": ["ai impact on real-world productivity", "gdpval is an early step"], "count": 2}, {"x": 1, "y": 1, "r": 6.324555320336759, "phrases": ["ai's potential", "database", "first version of gdpval, focusing on occupations where ai could have the highest impact on real-world productivity", "gdpval covers tasks across 9 industries and 44 occupations, and future versions will continue to expand coverage", "gdpval measures model performance", "gdpval progression", "knowledge work or physical work/manual labor (requiring actions to be taken in the physical world)", "limitations section below", "o*net\u2060(opens in a new window), a database of u.s. occupational information sponsored by the u.s. department of labor", "occupation qualified overall as \u201cpredominantly knowledge work\u201d if at least 60% of its component tasks were classified as not involving physical work or manual labor", "subjects", "threshold"], "count": 12}, {"x": 10, "y": 1, "r": 3, "phrases": ["artificial general intelligence", "mmlu"], "count": 2}, {"x": 7, "y": 0, "r": 6.055300708194983, "phrases": ["benchmarks", "diagrams", "documents", "domains", "federal reserve bank of st. louis", "model improvement", "multimedia", "slides", "spreadsheets", "time", "traditional benchmarks"], "count": 11}, {"x": 1, "y": 10, "r": 3, "phrases": ["bls"], "count": 1}, {"x": 4, "y": 0, "r": 7.958224257542215, "phrases": ["boundaries of model reasoning capabilities", "database of u.s. occupational information sponsored by the u.s. department of labor", "experienced professionals", "how we chose occupations", "humanity\u2019s last exam", "industries contributing to u.s. gdp", "knowledge work occupations", "limitations section", "occupations and sectors", "occupations selected from the top 9 industries contributing to u.s. gdp", "others", "real work products", "realism and diversity of tasks being evaluated", "reasoning capabilities", "scientific reasoning and critique on research papers", "task data from o*net", "u.s. department of labor", "version of this evaluation", "wages and compensation"], "count": 19}, {"x": 6, "y": 0, "r": 6.055300708194983, "phrases": ["broader impact", "context-rich tasks", "conversations", "deliverables", "evaluations", "freelance software engineering projects", "knowledge work or physical work/manual labor", "paper-bench", "part", "real payouts", "reference files and context"], "count": 11}, {"x": 3, "y": 0, "r": 7.958224257542215, "phrases": ["classic academic benchmarks", "data from the federal reserve bank of st. louis", "economic value", "expected deliverables", "fields", "first version of gdpval", "freelance software engineering projects based on real payouts", "future versions", "gdpval full set", "gross domestic product", "gross domestic product (gdp)", "knowledge work", "machine learning engineering tasks", "mle-bench", "one-shot evaluations", "task data", "task is based on real work products", "version", "wage and employment data from the may 2024 us bureau of labor statistics (bls) occupational employment report"], "count": 19}, {"x": 8, "y": 0, "r": 5.1639777949432215, "phrases": ["dozens of subjects", "economically valuable tasks", "future ai improvements", "key economic indicator", "progression", "real world", "specialized tasks", "widespread adoption"], "count": 8}, {"x": 10, "y": 0, "r": 6.055300708194983, "phrases": ["evaluation", "evidence", "guesswork", "humanity", "internet", "occupations", "smartphones", "swe-bench", "swe-lancer", "tasks", "technologies"], "count": 11}, {"x": 2, "y": 1, "r": 3, "phrases": ["future versions will extend to more interactive workflows and context-rich tasks"], "count": 1}, {"x": 3, "y": 5, "r": 3, "phrases": ["future versions will extend to more interactive workflows and context-rich tasks to better reflect the complexity of real-world knowledge work"], "count": 1}, {"x": 10, "y": 5, "r": 3, "phrases": ["gdpval"], "count": 1}, {"x": 2, "y": 4, "r": 3, "phrases": ["gdpval focuses on tasks based on deliverables that are either an actual piece of work or product that exists today or are a similarly constructed piece of work product"], "count": 1}, {"x": 4, "y": 10, "r": 3, "phrases": ["gdpval is an early step that doesn\u2019t reflect the full nuance of many economic tasks"], "count": 1}, {"x": 1, "y": 8, "r": 3, "phrases": ["gdpval is distinctive"], "count": 1}, {"x": 3, "y": 4, "r": 3, "phrases": ["gdpval is distinctive both in its realism and diversity of tasks being evaluated"], "count": 1}, {"x": 3, "y": 8, "r": 3, "phrases": ["gdpval is the next step in that progression"], "count": 1}, {"x": 1, "y": 5, "r": 3, "phrases": ["history shows"], "count": 1}, {"x": 9, "y": 1, "r": 3, "phrases": ["o*net"], "count": 1}, {"x": 4, "y": 6, "r": 3, "phrases": ["potential"], "count": 1}];
+
+        console.log('Bubble data loaded:', bubbleData.length, 'unique coordinate pairs');
+
+        new Chart(bubbleCtx, {
+            type: 'bubble',
+            data: {
+                datasets: [{
+                    label: 'Phrases',
+                    data: bubbleData,
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgb(75, 192, 192)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Repudiated Presence'
+                        },
+                        ticks: {
+                            stepSize: 1
+                        }
+                    },
+                    x: {
+                        beginAtZero: true,
+                        reverse: true,
+                        title: {
+                            display: true,
+                            text: 'Identified Count'
+                        },
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Phrase Distribution by Identification and Repudiation'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const point = context.raw;
+                                const phrases = point.phrases || [];
+                                const lines = [
+                                    `Identified: ${point.x}`,
+                                    `Repudiated: ${point.y}`,
+                                    `Number of phrases: ${point.count}`,
+                                    '',
+                                    'Phrases:'
+                                ];
+
+                                // Add first 10 phrases, truncate if more
+                                const maxPhrases = 10;
+                                phrases.slice(0, maxPhrases).forEach(p => {
+                                    lines.push(`  - ${p.substring(0, 50)}${p.length > 50 ? '...' : ''}`);
+                                });
+
+                                if (phrases.length > maxPhrases) {
+                                    lines.push(`  ... and ${phrases.length - maxPhrases} more`);
+                                }
+
+                                return lines;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Add click handlers for collapsible sections
+    document.addEventListener('DOMContentLoaded', function() {
+        const collapsibles = document.getElementsByClassName('collapsible');
+        for (let i = 0; i < collapsibles.length; i++) {
+            collapsibles[i].addEventListener('click', function() {
+                this.classList.toggle('active');
+                const content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                }
+            });
+        }
+    });
+    </script>
+</body>
+</html>

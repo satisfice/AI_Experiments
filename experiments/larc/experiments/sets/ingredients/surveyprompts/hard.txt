@@ -1,0 +1,5 @@
+Below the line of dashes is a text that comprises a set of recipes. Ignore all recipes except the one I am asking you about.
+
+List every unique ingredient mentioned in the apple pie recipe that is below the line of dashes. List only the ingredient names, not the amounts. Answer in the form of a JSON array of strings with no other commentary. Use the key 'results' for the array:
+
+--------------------------------

@@ -1,0 +1,12 @@
+{
+  "testid": "openai-gpt4.1-synthetic-hard-10-T0",
+  "testset": "LARC_Synthetic Text",
+  "description": "synthetic text",
+  "source_file": "experiments/sets/nounphrases/texts/synthetic.txt",
+  "survey_prompt_file": "experiments/sets/nounphrases/surveyprompts/hard.txt",
+  "presence_prompt_file": "experiments/sets/nounphrases/presenceprompts/hard.txt",
+  "model": "gpt-4.1-2025-04-14",
+  "temperature": 0,
+  "trials": 10,
+  "mongo-uri": "mongodb://localhost:27017/"
+}

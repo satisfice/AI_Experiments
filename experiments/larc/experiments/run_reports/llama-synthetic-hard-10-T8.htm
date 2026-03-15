@@ -1,0 +1,1780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Results: llama-synthetic-hard-10-T8</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .content {
+            white-space: pre-wrap;
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .legend {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #e9e9e9;
+            border-radius: 5px;
+        }
+        .legend-item {
+            display: inline-block;
+            margin-right: 20px;
+            margin-bottom: 10px;
+        }
+        .legend-color {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+        .highlight {
+            cursor: help;
+            position: relative;
+        }
+        .highlight .popup {
+            visibility: hidden;
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 6px;
+            white-space: nowrap;
+            z-index: 1000;
+            font-size: 14px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .highlight .popup::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+        .highlight:hover .popup {
+            visibility: visible;
+        }
+        h1 {
+            color: #333;
+        }
+        h2 {
+            color: #555;
+            margin-top: 40px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .metadata-table {
+            max-width: 600px;
+            margin: 20px 0;
+        }
+        .metadata-table td:first-child {
+            font-weight: bold;
+            text-align: right;
+            padding-right: 20px;
+            width: 250px;
+        }
+        .data-table th {
+            cursor: pointer;
+            user-select: none;
+        }
+        .data-table th:hover {
+            background-color: #45a049;
+        }
+        .collapsible {
+            background-color: #e9e9e9;
+            color: #333;
+            cursor: pointer;
+            padding: 15px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        .collapsible:hover {
+            background-color: #ddd;
+        }
+        .collapsible:after {
+            content: '\25BC'; /* Down arrow */
+            float: right;
+            margin-left: 5px;
+        }
+        .collapsible.active:after {
+            content: '\25B2'; /* Up arrow */
+        }
+        .collapsible-content {
+            padding: 0 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+            background-color: #f9f9f9;
+            border-left: 3px solid #4CAF50;
+            margin-bottom: 20px;
+        }
+        .prompt-section {
+            padding: 15px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            background-color: white;
+            border-radius: 3px;
+            margin: 10px 0;
+        }
+        .prompt-label {
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Results: llama-synthetic-hard-10-T8</h1>
+
+    <div class="legend">
+        <strong>Legend:</strong>
+        <div class="legend-item">
+            <span class="legend-color" style="background-color: green;"></span>
+            <span>Perfect match (count = 10, repudiation = 0)</span>
+        </div>
+        <div class="legend-item">
+            <span class="legend-color" style="background-color: yellow;"></span>
+            <span>Incomplete match (count &lt; 10, repudiation = 0)</span>
+        </div>
+        <div class="legend-item">
+            <span class="legend-color" style="background-color: orange;"></span>
+            <span>Repudiated match (repudiation &gt; 0)</span>
+        </div>
+    </div>
+    <button class="collapsible">Show Prompts Used in This Test</button>
+    <div class="collapsible-content">
+        <div class="prompt-section">
+            <div class="prompt-label">Survey Prompt Template:</div>
+            You are a professional grammarian. You know that a noun phrase is a group of two or more words headed by a noun that includes modifiers. Any noun phrase could be replaced by a pronoun without breaking the grammar of the sentence. A noun phrase may be nested within another noun phrase, as in &quot;the only man in the house who didn&#x27;t have a hat.&quot; This includes the nouns: man, house, and hat. The whole phrase is a noun phrase. But so is &quot;only man&quot; &quot;man in the house&quot; &quot;only man in the house&quot; &quot;a hat.&quot;
+
+List every unique noun and noun phrase in the following text below the line of dashes. Answer in the form of a JSON array of strings with no other commentary. Include both nouns and noun phrases in the same array. Use the key &#x27;results&#x27; for that array:
+
+--------------------------------
+        </div>
+        <div class="prompt-section">
+            <div class="prompt-label">Presence Check Prompt Template:</div>
+            You are a professional grammarian. You know that a noun phrase is a group of two or more words headed by a noun that includes modifiers. Any noun phrase could be replaced by a pronoun without breaking the grammar of the sentence. A noun phrase may be nested within another noun phrase, as in &quot;the only man in the house who didn&#x27;t have a hat.&quot; This includes the nouns: man, house, and hat. The whole phrase is a noun phrase. But so is &quot;only man&quot; &quot;man in the house&quot; &quot;only man in the house&quot; &quot;a hat.&quot;
+
+Please tell me if the word or phrase &quot;{item}&quot; is ever used as a noun or noun phrase in the text below the line of dashes. Answer in the form of a JSON object with one key: &#x27;exists&#x27;, which should be true or false:
+
+--------------------------------
+        </div>
+    </div>
+
+    <div class="content">
+<span class="highlight" style="background-color: orange;">Lizards that have fish without hamsters that are fast<span class="popup">Phrase: lizards that have fish without hamsters that are fast | Count: 6, Repudiation: 6</span></span> are more important than <span class="highlight" style="background-color: orange;">lizards that have birds with fish with birds<span class="popup">Phrase: lizards that have birds with fish with birds | Count: 7, Repudiation: 8</span></span>. <span class="highlight" style="background-color: orange;">Cats without fish that have dogs that have fish<span class="popup">Phrase: cats without fish that have dogs that have fish | Count: 5, Repudiation: 6</span></span> are equally important as <span class="highlight" style="background-color: orange;">small and big fish without hamsters<span class="popup">Phrase: small and big fish without hamsters | Count: 7, Repudiation: 3</span></span>. <span class="highlight" style="background-color: orange;">Certainly,<span class="popup">Phrase: certainly, | Count: 1, Repudiation: 10</span></span> <span class="highlight" style="background-color: yellow;">fast and big <span class="popup">Phrase: fast and big cats without small and colorful birds | Count: 6, Repudiation: 0</span></span><span class="highlight" style="background-color: orange;">cats without small and colorful birds<span class="popup">Phrase: cats without small and colorful birds | Count: 1, Repudiation: 3</span></span> are pretty cool. <span class="highlight" style="background-color: orange;">Dogs without hamsters that have dogs that have hamsters<span class="popup">Phrase: dogs without hamsters that have dogs that have hamsters | Count: 2, Repudiation: 7</span></span> are equally important as <span class="highlight" style="background-color: orange;">small and colorful hamsters that have cats without birds<span class="popup">Phrase: small and colorful hamsters that have cats without birds | Count: 5, Repudiation: 5</span></span>. <span class="highlight" style="background-color: orange;">Big and colorful hamsters that have hamsters with lizards<span class="popup">Phrase: big and colorful hamsters that have hamsters with lizards | Count: 6, Repudiation: 5</span></span> are better than <span class="highlight" style="background-color: orange;">cats with fish that have lizards that have birds<span class="popup">Phrase: cats with fish that have lizards that have birds | Count: 7, Repudiation: 6</span></span>. <span class="highlight" style="background-color: orange;">Playful and fast lizards with hamsters that are fast<span class="popup">Phrase: playful and fast lizards with hamsters that are fast | Count: 4, Repudiation: 1</span></span> are better than <span class="highlight" style="background-color: orange;">lizards that have cats with hamsters with fish<span class="popup">Phrase: lizards that have cats with hamsters with fish | Count: 8, Repudiation: 3</span></span>. <span class="highlight" style="background-color: orange;">Small and fast lizards that have small and big dogs<span class="popup">Phrase: small and fast lizards that have small and big dogs | Count: 8, Repudiation: 6</span></span> are less effective than <span class="highlight" style="background-color: orange;">slow and fast hamsters with playful and fast fish<span class="popup">Phrase: slow and fast hamsters with playful and fast fish | Count: 7, Repudiation: 5</span></span>. <span class="highlight" style="background-color: orange;">Dogs without cats without playful and fast fish<span class="popup">Phrase: dogs without cats without playful and fast fish | Count: 7, Repudiation: 6</span></span> are less effective than <span class="highlight" style="background-color: orange;">lizards that are fast that are big<span class="popup">Phrase: lizards that are fast that are big | Count: 8, Repudiation: 4</span></span>. <span class="highlight" style="background-color: orange;">Certainly,<span class="popup">Phrase: certainly, | Count: 1, Repudiation: 10</span></span> <span class="highlight" style="background-color: orange;">cats without birds that have lizards that are colorful<span class="popup">Phrase: cats without birds that have lizards that are colorful | Count: 8, Repudiation: 2</span></span> are pretty cool. <span class="highlight" style="background-color: orange;">Dogs with <span class="popup">Phrase: dogs with fish | Count: 2, Repudiation: 3</span></span><span class="highlight" style="background-color: orange;">fish with lizards with hamsters<span class="popup">Phrase: fish with lizards with hamsters | Count: 3, Repudiation: 9</span></span> are more important than <span class="highlight" style="background-color: orange;">birds with lizards with birds that have cats<span class="popup">Phrase: birds with lizards with birds that have cats | Count: 9, Repudiation: 5</span></span>.
+    </div>
+    <h2>Missing Phrases (Hallucination?)</h2>
+    <i>NOTE: Matching logic is case insensitive but does not account for punctuation.</i>
+    <table>
+        <thead>
+            <tr>
+                <th>Phrase</th>
+                <th>Count</th>
+                <th>Repudiation Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>a hat</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>big and colorful birds</td>
+                <td>1</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>birds that have fish with birds</td>
+                <td>1</td>
+                <td>4</td>
+            </tr>
+            <tr>
+                <td>cats that have birds</td>
+                <td>1</td>
+                <td>8</td>
+            </tr>
+            <tr>
+                <td>cats that have hamsters</td>
+                <td>1</td>
+                <td>5</td>
+            </tr>
+            <tr>
+                <td>cats that have hamsters that have lizards</td>
+                <td>1</td>
+                <td>8</td>
+            </tr>
+            <tr>
+                <td>cats that have hamsters with lizards</td>
+                <td>1</td>
+                <td>6</td>
+            </tr>
+            <tr>
+                <td>cats that have lizards</td>
+                <td>1</td>
+                <td>7</td>
+            </tr>
+            <tr>
+                <td>cats that have lizards that have hamsters</td>
+                <td>1</td>
+                <td>9</td>
+            </tr>
+            <tr>
+                <td>cats that have lizards that have lizards</td>
+                <td>1</td>
+                <td>9</td>
+            </tr>
+            <tr>
+                <td>cats that have lizards with hamsters</td>
+                <td>1</td>
+                <td>7</td>
+            </tr>
+            <tr>
+                <td>cats with dogs that have hamsters</td>
+                <td>1</td>
+                <td>4</td>
+            </tr>
+            <tr>
+                <td>cats with hamsters that have lizards</td>
+                <td>1</td>
+                <td>6</td>
+            </tr>
+            <tr>
+                <td>cats with lizards that have birds</td>
+                <td>1</td>
+                <td>4</td>
+            </tr>
+            <tr>
+                <td>cats with lizards that have hamsters</td>
+                <td>1</td>
+                <td>8</td>
+            </tr>
+            <tr>
+                <td>dogs that have birds</td>
+                <td>1</td>
+                <td>3</td>
+            </tr>
+            <tr>
+                <td>dogs that have cats</td>
+                <td>2</td>
+                <td>8</td>
+            </tr>
+            <tr>
+                <td>dogs that have dogs that have hamsters</td>
+                <td>1</td>
+                <td>5</td>
+            </tr>
+            <tr>
+                <td>dogs that have fish with lizards</td>
+                <td>1</td>
+                <td>8</td>
+            </tr>
+            <tr>
+                <td>dogs that have hamsters with lizards</td>
+                <td>1</td>
+                <td>4</td>
+            </tr>
+            <tr>
+                <td>dogs that have lizards that have birds</td>
+                <td>1</td>
+                <td>4</td>
+            </tr>
+            <tr>
+                <td>dogs that have lizards with fish</td>
+                <td>1</td>
+                <td>8</td>
+            </tr>
+            <tr>
+                <td>dogs that have lizards with hamsters</td>
+                <td>1</td>
+                <td>5</td>
+            </tr>
+            <tr>
+                <td>dogs with cats that have hamsters</td>
+                <td>1</td>
+                <td>7</td>
+            </tr>
+            <tr>
+                <td>dogs with hamsters</td>
+                <td>1</td>
+                <td>3</td>
+            </tr>
+            <tr>
+                <td>dogs with hamsters that have lizards</td>
+                <td>1</td>
+                <td>3</td>
+            </tr>
+            <tr>
+                <td>dogs with hamsters with fish</td>
+                <td>1</td>
+                <td>8</td>
+            </tr>
+            <tr>
+                <td>dogs with lizards that have birds</td>
+                <td>1</td>
+                <td>3</td>
+            </tr>
+            <tr>
+                <td>dogs with lizards that have fish</td>
+                <td>1</td>
+                <td>4</td>
+            </tr>
+            <tr>
+                <td>dogs with lizards that have hamsters</td>
+                <td>1</td>
+                <td>5</td>
+            </tr>
+            <tr>
+                <td>fish that have cats</td>
+                <td>1</td>
+                <td>4</td>
+            </tr>
+            <tr>
+                <td>fish that have hamsters</td>
+                <td>1</td>
+                <td>7</td>
+            </tr>
+            <tr>
+                <td>fish with birds with birds</td>
+                <td>1</td>
+                <td>7</td>
+            </tr>
+            <tr>
+                <td>hamsters that have cats that have lizards</td>
+                <td>1</td>
+                <td>5</td>
+            </tr>
+            <tr>
+                <td>hamsters that have cats with birds</td>
+                <td>1</td>
+                <td>7</td>
+            </tr>
+            <tr>
+                <td>hamsters that have dogs that have fish</td>
+                <td>1</td>
+                <td>9</td>
+            </tr>
+            <tr>
+                <td>hamsters that have fish</td>
+                <td>1</td>
+                <td>3</td>
+            </tr>
+            <tr>
+                <td>hamsters that have lizards</td>
+                <td>2</td>
+                <td>4</td>
+            </tr>
+            <tr>
+                <td>hamsters that have lizards that have cats</td>
+                <td>1</td>
+                <td>9</td>
+            </tr>
+            <tr>
+                <td>hamsters that have lizards that have hamsters</td>
+                <td>1</td>
+                <td>6</td>
+            </tr>
+            <tr>
+                <td>hamsters that have lizards that have lizards</td>
+                <td>1</td>
+                <td>4</td>
+            </tr>
+            <tr>
+                <td>hamsters that have lizards with birds</td>
+                <td>1</td>
+                <td>4</td>
+            </tr>
+            <tr>
+                <td>hamsters that have lizards with fish</td>
+                <td>1</td>
+                <td>6</td>
+            </tr>
+            <tr>
+                <td>hamsters with hamsters</td>
+                <td>1</td>
+                <td>6</td>
+            </tr>
+            <tr>
+                <td>hamsters with hamsters that have lizards</td>
+                <td>1</td>
+                <td>6</td>
+            </tr>
+            <tr>
+                <td>hamsters with hamsters with lizards</td>
+                <td>2</td>
+                <td>5</td>
+            </tr>
+            <tr>
+                <td>hamsters with lizards that have birds</td>
+                <td>1</td>
+                <td>6</td>
+            </tr>
+            <tr>
+                <td>hamsters with lizards that have cats</td>
+                <td>1</td>
+                <td>7</td>
+            </tr>
+            <tr>
+                <td>hamsters with lizards that have dogs</td>
+                <td>1</td>
+                <td>6</td>
+            </tr>
+            <tr>
+                <td>hamsters with lizards that have hamsters</td>
+                <td>1</td>
+                <td>7</td>
+            </tr>
+            <tr>
+                <td>house</td>
+                <td>2</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td>lizards that have cats that have lizards</td>
+                <td>1</td>
+                <td>8</td>
+            </tr>
+            <tr>
+                <td>lizards that have dogs</td>
+                <td>1</td>
+                <td>10</td>
+            </tr>
+            <tr>
+                <td>lizards that have fish with birds</td>
+                <td>1</td>
+                <td>9</td>
+            </tr>
+            <tr>
+                <td>lizards that have hamsters</td>
+                <td>3</td>
+                <td>6</td>
+            </tr>
+            <tr>
+                <td>lizards that have hamsters that have cats</td>
+                <td>1</td>
+                <td>7</td>
+            </tr>
+            <tr>
+                <td>lizards that have hamsters that have hamsters</td>
+                <td>1</td>
+                <td>7</td>
+            </tr>
+            <tr>
+                <td>lizards that have hamsters that have lizards</td>
+                <td>1</td>
+                <td>6</td>
+            </tr>
+            <tr>
+                <td>lizards that have hamsters with cats</td>
+                <td>1</td>
+                <td>3</td>
+            </tr>
+            <tr>
+                <td>lizards that have hamsters with fish</td>
+                <td>1</td>
+                <td>3</td>
+            </tr>
+            <tr>
+                <td>lizards that have hamsters with hamsters</td>
+                <td>1</td>
+                <td>5</td>
+            </tr>
+            <tr>
+                <td>lizards that have hamsters with lizards</td>
+                <td>1</td>
+                <td>7</td>
+            </tr>
+            <tr>
+                <td>lizards that have lizards that have cats</td>
+                <td>1</td>
+                <td>7</td>
+            </tr>
+            <tr>
+                <td>lizards that have lizards that have hamsters</td>
+                <td>1</td>
+                <td>7</td>
+            </tr>
+            <tr>
+                <td>lizards that have lizards that have lizards</td>
+                <td>1</td>
+                <td>9</td>
+            </tr>
+            <tr>
+                <td>lizards that have lizards with hamsters</td>
+                <td>1</td>
+                <td>6</td>
+            </tr>
+            <tr>
+                <td>lizards that have lizards with lizards</td>
+                <td>1</td>
+                <td>5</td>
+            </tr>
+            <tr>
+                <td>lizards with cats that have hamsters</td>
+                <td>1</td>
+                <td>4</td>
+            </tr>
+            <tr>
+                <td>lizards with hamsters that have cats</td>
+                <td>1</td>
+                <td>8</td>
+            </tr>
+            <tr>
+                <td>lizards with hamsters that have hamsters</td>
+                <td>1</td>
+                <td>4</td>
+            </tr>
+            <tr>
+                <td>lizards with hamsters that have lizards</td>
+                <td>1</td>
+                <td>5</td>
+            </tr>
+            <tr>
+                <td>lizards with hamsters with lizards</td>
+                <td>1</td>
+                <td>8</td>
+            </tr>
+            <tr>
+                <td>lizards with lizards that have birds</td>
+                <td>1</td>
+                <td>8</td>
+            </tr>
+            <tr>
+                <td>lizards with lizards that have hamsters</td>
+                <td>1</td>
+                <td>6</td>
+            </tr>
+            <tr>
+                <td>lizards with lizards that have lizards</td>
+                <td>1</td>
+                <td>6</td>
+            </tr>
+            <tr>
+                <td>man</td>
+                <td>2</td>
+                <td>1</td>
+            </tr>
+            <tr>
+                <td>man in the house</td>
+                <td>1</td>
+                <td>6</td>
+            </tr>
+            <tr>
+                <td>mansters</td>
+                <td>1</td>
+                <td>4</td>
+            </tr>
+            <tr>
+                <td>only man</td>
+                <td>1</td>
+                <td>2</td>
+            </tr>
+            <tr>
+                <td>only man in the house</td>
+                <td>1</td>
+                <td>5</td>
+            </tr>
+            <tr>
+                <td>playful and fast lizards that have hamsters that are fast</td>
+                <td>1</td>
+                <td>3</td>
+            </tr>
+            <tr>
+                <td>small and colorful birds without hamsters</td>
+                <td>1</td>
+                <td>2</td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>Test Summary</h2>
+    <table class="metadata-table">
+        <tr>
+            <td>Test Run ID</td>
+            <td>358fe21b04b54488a2efc77fe80dcb07</td>
+        </tr>
+        <tr>
+            <td>Time Completed</td>
+            <td>2026-03-12 23:00:40 UTC</td>
+        </tr>
+        <tr>
+            <td>Test</td>
+            <td>llama-synthetic-hard-10-T8</td>
+        </tr>
+        <tr>
+            <td>Model</td>
+            <td>llama3.1:8b</td>
+        </tr>
+        <tr>
+            <td>Temperature</td>
+            <td>0.8</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="height: 10px;"></td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font-weight: bold; background-color: #e9e9e9; text-align: left;">General Performance</td>
+        </tr>
+        <tr>
+            <td>Size of Text (estimated tokens)</td>
+            <td>280</td>
+        </tr>
+        <tr>
+            <td>Total Prompts</td>
+            <td>1610</td>
+        </tr>
+        <tr>
+            <td>Run Time (mm:ss start to end)</td>
+            <td>80:15</td>
+        </tr>
+        <tr>
+            <td>API Time (mm:ss)</td>
+            <td>80:12</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="height: 10px;"></td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font-weight: bold; background-color: #e9e9e9; text-align: left;">Survey Prompt Performance</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Load Duration (seconds)</td>
+            <td>0.642</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Prompt Eval Duration (seconds)</td>
+            <td>0.073</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Eval Duration (seconds)</td>
+            <td>12.960</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Prompt Eval Count</td>
+            <td>408.00</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Eval Count</td>
+            <td>400.70</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="height: 10px;"></td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font-weight: bold; background-color: #e9e9e9; text-align: left;">Presence Prompt Performance</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Load Duration (seconds)</td>
+            <td>0.095</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Prompt Eval Duration (seconds)</td>
+            <td>0.308</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Eval Duration (seconds)</td>
+            <td>0.244</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Prompt Eval Count</td>
+            <td>411.60</td>
+        </tr>
+        <tr>
+            <td style="padding-left: 30px;">Mean Eval Count</td>
+            <td>9.00</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="height: 10px;"></td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font-weight: bold; background-color: #e9e9e9; text-align: left;">Results</td>
+        </tr>
+        <tr>
+            <td>Total unique items</td>
+            <td>160</td>
+        </tr>
+        <tr>
+            <td>Total items counted</td>
+            <td>390</td>
+        </tr>
+        <tr>
+            <td>Trials</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="height: 10px;"></td>
+        </tr>
+        <tr>
+            <td>Repudiated Presence %</td>
+            <td>45.88</td>
+        </tr>
+        <tr>
+            <td>Miss Rate %</td>
+            <td>75.62</td>
+        </tr>
+        <tr>
+            <td>Ambivalence %</td>
+            <td>97.50 (156/160)</td>
+        </tr>
+    </table>
+
+    <h2>Results Visualization</h2>
+    <div style="height: 400px; margin-bottom: 30px;">
+        <canvas id="resultsChart"></canvas>
+    </div>
+
+    <div style="height: 500px; margin-bottom: 30px;">
+        <canvas id="bubbleChart"></canvas>
+    </div>
+
+    <h2>Detailed Results</h2>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th onclick="sortTable(0)">Phrase ▼</th>
+                <th onclick="sortTable(1)">Identified ▼</th>
+                <th onclick="sortTable(2)">Repudiated Presence ▼</th>
+            </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>a hat</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>big and colorful birds</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>big and colorful hamsters</td>
+            <td>4</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>big and colorful hamsters that have hamsters with lizards</td>
+            <td>6</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>birds</td>
+            <td>9</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>birds that have fish with birds</td>
+            <td>1</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>birds with fish with birds</td>
+            <td>1</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>birds with lizards</td>
+            <td>4</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>birds with lizards with birds</td>
+            <td>1</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td>birds with lizards with birds that have cats</td>
+            <td>9</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>cats</td>
+            <td>10</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>cats that have birds</td>
+            <td>1</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td>cats that have hamsters</td>
+            <td>1</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>cats that have hamsters that have lizards</td>
+            <td>1</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td>cats that have hamsters with lizards</td>
+            <td>1</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>cats that have lizards</td>
+            <td>1</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>cats that have lizards that have hamsters</td>
+            <td>1</td>
+            <td>9</td>
+        </tr>
+        <tr>
+            <td>cats that have lizards that have lizards</td>
+            <td>1</td>
+            <td>9</td>
+        </tr>
+        <tr>
+            <td>cats that have lizards with hamsters</td>
+            <td>1</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>cats with dogs that have hamsters</td>
+            <td>1</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>cats with fish</td>
+            <td>4</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>cats with fish that have lizards</td>
+            <td>1</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>cats with fish that have lizards that have birds</td>
+            <td>7</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>cats with hamsters</td>
+            <td>2</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>cats with hamsters that have lizards</td>
+            <td>1</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>cats with lizards that have birds</td>
+            <td>1</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>cats with lizards that have hamsters</td>
+            <td>1</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td>cats without birds</td>
+            <td>5</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>cats without birds that have lizards</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>cats without birds that have lizards that are colorful</td>
+            <td>8</td>
+            <td>2</td>
+        </tr>
+        <tr>
+            <td>cats without fish</td>
+            <td>3</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>cats without fish that have dogs that have fish</td>
+            <td>5</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>cats without small and colorful birds</td>
+            <td>1</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>certainly</td>
+            <td>1</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td>certainly,</td>
+            <td>1</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td>dogs</td>
+            <td>9</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>dogs that have birds</td>
+            <td>1</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>dogs that have cats</td>
+            <td>2</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td>dogs that have dogs that have hamsters</td>
+            <td>1</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>dogs that have fish</td>
+            <td>3</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>dogs that have fish with lizards</td>
+            <td>1</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td>dogs that have hamsters</td>
+            <td>2</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>dogs that have hamsters with lizards</td>
+            <td>1</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>dogs that have lizards that have birds</td>
+            <td>1</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>dogs that have lizards with fish</td>
+            <td>1</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td>dogs that have lizards with hamsters</td>
+            <td>1</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>dogs with cats that have hamsters</td>
+            <td>1</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>dogs with fish</td>
+            <td>2</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>dogs with fish with lizards with hamsters</td>
+            <td>7</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>dogs with hamsters</td>
+            <td>1</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>dogs with hamsters that have lizards</td>
+            <td>1</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>dogs with hamsters with fish</td>
+            <td>1</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td>dogs with lizards that have birds</td>
+            <td>1</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>dogs with lizards that have fish</td>
+            <td>1</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>dogs with lizards that have hamsters</td>
+            <td>1</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>dogs without cats</td>
+            <td>2</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>dogs without cats without playful and fast fish</td>
+            <td>7</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>dogs without hamsters</td>
+            <td>1</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>dogs without hamsters that have dogs that have hamsters</td>
+            <td>2</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>fast and big cats</td>
+            <td>3</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>fast and big cats without small and colorful birds</td>
+            <td>6</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>fish</td>
+            <td>10</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>fish that have cats</td>
+            <td>1</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>fish that have dogs that have fish</td>
+            <td>2</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>fish that have hamsters</td>
+            <td>1</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>fish with birds</td>
+            <td>1</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>fish with birds with birds</td>
+            <td>1</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>fish with lizards with hamsters</td>
+            <td>3</td>
+            <td>9</td>
+        </tr>
+        <tr>
+            <td>fish without hamsters</td>
+            <td>1</td>
+            <td>2</td>
+        </tr>
+        <tr>
+            <td>fish without hamsters that are fast</td>
+            <td>1</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>hamsters</td>
+            <td>10</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>hamsters that are fast</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>hamsters that have cats</td>
+            <td>3</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>hamsters that have cats that have lizards</td>
+            <td>1</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>hamsters that have cats with birds</td>
+            <td>1</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>hamsters that have cats without birds</td>
+            <td>1</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>hamsters that have dogs</td>
+            <td>1</td>
+            <td>2</td>
+        </tr>
+        <tr>
+            <td>hamsters that have dogs that have fish</td>
+            <td>1</td>
+            <td>9</td>
+        </tr>
+        <tr>
+            <td>hamsters that have fish</td>
+            <td>1</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>hamsters that have hamsters with lizards</td>
+            <td>2</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>hamsters that have lizards</td>
+            <td>2</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>hamsters that have lizards that have cats</td>
+            <td>1</td>
+            <td>9</td>
+        </tr>
+        <tr>
+            <td>hamsters that have lizards that have hamsters</td>
+            <td>1</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>hamsters that have lizards that have lizards</td>
+            <td>1</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>hamsters that have lizards with birds</td>
+            <td>1</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>hamsters that have lizards with fish</td>
+            <td>1</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>hamsters with fish</td>
+            <td>1</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>hamsters with hamsters</td>
+            <td>1</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>hamsters with hamsters that have lizards</td>
+            <td>1</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>hamsters with hamsters with lizards</td>
+            <td>2</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>hamsters with lizards</td>
+            <td>2</td>
+            <td>2</td>
+        </tr>
+        <tr>
+            <td>hamsters with lizards that have birds</td>
+            <td>1</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>hamsters with lizards that have cats</td>
+            <td>1</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>hamsters with lizards that have dogs</td>
+            <td>1</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>hamsters with lizards that have hamsters</td>
+            <td>1</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>hamsters with playful and fast fish</td>
+            <td>1</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>hat</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>house</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>lizards</td>
+            <td>10</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>lizards that are colorful</td>
+            <td>1</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>lizards that are fast</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>lizards that are fast that are big</td>
+            <td>8</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>lizards that have birds</td>
+            <td>4</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>lizards that have birds with fish</td>
+            <td>1</td>
+            <td>9</td>
+        </tr>
+        <tr>
+            <td>lizards that have birds with fish with birds</td>
+            <td>7</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td>lizards that have cats</td>
+            <td>3</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>lizards that have cats that have lizards</td>
+            <td>1</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td>lizards that have cats with hamsters</td>
+            <td>2</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>lizards that have cats with hamsters with fish</td>
+            <td>8</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>lizards that have dogs</td>
+            <td>1</td>
+            <td>10</td>
+        </tr>
+        <tr>
+            <td>lizards that have fish</td>
+            <td>2</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>lizards that have fish with birds</td>
+            <td>1</td>
+            <td>9</td>
+        </tr>
+        <tr>
+            <td>lizards that have fish without hamsters</td>
+            <td>2</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>lizards that have fish without hamsters that are fast</td>
+            <td>6</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>lizards that have hamsters</td>
+            <td>3</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>lizards that have hamsters that have cats</td>
+            <td>1</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>lizards that have hamsters that have hamsters</td>
+            <td>1</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>lizards that have hamsters that have lizards</td>
+            <td>1</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>lizards that have hamsters with cats</td>
+            <td>1</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>lizards that have hamsters with fish</td>
+            <td>1</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>lizards that have hamsters with hamsters</td>
+            <td>1</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>lizards that have hamsters with lizards</td>
+            <td>1</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>lizards that have lizards that have cats</td>
+            <td>1</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>lizards that have lizards that have hamsters</td>
+            <td>1</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>lizards that have lizards that have lizards</td>
+            <td>1</td>
+            <td>9</td>
+        </tr>
+        <tr>
+            <td>lizards that have lizards with hamsters</td>
+            <td>1</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>lizards that have lizards with lizards</td>
+            <td>1</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>lizards with cats that have hamsters</td>
+            <td>1</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>lizards with hamsters</td>
+            <td>3</td>
+            <td>2</td>
+        </tr>
+        <tr>
+            <td>lizards with hamsters that are fast</td>
+            <td>4</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>lizards with hamsters that have cats</td>
+            <td>1</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td>lizards with hamsters that have hamsters</td>
+            <td>1</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>lizards with hamsters that have lizards</td>
+            <td>1</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>lizards with hamsters with lizards</td>
+            <td>1</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td>lizards with lizards that have birds</td>
+            <td>1</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td>lizards with lizards that have hamsters</td>
+            <td>1</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>lizards with lizards that have lizards</td>
+            <td>1</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>man</td>
+            <td>2</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>man in the house</td>
+            <td>1</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>mansters</td>
+            <td>1</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>only man</td>
+            <td>1</td>
+            <td>2</td>
+        </tr>
+        <tr>
+            <td>only man in the house</td>
+            <td>1</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>playful and fast fish</td>
+            <td>2</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>playful and fast lizards</td>
+            <td>4</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>playful and fast lizards that have hamsters that are fast</td>
+            <td>1</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>playful and fast lizards with hamsters that are fast</td>
+            <td>4</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>slow and fast hamsters</td>
+            <td>4</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>slow and fast hamsters with playful and fast fish</td>
+            <td>7</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>small and big dogs</td>
+            <td>4</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>small and big fish</td>
+            <td>4</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>small and big fish without hamsters</td>
+            <td>7</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>small and colorful birds</td>
+            <td>6</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>small and colorful birds without hamsters</td>
+            <td>1</td>
+            <td>2</td>
+        </tr>
+        <tr>
+            <td>small and colorful hamsters</td>
+            <td>5</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td>small and colorful hamsters that have cats without birds</td>
+            <td>5</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td>small and fast lizards</td>
+            <td>5</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>small and fast lizards that have small and big dogs</td>
+            <td>8</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>that have fish without hamsters that are fast</td>
+            <td>1</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>without fish that have dogs that have fish</td>
+            <td>1</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td>without hamsters that have dogs that have hamsters</td>
+            <td>1</td>
+            <td>8</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <script>
+    function sortTable(columnIndex) {
+        const table = document.querySelector('.data-table');
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+
+        rows.sort((a, b) => {
+            const aValue = a.cells[columnIndex].textContent;
+            const bValue = b.cells[columnIndex].textContent;
+
+            // Check if numeric
+            const aNum = parseFloat(aValue);
+            const bNum = parseFloat(bValue);
+
+            if (!isNaN(aNum) && !isNaN(bNum)) {
+                return bNum - aNum; // Descending for numbers
+            } else {
+                return aValue.localeCompare(bValue); // Ascending for text
+            }
+        });
+
+        rows.forEach(row => tbody.appendChild(row));
+    }
+
+    // Initialize chart
+    const ctx = document.getElementById('resultsChart');
+    if (ctx) {
+        const chartLabels = ["cats", "fish", "hamsters", "lizards", "birds", "birds with lizards with birds ...", "dogs", "cats without birds that have l...", "lizards that are fast that are...", "lizards that have cats with ha...", "small and fast lizards that ha...", "cats with fish that have lizar...", "dogs with fish with lizards wi...", "dogs without cats without play...", "lizards that have birds with f...", "slow and fast hamsters with pl...", "small and big fish without ham...", "big and colorful hamsters that...", "fast and big cats without smal...", "lizards that have fish without...", "small and colorful birds", "cats without birds", "cats without fish that have do...", "small and colorful hamsters", "small and colorful hamsters th...", "small and fast lizards", "big and colorful hamsters", "birds with lizards", "cats with fish", "lizards that have birds", "lizards with hamsters that are...", "playful and fast lizards", "playful and fast lizards with ...", "slow and fast hamsters", "small and big dogs", "small and big fish", "cats without fish", "dogs that have fish", "fast and big cats", "fish with lizards with hamster...", "hamsters that have cats", "lizards that have cats", "lizards that have hamsters", "lizards with hamsters", "cats with hamsters", "dogs that have cats", "dogs that have hamsters", "dogs with fish", "dogs without cats", "dogs without hamsters that hav...", "fish that have dogs that have ...", "hamsters that are fast", "hamsters that have hamsters wi...", "hamsters that have lizards", "hamsters with hamsters with li...", "hamsters with lizards", "hat", "house", "lizards that are fast", "lizards that have cats with ha...", "lizards that have fish", "lizards that have fish without...", "man", "playful and fast fish", "a hat", "big and colorful birds", "birds that have fish with bird...", "birds with fish with birds", "birds with lizards with birds", "cats that have birds", "cats that have hamsters", "cats that have hamsters that h...", "cats that have hamsters with l...", "cats that have lizards", "cats that have lizards that ha...", "cats that have lizards that ha...", "cats that have lizards with ha...", "cats with dogs that have hamst...", "cats with fish that have lizar...", "cats with hamsters that have l...", "cats with lizards that have bi...", "cats with lizards that have ha...", "cats without birds that have l...", "cats without small and colorfu...", "certainly", "certainly,", "dogs that have birds", "dogs that have dogs that have ...", "dogs that have fish with lizar...", "dogs that have hamsters with l...", "dogs that have lizards that ha...", "dogs that have lizards with fi...", "dogs that have lizards with ha...", "dogs with cats that have hamst...", "dogs with hamsters", "dogs with hamsters that have l...", "dogs with hamsters with fish", "dogs with lizards that have bi...", "dogs with lizards that have fi...", "dogs with lizards that have ha...", "dogs without hamsters", "fish that have cats", "fish that have hamsters", "fish with birds", "fish with birds with birds", "fish without hamsters", "fish without hamsters that are...", "hamsters that have cats that h...", "hamsters that have cats with b...", "hamsters that have cats withou...", "hamsters that have dogs", "hamsters that have dogs that h...", "hamsters that have fish", "hamsters that have lizards tha...", "hamsters that have lizards tha...", "hamsters that have lizards tha...", "hamsters that have lizards wit...", "hamsters that have lizards wit...", "hamsters with fish", "hamsters with hamsters", "hamsters with hamsters that ha...", "hamsters with lizards that hav...", "hamsters with lizards that hav...", "hamsters with lizards that hav...", "hamsters with lizards that hav...", "hamsters with playful and fast...", "lizards that are colorful", "lizards that have birds with f...", "lizards that have cats that ha...", "lizards that have dogs", "lizards that have fish with bi...", "lizards that have hamsters tha...", "lizards that have hamsters tha...", "lizards that have hamsters tha...", "lizards that have hamsters wit...", "lizards that have hamsters wit...", "lizards that have hamsters wit...", "lizards that have hamsters wit...", "lizards that have lizards that...", "lizards that have lizards that...", "lizards that have lizards that...", "lizards that have lizards with...", "lizards that have lizards with...", "lizards with cats that have ha...", "lizards with hamsters that hav...", "lizards with hamsters that hav...", "lizards with hamsters that hav...", "lizards with hamsters with liz...", "lizards with lizards that have...", "lizards with lizards that have...", "lizards with lizards that have...", "man in the house", "mansters", "only man", "only man in the house", "playful and fast lizards that ...", "small and colorful birds witho...", "that have fish without hamster...", "without fish that have dogs th...", "without hamsters that have dog..."];
+        const chartCounts = [10, 10, 10, 10, 9, 9, 9, 8, 8, 8, 8, 7, 7, 7, 7, 7, 7, 6, 6, 6, 6, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+        const chartRepudiations = [0, 0, 0, 0, 0, 5, 0, 2, 4, 3, 6, 6, 0, 6, 8, 5, 3, 5, 0, 6, 0, 4, 6, 4, 5, 3, 0, 1, 5, 5, 1, 0, 1, 3, 1, 3, 5, 3, 0, 9, 3, 4, 6, 2, 3, 8, 4, 3, 7, 7, 7, 0, 5, 4, 5, 2, 0, 0, 0, 3, 4, 6, 1, 0, 0, 0, 4, 6, 8, 8, 5, 8, 6, 7, 9, 9, 7, 4, 3, 6, 4, 8, 0, 3, 10, 10, 3, 5, 8, 4, 4, 8, 5, 7, 3, 3, 8, 3, 4, 5, 3, 4, 7, 7, 7, 2, 0, 5, 7, 5, 2, 9, 3, 9, 6, 4, 4, 6, 5, 6, 6, 6, 7, 6, 7, 3, 1, 9, 8, 10, 9, 7, 7, 6, 3, 3, 5, 7, 7, 7, 9, 6, 5, 4, 8, 4, 5, 8, 8, 6, 6, 6, 4, 2, 5, 3, 2, 6, 7, 8];
+
+        console.log('Chart data loaded:', {
+            labels: chartLabels.length,
+            counts: chartCounts.length,
+            repudiations: chartRepudiations.length
+        });
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'Count (Identified)',
+                    data: chartCounts,
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Repudiation Count',
+                    data: chartRepudiations,
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Count'
+                        },
+                        grid: {
+                            display: false
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Phrases (sorted by count, highest first)'
+                        },
+                        ticks: {
+                            display: false
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Phrase Identification and Repudiation'
+                    }
+                }
+            }
+        });
+    }
+
+    // Initialize bubble chart
+    const bubbleCtx = document.getElementById('bubbleChart');
+    if (bubbleCtx) {
+        const bubbleData = [{"x": 1, "y": 0, "r": 10.327955589886443, "phrases": ["a hat", "big and colorful birds", "cats without birds that have lizards", "fish without hamsters that are fast"], "count": 4}, {"x": 4, "y": 0, "r": 7.302967433402214, "phrases": ["big and colorful hamsters", "playful and fast lizards"], "count": 2}, {"x": 6, "y": 5, "r": 5.1639777949432215, "phrases": ["big and colorful hamsters that have hamsters with lizards"], "count": 1}, {"x": 9, "y": 0, "r": 7.302967433402214, "phrases": ["birds", "dogs"], "count": 2}, {"x": 1, "y": 4, "r": 17.88854381999832, "phrases": ["birds that have fish with birds", "cats with dogs that have hamsters", "cats with lizards that have birds", "dogs that have hamsters with lizards", "dogs that have lizards that have birds", "dogs with lizards that have fish", "fish that have cats", "hamsters that have lizards that have lizards", "hamsters that have lizards with birds", "lizards with cats that have hamsters", "lizards with hamsters that have hamsters", "mansters"], "count": 12}, {"x": 1, "y": 6, "r": 20.0, "phrases": ["birds with fish with birds", "cats that have hamsters with lizards", "cats with hamsters that have lizards", "hamsters that have lizards that have hamsters", "hamsters that have lizards with fish", "hamsters with hamsters", "hamsters with hamsters that have lizards", "hamsters with lizards that have birds", "hamsters with lizards that have dogs", "lizards that have hamsters that have lizards", "lizards that have lizards with hamsters", "lizards with lizards that have hamsters", "lizards with lizards that have lizards", "man in the house", "that have fish without hamsters that are fast"], "count": 15}, {"x": 4, "y": 1, "r": 10.327955589886443, "phrases": ["birds with lizards", "lizards with hamsters that are fast", "playful and fast lizards with hamsters that are fast", "small and big dogs"], "count": 4}, {"x": 1, "y": 8, "r": 17.88854381999832, "phrases": ["birds with lizards with birds", "cats that have birds", "cats that have hamsters that have lizards", "cats with lizards that have hamsters", "dogs that have fish with lizards", "dogs that have lizards with fish", "dogs with hamsters with fish", "lizards that have cats that have lizards", "lizards with hamsters that have cats", "lizards with hamsters with lizards", "lizards with lizards that have birds", "without hamsters that have dogs that have hamsters"], "count": 12}, {"x": 9, "y": 5, "r": 5.1639777949432215, "phrases": ["birds with lizards with birds that have cats"], "count": 1}, {"x": 10, "y": 0, "r": 10.327955589886443, "phrases": ["cats", "fish", "hamsters", "lizards"], "count": 4}, {"x": 1, "y": 5, "r": 17.126976771553505, "phrases": ["cats that have hamsters", "dogs that have dogs that have hamsters", "dogs that have lizards with hamsters", "dogs with lizards that have hamsters", "hamsters that have cats that have lizards", "hamsters that have cats without birds", "hamsters with fish", "lizards that have hamsters with hamsters", "lizards that have lizards with lizards", "lizards with hamsters that have lizards", "only man in the house"], "count": 11}, {"x": 1, "y": 7, "r": 20.0, "phrases": ["cats that have lizards", "cats that have lizards with hamsters", "dogs with cats that have hamsters", "fish that have hamsters", "fish with birds", "fish with birds with birds", "hamsters that have cats with birds", "hamsters with lizards that have cats", "hamsters with lizards that have hamsters", "lizards that have hamsters that have cats", "lizards that have hamsters that have hamsters", "lizards that have hamsters with lizards", "lizards that have lizards that have cats", "lizards that have lizards that have hamsters", "without fish that have dogs that have fish"], "count": 15}, {"x": 1, "y": 9, "r": 13.662601021279464, "phrases": ["cats that have lizards that have hamsters", "cats that have lizards that have lizards", "hamsters that have dogs that have fish", "hamsters that have lizards that have cats", "lizards that have birds with fish", "lizards that have fish with birds", "lizards that have lizards that have lizards"], "count": 7}, {"x": 4, "y": 5, "r": 7.302967433402214, "phrases": ["cats with fish", "lizards that have birds"], "count": 2}, {"x": 1, "y": 3, "r": 17.88854381999832, "phrases": ["cats with fish that have lizards", "cats without small and colorful birds", "dogs that have birds", "dogs with hamsters", "dogs with hamsters that have lizards", "dogs with lizards that have birds", "dogs without hamsters", "hamsters that have fish", "hamsters with playful and fast fish", "lizards that have hamsters with cats", "lizards that have hamsters with fish", "playful and fast lizards that have hamsters that are fast"], "count": 12}, {"x": 7, "y": 6, "r": 7.302967433402214, "phrases": ["cats with fish that have lizards that have birds", "dogs without cats without playful and fast fish"], "count": 2}, {"x": 2, "y": 3, "r": 8.94427190999916, "phrases": ["cats with hamsters", "dogs with fish", "lizards that have cats with hamsters"], "count": 3}, {"x": 5, "y": 4, "r": 7.302967433402214, "phrases": ["cats without birds", "small and colorful hamsters"], "count": 2}, {"x": 8, "y": 2, "r": 5.1639777949432215, "phrases": ["cats without birds that have lizards that are colorful"], "count": 1}, {"x": 3, "y": 5, "r": 5.1639777949432215, "phrases": ["cats without fish"], "count": 1}, {"x": 5, "y": 6, "r": 5.1639777949432215, "phrases": ["cats without fish that have dogs that have fish"], "count": 1}, {"x": 1, "y": 10, "r": 8.94427190999916, "phrases": ["certainly", "certainly,", "lizards that have dogs"], "count": 3}, {"x": 2, "y": 8, "r": 5.1639777949432215, "phrases": ["dogs that have cats"], "count": 1}, {"x": 3, "y": 3, "r": 7.302967433402214, "phrases": ["dogs that have fish", "hamsters that have cats"], "count": 2}, {"x": 2, "y": 4, "r": 8.94427190999916, "phrases": ["dogs that have hamsters", "hamsters that have lizards", "lizards that have fish"], "count": 3}, {"x": 7, "y": 0, "r": 5.1639777949432215, "phrases": ["dogs with fish with lizards with hamsters"], "count": 1}, {"x": 2, "y": 7, "r": 8.94427190999916, "phrases": ["dogs without cats", "dogs without hamsters that have dogs that have hamsters", "fish that have dogs that have fish"], "count": 3}, {"x": 3, "y": 0, "r": 5.1639777949432215, "phrases": ["fast and big cats"], "count": 1}, {"x": 6, "y": 0, "r": 7.302967433402214, "phrases": ["fast and big cats without small and colorful birds", "small and colorful birds"], "count": 2}, {"x": 3, "y": 9, "r": 5.1639777949432215, "phrases": ["fish with lizards with hamsters"], "count": 1}, {"x": 1, "y": 2, "r": 10.327955589886443, "phrases": ["fish without hamsters", "hamsters that have dogs", "only man", "small and colorful birds without hamsters"], "count": 4}, {"x": 2, "y": 0, "r": 11.547005383792515, "phrases": ["hamsters that are fast", "hat", "house", "lizards that are fast", "playful and fast fish"], "count": 5}, {"x": 2, "y": 5, "r": 7.302967433402214, "phrases": ["hamsters that have hamsters with lizards", "hamsters with hamsters with lizards"], "count": 2}, {"x": 2, "y": 2, "r": 5.1639777949432215, "phrases": ["hamsters with lizards"], "count": 1}, {"x": 1, "y": 1, "r": 5.1639777949432215, "phrases": ["lizards that are colorful"], "count": 1}, {"x": 8, "y": 4, "r": 5.1639777949432215, "phrases": ["lizards that are fast that are big"], "count": 1}, {"x": 7, "y": 8, "r": 5.1639777949432215, "phrases": ["lizards that have birds with fish with birds"], "count": 1}, {"x": 3, "y": 4, "r": 5.1639777949432215, "phrases": ["lizards that have cats"], "count": 1}, {"x": 8, "y": 3, "r": 5.1639777949432215, "phrases": ["lizards that have cats with hamsters with fish"], "count": 1}, {"x": 2, "y": 6, "r": 5.1639777949432215, "phrases": ["lizards that have fish without hamsters"], "count": 1}, {"x": 6, "y": 6, "r": 5.1639777949432215, "phrases": ["lizards that have fish without hamsters that are fast"], "count": 1}, {"x": 3, "y": 6, "r": 5.1639777949432215, "phrases": ["lizards that have hamsters"], "count": 1}, {"x": 3, "y": 2, "r": 5.1639777949432215, "phrases": ["lizards with hamsters"], "count": 1}, {"x": 2, "y": 1, "r": 5.1639777949432215, "phrases": ["man"], "count": 1}, {"x": 4, "y": 3, "r": 7.302967433402214, "phrases": ["slow and fast hamsters", "small and big fish"], "count": 2}, {"x": 7, "y": 5, "r": 5.1639777949432215, "phrases": ["slow and fast hamsters with playful and fast fish"], "count": 1}, {"x": 7, "y": 3, "r": 5.1639777949432215, "phrases": ["small and big fish without hamsters"], "count": 1}, {"x": 5, "y": 5, "r": 5.1639777949432215, "phrases": ["small and colorful hamsters that have cats without birds"], "count": 1}, {"x": 5, "y": 3, "r": 5.1639777949432215, "phrases": ["small and fast lizards"], "count": 1}, {"x": 8, "y": 6, "r": 5.1639777949432215, "phrases": ["small and fast lizards that have small and big dogs"], "count": 1}];
+
+        console.log('Bubble data loaded:', bubbleData.length, 'unique coordinate pairs');
+
+        new Chart(bubbleCtx, {
+            type: 'bubble',
+            data: {
+                datasets: [{
+                    label: 'Phrases',
+                    data: bubbleData,
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgb(75, 192, 192)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Repudiated Presence'
+                        },
+                        ticks: {
+                            stepSize: 1
+                        }
+                    },
+                    x: {
+                        beginAtZero: true,
+                        reverse: true,
+                        title: {
+                            display: true,
+                            text: 'Identified Count'
+                        },
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Phrase Distribution by Identification and Repudiation'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const point = context.raw;
+                                const phrases = point.phrases || [];
+                                const lines = [
+                                    `Identified: ${point.x}`,
+                                    `Repudiated: ${point.y}`,
+                                    `Number of phrases: ${point.count}`,
+                                    '',
+                                    'Phrases:'
+                                ];
+
+                                // Add first 10 phrases, truncate if more
+                                const maxPhrases = 10;
+                                phrases.slice(0, maxPhrases).forEach(p => {
+                                    lines.push(`  - ${p.substring(0, 50)}${p.length > 50 ? '...' : ''}`);
+                                });
+
+                                if (phrases.length > maxPhrases) {
+                                    lines.push(`  ... and ${phrases.length - maxPhrases} more`);
+                                }
+
+                                return lines;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Add click handlers for collapsible sections
+    document.addEventListener('DOMContentLoaded', function() {
+        const collapsibles = document.getElementsByClassName('collapsible');
+        for (let i = 0; i < collapsibles.length; i++) {
+            collapsibles[i].addEventListener('click', function() {
+                this.classList.toggle('active');
+                const content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                }
+            });
+        }
+    });
+    </script>
+</body>
+</html>
