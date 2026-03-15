@@ -169,11 +169,55 @@ python np-create.py
 **Output:**
 - Generates 10 random sentences
 - Lists all noun phrases found in the sentences
-- Marks phrases with asterisks (*) if they're missing from the text (potential hallucinations)
 
-This script has no command-line arguments and is mainly used for testing and generating test data.
+This script is used for creating an authoritative oracle for noun phrase extraction experiments.
 
-### 7. runtests.bat - Batch Test Runner (Windows)
+### 7. extract-perf-stats.py - Performance Statistics Extractor
+
+Extracts performance statistics from MongoDB for a given test run ID and outputs them to a TSV file.
+
+**Usage:**
+```bash
+python extract-perf-stats.py <testrunid> --output <output_file>
+```
+
+**Arguments:**
+- `testrunid`: Test run ID to search for (required)
+- `--output`: Output TSV file path (default: stats.tsv)
+- `--mongo-uri`: MongoDB connection URI (default: mongodb://localhost:27017/)
+
+**Example:**
+```bash
+python extract-perf-stats.py abc123def456 --output performance.tsv
+```
+
+**Output:**
+- TSV file with columns: record_id, testStep, duration, load_duration, prompt_eval_duration, eval_duration, prompt_eval_count, eval_count
+
+### 8. export-experiments.py - Experiment Data Exporter
+
+Exports all completed experiment runs from the ARC database to a CSV file with metadata and performance metrics.
+
+**Usage:**
+```bash
+python export-experiments.py --output <output_file>
+```
+
+**Arguments:**
+- `--output`, `-o`: Output CSV file path (default: experiments.csv)
+- `--mongo-uri`: MongoDB connection URI (default: mongodb://localhost:27017/)
+
+**Example:**
+```bash
+python export-experiments.py --output results.csv
+```
+
+**Output:**
+- CSV file with columns including: testRunId, timestamp, test_set, test_id, model, temperature, trials, performance metrics, and timing statistics
+- Sorted by timestamp (most recent first)
+- Only includes completed experiments
+
+### 9. runtests.bat - Batch Test Runner (Windows)
 
 Batch file that runs multiple test configurations sequentially.
 
