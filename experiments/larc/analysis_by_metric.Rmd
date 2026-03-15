@@ -1,0 +1,473 @@
+---
+title: "LLM Aggregated Retrieval Consistency (Apple Pie Task)"
+output:
+  html_document:
+    df_print: paged
+  html_notebook: 
+    code_folding: hide
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE
+)
+library(tidyverse)
+```
+
+
+```{r load-data, include=FALSE}
+data <- read_tsv("data.tsv")
+
+# Extract model family name
+data <- data %>%
+  mutate(
+    model_family = case_when(
+      str_detect(model, "llama") ~ "llama3.1:8b",
+      str_detect(model, "gemma") ~ "gemma3:12b",
+      str_detect(model, "gpt-3.5") ~ "gpt-3.5-turbo",
+      str_detect(model, "gpt-4") ~ "gpt-4.1",
+      TRUE ~ model
+    ),
+    temperature = factor(temperature, levels = c(0.8, 0.4, 0)),
+    Prompt = factor(Prompt, levels = c("soft", "hard"))
+  )
+
+head(data)
+```
+
+*by James Bach*
+
+### About LARC
+Our ability to test and understand AI is critical to making responsible decisions about working with it. One of the tasks that we need AI to do is to pull data out of poorly structured contexts. Aggregated Retrieval Consistency is a way of evaluating LLMs on such tasks. The basic idea is described at <https://www.satisfice.com/blog/archives/487957>.
+
+### About The Apple Pie Task
+
+This is a report on the results of a LARC run that compares the behavior of four LLMs by a two stage process of first asking them to identify the ingredients of apple pie within a text that includes several recipes, then turning the question around and asking, for each identified ingredient, whether that is an ingredient of apple pie.
+
+This is a fairly simple retrieval task, executed on a tiny corpus. A more realistic test of this concept might be performed on a few thousand pages of text from public domain cookbooks, would take a lot more computing time, and seems unlikely to produce more favorable results than this experiment does. I think this task is, if anything, a "happy path" case.
+
+The full text of the recipes, including apple pie, is included [in Appendix 1](#appendix-1-recipe-text), below.
+
+The correct list of ingredients is listed [in Appendix 2](#appendix-2-expected-ingredients), below. As I see it, there are 12-14 ingredients that could fairly be listed, depending on how you interpret the list.
+
+The prompts I used are listed [in Appendix 3](#appendix-3-prompts), below.
+
+The metrics depicted in this report include:
+
+<table style="border-collapse: collapse; width: 100%;">
+  <tr style="background-color: black; color: white;">
+    <th style="width: 15%; padding: 10px; border: 1px solid #ddd; text-align: right;">Metric</th>
+    <th style="width: 85%; padding: 10px; border: 1px solid #ddd; text-align: left;">Description</th>
+  </tr>
+  <tr>
+    <td style="padding: 10px; border: 1px solid #ddd; text-align: right;"><strong>Items</strong></td>
+    <td style="padding: 10px; border: 1px solid #ddd;">How many unique "ingredients" were identified. These may include inflected strings that refer to the same ingredient, or hallucinated strings.</td>
+  </tr>
+  <tr>
+    <td style="padding: 10px; border: 1px solid #ddd; text-align: right;"><strong>Miss Rate</strong></td>
+    <td style="padding: 10px; border: 1px solid #ddd;">For the survey process, we would expect the same list of ingredients, each time we ask for it, which means nothing is missed. The miss rate is calculated by taking the number of unique items identified across all the survey trials and multiplying that by the number of trials to get the number of items found if the LLM had behaved with perfect consistency. Then we subtract the number of items actually found in the surveys and divide that perfect number. Thus, if there are ten trials, and each ingredient is identified in all ten of those trials, then the miss rate would be 0%. But if each trial identifies exactly one ingredient each time, and it is a different ingredient every time, then each ingredient would have been missed 9/10 times, for a miss rate of 90%.</td>
+  </tr>
+  <tr>
+    <td style="padding: 10px; border: 1px solid #ddd; text-align: right;"><strong>Repudiation</strong></td>
+    <td style="padding: 10px; border: 1px solid #ddd;">This is a measure of how often the LLM claims that an ingredient is <em>not</em> present when asked directly, despite claiming that it <em>is</em> present during the survey round of the experiment. It is calculated by taking the total number of repudiations during the presence round and dividing that by the number of unique items identified across all the survey trials multiplied by the number of trials.</td>
+  </tr>
+  <tr>
+    <td style="padding: 10px; border: 1px solid #ddd; text-align: right;"><strong>Ambivalence</strong></td>
+    <td style="padding: 10px; border: 1px solid #ddd;">This is a gross measure of consistency. It's the number of items missed or repudiated at least once divided by the total number of unique items identified. Basically it's the inverse of the measure of the proportion of items that scored perfectly— identified in all survey rounds and never repudiated.</td>
+  </tr>
+</table>
+<p>
+Detailed data from each run can be found at  <https://www.satisfice.com/reports/ingredients.htm>.
+
+## Number of Ingredients Identified
+
+```{r items-panel, echo=FALSE, fig.height=8, fig.width=12}
+ggplot(data, aes(x = model_family, y = total_unique_items, fill = model_family)) +
+  geom_bar(stat = "identity", width = 0.7) +
+  facet_grid(temperature ~ Prompt, labeller = label_both) +
+  labs(
+    title = "Items",
+    x = NULL,
+    y = "Total Unique Items",
+    fill = "Model"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+    strip.text = element_text(size = 10, face = "bold"),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    legend.position = "bottom",
+    panel.spacing = unit(0.5, "lines")
+  ) +
+  scale_fill_brewer(palette = "Set2")
+```
+
+### Analysis  
+
+When asked for the ingredients to apple pie, most of the models give most of the ingredients to the other recipes unless they are specifically told (in the "hard prompt") that they are to ignore everything except apple pie. 
+
+In my view, I shouldn't have to provide this warning, and **GPT4.1** seems to corroborate that because it does handle the task correctly.
+
+What I take away from this is that you don't have to tell an LLM anything that is obvious in a prompt, *except for all the obvious things that you must tell it in detail*. The problem is we cannot predict in advance what those things are.
+
+## Miss Rate
+
+```{r miss-rate-panel, echo=FALSE, fig.height=8, fig.width=12}
+ggplot(data, aes(x = model_family, y = miss_rate, fill = model_family)) +
+  geom_bar(stat = "identity", width = 0.7) +
+  facet_grid(temperature ~ Prompt, labeller = label_both) +
+  labs(
+    title = "Miss Rate",
+    x = NULL,
+    y = "Miss Rate (%)",
+    fill = "Model"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+    strip.text = element_text(size = 10, face = "bold"),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    legend.position = "bottom",
+    panel.spacing = unit(0.5, "lines")
+  ) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_y_continuous(limits = c(0, 100))
+```
+
+### Analysis  
+
+Notice that, for **Gemma** and **GPT3.5** the miss rate is dramatically lower when the harder prompt is used (remember that prompt is just two innocuous sentences longer than the soft prompt). This is because, with the softer prompt, the models were identifying a lot of non-apple pie ingredients-- but not all of them all the time, as if they were not quite sure about those ingredients. When the hard prompt was use, those models consistently focused on the apple pie.
+
+The story for the **Llama** model is a little different. Examination of the specific items identified shows us that at a temperature of 0 and .4 the hard prompt did cause the model to focus more on apple pie, but for .4 the miss rate remained at near 25% because it was not consistent about which of the apple pie ingredients it pulled up. However, at .8 it did not focus on apple pie ingredients.
+
+Thus at high temperature, **Llama** seems to have ignored the additional sentences of the hard prompt.
+
+Although the effect is small, notice that **GPT4.1** actually got a little *less* consistent when given a hard prompt at temperature 0. This is surprising, but demonstrates that a policy of always providing longer, more detailed prompts does not always lead to better results.
+
+## Repudiation
+
+```{r repudiation-panel, echo=FALSE, fig.height=8, fig.width=12}
+ggplot(data, aes(x = model_family, y = repudiated_presence_pct, fill = model_family)) +
+  geom_bar(stat = "identity", width = 0.7) +
+  facet_grid(temperature ~ Prompt, labeller = label_both) +
+  labs(
+    title = "Repudiation",
+    x = NULL,
+    y = "Repudiation (%)",
+    fill = "Model"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+    strip.text = element_text(size = 10, face = "bold"),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    legend.position = "bottom",
+    panel.spacing = unit(0.5, "lines")
+  ) +
+  scale_fill_brewer(palette = "Set2")
+```
+
+### Analysis  
+
+While **GPT4.1** was perfectly consistent, the other models struggled with repudiation. 
+
+Regardless of prompt type or temperature, **Llama** repudiated everything. Although it was not unsuccessful in surveying for apple pie ingredients, it could not be induced, in this experiment, to answer a direct question about the presence of any of those ingredients with the answer "true." Clearly some very different process is happening when we ask it about a specific ingredient than when we ask it to list ingredients. Perhaps more experimentation with variations of the prompt will help.
+
+Repudiation behavior with **GPT3.5** went from universal repudiation under the soft prompt to substantial affirmation under the hard prompt, varying term-by-term in an apparently random fashion.
+
+**Gemma** repudiation nearly disappeared entirely when given the hard prompt. Puzzlingly, with the hard prompt, the only ingredient **Gemma** repudiated at any temperature was "egg." Yet, egg was repudiated every single time (as if **Gemma** was channeling **Llama**, but just for eggs). This reminds us of the baffingly lumpy nature of LLM reliability, which can vary based on specific words in a text, for no apparent reason.
+
+Before you formulate a theory on why **Gemma** doesn't like eggs, you should know that with the *soft* prompt, egg got a perfect score with the **Gemma** model! It was identified 10 times and never repudiated. The problem child for the soft prompt was instead "granulated sugar." (All other repudiations were for ingredients that weren't apple pie ingredients, which is actually a good thing because they should have been repudiated.) 
+
+Good luck with your theorizing... I'm stumped.
+
+## Ambivalence
+
+```{r ambivalence-panel, echo=FALSE, fig.height=8, fig.width=12}
+ggplot(data, aes(x = model_family, y = ambivalence_pct, fill = model_family)) +
+  geom_bar(stat = "identity", width = 0.7) +
+  facet_grid(temperature ~ Prompt, labeller = label_both) +
+  labs(
+    title = "Ambivalence",
+    x = NULL,
+    y = "Ambivalence (%)",
+    fill = "Model"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+    strip.text = element_text(size = 10, face = "bold"),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    legend.position = "bottom",
+    panel.spacing = unit(0.5, "lines")
+  ) +
+  scale_fill_brewer(palette = "Set2")
+```
+
+### Analysis  
+
+Clearly, the **Gemma** model benefited the most from the harder prompt, while **GPT4.1**, otherwise excellent, was a little thrown off by it.
+
+The other models remained generally ambivalent about ingredients, although the hard prompt definitely helped.
+
+## Summary Statistics
+
+```{r summary, echo=FALSE}
+data %>%
+  group_by(model_family, Prompt, temperature) %>%
+  summarise(
+    items = mean(total_unique_items),
+    miss_rate = mean(miss_rate),
+    repudiation = mean(repudiated_presence_pct),
+    ambivalence = mean(ambivalence_pct),
+    .groups = "drop"
+  ) %>%
+  arrange(model_family, Prompt, temperature)
+```
+
+## Discussion
+
+What this little experiment demonstrates is that there can be no simple answer to the question "can an LLM do X reliably?" without conducting extensive testing.
+
+The testing demonstrated here, although extensive in some sense (many hours of computation and a total of 6310 prompts offered) merely scratches the surface. It merely tells us that more prompting strategies and temperature variations are in order. Or perhaps pre-processing the text of the recipes would help.
+
+In any real-life application of AI, there are many knobs we can turn and levers to pull. What this data shows is that we will probably not be able to take refuge in general heuristics such as "always write a long and detailed prompt" or "never use the Llama model." Whatever we do we will have to test it probabilistically-- doing many repetitions and repeating with tiny variations. This will be expensive, but there may be no alternative if we want to release a reliable product.
+
+I intend to perform this task with other domains, such as identifying side effects in pharmaceutical documentation, or names of people in news stories.
+
+## Appendix 1: Recipe Text
+
+```
+Pumpkin Pie Recipe
+
+Ingredients
+
+For the crust:
+1 1/4 cups all-purpose flour
+1/2 teaspoon salt
+1/2 cup cold unsalted butter, cut into cubes
+3 to 4 tablespoons ice water
+
+For the filling:
+1 (15-ounce) can pumpkin puree or about 2 cups homemade puree
+3/4 cup packed brown sugar
+2 large eggs
+1 teaspoon ground cinnamon
+1/2 teaspoon ground ginger
+1/4 teaspoon ground nutmeg
+1/4 teaspoon ground cloves
+1/2 teaspoon salt
+1 cup evaporated milk or half-and-half
+
+Instructions
+
+Make the crust:
+In a bowl, mix flour and salt. Cut in the butter with a pastry cutter or fork until the mixture looks like coarse crumbs. Add ice water one tablespoon at a time until the dough holds together. Shape into a disk, wrap in plastic, and chill for 30 minutes. Roll out on a floured surface and fit into a 9-inch pie pan. Trim and crimp the edges.
+
+Make the filling:
+In a large bowl, whisk together pumpkin, brown sugar, eggs, cinnamon, ginger, nutmeg, cloves, and salt. Gradually whisk in evaporated milk until smooth.
+
+Assemble and bake:
+Preheat oven to 425°F (220°C). Pour the filling into the unbaked pie shell. Bake for 15 minutes, then reduce the temperature to 350°F (175°C) and continue baking for 40 to 50 minutes, or until a knife inserted near the center comes out clean. Cool on a wire rack for at least 2 hours before serving.
+
+Optional toppings:
+Whipped cream
+Candied pecans
+Cinnamon sugar
+
+French Onion Soup Recipe
+
+Ingredients
+
+4 large yellow onions, thinly sliced
+3 tablespoons unsalted butter
+1 tablespoon olive oil
+1 teaspoon salt
+1/2 teaspoon sugar
+2 cloves garlic, minced
+2 tablespoons all-purpose flour
+8 cups beef broth
+1/2 cup dry white wine (optional)
+2 teaspoons Worcestershire sauce
+1 bay leaf
+1/2 teaspoon dried thyme (or a few sprigs of fresh thyme)
+Salt and pepper to taste
+1 baguette, sliced
+2 cups grated Gruyère cheese (or Swiss cheese)
+
+Instructions
+
+In a large pot, melt the butter with olive oil over medium heat. Add sliced onions and cook, stirring often, for about 10 minutes until they start to soften.
+
+Add salt and sugar to help caramelize the onions. Continue cooking for 30 to 40 minutes, stirring occasionally, until the onions are deep golden brown.
+
+Add minced garlic and cook for 1 minute. Stir in the flour and cook for another 2 minutes to remove the raw taste.
+
+Slowly add beef broth while stirring, then add white wine, Worcestershire sauce, bay leaf, and thyme. Bring to a boil, then reduce heat and simmer uncovered for 30 minutes. Season with salt and pepper to taste.
+
+While the soup simmers, toast the baguette slices in the oven until crisp.
+
+To serve, ladle soup into oven-safe bowls, place a toasted baguette slice on top, and cover with grated Gruyère cheese.
+
+Place bowls under a broiler until the cheese is melted and bubbly.
+
+Serve hot.
+
+Apple Pie Recipe
+
+Ingredients
+
+For the crust (makes a double crust):
+
+2 ½ cups all-purpose flour
+1 tsp salt
+1 cup (2 sticks) unsalted butter, chilled and cut into cubes
+6–8 tbsp ice water
+
+For the filling:
+
+6–7 medium apples (Granny Smith, Honeycrisp, or a mix)
+¾ cup granulated sugar
+¼ cup brown sugar
+2 tbsp all-purpose flour
+1 tsp ground cinnamon
+¼ tsp ground nutmeg (optional)
+1 tbsp lemon juice
+1 tbsp butter (to dot the filling)
+
+For finishing:
+
+1 egg (beaten, for egg wash)
+1 tbsp coarse sugar (optional, for sprinkling)
+
+Instructions
+1. Make the crust
+
+In a large bowl, whisk together flour and salt.
+Cut in butter using a pastry cutter or fork until mixture resembles coarse crumbs.
+Add ice water, 1 tbsp at a time, mixing until dough just holds together.
+Divide dough into 2 disks, wrap in plastic, and chill for at least 1 hour.
+
+2. Prepare the filling
+
+Peel, core, and slice apples (about ¼-inch thick).
+In a large bowl, toss apple slices with sugars, flour, cinnamon, nutmeg, and lemon juice. Let sit 10 minutes.
+
+3. Assemble the pie
+
+Preheat oven to 425°F (220°C).
+Roll out one disk of dough into a circle about 12 inches wide. Fit it into a 9-inch pie pan.
+Fill with apple mixture, mounding slightly in the center. Dot with small pieces of butter.
+Roll out second disk of dough and place over filling (or cut into strips for a lattice top). Trim and crimp edges.
+Brush crust with beaten egg and sprinkle with coarse sugar if desired.
+
+4. Bake
+
+Bake at 425°F (220°C) for 15 minutes.
+
+Reduce temperature to 375°F (190°C) and bake 40–50 minutes more, until crust is golden brown and filling is bubbling.
+(Tip: Place foil or a baking sheet under the pie to catch drips.)
+
+5. Cool
+
+Let pie cool at least 2 hours before slicing so the filling sets.
+
+Beef Wellington Recipe
+
+Ingredients
+
+1 center-cut beef tenderloin (about 2 pounds)
+Salt and black pepper
+2 tablespoons olive oil
+2 tablespoons Dijon mustard
+8 ounces mushrooms, finely chopped
+2 tablespoons unsalted butter
+2 cloves garlic, minced
+2 teaspoons fresh thyme leaves
+6 to 8 slices prosciutto
+1 sheet puff pastry, thawed if frozen
+1 egg, beaten (for egg wash)
+All-purpose flour for dusting
+
+Optional for serving:
+Red wine sauce or beef gravy
+
+Instructions
+
+Preheat oven to 425°F (220°C). Season the beef tenderloin generously with salt and pepper.
+
+Heat olive oil in a heavy skillet over high heat. Sear the beef on all sides until browned, about 2 to 3 minutes per side. Remove from pan and let cool slightly, then brush all over with Dijon mustard.
+
+In the same pan, melt butter and add mushrooms, garlic, and thyme. Cook until the mixture is dry and browned, about 10 minutes. Set aside to cool.
+
+On a sheet of plastic wrap, lay out the prosciutto slices, slightly overlapping to form a rectangle. Spread the mushroom mixture evenly over the prosciutto.
+
+Place the seared beef on top of the mushroom layer, then use the plastic wrap to roll the prosciutto tightly around the beef. Chill for about 20 minutes to firm up.
+
+Roll out the puff pastry on a floured surface large enough to completely wrap the beef. Remove the plastic wrap and place the beef in the center of the pastry. Brush the edges with beaten egg and wrap the pastry around the beef, sealing the edges. Trim any excess pastry.
+
+Place the wrapped beef seam-side down on a parchment-lined baking sheet. Brush the top with the remaining egg wash.
+
+Bake for 40 to 45 minutes, or until the pastry is golden brown and an instant-read thermometer inserted into the center of the beef reads 125°F (52°C) for medium rare.
+
+Let rest for 10 minutes before slicing.
+
+Serve with red wine sauce or gravy if desired.
+```
+
+## Appendix 2: Expected Ingredients
+
+A basic reading affords this interpretation of the ingredients of apple pie yield 13 in total:
+
+- all-purpose flour
+- salt
+- unsalted butter
+- ice water
+- medium apples (Granny Smith, Honeycrisp, or a mix)
+- granulated sugar
+- brown sugar
+- ground cinnamon
+- ground nutmeg
+- lemon juice
+- butter
+- egg
+- coarse sugar
+
+However, some variations are also reasonable. For instance, butter may be left out, since the reference to it may have been intended to refer to unsalted butter, and unsalted butter could be used in that scenario. Also, Honeycrisp and Granny Smith apples may be called out separately. Thus the correct number of ingredients may be as little as 12 or as many as 14, as I reckon it.
+
+Although consistency, rather than correctness, is what LARC tries to measure, it's important to understand that certain kinds of inconsistency may be endemic to the nature of the retrieval task, given that there is more than one reasonable way of making sense of the data.
+
+## Appendix 3: Prompts
+
+The basic, or "soft" survey prompt that I used was:
+
+```
+List every unique ingredient mentioned in the apple pie recipe that is below the line of dashes. List only the ingredient names, not the amounts. Answer in the form of a JSON array of strings with no other commentary. Use the key 'results' for the array:
+
+--------------------------------
+```
+
+The corresponding presence prompt was:
+
+```
+Is "{item}" an ingredient listed in the apple pie recipe that is below the line of dashes. Answer in the form of a JSON object with one key: 'exists', which should be true or false:
+
+--------------------------------
+```
+
+Obviously, the software replaced {item} with the corresponding ingredient for each round of prompting.
+
+To "harden" these prompts I added these two sentences to the start of each prompt:
+
+```
+Below the line of dashes is a text that comprises a set of recipes. Ignore all recipes except the one I am asking you about.
+```
+
+Note that these sentences contribute no important information. Everything a human or LLM should need to perform the task correctly is already in the soft versions of the prompt. However, I did note a substantial improvement in LLM performance when using the hard prompt, except in one odd case where the otherwise perfect ChatGPT 4.1 model got a little *worse*.

@@ -290,7 +290,7 @@ else:
     except Exception as e:
         print(f"Failed to store start record in MongoDB: {e}")
 
-API_KEY = os.getenv("OPENAI_KEY")  # or paste your key directly (not recommended)
+API_KEY = os.getenv("OPENAI_API_KEY")  # or paste your key directly (not recommended)
 url = "https://api.openai.com/v1/responses"
 
 http = logged_requests.loggedRequests(logResponse=True, logName="openai", caching=False, vcrmode=False)

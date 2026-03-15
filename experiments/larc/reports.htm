@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LARC Reports</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+        }
+        .controls {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .controls input {
+            padding: 8px;
+            width: 300px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            position: sticky;
+            top: 0;
+            cursor: pointer;
+            user-select: none;
+        }
+        th:hover {
+            background-color: #45a049;
+        }
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .report-btn {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .report-btn:hover {
+            background-color: #0b7dda;
+        }
+        .report-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .info {
+            margin-top: 10px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>LARC Reports</h1>
+
+    <div class="controls">
+        <input type="text" id="searchInput" placeholder="Search in all columns..." onkeyup="filterTable()">
+        <div class="info">
+            Showing <span id="rowCount">0</span> of <span id="totalRows">0</span> experiments
+        </div>
+    </div>
+
+    <table id="configTable">
+        <thead>
+            <tr>
+                <th>Report</th>
+                <th onclick="sortTable(1)">Filename ▼</th>
+                <th onclick="sortTable(2)">testid ▼</th>
+                <th onclick="sortTable(3)">testset ▼</th>
+                <th onclick="sortTable(4)">description ▼</th>
+                <th onclick="sortTable(5)">model ▼</th>
+                <th onclick="sortTable(6)">temperature ▼</th>
+                <th onclick="sortTable(7)">trials ▼</th>
+                <th onclick="sortTable(8)">source_file ▼</th>
+                <th onclick="sortTable(9)">survey_prompt_file ▼</th>
+                <th onclick="sortTable(10)">presence_prompt_file ▼</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/apriel-synthetic-hard-10-T0.htm', '_blank')">View Report</button></td>
+                <td>apriel-synthetic-hard-10-T0.json</td>
+                <td>apriel-synthetic-hard-10-T0</td>
+                <td>LARC_Synthetic Text</td>
+                <td>synthetic text</td>
+                <td>hf.co/bartowski/ServiceNow-AI_Apriel-1.5-15b-Thinker-GGUF:Q4_K_M</td>
+                <td>0</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/synthetic.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/hard.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/apriel-synthetic-hard-10-T4.htm', '_blank')">View Report</button></td>
+                <td>apriel-synthetic-hard-10-T4.json</td>
+                <td>apriel-synthetic-hard-10-T4</td>
+                <td>LARC_Synthetic Text</td>
+                <td>synthetic text</td>
+                <td>hf.co/bartowski/ServiceNow-AI_Apriel-1.5-15b-Thinker-GGUF:Q4_K_M</td>
+                <td>0.4</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/synthetic.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/hard.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/apriel-synthetic-hard-10-T8.htm', '_blank')">View Report</button></td>
+                <td>apriel-synthetic-hard-10-T8.json</td>
+                <td>apriel-synthetic-hard-10-T8</td>
+                <td>LARC_Synthetic Text</td>
+                <td>synthetic text</td>
+                <td>hf.co/bartowski/ServiceNow-AI_Apriel-1.5-15b-Thinker-GGUF:Q4_K_M</td>
+                <td>0.8</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/synthetic.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/hard.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/apriel-synthetic-soft-10-T0.htm', '_blank')">View Report</button></td>
+                <td>apriel-synthetic-soft-10-T0.json</td>
+                <td>apriel-synthetic-soft-10-T0</td>
+                <td>LARC_Synthetic Text</td>
+                <td>synthetic text</td>
+                <td>hf.co/bartowski/ServiceNow-AI_Apriel-1.5-15b-Thinker-GGUF:Q4_K_M</td>
+                <td>0</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/synthetic.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/soft.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/soft.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/apriel-synthetic-soft-10-T4.htm', '_blank')">View Report</button></td>
+                <td>apriel-synthetic-soft-10-T4.json</td>
+                <td>apriel-synthetic-soft-10-T4</td>
+                <td>LARC_Synthetic Text</td>
+                <td>synthetic text</td>
+                <td>hf.co/bartowski/ServiceNow-AI_Apriel-1.5-15b-Thinker-GGUF:Q4_K_M</td>
+                <td>0.4</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/synthetic.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/soft.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/soft.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/apriel-synthetic-soft-10-T8.htm', '_blank')">View Report</button></td>
+                <td>apriel-synthetic-soft-10-T8.json</td>
+                <td>apriel-synthetic-soft-10-T8</td>
+                <td>LARC_Synthetic Text</td>
+                <td>synthetic text</td>
+                <td>hf.co/bartowski/ServiceNow-AI_Apriel-1.5-15b-Thinker-GGUF:Q4_K_M</td>
+                <td>0.8</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/synthetic.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/soft.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/soft.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/gemma-recipes-hard-10-T0.htm', '_blank')">View Report</button></td>
+                <td>gemma-recipes-hard-10-T0.json</td>
+                <td>gemma-recipes-hard-10-T0</td>
+                <td>LARC_ingredients</td>
+                <td>retrieving ingredients from a recipe</td>
+                <td>gemma3:12b</td>
+                <td>0</td>
+                <td>10</td>
+                <td>experiments/sets/ingredients/texts/recipes.txt</td>
+                <td>experiments/sets/ingredients/surveyprompts/hard.txt</td>
+                <td>experiments/sets/ingredients/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/gemma-recipes-hard-10-T4.htm', '_blank')">View Report</button></td>
+                <td>gemma-recipes-hard-10-T4.json</td>
+                <td>gemma-recipes-hard-10-T4</td>
+                <td>LARC_ingredients</td>
+                <td>retrieving ingredients from a recipe</td>
+                <td>gemma3:12b</td>
+                <td>0.4</td>
+                <td>10</td>
+                <td>experiments/sets/ingredients/texts/recipes.txt</td>
+                <td>experiments/sets/ingredients/surveyprompts/hard.txt</td>
+                <td>experiments/sets/ingredients/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/gemma-recipes-hard-10-T8.htm', '_blank')">View Report</button></td>
+                <td>gemma-recipes-hard-10-T8.json</td>
+                <td>gemma-recipes-hard-10-T8</td>
+                <td>LARC_ingredients</td>
+                <td>retrieving ingredients from a recipe</td>
+                <td>gemma3:12b</td>
+                <td>0.8</td>
+                <td>10</td>
+                <td>experiments/sets/ingredients/texts/recipes.txt</td>
+                <td>experiments/sets/ingredients/surveyprompts/hard.txt</td>
+                <td>experiments/sets/ingredients/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/gemma-recipes-soft-10-T0.htm', '_blank')">View Report</button></td>
+                <td>gemma-recipes-soft-10-T0.json</td>
+                <td>gemma-recipes-soft-10-T0</td>
+                <td>LARC_ingredients</td>
+                <td>retrieving ingredients from a recipe</td>
+                <td>gemma3:12b</td>
+                <td>0</td>
+                <td>10</td>
+                <td>experiments/sets/ingredients/texts/recipes.txt</td>
+                <td>experiments/sets/ingredients/surveyprompts/soft.txt</td>
+                <td>experiments/sets/ingredients/presenceprompts/soft.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/gemma-recipes-soft-10-T4.htm', '_blank')">View Report</button></td>
+                <td>gemma-recipes-soft-10-T4.json</td>
+                <td>gemma-recipes-soft-10-T4</td>
+                <td>LARC_ingredients</td>
+                <td>retrieving ingredients from a recipe</td>
+                <td>gemma3:12b</td>
+                <td>0.4</td>
+                <td>10</td>
+                <td>experiments/sets/ingredients/texts/recipes.txt</td>
+                <td>experiments/sets/ingredients/surveyprompts/soft.txt</td>
+                <td>experiments/sets/ingredients/presenceprompts/soft.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/gemma-recipes-soft-10-T8.htm', '_blank')">View Report</button></td>
+                <td>gemma-recipes-soft-10-T8.json</td>
+                <td>gemma-recipes-soft-10-T8</td>
+                <td>LARC_ingredients</td>
+                <td>retrieving ingredients from a recipe</td>
+                <td>gemma3:12b</td>
+                <td>0.8</td>
+                <td>10</td>
+                <td>experiments/sets/ingredients/texts/recipes.txt</td>
+                <td>experiments/sets/ingredients/surveyprompts/soft.txt</td>
+                <td>experiments/sets/ingredients/presenceprompts/soft.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/gemma-simple1-hard-10-T4.htm', '_blank')">View Report</button></td>
+                <td>gemma-simple1-hard-10-T4.json</td>
+                <td>gemma-simple1-hard-10-T4</td>
+                <td>LARC_Simple1</td>
+                <td>simple word list</td>
+                <td>gemma3:12b</td>
+                <td>0.4</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/simple1.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/hard.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/gemma-simple1-soft-10-T4.htm', '_blank')">View Report</button></td>
+                <td>gemma-simple1-soft-10-T4.json</td>
+                <td>gemma-simple1-soft-10-T4</td>
+                <td>LARC_Simple1</td>
+                <td>simple word list</td>
+                <td>gemma3:12b</td>
+                <td>0.4</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/simple1.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/soft.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/soft.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/llama-OpenAI-hard-10-T0.htm', '_blank')">View Report</button></td>
+                <td>llama-openai-hard-10-T0.json</td>
+                <td>llama-OpenAI-hard-10-T0</td>
+                <td>LARC_OpenAI Text</td>
+                <td>OpenAI text</td>
+                <td>llama3.1:8b</td>
+                <td>0</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/openai.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/hard.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/llama-OpenAI-hard-10-T4.htm', '_blank')">View Report</button></td>
+                <td>llama-openai-hard-10-T4.json</td>
+                <td>llama-OpenAI-hard-10-T4</td>
+                <td>LARC_OpenAI Text</td>
+                <td>OpenAI text</td>
+                <td>llama3.1:8b</td>
+                <td>0.4</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/openai.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/hard.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/llama-OpenAI-hard-10-T8.htm', '_blank')">View Report</button></td>
+                <td>llama-openai-hard-10-T8.json</td>
+                <td>llama-OpenAI-hard-10-T8</td>
+                <td>LARC_OpenAI Text</td>
+                <td>OpenAI text</td>
+                <td>llama3.1:8b</td>
+                <td>0.8</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/openai.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/hard.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/llama-OpenAI-soft-10-T0.htm', '_blank')">View Report</button></td>
+                <td>llama-openai-soft-10-T0.json</td>
+                <td>llama-OpenAI-soft-10-T0</td>
+                <td>LARC_OpenAI Text</td>
+                <td>OpenAI text</td>
+                <td>llama3.1:8b</td>
+                <td>0</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/openai.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/soft.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/soft.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/llama-OpenAI-soft-10-T4.htm', '_blank')">View Report</button></td>
+                <td>llama-openai-soft-10-T4.json</td>
+                <td>llama-OpenAI-soft-10-T4</td>
+                <td>LARC_OpenAI Text</td>
+                <td>OpenAI text</td>
+                <td>llama3.1:8b</td>
+                <td>0.4</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/openai.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/soft.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/soft.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/llama-OpenAI-soft-10-T8.htm', '_blank')">View Report</button></td>
+                <td>llama-openai-soft-10-T8.json</td>
+                <td>llama-OpenAI-soft-10-T8</td>
+                <td>LARC_OpenAI Text</td>
+                <td>OpenAI text</td>
+                <td>llama3.1:8b</td>
+                <td>0.8</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/openai.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/soft.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/soft.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/llama-recipes-10-hard-T0.htm', '_blank')">View Report</button></td>
+                <td>llama-recipes-hard-10-T0.json</td>
+                <td>llama-recipes-10-hard-T0</td>
+                <td>LARC_ingredients</td>
+                <td>retrieving ingredients from a recipe</td>
+                <td>llama3.1:8b</td>
+                <td>0</td>
+                <td>10</td>
+                <td>experiments/sets/ingredients/texts/recipes.txt</td>
+                <td>experiments/sets/ingredients/surveyprompts/hard.txt</td>
+                <td>experiments/sets/ingredients/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/llama-recipes-10-hard-T4.htm', '_blank')">View Report</button></td>
+                <td>llama-recipes-hard-10-T4.json</td>
+                <td>llama-recipes-10-hard-T4</td>
+                <td>LARC_ingredients</td>
+                <td>retrieving ingredients from a recipe</td>
+                <td>llama3.1:8b</td>
+                <td>0.4</td>
+                <td>10</td>
+                <td>experiments/sets/ingredients/texts/recipes.txt</td>
+                <td>experiments/sets/ingredients/surveyprompts/hard.txt</td>
+                <td>experiments/sets/ingredients/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/llama-recipes-10-hard-T8.htm', '_blank')">View Report</button></td>
+                <td>llama-recipes-hard-10-T8.json</td>
+                <td>llama-recipes-10-hard-T8</td>
+                <td>LARC_ingredients</td>
+                <td>retrieving ingredients from a recipe</td>
+                <td>llama3.1:8b</td>
+                <td>0.8</td>
+                <td>10</td>
+                <td>experiments/sets/ingredients/texts/recipes.txt</td>
+                <td>experiments/sets/ingredients/surveyprompts/hard.txt</td>
+                <td>experiments/sets/ingredients/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/llama-recipes-10-soft-T0.htm', '_blank')">View Report</button></td>
+                <td>llama-recipes-soft-10-T0.json</td>
+                <td>llama-recipes-10-soft-T0</td>
+                <td>LARC_ingredients</td>
+                <td>retrieving ingredients from a recipe</td>
+                <td>llama3.1:8b</td>
+                <td>0</td>
+                <td>10</td>
+                <td>experiments/sets/ingredients/texts/recipes.txt</td>
+                <td>experiments/sets/ingredients/surveyprompts/soft.txt</td>
+                <td>experiments/sets/ingredients/presenceprompts/soft.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/llama-recipes-10-soft-T4.htm', '_blank')">View Report</button></td>
+                <td>llama-recipes-soft-10-T4.json</td>
+                <td>llama-recipes-10-soft-T4</td>
+                <td>LARC_ingredients</td>
+                <td>retrieving ingredients from a recipe</td>
+                <td>llama3.1:8b</td>
+                <td>0.4</td>
+                <td>10</td>
+                <td>experiments/sets/ingredients/texts/recipes.txt</td>
+                <td>experiments/sets/ingredients/surveyprompts/soft.txt</td>
+                <td>experiments/sets/ingredients/presenceprompts/soft.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/llama-recipes-10-soft-T8.htm', '_blank')">View Report</button></td>
+                <td>llama-recipes-soft-10-T8.json</td>
+                <td>llama-recipes-10-soft-T8</td>
+                <td>LARC_ingredients</td>
+                <td>retrieving ingredients from a recipe</td>
+                <td>llama3.1:8b</td>
+                <td>0.8</td>
+                <td>10</td>
+                <td>experiments/sets/ingredients/texts/recipes.txt</td>
+                <td>experiments/sets/ingredients/surveyprompts/soft.txt</td>
+                <td>experiments/sets/ingredients/presenceprompts/soft.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/llama-synthetic-hard-10-T0.htm', '_blank')">View Report</button></td>
+                <td>llama-synthetic-hard-10-T0.json</td>
+                <td>llama-synthetic-hard-10-T0</td>
+                <td>LARC_Synthetic Text</td>
+                <td>synthetic text</td>
+                <td>llama3.1:8b</td>
+                <td>0</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/synthetic.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/hard.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/llama-synthetic-hard-10-T4.htm', '_blank')">View Report</button></td>
+                <td>llama-synthetic-hard-10-T4.json</td>
+                <td>llama-synthetic-hard-10-T4</td>
+                <td>LARC_Synthetic Text</td>
+                <td>synthetic text</td>
+                <td>llama3.1:8b</td>
+                <td>0.4</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/synthetic.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/hard.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/llama-synthetic-hard-10-T8.htm', '_blank')">View Report</button></td>
+                <td>llama-synthetic-hard-10-T8.json</td>
+                <td>llama-synthetic-hard-10-T8</td>
+                <td>LARC_Synthetic Text</td>
+                <td>synthetic text</td>
+                <td>llama3.1:8b</td>
+                <td>0.8</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/synthetic.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/hard.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/llama-synthetic-soft-10-T0.htm', '_blank')">View Report</button></td>
+                <td>llama-synthetic-soft-10-T0.json</td>
+                <td>llama-synthetic-soft-10-T0</td>
+                <td>LARC_Synthetic Text</td>
+                <td>synthetic text</td>
+                <td>llama3.1:8b</td>
+                <td>0</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/synthetic.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/soft.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/soft.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/llama-synthetic-soft-10-T4.htm', '_blank')">View Report</button></td>
+                <td>llama-synthetic-soft-10-T4.json</td>
+                <td>llama-synthetic-soft-10-T4</td>
+                <td>LARC_Synthetic Text</td>
+                <td>synthetic text</td>
+                <td>llama3.1:8b</td>
+                <td>0.4</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/synthetic.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/soft.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/soft.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/llama-synthetic-soft-10-T8.htm', '_blank')">View Report</button></td>
+                <td>llama-synthetic-soft-10-T8.json</td>
+                <td>llama-synthetic-soft-10-T8</td>
+                <td>LARC_Synthetic Text</td>
+                <td>synthetic text</td>
+                <td>llama3.1:8b</td>
+                <td>0.8</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/synthetic.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/soft.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/soft.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/openai-gpt3.5-recipes-10-hard-T0.htm', '_blank')">View Report</button></td>
+                <td>openai-gpt3.5-recipes-hard-10-T0.json</td>
+                <td>openai-gpt3.5-recipes-10-hard-T0</td>
+                <td>LARC_ingredients</td>
+                <td>retrieving ingredients from a recipe</td>
+                <td>gpt-3.5-turbo</td>
+                <td>0</td>
+                <td>10</td>
+                <td>experiments/sets/ingredients/texts/recipes.txt</td>
+                <td>experiments/sets/ingredients/surveyprompts/hard.txt</td>
+                <td>experiments/sets/ingredients/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/openai-gpt3.5-recipes-10-hard-T4.htm', '_blank')">View Report</button></td>
+                <td>openai-gpt3.5-recipes-hard-10-T4.json</td>
+                <td>openai-gpt3.5-recipes-10-hard-T4</td>
+                <td>LARC_ingredients</td>
+                <td>retrieving ingredients from a recipe</td>
+                <td>gpt-3.5-turbo</td>
+                <td>0.4</td>
+                <td>10</td>
+                <td>experiments/sets/ingredients/texts/recipes.txt</td>
+                <td>experiments/sets/ingredients/surveyprompts/hard.txt</td>
+                <td>experiments/sets/ingredients/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/openai-gpt3.5-recipes-10-hard-T8.htm', '_blank')">View Report</button></td>
+                <td>openai-gpt3.5-recipes-hard-10-T8.json</td>
+                <td>openai-gpt3.5-recipes-10-hard-T8</td>
+                <td>LARC_ingredients</td>
+                <td>retrieving ingredients from a recipe</td>
+                <td>gpt-3.5-turbo</td>
+                <td>0.8</td>
+                <td>10</td>
+                <td>experiments/sets/ingredients/texts/recipes.txt</td>
+                <td>experiments/sets/ingredients/surveyprompts/hard.txt</td>
+                <td>experiments/sets/ingredients/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/openai-gpt3.5-recipes-10-soft-T0.htm', '_blank')">View Report</button></td>
+                <td>openai-gpt3.5-recipes-soft-10-T0.json</td>
+                <td>openai-gpt3.5-recipes-10-soft-T0</td>
+                <td>LARC_ingredients</td>
+                <td>retrieving ingredients from a recipe</td>
+                <td>gpt-3.5-turbo</td>
+                <td>0</td>
+                <td>10</td>
+                <td>experiments/sets/ingredients/texts/recipes.txt</td>
+                <td>experiments/sets/ingredients/surveyprompts/soft.txt</td>
+                <td>experiments/sets/ingredients/presenceprompts/soft.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/openai-gpt3.5-recipes-10-soft-T4.htm', '_blank')">View Report</button></td>
+                <td>openai-gpt3.5-recipes-soft-10-T4.json</td>
+                <td>openai-gpt3.5-recipes-10-soft-T4</td>
+                <td>LARC_ingredients</td>
+                <td>retrieving ingredients from a recipe</td>
+                <td>gpt-3.5-turbo</td>
+                <td>0.4</td>
+                <td>10</td>
+                <td>experiments/sets/ingredients/texts/recipes.txt</td>
+                <td>experiments/sets/ingredients/surveyprompts/soft.txt</td>
+                <td>experiments/sets/ingredients/presenceprompts/soft.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/openai-gpt3.5-recipes-10-soft-T8.htm', '_blank')">View Report</button></td>
+                <td>openai-gpt3.5-recipes-soft-10-T8.json</td>
+                <td>openai-gpt3.5-recipes-10-soft-T8</td>
+                <td>LARC_ingredients</td>
+                <td>retrieving ingredients from a recipe</td>
+                <td>gpt-3.5-turbo</td>
+                <td>0.8</td>
+                <td>10</td>
+                <td>experiments/sets/ingredients/texts/recipes.txt</td>
+                <td>experiments/sets/ingredients/surveyprompts/prompt.txt</td>
+                <td>experiments/sets/ingredients/presenceprompts/prompt.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/openai-gpt3.5-synthetic-hard-10-T0.htm', '_blank')">View Report</button></td>
+                <td>openai-gpt3.5-synthetic-hard-10-T0.json</td>
+                <td>openai-gpt3.5-synthetic-hard-10-T0</td>
+                <td>LARC_Synthetic Text</td>
+                <td>synthetic text</td>
+                <td>gpt-3.5-turbo</td>
+                <td>0</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/synthetic.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/hard.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/openai-gpt3.5-synthetic-hard-10-T4.htm', '_blank')">View Report</button></td>
+                <td>openai-gpt3.5-synthetic-hard-10-T4.json</td>
+                <td>openai-gpt3.5-synthetic-hard-10-T4</td>
+                <td>LARC_Synthetic Text</td>
+                <td>synthetic text</td>
+                <td>gpt-3.5-turbo</td>
+                <td>0.4</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/synthetic.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/hard.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/openai-gpt3.5-synthetic-hard-10-T8.htm', '_blank')">View Report</button></td>
+                <td>openai-gpt3.5-synthetic-hard-10-T8.json</td>
+                <td>openai-gpt3.5-synthetic-hard-10-T8</td>
+                <td>LARC_Synthetic Text</td>
+                <td>synthetic text</td>
+                <td>gpt-3.5-turbo</td>
+                <td>0.8</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/synthetic.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/hard.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/openai-gpt3.5-synthetic-soft-10-T0.htm', '_blank')">View Report</button></td>
+                <td>openai-gpt3.5-synthetic-soft-10-T0.json</td>
+                <td>openai-gpt3.5-synthetic-soft-10-T0</td>
+                <td>LARC_Synthetic Text</td>
+                <td>synthetic text</td>
+                <td>gpt-3.5-turbo</td>
+                <td>0</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/synthetic.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/soft.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/soft.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/openai-gpt3.5-synthetic-soft-10-T4.htm', '_blank')">View Report</button></td>
+                <td>openai-gpt3.5-synthetic-soft-10-T4.json</td>
+                <td>openai-gpt3.5-synthetic-soft-10-T4</td>
+                <td>LARC_Synthetic Text</td>
+                <td>synthetic text</td>
+                <td>gpt-3.5-turbo</td>
+                <td>0.4</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/synthetic.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/soft.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/soft.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/openai-gpt3.5-synthetic-soft-10-T8.htm', '_blank')">View Report</button></td>
+                <td>openai-gpt3.5-synthetic-soft-10-T8.json</td>
+                <td>openai-gpt3.5-synthetic-soft-10-T8</td>
+                <td>LARC_Synthetic Text</td>
+                <td>synthetic text</td>
+                <td>gpt-3.5-turbo</td>
+                <td>0.8</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/synthetic.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/soft.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/soft.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/openai-gpt4.1-recipes-10-hard-T0.htm', '_blank')">View Report</button></td>
+                <td>openai-gpt4.1-recipes-hard-10-T0.json</td>
+                <td>openai-gpt4.1-recipes-10-hard-T0</td>
+                <td>LARC_ingredients</td>
+                <td>retrieving ingredients from a recipe</td>
+                <td>gpt-4.1-2025-04-14</td>
+                <td>0</td>
+                <td>10</td>
+                <td>experiments/sets/ingredients/texts/recipes.txt</td>
+                <td>experiments/sets/ingredients/surveyprompts/hard.txt</td>
+                <td>experiments/sets/ingredients/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/openai-gpt4.1-recipes-10-hard-T4.htm', '_blank')">View Report</button></td>
+                <td>openai-gpt4.1-recipes-hard-10-T4.json</td>
+                <td>openai-gpt4.1-recipes-10-hard-T4</td>
+                <td>LARC_ingredients</td>
+                <td>retrieving ingredients from a recipe</td>
+                <td>gpt-4.1-2025-04-14</td>
+                <td>0.4</td>
+                <td>10</td>
+                <td>experiments/sets/ingredients/texts/recipes.txt</td>
+                <td>experiments/sets/ingredients/surveyprompts/hard.txt</td>
+                <td>experiments/sets/ingredients/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/openai-gpt4.1-recipes-10-hard-T8.htm', '_blank')">View Report</button></td>
+                <td>openai-gpt4.1-recipes-hard-10-T8.json</td>
+                <td>openai-gpt4.1-recipes-10-hard-T8</td>
+                <td>LARC_ingredients</td>
+                <td>retrieving ingredients from a recipe</td>
+                <td>gpt-4.1-2025-04-14</td>
+                <td>0.8</td>
+                <td>10</td>
+                <td>experiments/sets/ingredients/texts/recipes.txt</td>
+                <td>experiments/sets/ingredients/surveyprompts/hard.txt</td>
+                <td>experiments/sets/ingredients/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/openai-gpt4.1-recipes-10-soft-T0.htm', '_blank')">View Report</button></td>
+                <td>openai-gpt4.1-recipes-soft-10-T0.json</td>
+                <td>openai-gpt4.1-recipes-10-soft-T0</td>
+                <td>LARC_ingredients</td>
+                <td>retrieving ingredients from a recipe</td>
+                <td>gpt-4.1-2025-04-14</td>
+                <td>0</td>
+                <td>10</td>
+                <td>experiments/sets/ingredients/texts/recipes.txt</td>
+                <td>experiments/sets/ingredients/surveyprompts/soft.txt</td>
+                <td>experiments/sets/ingredients/presenceprompts/soft.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/openai-gpt4.1-recipes-10-soft-T4.htm', '_blank')">View Report</button></td>
+                <td>openai-gpt4.1-recipes-soft-10-T4.json</td>
+                <td>openai-gpt4.1-recipes-10-soft-T4</td>
+                <td>LARC_ingredients</td>
+                <td>retrieving ingredients from a recipe</td>
+                <td>gpt-4.1-2025-04-14</td>
+                <td>0.4</td>
+                <td>10</td>
+                <td>experiments/sets/ingredients/texts/recipes.txt</td>
+                <td>experiments/sets/ingredients/surveyprompts/soft.txt</td>
+                <td>experiments/sets/ingredients/presenceprompts/soft.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/openai-gpt4.1-recipes-10-soft-T8.htm', '_blank')">View Report</button></td>
+                <td>openai-gpt4.1-recipes-soft-10-T8.json</td>
+                <td>openai-gpt4.1-recipes-10-soft-T8</td>
+                <td>LARC_ingredients</td>
+                <td>retrieving ingredients from a recipe</td>
+                <td>gpt-4.1-2025-04-14</td>
+                <td>0.8</td>
+                <td>10</td>
+                <td>experiments/sets/ingredients/texts/recipes.txt</td>
+                <td>experiments/sets/ingredients/surveyprompts/soft.txt</td>
+                <td>experiments/sets/ingredients/presenceprompts/soft.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/openai-gpt4.1-synthetic-hard-10-T0.htm', '_blank')">View Report</button></td>
+                <td>openai-gpt4.1-synthetic-hard-10-T0.json</td>
+                <td>openai-gpt4.1-synthetic-hard-10-T0</td>
+                <td>LARC_Synthetic Text</td>
+                <td>synthetic text</td>
+                <td>gpt-4.1-2025-04-14</td>
+                <td>0</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/synthetic.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/hard.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/openai-gpt4.1-synthetic-hard-10-T4.htm', '_blank')">View Report</button></td>
+                <td>openai-gpt4.1-synthetic-hard-10-T4.json</td>
+                <td>openai-gpt4.1-synthetic-hard-10-T4</td>
+                <td>LARC_Synthetic Text</td>
+                <td>synthetic text</td>
+                <td>gpt-4.1-2025-04-14</td>
+                <td>0.4</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/synthetic.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/hard.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/openai-gpt4.1-synthetic-hard-10-T8.htm', '_blank')">View Report</button></td>
+                <td>openai-gpt4.1-synthetic-hard-10-T8.json</td>
+                <td>openai-gpt4.1-synthetic-hard-10-T8</td>
+                <td>LARC_Synthetic Text</td>
+                <td>synthetic text</td>
+                <td>gpt-4.1-2025-04-14</td>
+                <td>0.8</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/synthetic.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/hard.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/hard.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/openai-gpt4.1-synthetic-soft-10-T0.htm', '_blank')">View Report</button></td>
+                <td>openai-gpt4.1-synthetic-soft-10-T0.json</td>
+                <td>openai-gpt4.1-synthetic-soft-10-T0</td>
+                <td>LARC_Synthetic Text</td>
+                <td>synthetic text</td>
+                <td>gpt-4.1-2025-04-14</td>
+                <td>0</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/synthetic.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/soft.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/soft.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/openai-gpt4.1-synthetic-soft-10-T4.htm', '_blank')">View Report</button></td>
+                <td>openai-gpt4.1-synthetic-soft-10-T4.json</td>
+                <td>openai-gpt4.1-synthetic-soft-10-T4</td>
+                <td>LARC_Synthetic Text</td>
+                <td>synthetic text</td>
+                <td>gpt-4.1-2025-04-14</td>
+                <td>0.4</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/synthetic.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/soft.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/soft.txt</td>
+            </tr>
+            <tr>
+                <td><button class="report-btn" onclick="window.open('https://www.satisfice.com/reports/openai-gpt4.1-synthetic-soft-10-T8.htm', '_blank')">View Report</button></td>
+                <td>openai-gpt4.1-synthetic-soft-10-T8.json</td>
+                <td>openai-gpt4.1-synthetic-soft-10-T8</td>
+                <td>LARC_Synthetic Text</td>
+                <td>synthetic text</td>
+                <td>gpt-4.1-2025-04-14</td>
+                <td>0.8</td>
+                <td>10</td>
+                <td>experiments/sets/nounphrases/texts/synthetic.txt</td>
+                <td>experiments/sets/nounphrases/surveyprompts/soft.txt</td>
+                <td>experiments/sets/nounphrases/presenceprompts/soft.txt</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+    // Initialize row counts
+    document.addEventListener('DOMContentLoaded', function() {
+        updateRowCount();
+    });
+
+    function filterTable() {
+        const input = document.getElementById('searchInput');
+        const filter = input.value.toLowerCase();
+        const table = document.getElementById('configTable');
+        const rows = table.getElementsByTagName('tr');
+
+        let visibleCount = 0;
+
+        // Start from 1 to skip header row
+        for (let i = 1; i < rows.length; i++) {
+            const cells = rows[i].getElementsByTagName('td');
+            let found = false;
+
+            // Search in all cells except the button cell
+            for (let j = 1; j < cells.length; j++) {
+                const cellText = cells[j].textContent || cells[j].innerText;
+                if (cellText.toLowerCase().indexOf(filter) > -1) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (found) {
+                rows[i].style.display = '';
+                visibleCount++;
+            } else {
+                rows[i].style.display = 'none';
+            }
+        }
+
+        document.getElementById('rowCount').textContent = visibleCount;
+    }
+
+    function sortTable(columnIndex) {
+        const table = document.getElementById('configTable');
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+
+        rows.sort((a, b) => {
+            const aValue = a.cells[columnIndex].textContent;
+            const bValue = b.cells[columnIndex].textContent;
+
+            // Try numeric comparison
+            const aNum = parseFloat(aValue);
+            const bNum = parseFloat(bValue);
+
+            if (!isNaN(aNum) && !isNaN(bNum)) {
+                return bNum - aNum;
+            } else {
+                return aValue.localeCompare(bValue);
+            }
+        });
+
+        rows.forEach(row => tbody.appendChild(row));
+        updateRowCount();
+    }
+
+    function updateRowCount() {
+        const table = document.getElementById('configTable');
+        const rows = table.getElementsByTagName('tr');
+        const totalRows = rows.length - 1; // Exclude header
+        document.getElementById('totalRows').textContent = totalRows;
+        document.getElementById('rowCount').textContent = totalRows;
+    }
+    </script>
+</body>
+</html>

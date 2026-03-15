@@ -1,0 +1,25 @@
+test_id	Prompt	model	temperature	total_prompts	api_time_minutes	time per prompt	total_unique_items	repudiated_presence_pct	miss_rate	ambivalence_pct	ambivalent_items_count	ambivalent_items_total
+llama-recipes-10-soft-T8	soft	llama3.1:8b	0.8	570	131.1333	13.80350526	56	100	47.67857143	100	56	56
+llama-recipes-10-soft-T4	soft	llama3.1:8b	0.4	480	124.45	15.55625	47	100	36.59574468	100	47	47
+llama-recipes-10-soft-T0	soft	llama3.1:8b	0	280	72.7	15.57857143	27	100	0	100	27	27
+llama-recipes-10-hard-T8	hard	llama3.1:8b	0.8	220	57.5333	15.6909	21	100	49.04761905	100	21	21
+llama-recipes-10-hard-T4	hard	llama3.1:8b	0.4	160	40.5333	15.1999875	15	100	31.33333333	100	15	15
+llama-recipes-10-hard-T0	hard	llama3.1:8b	0	90	22.2667	14.84446667	8	100	0	100	8	8
+gemma-recipes-soft-10-T8	soft	gemma3:12b	0.8	480	125.45	15.68125	47	68.08510638	32.76595745	82.9787234	39	47
+gemma-recipes-soft-10-T4	soft	gemma3:12b	0.4	450	117.5	15.66666667	44	65.90909091	28.86363636	79.54545455	35	44
+gemma-recipes-soft-10-T0	soft	gemma3:12b	0	320	84.55	15.853125	31	58.06451613	0	58.06451613	18	31
+gemma-recipes-hard-10-T8	hard	gemma3:12b	0.8	140	36.9167	15.82144286	13	7.692307692	1.538461538	15.38461538	2	13
+gemma-recipes-hard-10-T4	hard	gemma3:12b	0.4	140	55	23.57142857	13	7.692307692	0	7.692307692	1	13
+gemma-recipes-hard-10-T0	hard	gemma3:12b	0	140	58.7833	25.19284286	13	7.692307692	0	7.692307692	1	13
+openai-gpt3.5-recipes-10-soft-T8	soft	gpt-3.5-turbo	0.8	580	10.8	1.117241379	57	97.01754386	30.1754386	100	57	57
+openai-gpt3.5-recipes-10-soft-T4	soft	gpt-3.5-turbo	0.4	490	9.2	1.126530612	48	100	12.08333333	100	48	48
+openai-gpt3.5-recipes-10-soft-T0	soft	gpt-3.5-turbo	0	490	9.4667	1.159187755	48	100	9.375	100	48	48
+openai-gpt3.5-recipes-10-hard-T8	hard	gpt-3.5-turbo	0.8	160	2.95	1.10625	15	54.66666667	12.66666667	100	15	15
+openai-gpt3.5-recipes-10-hard-T4	hard	gpt-3.5-turbo	0.4	140	2.7667	1.185728571	13	54.61538462	0	76.92307692	10	13
+openai-gpt3.5-recipes-10-hard-T0	hard	gpt-3.5-turbo	0	140	2.6667	1.142871429	13	50.76923077	0	61.53846154	8	13
+openai-gpt4.1-recipes-10-soft-T8	soft	gpt-4.1-2025-04-14	0.8	140	2.5333	1.0857	13	0	0	0	0	13
+openai-gpt4.1-recipes-10-soft-T4	soft	gpt-4.1-2025-04-14	0.4	140	2.55	1.092857143	13	0	0	0	0	13
+openai-gpt4.1-recipes-10-soft-T0	soft	gpt-4.1-2025-04-14	0	140	2.7	1.157142857	13	0	0	0	0	13
+openai-gpt4.1-recipes-10-hard-T8	hard	gpt-4.1-2025-04-14	0.8	140	2.7	1.157142857	13	0	0	0	0	13
+openai-gpt4.1-recipes-10-hard-T4	hard	gpt-4.1-2025-04-14	0.4	140	3.0833	1.321414286	13	0	0	0	0	13
+openai-gpt4.1-recipes-10-hard-T0	hard	gpt-4.1-2025-04-14	0	140	2.55	1.092857143	13	0	0.769230769	7.692307692	1	13
