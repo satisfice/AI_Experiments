@@ -1,6 +1,12 @@
 # LARC - LLM Aggregated Retrieval Consistency Tests
 
-This directory contains tools for testing LLM consistency in retrieving and identifying noun phrases from text.
+This directory contains tools and test results for testing LLM consistency in retrieving items from a text.
+
+There are two key ideas behind LARC:
+
+1. Compare open retrieval ("list all items of type X") with closed retrieval ("is item Y an X that is present in the text?"). They should be perfectly consistent.
+
+2. Perform many trials, since LLMs are probabilistic.
 
 ## Prerequisites
 
