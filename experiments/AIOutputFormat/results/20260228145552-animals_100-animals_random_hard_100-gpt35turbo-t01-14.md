@@ -1,0 +1,92 @@
+- Cat
+- Dog
+- Elephant
+- Giraffe
+- Tiger
+- Lion
+- Bear
+- Zebra
+- Rhino
+- Monkey
+- Koala
+- Kangaroo
+- Panda
+- Fox
+- Wolf
+- Deer
+- Rabbit
+- Horse
+- Dolphin
+- Shark
+- Octopus
+- Penguin
+- Eagle
+- Owl
+- Parrot
+- Flamingo
+- Crocodile
+- Alligator
+- Gorilla
+- Chimpanzee
+- Leopard
+- Cheetah
+- Hyena
+- Hippo
+- Rhinoceros
+- Polar bear
+- Jellyfish
+- Sea turtle
+- Seahorse
+- Lizard
+- Salamander
+- Tarantula
+- Scorpion
+- Spider
+- Crab
+- Lobster
+- Snail
+- Slug
+- Ant
+- Bee
+- Butterfly
+- Dragonfly
+- Grasshopper
+- Ladybug
+- Bumblebee
+- Mosquito
+- Cockroach
+- Scorpion
+- Centipede
+- Millipede
+- Earthworm
+- Starfish
+- Jellyfish
+- Clam
+- Oyster
+- Squid
+- Cuttlefish
+- Sea urchin
+- Sea cucumber
+- Hermit crab
+- Blue whale
+- Orca
+- Humpback whale
+- Sperm whale
+- Beluga whale
+- Narwhal
+- Great white shark
+- Hammerhead shark
+- Tiger shark
+- Bull shark
+- Manta ray
+- Stingray
+- Electric ray
+- Clownfish
+- Angelfish
+- Pufferfish
+- Seahorse
+- Starfish
+- Sea turtle
+- Dolphin
+- Octopus
+- Squid

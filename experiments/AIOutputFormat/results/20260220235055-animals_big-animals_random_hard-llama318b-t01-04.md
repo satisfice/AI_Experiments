@@ -1,0 +1,17 @@
+* Octopus
+* Lemur
+* Flamingo
+* Mongoose
+* Seal
+* Penguin
+* Falcon
+* Rabbit
+* Raccoon
+* Koala 
+* Cheetah
+* Snake
+* Wolf
+* Dolphin
+* Kangaroo
+* Tiger
+* Bear

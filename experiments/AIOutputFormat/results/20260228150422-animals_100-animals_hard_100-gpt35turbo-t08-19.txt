@@ -1,0 +1,100 @@
+1. Dog
+2. Cat
+3. Elephant
+4. Lion
+5. Tiger
+6. Giraffe
+7. Zebra
+8. Bear
+9. Fox
+10. Wolf
+11. Rabbit
+12. Deer
+13. Kangaroo
+14. Hippo
+15. Rhino
+16. Monkey
+17. Gorilla
+18. Panda
+19. Koala
+20. Dolphin
+21. Whale
+22. Penguin
+23. Koala
+24. Sloth
+25. Cheetah
+26. Ostrich
+27. Orangutan
+28. Cheetah
+29. Crocodile
+30. Alligator
+31. Camel
+32. Horse
+33. Donkey
+34. Cow
+35. Goat
+36. Sheep
+37. Pig
+38. Chicken
+39. Duck
+40. Turkey
+41. Eagle
+42. Falcon
+43. Hawk
+44. Seagull
+45. Owl
+46. Parrot
+47. Toucan
+48. Flamingo
+49. Pelican
+50. Swan
+51. Hummingbird
+52. Peacock
+53. Pigeon
+54. Sparrow
+55. Sparrowhawk
+56. Vulture
+57. Bat
+58. Rat
+59. Mouse
+60. Squirrel
+61. Chipmunk
+62. Beaver
+63. Raccoon
+64. Skunk
+65. Hedgehog
+66. Porcupine
+67. Armadillo
+68. Turtle
+69. Tortoise
+70. Frog
+71. Toad
+72. Salamander
+73. Newt
+74. Gecko
+75. Iguana
+76. Chameleon
+77. Lizard
+78. Snake
+79. Cobra
+80. Python
+81. Boa
+82. Rattlesnake
+83. Garter snake
+84. King snake
+85. Corn snake
+86. Milk snake
+87. Mole snake
+88. Black mamba
+89. Water moccasin
+90. Gila monster
+91. Komodo dragon
+92. Monitor lizard
+93. Reticulated python
+94. Ball python
+95. Green tree python
+96. Red-tailed boa
+97. Burmese python
+98. Anaconda
+99. Yellow anaconda
+100. Green anaconda

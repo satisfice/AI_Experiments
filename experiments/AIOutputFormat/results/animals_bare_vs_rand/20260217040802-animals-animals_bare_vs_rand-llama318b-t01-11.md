@@ -1,0 +1,14 @@
+* Lion
+* Tiger
+* Elephant
+* Gorilla
+* Kangaroo
+* Koala
+* Cheetah
+* Chimpanzee
+* Penguin
+* Octopus 
+* Wolf 
+* Bear 
+* Snake 
+* Dolphin

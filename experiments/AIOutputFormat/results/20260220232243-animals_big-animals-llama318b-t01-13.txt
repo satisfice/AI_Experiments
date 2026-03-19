@@ -1,0 +1,12 @@
+Cheetah
+Giraffe
+Kangaroo
+Penguin
+Tiger
+Elephant
+Wolf
+Monkey
+Bear
+Dolphin 
+Parrot
+Rabbit

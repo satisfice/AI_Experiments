@@ -1,0 +1,100 @@
+1. Lion
+2. Tiger
+3. Bear
+4. Elephant
+5. Giraffe
+6. Zebra
+7. Cheetah
+8. Wolf
+9. Fox
+10. Gorilla
+11. Panda
+12. Kangaroo
+13. Rhinoceros
+14. Hippopotamus
+15. Crocodile
+16. Parrot
+17. Eagle
+18. Dolphin
+19. Shark
+20. Octopus
+21. Penguin
+22. Owl
+23. Koala
+24. Snake
+25. Camel
+26. Bison
+27. Alligator
+28. Flamingo
+29. Jellyfish
+30. Sloth
+31. Horse
+32. Chimpanzee
+33. Ostrich
+34. Platypus
+35. Lemur
+36. Seal
+37. Walrus
+38. Llama
+39. Alpaca
+40. Otter
+41. Raccoon
+42. Hedgehog
+43. Chameleon
+44. Toucan
+45. Peacock
+46. Squirrel
+47. Meerkat
+48. Antelope
+49. Hyena
+50. Rhinoceros
+51. Armadillo
+52. Bison
+53. Elk
+54. Moose
+55. Boar
+56. Wolverine
+57. Bobcat
+58. Lynx
+59. Wildebeest
+60. Impala
+61. Cheetah
+62. Warthog
+63. Mongoose
+64. Lemming
+65. Groundhog
+66. Chipmunk
+67. Ocelot
+68. Marmoset
+69. Porcupine
+70. Aardvark
+71. Vulture
+72. Condor
+73. Osprey
+74. Pelican
+75. Rattlesnake
+76. Iguana
+77. Komodo dragon
+78. Anaconda
+79. Boa constrictor
+80. Reticulated python
+81. King cobra
+82. Black mamba
+83. Gaboon viper
+84. Cottonmouth
+85. Fer-de-lance
+86. Coral snake
+87. Garter snake
+88. Rat snake
+89. Milk snake
+90. Corn snake
+91. Water snake
+92. Green tree python
+93. Centralian carpet python
+94. Bullsnake
+95. Rat snake
+96. Rainbow boa
+97. Brazilian rainbow boa
+98. Ringed python
+99. Woma python
+100. Rough-scaled python

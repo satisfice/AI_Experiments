@@ -1,0 +1,101 @@
+Here is a list of 100 random animal names:
+1. Elephant
+2. Panther
+3. Frog
+4. Dolphin
+5. Giraffe
+6. Koala
+7. Zebra
+8. Owl
+9. Cheetah
+10. Seal
+11. Kangaroo
+12. Octopus
+13. Sloth
+14. Rhinoceros
+15. Penguin
+16. Fox
+17. Horse
+18. Bear
+19. Chimpanzee
+20. Platypus
+21. Otter
+22. Jellyfish
+23. Tiger
+24. Puffin
+25. Gorilla
+26. Orangutan
+27. Squirrel
+28. Wolf
+29. Deer
+30. Flamingo
+31. Bumblebee
+32. Lemur
+33. Camel
+34. Hedgehog
+35. Lobster
+36. Alpaca
+37. Parrot
+38. Raccoon
+39. Walrus
+40. Ostrich
+41. Chipmunk
+42. Toucan
+43. Seahorse
+44. Tasmanian Devil
+45. Manta Ray
+46. Axolotl
+47. Bison
+48. Kiwi
+49. Anaconda
+50. Llama
+51. Komodo Dragon
+52. Armadillo
+53. Hyena
+54. Bald Eagle
+55. Peacock
+56. Pelican
+57. Meerkat
+58. Cockatoo
+59. Caribou
+60. Hummingbird
+61. Mongoose
+62. Hammerhead Shark
+63. Boar
+64. Ibex
+65. Triceratops
+66. Firefly
+67. Koala
+68. Platypus
+69. Tarantula
+70. Beaver
+71. Quokka
+72. Pika
+73. Rattlesnake
+74. Scorpion
+75. Gila Monster
+76. Zebu
+77. Lemming
+78. Ibex
+79. Aardvark
+80. Ocelot
+81. Tapir
+82. Praying Mantis
+83. Crab
+84. Peafowl
+85. Skunk
+86. Dingo
+87. Walrus
+88. Hornbill
+89. Capybara
+90. Dik Dik
+91. Gazelle
+92. Hedgehog
+93. Skunk
+94. Orca
+95. Narwhal
+96. Platypus
+97. Puffin
+98. Red Panda
+99. Salamander
+100. Wolverine

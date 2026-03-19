@@ -1,0 +1,29 @@
+- African Elephant  
+- Bengal Tiger  
+- Giant Panda  
+- Red Fox  
+- Blue Jay  
+- Emperor Penguin  
+- Komodo Dragon  
+- Bald Eagle  
+- Grey Wolf  
+- Snow Leopard  
+- Arabian Oryx  
+- Atlantic Puffin  
+- Gorilla  
+- Kangaroo  
+- Owl  
+- Rhinoceros  
+- King Cobra  
+- Sea Otter  
+- Chimpanzee  
+- Cheetah  
+- Platypus  
+- Humpback Whale  
+- Sloth  
+- Macaw  
+- Crocodile  
+- Mountain Goat  
+- Caribou  
+- Hedgehog  
+- Jackrabbit

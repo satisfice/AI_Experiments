@@ -1,0 +1,17 @@
+Giraffe
+Pangolin
+Chimpanzee
+Mole
+Koala
+Fennec Fox
+Quail
+Narwhal
+Okapi
+Rhinoceros
+Octopus 
+Tortoise 
+Lemur 
+Cassowary 
+Manatee 
+Ostrich 
+Sea Lion

@@ -1,0 +1,74 @@
+- Dog
+- Cat
+- Bird
+- Fish
+- Elephant
+- Lion
+- Tiger
+- Bear
+- Giraffe
+- Monkey
+- Snake
+- Rabbit
+- Frog
+- Dolphin
+- Horse
+- Cow
+- Sheep
+- Pig
+- Chicken
+- Duck
+- Deer
+- Fox
+- Wolf
+- Kangaroo
+- Penguin
+- Octopus
+- Jellyfish
+- Crab
+- Lobster
+- Shrimp
+- Squid
+- Elephant seal
+- Gorilla
+- Orangutan
+- Chimpanzee
+- Platypus
+- Koala
+- Tasmanian devil
+- Wombat
+- Kangaroo
+- Wallaby
+- Ostrich
+- Emu
+- Koala
+- Quokka
+- Quoll
+- Tasmanian tiger
+- Tasmanian pademelon
+- Tasmanian bettong
+- Tasmanian echidna
+- Tasmanian kookaburra
+- Tasmanian falcon
+- Tasmanian wedge-tailed eagle
+- Tasmanian currawong
+- Tasmanian rosella
+- Tasmanian firetail
+- Tasmanian scrubfowl
+- Tasmanian raven
+- Tasmanian crow
+- Tasmanian magpie
+- Tasmanian butcherbird
+- Tasmanian thrush
+- Tasmanian swallow
+- Tasmanian bristlebird
+- Tasmanian lyrebird
+- Tasmanian quail
+- Tasmanian partridge
+- Tasmanian nightjar
+- Tasmanian owl
+- Tasmanian swift
+- Tasmanian honeyeater
+- Tasmanian thornbill
+- Tasmanian pardalote
+- Tasmanian robin

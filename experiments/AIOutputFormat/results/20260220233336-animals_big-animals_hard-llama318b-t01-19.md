@@ -1,0 +1,16 @@
+Monkey
+Lemur
+Sloth
+Rabbit
+Giraffe
+Tiger
+Lynx
+Wolf
+Kangaroo
+Penguin
+Snake
+Crocodile
+Bear
+Elephant
+Gorilla
+Donkey

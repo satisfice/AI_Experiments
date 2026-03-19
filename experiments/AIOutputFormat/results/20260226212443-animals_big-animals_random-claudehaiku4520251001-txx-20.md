@@ -1,0 +1,15 @@
+- Lion
+- Penguin
+- Elephant
+- Octopus
+- Giraffe
+- Dolphin
+- Wolverine
+- Flamingo
+- Koala
+- Jaguar
+- Narwhal
+- Hedgehog
+- Peacock
+- Otter
+- Cheetah

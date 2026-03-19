@@ -1,0 +1,15 @@
+- Giraffe
+- Platypus
+- Lynx
+- Capybara
+- Flamingo
+- Badger
+- Okapi
+- Seahorse
+- Quokka
+- Mongoose
+- Narwhal
+- Caracal
+- Tapir
+- Kiwi
+- Hyena

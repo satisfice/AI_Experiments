@@ -1,0 +1,15 @@
+- Elephant
+- Penguin
+- Cheetah
+- Octopus
+- Flamingo
+- Wolverine
+- Jellyfish
+- Rhinoceros
+- Peacock
+- Wombat
+- Lynx
+- Kiwi
+- Anteater
+- Platypus
+- Caracal

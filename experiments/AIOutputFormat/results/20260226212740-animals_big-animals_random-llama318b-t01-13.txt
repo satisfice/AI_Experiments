@@ -1,0 +1,17 @@
+Lemur
+Capybara
+Fennec
+Kangaroo
+Toucan
+Penguin
+Ostrich
+Sparrow
+Crocodile
+Rhinoceros
+Hedgehog
+Badger
+Quail
+Gazelle
+Walrus
+Flamingo 
+Marmot

@@ -1,0 +1,10 @@
+1. Flamingo
+2. Cheetah
+3. Koala
+4. Fennec
+5. Axolotl
+6. Narwhal
+7. Quail
+8. Meerkat
+9. Chinchilla
+10. Warthog

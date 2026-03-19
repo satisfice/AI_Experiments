@@ -1,0 +1,113 @@
+Elephant  
+Golden Eagle  
+Tiger  
+Giraffe  
+Koala  
+Bald Eagle  
+Crocodile  
+Penguin  
+Hippopotamus  
+Gorilla  
+Leopard  
+Panda  
+Rhinoceros  
+Dolphin  
+Siberian Husky  
+Chameleon  
+Kangaroo  
+Salmon  
+Orangutan  
+Antelope  
+Tasmanian devil  
+Swan  
+Wolverine  
+Jaguar  
+Lizard  
+Bat  
+Moose  
+Sea turtle  
+Zebra  
+Ostrich  
+Sealion  
+Camel  
+Frog  
+Parrot  
+Cougar  
+Hyena  
+Otter  
+Buffalo  
+Armadillo  
+Dingo  
+Eagle  
+Shark  
+Vulture  
+Seagull  
+Deer  
+Koala bear  
+Goat  
+Rabbit  
+Skunk  
+Anteater  
+Blowfish  
+Cheetah  
+Ibex  
+Turtle  
+Lemur  
+Ocelot  
+Guinea pig  
+Meerkat  
+Elephant seal  
+Red fox  
+Porcupine  
+Cuttlefish  
+Walrus  
+Sandcat  
+Jackal  
+Lynx  
+Hummingbird  
+Porpoise  
+Bison  
+Capybara  
+Bald Eagle  
+Caiman  
+Gibbon  
+Kingfisher  
+Mongoose  
+Pigeon  
+Koala  
+Python  
+Salamander  
+Raccoon  
+Snail  
+Thomson's Gazelle  
+Wallaby  
+Warthog  
+Viper  
+Yellowfin Tuna  
+Zorilla  
+Anaconda  
+Barracuda  
+Bushbaby  
+Cavy  
+Dodo  
+Echidna  
+Firefly  
+Gharial  
+Hummingbird  
+Indian Cobra  
+Jackrabbit  
+Kiwi  
+Lemur  
+Mastiff  
+Numbat  
+Oryx  
+Pangolin  
+Quokka  
+Reindeer  
+Scorpion  
+Tamarin  
+Uakari  
+Vicuña  
+Wombat  
+Xerus  
+Yellowtail Kingfish

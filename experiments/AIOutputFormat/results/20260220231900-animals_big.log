@@ -1,0 +1,15 @@
+Experiment Log
+==============
+
+Timestamp: 20260220231900
+Experiment: animals_big
+Model: claude-haiku-4-5-20251001
+Prompt: animals_random_hard.prompt
+Format(s): txt, txt1, md, json, yml, csv, html
+Temperature: default
+Iterations: 20
+
+No files required UTF-8 encoding (all outputs contained only ASCII characters).
+
+Total Files Generated: 140
+Files with Non-ASCII Characters: 0

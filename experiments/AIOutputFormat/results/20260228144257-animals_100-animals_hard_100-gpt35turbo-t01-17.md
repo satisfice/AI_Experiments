@@ -1,0 +1,96 @@
+- Lion
+- Elephant
+- Giraffe
+- Tiger
+- Bear
+- Zebra
+- Monkey
+- Rhino
+- Crocodile
+- Dolphin
+- Penguin
+- Koala
+- Kangaroo
+- Cheetah
+- Gorilla
+- Polar bear
+- Hippo
+- Flamingo
+- Bald eagle
+- Octopus
+- Seahorse
+- Blue whale
+- Owl
+- Fox
+- Wolf
+- Bald eagle
+- Panther
+- Jellyfish
+- Alligator
+- Chimpanzee
+- Parrot
+- Orangutan
+- Puma
+- Sloth
+- Koala
+- Hedgehog
+- Starfish
+- Sea turtle
+- Orca
+- Kangaroo
+- Kookaburra
+- Walrus
+- Platypus
+- Armadillo
+- Ostrich
+- Gazelle
+- Hyena
+- Lemur
+- Meerkat
+- Otter
+- Raccoon
+- Squirrel
+- Bison
+- Caribou
+- Elk
+- Moose
+- Mountain goat
+- Mountain lion
+- Peregrine falcon
+- Pronghorn
+- Snowshoe hare
+- Groundhog
+- Marmot
+- Bat
+- Wolf spider
+- Scorpion
+- Black widow spider
+- Tarantula
+- Poison dart frog
+- Coral snake
+- Komodo dragon
+- Anaconda
+- Rattlesnake
+- American alligator
+- Nile crocodile
+- Bearded dragon
+- Corn snake
+- Geckos
+- Green tree python
+- Leatherback turtle
+- Anglerfish
+- Stonefish
+- Stingray
+- Boa constrictor
+- Python
+- Anaconda
+- Cobra
+- Reticulated python
+- Pit viper
+- Monocled cobra
+- Banded krait
+- Black mamba
+- Green mamba
+- Inland taipan
+- King cobra
+- Tiger snake

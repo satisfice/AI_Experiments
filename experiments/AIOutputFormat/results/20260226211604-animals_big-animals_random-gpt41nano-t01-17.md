@@ -1,0 +1,10 @@
+- Red Fox  
+- Siberian Tiger  
+- Blue Jay  
+- African Elephant  
+- Green Iguana  
+- Snow Leopard  
+- Bald Eagle  
+- Komodo Dragon  
+- Southern Cassowary  
+- Black Rhinoceros

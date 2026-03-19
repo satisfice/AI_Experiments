@@ -1,0 +1,15 @@
+Experiment Log
+==============
+
+Timestamp: 20260301150915
+Experiment: animals_100
+Model: llama3.1:8b
+Prompt: animals_hard_100.prompt
+Format(s): html, csv
+Temperature: 08
+Iterations: 20
+
+No files required UTF-8 encoding (all outputs contained only ASCII characters).
+
+Total Files Generated: 0
+Files with Non-ASCII Characters: 0

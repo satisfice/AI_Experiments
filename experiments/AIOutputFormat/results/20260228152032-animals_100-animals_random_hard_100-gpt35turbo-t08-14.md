@@ -1,0 +1,92 @@
+- Cat
+- Dog
+- Elephant
+- Tiger
+- Lion
+- Zebra
+- Giraffe
+- Bear
+- Fox
+- Rabbit
+- Dolphin
+- Shark
+- Eagle
+- Owl
+- Penguin
+- Koala
+- Kangaroo
+- Crocodile
+- Rhinoceros
+- Hippopotamus
+- Gorilla
+- Chimpanzee
+- Octopus
+- Jellyfish
+- Snake
+- Lizard
+- Hedgehog
+- Horse
+- Deer
+- Wolf
+- Bat
+- Squirrel
+- Raccoon
+- Otter
+- Beaver
+- Moose
+- Toucan
+- Parrot
+- Flamingo
+- Pelican
+- Pigeon
+- Seagull
+- Sparrow
+- Crow
+- Swan
+- Duck
+- Goose
+- Heron
+- Crane
+- Hummingbird
+- Woodpecker
+- Blue Jay
+- Cardinal
+- Sparrowhawk
+- Falcon
+- Eagle Owl
+- Barn Owl
+- Snowy Owl
+- Great Horned Owl
+- Osprey
+- Peregrine Falcon
+- Kestrel
+- American Kestrel
+- Cooper's Hawk
+- Red-Tailed Hawk
+- Golden Eagle
+- Bald Eagle
+- Turkey Vulture
+- Red-Shouldered Hawk
+- Swainson's Hawk
+- Roadrunner
+- Pheasant
+- Wild Turkey
+- American Woodcock
+- Killdeer
+- American Avocet
+- Godwit
+- Snowy Egret
+- Great Blue Heron
+- Great Egret
+- Canada Goose
+- Mallard
+- Northern Pintail
+- American Black Duck
+- Harlequin Duck
+- Long-Tailed Duck
+- Wood Duck
+- Red-Breasted Merganser
+- Black Scoter
+- Ruddy Duck
+- Marbled Godwit
+- Short-Billed Dowitcher

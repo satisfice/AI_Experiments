@@ -1,0 +1,10 @@
+Lemur
+Tiger
+Koala
+Giraffe
+Bear
+Wolf
+Horse
+Donkey
+Rabbit
+Fox

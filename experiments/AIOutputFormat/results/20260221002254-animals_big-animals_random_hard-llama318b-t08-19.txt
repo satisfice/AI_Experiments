@@ -1,0 +1,17 @@
+Ostrich
+Leopard
+Rhinoceros
+Penguin
+Kangaroo
+Tiger
+Falcon
+Giraffe
+Cheetah
+Elephant 
+Walrus 
+Mongoose 
+Jaguar 
+Seal 
+Hedgehog 
+Fox 
+Chimpanzee

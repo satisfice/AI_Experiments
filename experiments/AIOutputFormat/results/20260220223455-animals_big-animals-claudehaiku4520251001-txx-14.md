@@ -1,0 +1,20 @@
+- Lion
+- Elephant
+- Penguin
+- Giraffe
+- Dolphin
+- Cheetah
+- Polar bear
+- Kangaroo
+- Octopus
+- Peacock
+- Wolf
+- Rhinoceros
+- Panda
+- Eagle
+- Zebra
+- Koala
+- Otter
+- Flamingo
+- Gorilla
+- Crocodile

@@ -1,0 +1,96 @@
+- Dog
+- Cat
+- Elephant
+- Giraffe
+- Lion
+- Tiger
+- Monkey
+- Bear
+- Wolf
+- Fox
+- Rabbit
+- Deer
+- Zebra
+- Kangaroo
+- Koala
+- Panda
+- Hippo
+- Rhino
+- Gorilla
+- Chimpanzee
+- Cheetah
+- Crocodile
+- Alligator
+- Dolphin
+- Whale
+- Shark
+- Octopus
+- Jellyfish
+- Penguin
+- Ostrich
+- Flamingo
+- Parrot
+- Eagle
+- Owl
+- Falcon
+- Peacock
+- Toucan
+- Pelican
+- Seagull
+- Hummingbird
+- Butterfly
+- Dragonfly
+- Ladybug
+- Grasshopper
+- Ant
+- Spider
+- Scorpion
+- Centipede
+- Millipede
+- Bee
+- Wasp
+- Hornet
+- Mosquito
+- Fly
+- Cockroach
+- Termite
+- Cricket
+- Grasshopper
+- Firefly
+- Caterpillar
+- Snail
+- Slug
+- Crab
+- Lobster
+- Shrimp
+- Jellyfish
+- Starfish
+- Sea urchin
+- Sea cucumber
+- Clownfish
+- Seahorse
+- Sea turtle
+- Manta ray
+- Stingray
+- Blue whale
+- Dolphin
+- Penguin
+- Otter
+- seals
+- Walrus
+- Bearded seal
+- Sea otter
+- Arctic fox
+- Arctic wolf
+- Polar bear
+- Caribou
+- Arctic hare
+- Musk ox
+- Arctic tern
+- puffin
+- Snowy owl
+- Snow geese
+- Snowshoe hare
+- Arctic tern
+- Snowy dog
+- Snow leopard

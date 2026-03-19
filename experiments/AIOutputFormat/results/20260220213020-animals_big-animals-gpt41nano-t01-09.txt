@@ -1,0 +1,51 @@
+Lion  
+Tiger  
+Elephant  
+Giraffe  
+Zebra  
+Kangaroo  
+Penguin  
+Koala  
+Hippopotamus  
+Rhinoceros  
+Cheetah  
+Leopard  
+Brown Bear  
+Polar Bear  
+Wolverine  
+Fox  
+Wolf  
+Deer  
+Moose  
+Camel  
+Llama  
+Alpaca  
+Chihuahua  
+Bulldog  
+Siberian Husky  
+Golden Retriever  
+Siamese Cat  
+Persian Cat  
+Parrot  
+Canary  
+Hummingbird  
+Frog  
+Salamander  
+Crocodile  
+Alligator  
+Snake  
+Turtle  
+Dolphin  
+Orca  
+Shark  
+Octopus  
+Sea Turtle  
+Crab  
+Lobster  
+Jellyfish  
+Starfish  
+Seahorse  
+Penguin  
+Ostrich  
+Emu  
+Cockatoo

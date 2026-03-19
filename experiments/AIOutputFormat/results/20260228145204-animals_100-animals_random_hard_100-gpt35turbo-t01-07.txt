@@ -1,0 +1,91 @@
+- Dog
+- Cat
+- Elephant
+- Giraffe
+- Lion
+- Tiger
+- Zebra
+- Monkey
+- Bear
+- Wolf
+- Dolphin
+- Fox
+- Deer
+- Kangaroo
+- Hippo
+- Rhino
+- Camel
+- Cheetah
+- Gorilla
+- Penguin
+- Koala
+- Panda
+- Otter
+- Octopus
+- Seahorse
+- Jellyfish
+- Moose
+- Raccoon
+- Squirrel
+- Hedgehog
+- Ostrich
+- Parrot
+- Flamingo
+- Turtle
+- Crocodile
+- Alligator
+- Eagle
+- Owl
+- Falcon
+- Swan
+- Shark
+- Whale
+- Salmon
+- Lobster
+- Crab
+- Butterfly
+- Peacock
+- Puma
+- Buffalo
+- Bison
+- Antelope
+- Sloth
+- Lemur
+- Chimpanzee
+- Orangutan
+- Seagull
+- Pelican
+- Platypus
+- Armadillo
+- Rhinoceros
+- Jaguar
+- Corgi
+- Husky
+- Poodle
+- Bulldog
+- Rottweiler
+- Dalmatian
+- Chihuahua
+- Boxer
+- Great Dane
+- Labrador
+- Pug
+- Beagle
+- Yorkie
+- Maltese
+- Doberman
+- Border Collie
+- Australian Shepherd
+- Golden Retriever
+- Shih Tzu
+- Bernese Mountain Dog
+- Jack Russell Terrier
+- Mastiff
+- Saint Bernard
+- Pomeranian
+- Papillon
+- Shiba Inu
+- Bichon Frise
+- Vizsla
+- German Shepherd
+- French Bulldog

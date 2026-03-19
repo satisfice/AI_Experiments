@@ -1,0 +1,16 @@
+Badger
+Pangolin
+Ostrich
+Gorilla
+Octopus
+Hedgehog
+Mongoose
+Cheetah
+Lemur
+Rhinoceros
+Dolphin
+Fox
+Crocodile
+Koala
+Falcon
+Raccoon

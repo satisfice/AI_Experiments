@@ -1,0 +1,97 @@
+- Dog
+- Cat
+- Fish
+- Elephant
+- Lion
+- Tiger
+- Bear
+- Giraffe
+- Zebra
+- Monkey
+- Horse
+- Kangaroo
+- Rabbit
+- Deer
+- Dolphin
+- Penguin
+- Owl
+- Eagle
+- Fox
+- Wolf
+- Rhinoceros
+- Hippopotamus
+- Crocodile
+- Camel
+- Kangaroo
+- Gorilla
+- Koala
+- Panda
+- Octopus
+- Jellyfish
+- Butterfly
+- Hummingbird
+- Flamingo
+- Peacock
+- Parrot
+- Toucan
+- Falcon
+- Anaconda
+- Cobra
+- Boa
+- Tarantula
+- Scorpion
+- Beetle
+- Grasshopper
+- Ladybug
+- Ant
+- Bee
+- Spider
+- Snail
+- Slug
+- Worm
+- Bat
+- Squirrel
+- Chipmunk
+- Raccoon
+- Skunk
+- Hedgehog
+- Opossum
+- Mole
+- Prairie Dog
+- Armadillo
+- Platypus
+- Koala
+- Kangaroo
+- Tasmanian Devil
+- Dingo
+- Kookaburra
+- Cockatoo
+- Emu
+- Wombat
+- Echidna
+- Quokka
+- Wallaby
+- Tasmanian Tiger
+- Spider Monkey
+- Capuchin Monkey
+- Gibbon
+- Orangutan
+- Lemur
+- Tarsier
+- Proboscis Monkey
+- Siamang
+- Gorilla
+- Chimpanzee
+- Bonobo
+- Baboon
+- Mandrill
+- Drill
+- Gelada
+- Vervet Monkey
+- Rhesus Macaque
+- Barbary Macaque
+- Japanese Macaque
+- Snow Monkey
+- Proboscis Monkey
+- Pygmy Marmoset
+- Tamarin

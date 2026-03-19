@@ -1,0 +1,10 @@
+1. Tiger
+2. Elephant
+3. Giraffe
+4. Lion
+5. Zebra
+6. Panda
+7. Koala
+8. Hippo
+9. Rhinoceros
+10. Gorilla

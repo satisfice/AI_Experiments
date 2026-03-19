@@ -1,0 +1,36 @@
+```json
+{
+  "animals": [
+    "Quokka",
+    "Narwhal",
+    "Pangolin",
+    "Axolotl",
+    "Capybara",
+    "Okapi",
+    "Numbat",
+    "Kakapo",
+    "Gharial",
+    "Takin",
+    "Lemur",
+    "Cassowary",
+    "Wallaby",
+    "Porcupine",
+    "Emu",
+    "Chinchilla",
+    "Tapir",
+    "Musk Ox",
+    "Echidna",
+    "Lynx",
+    "Platypus",
+    "Wombat",
+    "Pronghorn",
+    "Ocelot",
+    "Kiwi",
+    "Dhole",
+    "Saola",
+    "Cassowary",
+    "Margay",
+    "Tarsier"
+  ]
+}
+```

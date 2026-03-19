@@ -1,0 +1,100 @@
+1. Lion
+2. Tiger
+3. Elephant
+4. Giraffe
+5. Zebra
+6. Cheetah
+7. Gorilla
+8. Panda
+9. Koala
+10. Kangaroo
+11. Wolf
+12. Fox
+13. Bear
+14. Deer
+15. Moose
+16. Rabbit
+17. Squirrel
+18. Chipmunk
+19. Raccoon
+20. Skunk
+21. Otter
+22. Beaver
+23. Platypus
+24. Dolphin
+25. Whale
+26. Shark
+27. Octopus
+28. Jellyfish
+29. Starfish
+30. Sea turtle
+31. Penguin
+32. Seal
+33. Walrus
+34. Polar bear
+35. Elephant seal
+36. Orangutan
+37. Chimpanzee
+38. Baboon
+39. Lemur
+40. Sloth
+41. Armadillo
+42. Porcupine
+43. Hedgehog
+44. Opossum
+45. Bat
+46. Kangaroo rat
+47. Wombat
+48. Tasmanian devil
+49. Wallaby
+50. Red panda
+51. Meerkat
+52. Hyena
+53. Jackal
+54. Ostrich
+55. Emu
+56. Flamingo
+57. Toucan
+58. Parrot
+59. Pelican
+60. Hummingbird
+61. Eagle
+62. Falcon
+63. Hawk
+64. Owl
+65. Vulture
+66. Crow
+67. Raven
+68. Blue jay
+69. Cardinal
+70. Robin
+71. Sparrow
+72. Swallow
+73. Seagull
+74. Pigeon
+75. Chickadee
+76. Woodpecker
+77. Nuthatch
+78. Kingfisher
+79. Heron
+80. Egret
+81. Crane
+82. Stork
+83. Ibex
+84. Gazelle
+85. Antelope
+86. Wildebeest
+87. Bison
+88. Yak
+89. Musk ox
+90. Water buffalo
+91. Caribou
+92. Reindeer
+93. Camel
+94. Llama
+95. Alpaca
+96. Vicuña
+97. Guanaco
+98. Tapir
+99. Hippopotamus
+100. Rhinoceros

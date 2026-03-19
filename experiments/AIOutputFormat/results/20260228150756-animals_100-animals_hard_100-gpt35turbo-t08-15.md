@@ -1,0 +1,94 @@
+- Dog
+- Cat
+- Fish
+- Bird
+- Lion
+- Elephant
+- Tiger
+- Giraffe
+- Monkey
+- Bear
+- Deer
+- Rabbit
+- Horse
+- Cow
+- Sheep
+- Pig
+- Chicken
+- Duck
+- Goose
+- Fox
+- Wolf
+- Kangaroo
+- Zebra
+- Rhinoceros
+- Hippopotamus
+- Alligator
+- Crocodile
+- Dolphin
+- Whale
+- Shark
+- Octopus
+- Jellyfish
+- Snail
+- Butterfly
+- Bee
+- Ant
+- Spider
+- Scorpion
+- Crab
+- Lobster
+- Starfish
+- Seahorse
+- Jellyfish
+- Goldfish
+- Parrot
+- Owl
+- Eagle
+- Peacock
+- Flamingo
+- Penguin
+- Ostrich
+- Toucan
+- Falcon
+- Bald eagle
+- Blue jay
+- Hummingbird
+- Robin
+- Sparrow
+- Pelican
+- Swan
+- Firefly
+- Ladybug
+- Praying mantis
+- Grasshopper
+- Dragonfly
+- Caterpillar
+- Centipede
+- Millipede
+- Earthworm
+- Mosquito
+- Bedbug
+- Flea
+- Tick
+- Louse
+- Cockroach
+- Termite
+- Weevil
+- Wasp
+- Hornet
+- Yellow jacket
+- Cicada
+- Locust
+- Katydid
+- Grasshopper
+- Cricket
+- Stink bug
+- Moth
+- Gnat
+- Fruit fly
+- Horsefly
+- Housefly
+- Butterfly
+- Monarch butterfly
+- Swallowtail butterfly

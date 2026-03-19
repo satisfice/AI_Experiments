@@ -1,0 +1,15 @@
+1. Quail
+2. Narwhal
+3. Puma
+4. Llama
+5. Ostrich
+6. Kangaroo
+7. Gorilla
+8. Mongoose
+9. Raccoon
+10. Falcon
+11. Cheetah
+12. Badger
+13. Wolf
+14. Armadillo
+15. Eel

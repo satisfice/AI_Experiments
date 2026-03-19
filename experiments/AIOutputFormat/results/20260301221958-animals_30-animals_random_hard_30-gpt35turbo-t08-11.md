@@ -1,0 +1,30 @@
+- Lion
+- Elephant
+- Tiger
+- Zebra
+- Giraffe
+- Bear
+- Wolf
+- Fox
+- Kangaroo
+- Penguin
+- Dolphin
+- Koala
+- Cheetah
+- Gorilla
+- Rhinoceros
+- Hippopotamus
+- Ostrich
+- Octopus
+- Jellyfish
+- Flamingo
+- Tarantula
+- Crocodile
+- Chimpanzee
+- Orangutan
+- Bald Eagle
+- Hammerhead Shark
+- Komodo Dragon
+- Red Panda
+- Snow Leopard
+- Platypus

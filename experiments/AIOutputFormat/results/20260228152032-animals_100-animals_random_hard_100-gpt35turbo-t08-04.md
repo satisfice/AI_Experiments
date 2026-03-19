@@ -1,0 +1,93 @@
+- Lion
+- Elephant
+- Giraffe
+- Zebra
+- Tiger
+- Penguin
+- Dolphin
+- Koala
+- Kangaroo
+- Gorilla
+- Cheetah
+- Hippopotamus
+- Rhinoceros
+- Grizzly Bear
+- Panda
+- Red Fox
+- Snow Leopard
+- Blue Whale
+- Chimpanzee
+- Bald Eagle
+- Polar Bear
+- Sea Turtle
+- Octopus
+- Wolf
+- Flamingo
+- Orangutan
+- Alligator
+- Black Bear
+- Jaguar
+- Ostrich
+- Great White Shark
+- Parrot
+- Kangaroo
+- Snowy Owl
+- Camel
+- Antelope
+- Jaguar
+- Walrus
+- Puffin
+- Bald Eagle
+- Armadillo
+- Bison
+- Moose
+- Porcupine
+- Red Panda
+- Skunk
+- Bobcat
+- Raccoon
+- Chimpanzee
+- Ferret
+- Hedgehog
+- Lemur
+- Otter
+- Red Squirrel
+- Salamander
+- Platypus
+- Tasmanian Devil
+- Koala
+- Kangaroo
+- Wombat
+- Emu
+- Sugarglider
+- Quokka
+- Cockatoo
+- Galah
+- Wallaby
+- Tasmanian Tiger
+- Kiwi
+- Kea
+- Kaka
+- Kakapo
+- Tuatara
+- Tui
+- Pukeko
+- Weka
+- Moa
+- Pukeko
+- Kakapo
+- Kea
+- Takahe
+- Kea
+- Kakapo
+- Pukeko
+- Kiwi
+- Weka
+- Tui
+- Kaka
+- Moa
+- Kakapo
+- Pukeko
+- Kea
+- Kiwi
+- Moa

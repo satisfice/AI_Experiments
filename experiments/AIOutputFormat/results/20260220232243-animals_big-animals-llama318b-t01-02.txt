@@ -1,0 +1,14 @@
+Tiger
+Lion
+Giraffe
+Elephant
+Monkey
+Kangaroo
+Penguin
+Horse
+Cow
+Bear
+Wolf
+Dolphin 
+Falcon
+Snake

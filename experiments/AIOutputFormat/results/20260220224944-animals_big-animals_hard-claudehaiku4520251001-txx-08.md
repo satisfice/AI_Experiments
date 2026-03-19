@@ -1,0 +1,96 @@
+- Aardvark
+- Albatross
+- Alligator
+- Alpaca
+- Anaconda
+- Anteater
+- Antelope
+- Ape
+- Armadillo
+- Badger
+- Bagworm
+- Bald Eagle
+- Bandicoot
+- Barnacle
+- Barracuda
+- Bat
+- Bear
+- Beaver
+- Bee
+- Beetle
+- Beluga
+- Bighorn Sheep
+- Bilby
+- Bison
+- Black Panther
+- Boa
+- Bobcat
+- Bonobo
+- Booby
+- Moose
+- Moth
+- Mule
+- Musk Ox
+- Muskrat
+- Narwhal
+- Newt
+- Nighthawk
+- Numbat
+- Nut Weevil
+- Ocelot
+- Octopus
+- Okapi
+- Opossum
+- Orangutan
+- Orca
+- Ostrich
+- Otter
+- Owl
+- Ox
+- Oyster
+- Paca
+- Panda
+- Panther
+- Parrot
+- Parrotfish
+- Partridge
+- Peacock
+- Peafowl
+- Pelican
+- Penguin
+- Peregrine Falcon
+- Periwinkle
+- Phalanger
+- Pheasant
+- Pig
+- Pigeon
+- Pika
+- Pike
+- Pilchard
+- Pilot Whale
+- Pinniped
+- Pipit
+- Piranha
+- Pit Viper
+- Porcupine
+- Porpoise
+- Possum
+- Potto
+- Prawn
+- Primate
+- Pronghorn
+- Puffin
+- Pug
+- Puma
+- Pupa
+- Pupfish
+- Puppy
+- Purl
+- Puss Caterpillar
+- Pussycat
+- Putto
+- Pycnogonid
+- Pye-dog
+- Pygmy Hippopotamus
+- Pylon
+- Python

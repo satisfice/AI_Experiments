@@ -1,0 +1,53 @@
+Experiment Log
+==============
+
+Timestamp: 20260228161817
+Experiment: animals_100
+Model: claude-haiku-4-5-20251001
+Prompt: animals_random_hard_100.prompt
+Format(s): txt, txt1, md, json, yml, csv, html
+Temperature: default
+Iterations: 20
+
+Files Requiring UTF-8 Encoding (Non-ASCII Characters):
+-----------------------------------------------------
+  - 20260228161817-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-08.txt
+  - 20260228161817-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-10.txt
+  - 20260228161817-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-14.txt
+  - 20260228161817-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-17.txt
+  - 20260228161944-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-03.txt1
+  - 20260228161944-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-11.txt1
+  - 20260228161944-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-12.txt1
+  - 20260228161944-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-15.txt1
+  - 20260228161944-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-16.txt1
+  - 20260228161944-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-17.txt1
+  - 20260228161944-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-18.txt1
+  - 20260228162112-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-01.md
+  - 20260228162112-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-04.md
+  - 20260228162112-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-07.md
+  - 20260228162112-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-11.md
+  - 20260228162112-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-13.md
+  - 20260228162112-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-14.md
+  - 20260228162112-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-16.md
+  - 20260228162112-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-20.md
+  - 20260228162237-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-14.json
+  - 20260228162431-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-05.yml
+  - 20260228162431-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-08.yml
+  - 20260228162431-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-09.yml
+  - 20260228162431-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-10.yml
+  - 20260228162431-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-12.yml
+  - 20260228162431-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-18.yml
+  - 20260228162431-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-19.yml
+  - 20260228162431-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-20.yml
+  - 20260228162606-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-05.csv
+  - 20260228162606-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-12.csv
+  - 20260228162721-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-03.html
+  - 20260228162721-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-04.html
+  - 20260228162721-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-09.html
+  - 20260228162721-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-10.html
+  - 20260228162721-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-14.html
+  - 20260228162721-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-16.html
+  - 20260228162721-animals_random_hard_100-animals_100-claudehaiku4520251001-txx-20.html
+
+Total Files Generated: 140
+Files with Non-ASCII Characters: 37

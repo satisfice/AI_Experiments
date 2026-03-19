@@ -1,0 +1,20 @@
+Lion  
+Elephant  
+Giraffe  
+Tiger  
+Kangaroo  
+Penguin  
+Hedgehog  
+Otter  
+Koala  
+Cheetah  
+Falcon  
+Blue whale  
+Armadillo  
+Sloth  
+Meerkat  
+Raccoon  
+Chameleon  
+Penguin  
+Walrus  
+Panda

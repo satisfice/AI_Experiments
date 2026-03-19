@@ -1,0 +1,10 @@
+Kangaroo
+Ferret
+Giraffe
+Penguin
+Rhino
+Toucan
+Hedgehog
+Quail
+Ostrich
+Rabbit

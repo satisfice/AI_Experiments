@@ -1,0 +1,225 @@
+Aardvark
+Addax
+Agouti
+Albatross
+Alligator
+Antelope
+Ape
+Armadillo
+Axolotl
+Badger
+Ball python
+Bandicoot
+Barbary macaque
+Barracuda
+Bear
+Beaver
+Bee-eater
+Bengal tiger
+Bison
+Bobcat
+Bonobo
+Box turtle
+Brazilian tapir
+Brook trout
+Burbot
+Bushbaby
+Butterflyfish
+Caiman
+Camel
+Capuchin monkey
+Caribou
+Cat
+Catfish
+Cattle egret
+Chameleon
+Chipmunk
+Clownfish
+Coati
+Cobra
+Collared peccary
+Common crane
+Copernicus frog
+Corn snake
+Cougar
+Cow
+Crab
+Crested gecko
+Crow
+Crocodile
+Crossbill
+Curlew
+Dall sheep
+Damselfish
+Dart frog
+Deer mouse
+Desert bighorn sheep
+Desert tortoise
+Dingo
+Dogfish
+Donkey
+Dovekie
+Downy woodpecker
+Duck
+Dugong
+Dunnart
+Echidna
+Eel
+Elephant seal
+Elk
+Emu
+Fennec fox
+Fin whale
+Fish eagle
+Flatworm
+Fox
+Frill-necked lizard
+Frog
+Gadwall
+Garter snake
+Gecko
+Geese
+Goat
+Golden eagle
+Goldfish
+Goose
+Grasshopper
+Grey heron
+Grey wolf
+Guinea pig
+Gull
+Hammerhead shark
+Hare
+Hedgehog
+Helicopter seal
+Hen
+Hermit crab
+Heron
+Herring gull
+Hippopotamus
+Hornbill
+Horse
+Horse mackerel
+Hummingbird
+Hyena
+Ibis
+Impala
+Jackal
+Jaguar
+Jellyfish
+Kangaroo rat
+Kangaroo
+Kea
+Killifish
+King cobra
+Kingfisher
+Kinkajou
+Kit fox
+Lamb
+Langur monkey
+Leopard
+Leopard frog
+Lemur
+Lion
+Lizard
+Locust
+Macaque
+Magpie
+Manatee
+Marmot
+Marten
+Meerkat
+Mole rat
+Monkey
+Moon jellyfish
+Mountain goat
+Mudskipper
+Narwhal
+Newt
+Night heron
+Nilgai
+Ocelot
+Okapi
+Old world warbler
+Opossum
+Orca
+Otter
+Ostrich
+Owl
+Paddlefish
+Painted turtle
+Panther
+Parrot
+Partridge
+Peacock
+Pearl oyster
+Pelican
+Penguin
+Perch
+Pheasant
+Pig
+Pileated woodpecker
+Pinniped
+Platypus
+Plover
+Puma
+Quail
+Rabbit
+Raccoon
+Rattlesnake
+Red fox
+Red panda
+Redfish
+Rhino
+Roadrunner
+Robin
+Rock dove
+Saddleback tetra
+Salmon
+Sandpiper
+Sandviper
+Scorpion
+Sea bass
+Sea lion
+Seahorse
+Sea turtle
+Seagull
+Shark
+Sheep
+Shrimp
+Skate
+Snake
+Snapping turtle
+Sparrow
+Sprat
+Starfish
+Stingray
+Swordfish
+Tapir
+Tarsier
+Teal
+Thomson's gazelle
+Threadfin hawk
+Timber wolf
+Tiger
+Toad
+Tortoise
+Toucan
+Townsend's warbler
+Tree frog
+Trout
+Turaco
+Turkey vulture
+Vampire squid
+Wallaby
+Warthog
+Water buffalo
+Weasel
+Western kingbird
+White shark
+Wildebeest
+Woodchuck
+Woodpecker
+Wrasse
+Yellow fin tuna
+Zebra

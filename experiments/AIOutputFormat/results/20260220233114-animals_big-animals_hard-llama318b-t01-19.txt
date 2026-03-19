@@ -1,0 +1,10 @@
+Tiger
+Lemur
+Kangaroo
+Rattlesnake
+Falcon
+Penguin
+Giraffe
+Otter
+Mongoose
+Koala

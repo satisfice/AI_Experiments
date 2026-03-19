@@ -1,0 +1,15 @@
+- Zebra
+- Octopus
+- Flamingo
+- Badger
+- Chinchilla
+- Pelican
+- Mongoose
+- Quokka
+- Narwhal
+- Tapir
+- Cassowary
+- Numbat
+- Serval
+- Kiwi
+- Axolotl

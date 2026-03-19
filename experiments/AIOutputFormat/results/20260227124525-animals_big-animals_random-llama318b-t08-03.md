@@ -1,0 +1,12 @@
+1. Flamingo
+2. Cheetah
+3. Sloth
+4. Penguin
+5. Kangaroo
+6. Ostrich
+7. Koala
+8. Wolf
+9. Chimpanzee
+10. Armadillo
+11. Donkey
+12. Iguana

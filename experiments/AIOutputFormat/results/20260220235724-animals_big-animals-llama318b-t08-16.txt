@@ -1,0 +1,13 @@
+Cat
+Elephant
+Giraffe
+Kangaroo
+Penguin
+Tiger
+Wolf
+Lemur
+Falcon
+Otter
+Raccoon
+Cheetah 
+Hedgehog

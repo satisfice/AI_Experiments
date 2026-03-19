@@ -1,0 +1,14 @@
+Giraffe
+Tortoise
+Penguin
+Hamster
+Lemur
+Kangaroo
+Octopus
+Falcon
+Rhinoceros
+Ostrich
+Dolphin 
+Cheetah 
+Wombat 
+Jellyfish

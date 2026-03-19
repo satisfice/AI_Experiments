@@ -1,0 +1,10 @@
+Lemur
+Tortoise
+Fennec
+Quail
+Walrus
+Otter
+Rhinoceros
+Gazelle
+Mongoose
+Penguin

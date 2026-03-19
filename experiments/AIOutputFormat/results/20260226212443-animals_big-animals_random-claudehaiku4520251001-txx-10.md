@@ -1,0 +1,15 @@
+- Giraffe
+- Platypus
+- Badger
+- Flamingo
+- Otter
+- Tapir
+- Quokka
+- Lynx
+- Cassowary
+- Numbat
+- Pangolin
+- Capybara
+- Wombat
+- Okapi
+- Kiwi

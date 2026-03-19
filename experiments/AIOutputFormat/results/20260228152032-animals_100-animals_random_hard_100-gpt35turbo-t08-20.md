@@ -1,0 +1,90 @@
+- Lion
+- Giraffe
+- Tiger
+- Elephant
+- Zebra
+- Panda
+- Koala
+- Kangaroo
+- Crocodile
+- Hippopotamus
+- Rhinoceros
+- Gorilla
+- Cheetah
+- Penguin
+- Dolphin
+- Orangutan
+- Polar bear
+- Grizzly bear
+- Seal
+- Walrus
+- Otter
+- Wolf
+- Fox
+- Deer
+- Moose
+- Elk
+- Buffalo
+- Antelope
+- Hyena
+- Cheetah
+- Jaguar
+- Leopard
+- Panther
+- Bobcat
+- Lynx
+- Ocelot
+- Caracal
+- Cougar
+- Puma
+- Snow leopard
+- Cheetah
+- Serval
+- Fishing cat
+- Margay
+- Geoffroy's cat
+- Flat-headed cat
+- Rusty-spotted cat
+- Jungle cat
+- Black-footed cat
+- Sand cat
+- Leopard cat
+- Clouded leopard
+- Asiatic golden cat
+- Iberian lynx
+- Canada lynx
+- Eurasian lynx
+- Caracal
+- Pallas's cat
+- Manul
+- Jaguarundi
+- Oncilla
+- Kodkod
+- Colocolo
+- Pampas cat
+- Andean mountain cat
+- Marbled cat
+- Borneo bay cat
+- Sunda clouded leopard
+- African golden cat
+- Cheetah
+- Cougar
+- Mountain lion
+- Puma
+- Panther
+- Catamount
+- Painted cat
+- Currupira
+- Andean cat
+- Sand cat
+- Rusty-spotted cat
+- Jungle cat
+- Kodkod
+- Iriomote cat
+- Black-footed cat
+- Margay
+- Jaguarundi
+- Ocelot
+- Serval
+- Geoffrey's cat
+- Flat-headed cat

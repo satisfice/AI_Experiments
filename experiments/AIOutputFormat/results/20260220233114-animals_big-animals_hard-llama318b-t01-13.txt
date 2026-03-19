@@ -1,0 +1,11 @@
+Giraffe
+Lemur
+Kangaroo
+Chimpanzee
+Rhinoceros
+Tiger
+Wolf
+Ostrich
+Penguin
+Hedgehog
+Donkey

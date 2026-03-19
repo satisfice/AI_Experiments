@@ -1,0 +1,100 @@
+1. Dog
+2. Cat
+3. Horse
+4. Elephant
+5. Lion
+6. Tiger
+7. Bear
+8. Giraffe
+9. Zebra
+10. Monkey
+11. Kangaroo
+12. Gorilla
+13. Cheetah
+14. Rhinoceros
+15. Hippopotamus
+16. Deer
+17. Fox
+18. Wolf
+19. Rabbit
+20. Squirrel
+21. Dolphin
+22. Whale
+23. Shark
+24. Octopus
+25. Jellyfish
+26. Penguin
+27. Polar bear
+28. Walrus
+29. Seal
+30. Otter
+31. Beaver
+32. Platypus
+33. Koala
+34. Kangaroo
+35. Tasmanian devil
+36. Echidna
+37. Wombat
+38. Parrot
+39. Eagle
+40. Falcon
+41. Owl
+42. Hawk
+43. Crow
+44. Seagull
+45. Raven
+46. Toucan
+47. Flamingo
+48. Pelican
+49. Hummingbird
+50. Sparrow
+51. Robin
+52. Blue jay
+53. Cardinal
+54. Woodpecker
+55. Peacock
+56. Pigeon
+57. Swan
+58. Duck
+59. Goose
+60. Chicken
+61. Rooster
+62. Turkey
+63. Pheasant
+64. Quail
+65. Ostrich
+66. Emu
+67. Cassowary
+68. Rhea
+69. Partridge
+70. Ptarmigan
+71. Grouse
+72. Puffin
+73. Albatross
+74. Cormorant
+75. Heron
+76. Egret
+77. Stork
+78. Crane
+79. Ibex
+80. Gazelle
+81. Antelope
+82. Buffalo
+83. Yak
+84. Musk ox
+85. Water buffalo
+86. Wildebeest
+87. Bighorn sheep
+88. Bison
+89. Caribou
+90. Reindeer
+91. Moose
+92. Elk
+93. Red deer
+94. Sika deer
+95. Fallow deer
+96. Muntjac
+97. Roe deer
+98. Axis deer
+99. Sambar deer
+100. Tufted deer

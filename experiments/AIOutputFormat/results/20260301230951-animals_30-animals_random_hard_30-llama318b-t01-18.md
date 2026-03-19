@@ -1,0 +1,27 @@
+*Octopus
+Fennec Fox
+Cheetah
+Armadillo
+Kangaroo
+Tortoise
+Hedgehog
+Penguin
+Rattlesnake
+Chinchilla
+Lemur
+Badger
+Squirrel
+Tapir
+Flamingo
+Mongoose
+Giraffe
+Wolf
+Bear
+Ostrich
+Panther
+Lynx
+Monkey
+Skunk
+Fox
+Crocodile
+Quail*

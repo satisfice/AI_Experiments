@@ -1,0 +1,100 @@
+1. Dog
+2. Cat
+3. Elephant
+4. Lion
+5. Tiger
+6. Giraffe
+7. Zebra
+8. Bear
+9. Dolphin
+10. Penguin
+11. Panda
+12. Wolf
+13. Fox
+14. Gorilla
+15. Rhino
+16. Hippo
+17. Kangaroo
+18. Koala
+19. Cheetah
+20. Ostrich
+21. Octopus
+22. Bald Eagle
+23. Blue Jay
+24. Chimpanzee
+25. Hammerhead Shark
+26. Orangutan
+27. Platypus
+28. Raccoon
+29. Sloth
+30. Flamingo
+31. Parrot
+32. Toucan
+33. Snow Leopard
+34. Alligator
+35. Crocodile
+36. Jellyfish
+37. Lemur
+38. Moose
+39. Otter
+40. Seal
+41. Walrus
+42. Hedgehog
+43. Bison
+44. Camel
+45. Llama
+46. Meerkat
+47. Armadillo
+48. Falcon
+49. Cheetah
+50. Gazelle
+51. Rhinoceros
+52. Antelope
+53. Groundhog
+54. Badger
+55. Boar
+56. Ibex
+57. Impala
+58. Jaguar
+59. Marmot
+60. Muskox
+61. Porcupine
+62. Tamarin
+63. Anteater
+64. Capybara
+65. Chinchilla
+66. Lemming
+67. Porpoise
+68. Aardvark
+69. Chipmunk
+70. Lemur
+71. Mongoose
+72. Ocelot
+73. Wolverine
+74. Beagle
+75. Dachshund
+76. Poodle
+77. Shih Tzu
+78. Bulldog
+79. Rottweiler
+80. Great Dane
+81. Boxer
+82. Chihuahua
+83. Yorkshire Terrier
+84. German Shepherd
+85. Labrador Retriever
+86. Golden Retriever
+87. Pug
+88. Siberian Husky
+89. Border Collie
+90. Australian Shepherd
+91. Doberman Pinscher
+92. Shetland Sheepdog
+93. Cavalier King Charles Spaniel
+94. Cocker Spaniel
+95. Basset Hound
+96. Maltese
+97. Jack Russell Terrier
+98. West Highland White Terrier
+99. Boston Terrier
+100. Miniature Schnauzer

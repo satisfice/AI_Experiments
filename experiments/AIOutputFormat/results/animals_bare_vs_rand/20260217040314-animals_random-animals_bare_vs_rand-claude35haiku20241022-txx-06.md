@@ -1,0 +1,22 @@
+# Random Animal Names
+
+- Platypus
+- Axolotl
+- Capybara
+- Pangolin
+- Quokka
+- Fennec Fox
+- Tardigrade
+- Narwhal
+- Okapi
+- Red Panda
+- Komodo Dragon
+- Aye-aye
+- Saiga Antelope
+- Mantis Shrimp
+- Blobfish
+- Echidna
+- Kinkajou
+- Gharial
+- Kakapo
+- Numbat

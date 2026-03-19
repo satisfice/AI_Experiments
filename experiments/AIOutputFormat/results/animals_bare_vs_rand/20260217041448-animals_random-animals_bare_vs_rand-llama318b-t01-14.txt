@@ -1,0 +1,17 @@
+Mongoose
+Puma
+Giraffe
+Meerkat
+Quail
+Fennec
+Hedgehog
+Cheetah
+Tapir
+Kangaroo
+Okapi
+Rhinoceros
+Armadillo
+Ostrich
+Wombat
+Toucan
+Platypus

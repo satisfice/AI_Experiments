@@ -1,0 +1,15 @@
+- Panther
+- Quokka
+- Koala
+- Cheetah
+- Axolotl
+- Lemur
+- Otter
+- Raccoon
+- Tamarin
+- Tapir
+- Llama
+- Osprey
+- Ibex
+- Myna
+- Gecko

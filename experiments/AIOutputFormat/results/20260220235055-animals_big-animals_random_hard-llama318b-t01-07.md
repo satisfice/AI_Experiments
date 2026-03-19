@@ -1,0 +1,10 @@
+* Mongoose
+* Ostrich
+* Platypus
+* Sloth
+* Quail
+* Lemur
+* Kangaroo
+* Rattlesnake
+* Axolotl
+* Flamingo

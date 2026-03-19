@@ -1,0 +1,20 @@
+- Giraffe
+- Platypus
+- Mongoose
+- Macaw
+- Hedgehog
+- Seahorse
+- Badger
+- Flamingo
+- Otter
+- Capybara
+- Lynx
+- Toucan
+- Armadillo
+- Porcupine
+- Albatross
+- Fennec Fox
+- Quokka
+- Tapir
+- Kiwi
+- Meerkat

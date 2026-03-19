@@ -1,0 +1,16 @@
+Lemur
+Penguin
+Kangaroo
+Rhinoceros
+Cheetah
+Tiger
+Giraffe
+Elephant
+Gorilla
+Monkey 
+Chimpanzee 
+Bear
+Wolf 
+Fox
+Deer 
+Horse

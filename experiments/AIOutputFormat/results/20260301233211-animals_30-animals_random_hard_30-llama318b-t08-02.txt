@@ -1,0 +1,30 @@
+1. Armadillo
+2. Platypus
+3. Narwhal
+4. Pangolin
+5. Okapi
+6. Meerkat
+7. Mongoose
+8. Quokka
+9. Fennec Fox
+10. Axolotl
+11. Tasmanian Devil
+12. Aye Aye
+13. Lemur
+14. Sugar Glider
+15. Chameleon
+16. Rattlesnake
+17. Tarantula
+18. Jellyfish
+19. Sea Cucumber
+20. Manatee
+21. Mole
+22. Groundhog
+23. Badger
+24. Otter
+25. Puma
+26. Ocelot
+27. Coati
+28. Kinkajou
+29. Gibbon
+30. Warthog

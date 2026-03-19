@@ -1,0 +1,100 @@
+1. Lion
+2. Koala
+3. Elephant
+4. Giraffe
+5. Penguin
+6. Tiger
+7. Kangaroo
+8. Zebra
+9. Gorilla
+10. Cheetah
+11. Orangutan
+12. Hippopotamus
+13. Dolphin
+14. Polar bear
+15. Rhino
+16. Panda
+17. Camel
+18. Chimpanzee
+19. Hedgehog
+20. Ostrich
+21. Otter
+22. Alligator
+23. Black bear
+24. Flamingo
+25. Bison
+26. Walrus
+27. Wolf
+28. Parrot
+29. Seal
+30. Jaguar
+31. Sloth
+32. Raccoon
+33. Lemur
+34. Armadillo
+35. Fox
+36. Octopus
+37. Meerkat
+38. Skunk
+39. Toucan
+40. Red panda
+41. Beaver
+42. Owl
+43. Llama
+44. Puffin
+45. Goat
+46. Hyena
+47. Gazelle
+48. Lynx
+49. Sea turtle
+50. Macaw
+51. Mongoose
+52. Kangaroo rat
+53. Tarantula
+54. Wallaby
+55. Chameleon
+56. Tapir
+57. Rhinoceros beetle
+58. Platypus
+59. Komodo dragon
+60. Porcupine
+61. Camel spider
+62. Red fox
+63. Baboon
+64. Blue whale
+65. Caiman
+66. Vulture
+67. Grizzly bear
+68. Oryx
+69. Puma
+70. Iguana
+71. Aardvark
+72. Peacock
+73. Warthog
+74. Fennec fox
+75. Tasmanian devil
+76. Marmoset
+77. Dingo
+78. Rattlesnake
+79. Pigeon
+80. Squirrel
+81. Emu
+82. Blue tang
+83. Quetzal
+84. Owl butterfly
+85. Mule deer
+86. Wombat
+87. Monitor lizard
+88. Alpaca
+89. Box turtle
+90. Sea lion
+91. Flying squirrel
+92. Mantis shrimp
+93. Puma
+94. Kangaroo rat
+95. Hyena
+96. Blue tang
+97. Kiwi
+98. Manatee
+99. African grey parrot
+100. Tamandua

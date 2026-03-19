@@ -1,0 +1,10 @@
+Cheetah
+Kangaroo
+Penguin
+Crocodile
+Quail
+Rattlesnake
+Tortoise
+Ostrich
+Falcon
+Chameleon

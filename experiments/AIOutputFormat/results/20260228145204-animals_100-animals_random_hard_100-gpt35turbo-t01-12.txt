@@ -1,0 +1,100 @@
+1. Lion
+2. Elephant
+3. Monkey
+4. Giraffe
+5. Tiger
+6. Penguin
+7. Dolphin
+8. Kangaroo
+9. Zebra
+10. Bear
+11. Panda
+12. Cheetah
+13. Rhino
+14. Koala
+15. Wolf
+16. Fox
+17. Otter
+18. Horse
+19. Gorilla
+20. Jaguar
+21. Owl
+22. Parrot
+23. Seal
+24. Camel
+25. Squirrel
+26. Flamingo
+27. Meerkat
+28. Lemur
+29. Hedgehog
+30. Alligator
+31. Ostrich
+32. Hippopotamus
+33. Sloth
+34. Platypus
+35. Octopus
+36. Racoon
+37. Kangaroo
+38. Walrus
+39. Cheetah
+40. Panther
+41. Bison
+42. Armadillo
+43. Puffin
+44. Penguin
+45. Orangutan
+46. Chameleon
+47. Wolverine
+48. Mongoose
+49. Lemming
+50. Vulture
+51. Pelican
+52. Marmoset
+53. Antelope
+54. Tapir
+55. Salamander
+56. Flamingo
+57. Llama
+58. Raccoon
+59. Emu
+60. Komodo Dragon
+61. Opossum
+62. Yak
+63. Platypus
+64. Koala
+65. Humpback Whale
+66. Bald Eagle
+67. Tasmanian Devil
+68. Sea Turtle
+69. Armadillo
+70. Red Panda
+71. Snow Leopard
+72. Blue Whale
+73. Rattlesnake
+74. Gorilla
+75. Hyena
+76. Okapi
+77. Cassowary
+78. Gazelle
+79. Manatee
+80. Capybara
+81. Bearded Dragon
+82. Booby
+83. Lemur
+84. Axolotl
+85. Tasmanian Tiger
+86. Cassowary
+87. Mink
+88. Ocelot
+89. Caracal
+90. Vaquita
+91. Tarsier
+92. Gharial
+93. Aardvark
+94. Kinkajou
+95. Wallaby
+96. Dugong
+97. Quokka
+98. Fossa
+99. Takin
+100. Weasel

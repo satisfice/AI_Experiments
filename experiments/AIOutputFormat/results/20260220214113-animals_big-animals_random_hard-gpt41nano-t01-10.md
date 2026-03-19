@@ -1,0 +1,20 @@
+- Kangaroo
+- Penguin
+- Elephant
+- Cheetah
+- Octopus
+- Gorilla
+- Salamander
+- Owl
+- Fox
+- Zebra
+- Lobster
+- Crocodile
+- Hummingbird
+- Sloth
+- Tiger
+- Seahorse
+- Raccoon
+- Komodo Dragon
+- Dolphin
+- Chameleon

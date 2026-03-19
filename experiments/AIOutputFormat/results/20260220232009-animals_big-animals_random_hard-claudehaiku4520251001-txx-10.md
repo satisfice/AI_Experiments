@@ -1,0 +1,20 @@
+- Giraffe
+- Platypus
+- Ostrich
+- Axolotl
+- Narwhal
+- Quokka
+- Mantis Shrimp
+- Capybara
+- Fennec Fox
+- Okapi
+- Pangolin
+- Cassowary
+- Gharial
+- Kakapo
+- Numbat
+- Aye-aye
+- Anglerfish
+- Binturong
+- Colugo
+- Dugong

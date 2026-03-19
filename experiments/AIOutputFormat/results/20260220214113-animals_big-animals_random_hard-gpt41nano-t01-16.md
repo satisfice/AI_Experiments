@@ -1,0 +1,20 @@
+Camel  
+Ocelot  
+Lion  
+Kangaroo  
+Penguin  
+Echidna  
+Giraffe  
+Sloth  
+Tiger  
+Otter  
+Hippopotamus  
+Chameleon  
+Emu  
+Wolf  
+Frog  
+Dolphin  
+Cheetah  
+Parrot  
+Armadillo  
+Boa constrictor

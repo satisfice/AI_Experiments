@@ -1,0 +1,16 @@
+*Giraffe
+Puma
+Manatee
+Koala
+Toucan
+Octopus
+Quail
+Rhinoceros
+Ostrich
+Tapir*
+Hedgehog
+Ocelot
+Alligator
+Mongoose
+Falcon 
+Fox

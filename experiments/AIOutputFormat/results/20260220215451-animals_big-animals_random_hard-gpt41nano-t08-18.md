@@ -1,0 +1,15 @@
+Giraffe  
+Salmon  
+Kangaroo  
+Owl  
+Elephant  
+Parrot  
+Tiger  
+Crocodile  
+Penguin  
+Lemur  
+Hedgehog  
+Dolphin  
+Raccoon  
+Falcon  
+Otter

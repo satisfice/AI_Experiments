@@ -1,0 +1,100 @@
+1. Dog
+2. Cat
+3. Elephant
+4. Lion
+5. Tiger
+6. Giraffe
+7. Zebra
+8. Monkey
+9. Bear
+10. Wolf
+11. Deer
+12. Fox
+13. Rabbit
+14. Kangaroo
+15. Hippopotamus
+16. Gorilla
+17. Camel
+18. Koala
+19. Panda
+20. Rhinoceros
+21. Giraffe
+22. Owl
+23. Eagle
+24. Alligator
+25. Dolphin
+26. Shark
+27. Octopus
+28. Jellyfish
+29. Penguin
+30. Polar Bear
+31. Raccoon
+32. Squirrel
+33. Hedgehog
+34. Owl
+35. Flamingo
+36. Peacock
+37. Kangaroo
+38. Buffalo
+39. Crocodile
+40. Ostrich
+41. Chimpanzee
+42. Hyena
+43. Platypus
+44. Walrus
+45. Seal
+46. Bison
+47. Lemur
+48. Sloth
+49. Otter
+50. Lobster
+51. Crab
+52. Sloth
+53. Parrot
+54. Bald Eagle
+55. Cheetah
+56. Puma
+57. Jaguar
+58. Panther
+59. Bobcat
+60. Snow Leopard
+61. Cheetah
+62. Cougar
+63. Lynx
+64. Mountain Lion
+65. Serval
+66. Caracal
+67. Fennec Fox
+68. Gray Wolf
+69. Red Fox
+70. Arctic Fox
+71. Swift Fox
+72. Bat
+73. Black Bear
+74. Brown Bear
+75. Grizzly Bear
+76. Panda Bear
+77. Polar Bear
+78. Panda
+79. Red Panda
+80. Giant Panda
+81. Gorilla
+82. Orangutan
+83. Bonobo
+84. Chimpanzee
+85. Gibbon
+86. Koala
+87. Lemur
+88. Aye-Aye
+89. Ruffed Lemur
+90. Ring-Tailed Lemur
+91. Proboscis Monkey
+92. Squirrel Monkey
+93. Tamarin
+94. Capuchin Monkey
+95. Spider Monkey
+96. Howler Monkey
+97. Golden Lion Tamarin
+98. Wolf
+99. Red Wolf
+100. Gray Wolf

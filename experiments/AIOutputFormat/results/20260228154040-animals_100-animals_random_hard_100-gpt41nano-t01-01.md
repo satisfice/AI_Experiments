@@ -1,0 +1,104 @@
+- African elephant  
+- Bald eagle  
+- Cheetah  
+- Dromedary camel  
+- European brown bear  
+- Fennec fox  
+- Gorilla  
+- Hippopotamus  
+- Indian cobra  
+- Jackal  
+- Kangaroo  
+- Lioness  
+- Macaw  
+- Narwhal  
+- Octopus  
+- Panda  
+- Quokka  
+- Raccoon  
+- Seahorse  
+- Toucan  
+- Uakari  
+- Vulture  
+- Warthog  
+- Xerces blue butterfly  
+- Yellowtail fish  
+- Zebra  
+- Antelope  
+- Bat  
+- Crocodile  
+- Dart frog  
+- Elephant seal  
+- Falcon  
+- Gibbon  
+- Hedgehog  
+- Iguana  
+- Jackrabbit  
+- Kiwi  
+- Lesser panda  
+- Moose  
+- Newt  
+- Okapi  
+- Pelican  
+- Quail  
+- Reindeer  
+- Sperm whale  
+- Tiger  
+- Urial  
+- Viper  
+- Wallaby  
+- X-ray fish  
+- Yellow mongoose  
+- Zebra shark  
+- Albatross  
+- Blue jay  
+- Chameleon  
+- Dugong  
+- Eel  
+- Finch  
+- Gila monster  
+- Harrier hawk  
+- Impala  
+- Jaguar  
+- Koala  
+- Lemur  
+- Mongoose  
+- Nautilus  
+- Ocelot  
+- Platypus  
+- Quetzal  
+- Rhinoceros  
+- Salmon  
+- Tarsier  
+- Uakari  
+- Vicuña  
+- Wolf  
+- Xerus  
+- Yellow-footed rock wallaby  
+- Zorilla  
+- Anole  
+- Binturong  
+- Crab  
+- Deer  
+- Echidna  
+- Flame angelfish  
+- Gorilla  
+- Hyena  
+- Irish setter  
+- Jackal  
+- Kingfisher  
+- Lemur  
+- Mountain goat  
+- Numbat  
+- Owl  
+- Puffin  
+- Quokka  
+- Rooster  
+- Salamander  
+- Tapir  
+- Urchin  
+- Vulture  
+- Wombat  
+- Xantus' hummingbird  
+- Yellowfin tuna  
+- Zebu

@@ -1,0 +1,105 @@
+- Aardvark
+- Albatross
+- Alpaca
+- Anaconda
+- Anchovy
+- Anemone
+- Antelope
+- Anteater
+- Antlion
+- Ape
+- Aphid
+- Armadillo
+- Aron
+- Auk
+- Aye-aye
+- Badger
+- Bald eagle
+- Bandicoot
+- Barracuda
+- Basilisk
+- Bass
+- Bat
+- Beaked whale
+- Bear
+- Beaver
+- Bee
+- Bee-eater
+- Beetle
+- Bellbird
+- Binturong
+- Bird of paradise
+- Bison
+- Bittern
+- Blackbird
+- Boa
+- Boar
+- Bobcat
+- Bobolink
+- Bonefish
+- Booby
+- Boubou
+- Boutu
+- Bower bird
+- Bowhead whale
+- Box jellyfish
+- Brahminy
+- Brambling
+- Bristlemouth
+- Brittle star
+- Brocket
+- Brook lamprey
+- Broom snake
+- Brown bear
+- Brown kiwi
+- Brubru
+- Brush-tailed possum
+- Bubul
+- Buckeye butterfly
+- Budgerigar
+- Buffalo
+- Bulbul
+- Bulldog
+- Bullfrog
+- Bullhead
+- Bumble bee
+- Burrowing owl
+- Bushbaby
+- Bushbuck
+- Bustard
+- Butterfly
+- Button quail
+- Buzzard
+- Caiman
+- Camel
+- Canary
+- Canvasback
+- Capercaillie
+- Capuchin
+- Capybara
+- Caracal
+- Caracara
+- Cardinal
+- Carp
+- Cassowary
+- Cat
+- Caterpillar
+- Catfish
+- Cattle
+- Cavy
+- Cay
+- Cephalopod
+- Chaffinch
+- Chameleon
+- Chamois
+- Chanting goshawk
+- Char
+- Chard
+- Chare
+- Cheetah
+- Chevrotain
+- Chick
+- Chickadee
+- Chicken
+- Chigger
+- Chihuahua

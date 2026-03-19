@@ -1,0 +1,13 @@
+Giraffe
+Tortoise
+Falcon
+Ostrich
+Hedgehog
+Mongoose
+Cheetah
+Kangaroo
+Penguin
+Donkey
+Lemur 
+Fox
+Chimpanzee

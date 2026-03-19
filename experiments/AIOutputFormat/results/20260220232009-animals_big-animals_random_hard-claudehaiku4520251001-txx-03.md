@@ -1,0 +1,15 @@
+- Giraffe
+- Platypus
+- Octopus
+- Fennec Fox
+- Capybara
+- Narwhal
+- Axolotl
+- Quokka
+- Pangolin
+- Cassowary
+- Musk Ox
+- Tapir
+- Numbat
+- Gharial
+- Okapi

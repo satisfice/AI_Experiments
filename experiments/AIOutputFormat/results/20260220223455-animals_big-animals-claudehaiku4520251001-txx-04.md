@@ -1,0 +1,15 @@
+- Lion
+- Elephant
+- Dolphin
+- Penguin
+- Giraffe
+- Bear
+- Wolf
+- Zebra
+- Tiger
+- Cheetah
+- Kangaroo
+- Owl
+- Salmon
+- Peacock
+- Otter

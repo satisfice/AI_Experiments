@@ -1,0 +1,100 @@
+1. Dog
+2. Cat
+3. Elephant
+4. Lion
+5. Giraffe
+6. Monkey
+7. Tiger
+8. Horse
+9. Dolphin
+10. Zebra
+11. Bear
+12. Rabbit
+13. Kangaroo
+14. Penguin
+15. Koala
+16. Fox
+17. Owl
+18. Gorilla
+19. Rhino
+20. Wolf
+21. Seal
+22. Cheetah
+23. Hippo
+24. Camel
+25. Deer
+26. Parrot
+27. Squirrel
+28. Platypus
+29. Bald Eagle
+30. Hedgehog
+31. Sloth
+32. Octopus
+33. Polar Bear
+34. Chimpanzee
+35. Alligator
+36. Falcon
+37. Otter
+38. Panther
+39. Raccoon
+40. Puma
+41. Salmon
+42. Stingray
+43. Skunk
+44. Walrus
+45. Wolverine
+46. Woodpecker
+47. Yak
+48. Ostrich
+49. Orangutan
+50. Komodo Dragon
+51. Flamingo
+52. Llama
+53. Porcupine
+54. Tasmanian Devil
+55. Ibex
+56. Fennec Fox
+57. Snow Leopard
+58. Blue Jay
+59. Cassowary
+60. Anteater
+61. Aardvark
+62. Gazelle
+63. Mongoose
+64. Toucan
+65. Wolverine
+66. Boar
+67. Armadillo
+68. Alpaca
+69. Bald Eagle
+70. Bullfrog
+71. Chipmunk
+72. Crow
+73. Dingo
+74. Flying Fox
+75. Hummingbird
+76. Iguana
+77. Jackal
+78. Jaguar
+79. Lemur
+80. Macaw
+81. Manatee
+82. Moose
+83. Narwhal
+84. Nightingale
+85. Pangolin
+86. Puffin
+87. Raven
+88. Red Panda
+89. Rhinoceros
+90. Sable
+91. Scorpion
+92. Seahorse
+93. Sea Urchin
+94. Snapping Turtle
+95. Spider Monkey
+96. Starfish
+97. Swordfish
+98. Tapir
+99. Tortoise
+100. Vulture

@@ -1,0 +1,92 @@
+- Lion
+- Elephant
+- Giraffe
+- Zebra
+- Rhino
+- Hippo
+- Tiger
+- Monkey
+- Gorilla
+- Bear
+- Wolf
+- Fox
+- Rabbit
+- Deer
+- Moose
+- Antelope
+- Kangaroo
+- Koala
+- Platypus
+- Emu
+- Ostrich
+- Penguin
+- Dolphin
+- Whale
+- Shark
+- Octopus
+- Jellyfish
+- Starfish
+- Sea turtle
+- Crab
+- Lobster
+- Seahorse
+- Clownfish
+- Dolphin
+- Crocodile
+- Alligator
+- Boa constrictor
+- Python
+- Rattlesnake
+- Cobra
+- Komodo dragon
+- Chameleon
+- Iguana
+- Monitor lizard
+- Salamander
+- Frog
+- Toad
+- Newt
+- Axolotl
+- Crocodile
+- Alligator
+- Snapping turtle
+- Box turtle
+- Tortoise
+- Corn snake
+- Ball python
+- Milk snake
+- Garter snake
+- Boa constrictor
+- Green tree python
+- King cobra
+- Black mamba
+- Reticulated python
+- Gaboon viper
+- Coral snake
+- Gila monster
+- Blue-tongued skink
+- Green anaconda
+- Yellow anaconda
+- Diamondback rattlesnake
+- Copperhead
+- Black racer
+- Water moccasin
+- Grass snake
+- Rat snake
+- Bullsnake
+- Hog-nosed snake
+- Water snake
+- Ribbon snake
+- Coachwhip snake
+- Pine snake
+- Gopher snake
+- Indigo snake
+- Burmese python
+- Red-tailed boa
+- Rock python
+- Carpet python
+- Woma python
+- Children's python
+- Spotted python
+- Olive python
+- Stimson's python

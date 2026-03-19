@@ -1,0 +1,29 @@
+Octopus
+Koala
+Tiger
+Giraffe
+Fennec Fox
+Hedgehog
+Ostrich
+Rhinoceros
+Penguin
+Wombat
+Badger
+Mongoose
+Armadillo
+Cheetah
+Meerkat
+Lemur
+Flamingo
+Dolphin
+Chimpanzee
+Wolf
+Sea Lion
+Iguana
+Crocodile
+Falcon
+Elephant
+Snake
+Hyena
+Tapir
+Manatee

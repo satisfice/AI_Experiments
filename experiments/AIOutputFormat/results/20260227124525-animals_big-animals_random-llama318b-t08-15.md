@@ -1,0 +1,15 @@
+1. Cheetah
+2. Octopus
+3. Koala
+4. Falcon
+5. Chimpanzee
+6. Narwhal
+7. Raccoon
+8. Lemur
+9. Penguin
+10. Jaguar
+11. Kangaroo
+12. Elephant 
+13. Tapir 
+14. Seal 
+15. Ostrich

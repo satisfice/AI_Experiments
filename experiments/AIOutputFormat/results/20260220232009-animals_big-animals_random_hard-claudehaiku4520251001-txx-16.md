@@ -1,0 +1,20 @@
+- Pangolin
+- Flamingo
+- Badger
+- Jellyfish
+- Tapir
+- Ocelot
+- Albatross
+- Quokka
+- Narwhal
+- Lemur
+- Caracal
+- Dugong
+- Emu
+- Hyena
+- Proboscis Monkey
+- Axolotl
+- Kestrel
+- Numbat
+- Cassowary
+- Wombat

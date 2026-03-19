@@ -1,0 +1,15 @@
+- Giraffe
+- Platypus
+- Capybara
+- Axolotl
+- Red Panda
+- Pangolin
+- Narwhal
+- Quokka
+- Okapi
+- Fennec Fox
+- Komodo Dragon
+- Echidna
+- Tardigrade
+- Mantis Shrimp
+- Zebu

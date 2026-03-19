@@ -1,0 +1,10 @@
+1. Giraffe
+2. Tiger
+3. Elephant
+4. Dolphin
+5. Koala
+6. Ostrich
+7. Kangaroo
+8. Sloth
+9. Zebra
+10. Penguin

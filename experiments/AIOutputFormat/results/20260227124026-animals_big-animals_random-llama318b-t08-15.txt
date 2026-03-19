@@ -1,0 +1,10 @@
+Toucan
+Giraffe
+Chimpanzee
+Penguin
+Octopus
+Kangaroo
+Flamingo
+Rhinoceros
+Badger
+Fox

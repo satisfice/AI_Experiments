@@ -1,0 +1,16 @@
+Cat
+Dog
+Elephant
+Giraffe
+Lion
+Tiger
+Monkey
+Bear
+Wolf
+Falcon
+Horse
+Deer
+Snake
+Rabbit
+Fox
+Kangaroo

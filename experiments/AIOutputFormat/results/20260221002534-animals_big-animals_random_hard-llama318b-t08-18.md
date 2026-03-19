@@ -1,0 +1,10 @@
+* Lion
+* Octopus
+* Quail
+* Fox
+* Kangaroo
+* Dolphin
+* Falcon
+* Rabbit
+* Seal
+* Cheetah

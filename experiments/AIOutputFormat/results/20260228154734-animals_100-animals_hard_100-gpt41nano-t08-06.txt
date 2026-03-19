@@ -1,0 +1,120 @@
+Lion  
+Tiger  
+Elephant  
+Giraffe  
+Zebra  
+Kangaroo  
+Panda  
+Koala  
+Hippopotamus  
+Rhinoceros  
+Cheetah  
+Leopard  
+Jaguar  
+Lynx  
+Wildcat  
+Fox  
+Wolf  
+Coyote  
+Bison  
+Buffalo  
+Antelope  
+Deer  
+Moose  
+Elk  
+Caribou  
+Opossum  
+Skunk  
+Badger  
+Otter  
+Beaver  
+Hedgehog  
+Squirrel  
+Chipmunk  
+Prairie Dog  
+Marmot  
+Gopher  
+Porcupine  
+Armadillo  
+Sloth  
+Macaque  
+Baboon  
+Mandrill  
+Howler Monkey  
+Spider Monkey  
+Capuchin Monkey  
+Orangutan  
+Gorilla  
+Chimpanzee  
+Bonobo  
+Lemur  
+Tamarin  
+Colobus Monkey  
+Mongoose  
+Meerkat  
+Hyena  
+Jackal  
+Cheetah  
+Ocelot  
+Margay  
+Serval  
+Caracal  
+Fossa  
+Genet  
+Mongooses  
+Dhole  
+Tasmanian Devil  
+Wombat  
+Numbat  
+Quokka  
+Tasmanian Tiger  
+Koala  
+Dingo  
+Fox  
+Jackal  
+Chimpanzee  
+Gibbon  
+Slow Loris  
+Tarsier  
+Aardvark  
+Meerkat  
+Platypus  
+Echidna  
+Cuscus  
+Dugong  
+Manatee  
+Red Panda  
+Squirrel Monkey  
+Woodland Caribou  
+Snow Leopard  
+Siberian Tiger  
+Indian Rhinoceros  
+Sumatran Orangutan  
+Malayan Tapir  
+Gila Monster  
+Komodo Dragon  
+Velociraptor (extinct)  
+Brontosaurus (extinct)  
+Megalodon (extinct)  
+Dodo (extinct)  
+Passenger Pigeon (extinct)  
+Woolly Mammoth (extinct)  
+Ancient Nautilus  
+Giant Squid  
+Sea Dragon  
+Japanese Spider Crab  
+Giant Panda  
+Blue Whale  
+Humpback Whale  
+Orca  
+Sperm Whale  
+Narwhal  
+Beluga Whale  
+Sei Whale  
+Fin Whale  
+Bryde's Whale  
+Minke Whale  
+Pygmy Marmoset  
+Golden Lion Tamarin  
+Red Fox  
+Painted Wolf (Australian/Dingoes)

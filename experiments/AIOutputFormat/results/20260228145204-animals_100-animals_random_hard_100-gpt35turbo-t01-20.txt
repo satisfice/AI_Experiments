@@ -1,0 +1,100 @@
+1. Elephant
+2. Tiger
+3. Giraffe
+4. Monkey
+5. Lion
+6. Zebra
+7. Kangaroo
+8. Gorilla
+9. Cheetah
+10. Rhino
+11. Hippo
+12. Panda
+13. Koala
+14. Penguin
+15. Polar bear
+16. Dolphin
+17. Seal
+18. Wolf
+19. Fox
+20. Bear
+21. Otter
+22. Chimpanzee
+23. Leopard
+24. Ostrich
+25. Camel
+26. Sloth
+27. Hedgehog
+28. Raccoon
+29. Red panda
+30. Crocodile
+31. Alligator
+32. Octopus
+33. Jellyfish
+34. Shark
+35. Seahorse
+36. Turtle
+37. Flamingo
+38. Bald eagle
+39. Owl
+40. Falcon
+41. Blue jay
+42. Parrot
+43. Toucan
+44. Pelican
+45. Puffin
+46. Hummingbird
+47. Swan
+48. Robin
+49. Peacock
+50. Woodpecker
+51. Sparrow
+52. Heron
+53. Falcon
+54. Osprey
+55. Vulture
+56. Kookaburra
+57. Emu
+58. Cockatoo
+59. Kingfisher
+60. Sandpiper
+61. Crow
+62. Macaw
+63. Magpie
+64. Albatross
+65. Iguana
+66. Komodo dragon
+67. Chameleon
+68. Anaconda
+69. Boa constrictor
+70. Python
+71. Garter snake
+72. Coral snake
+73. King cobra
+74. Rattlesnake
+75. Black mamba
+76. Spitting cobra
+77. Green tree python
+78. Milk snake
+79. Copperhead
+80. Sea snake
+81. Reticulated python
+82. Burmese python
+83. Eastern diamondback rattlesnake
+84. Western diamondback rattlesnake
+85. Ball python
+86. Red tailed boa
+87. Black rat snake
+88. Blue racer
+89. Ribbon snake
+90. Eastern coral snake
+91. Coral pink snake
+92. Yellow rat snake
+93. Ringneck snake
+94. Eastern garter snake
+95. California king snake
+96. Northern water snake
+97. Timber rattlesnake
+98. Eastern hog nose
+99. Desert king snake
+100. Rough green snake

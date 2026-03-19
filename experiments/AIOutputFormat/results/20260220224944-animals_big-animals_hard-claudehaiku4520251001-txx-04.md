@@ -1,0 +1,45 @@
+- Aardvark
+- Albatross
+- Alligator
+- Alpaca
+- Anaconda
+- Anchor
+- Angelfish
+- Anglerfish
+- Anteater
+- Antelope
+- Antlion
+- Ants
+- Ape
+- Aphid
+- Arabian Horse
+- Arapaima
+- Arboreal Alligator
+- Archerfish
+- Arctic Fox
+- Arctic Hare
+- Arctic Wolf
+- Armadillo
+- Arrow Crab
+- Arrow-poison Frog
+- Arrowtooth Eel
+- Arthropod
+- Aseel
+- Asp
+- Aspen Bark Beetle
+- Ass
+- Assamese Macaque
+- Atlantic Bluefin Tuna
+- Atlantic Puffin
+- Atlas Moth
+- Atoll Fish
+- Attercop
+- Attercop Spider
+- Auklet
+- Auk
+- Aye-aye
+- Axolotl
+- Ayam Cemani
+- Aye Aye
+- Aylesbury Duck
+- Aztec Ant

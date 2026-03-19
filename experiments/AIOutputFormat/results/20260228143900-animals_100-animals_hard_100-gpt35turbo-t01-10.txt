@@ -1,0 +1,100 @@
+1. Dog
+2. Cat
+3. Bird
+4. Rabbit
+5. Horse
+6. Fish
+7. Elephant
+8. Lion
+9. Tiger
+10. Giraffe
+11. Zebra
+12. Bear
+13. Monkey
+14. Dolphin
+15. Shark
+16. Deer
+17. Fox
+18. Wolf
+19. Kangaroo
+20. Owl
+21. Eagle
+22. Penguin
+23. Elephant
+24. Rhino
+25. Hippo
+26. Gorilla
+27. Alligator
+28. Crocodile
+29. Cheetah
+30. Panda
+31. Koala
+32. Sloth
+33. Seal
+34. Walrus
+35. Otter
+36. Squirrel
+37. Chipmunk
+38. Gorilla
+39. Chimpanzee
+40. Lemur
+41. Meerkat
+42. Sloth
+43. Raccoon
+44. Skunk
+45. Beaver
+46. Platypus
+47. Kangaroo
+48. Koala
+49. Tasmanian Devil
+50. Wombat
+51. Possum
+52. Kookaburra
+53. Emu
+54. Cockatoo
+55. Platypus
+56. Tasmanian Tiger
+57. Wallaby
+58. Bilby
+59. Quokka
+60. Blue-ringed Octopus
+61. Tasmanian Giant Crab
+62. Cassowary
+63. Dingo
+64. Rainbow Lorikeet
+65. Frill-necked Lizard
+66. Sugar Glider
+67. Tasmanian Pademelon
+68. Echidna
+69. Bearded Dragon
+70. Green Tree Frog
+71. Tasmanian Masked Owl
+72. Southern Right Whale
+73. Australian Fur Seal
+74. Australian Sea Lion
+75. Green Turtle
+76. Humpback Whale
+77. Blue Whale
+78. Orca
+79. Sperm Whale
+80. Minke Whale
+81. Grey Nurse Shark
+82. White Shark
+83. Manta Ray
+84. Loggerhead Turtle
+85. Bottlenose Dolphin
+86. Blue-ringed Octopus
+87. Box Jellyfish
+88. Stonefish
+89. Kookaburra
+90. Saltwater Crocodile
+91. Blue-tongued Lizard
+92. Saltwater Crocodile
+93. Carpet Python
+94. Common Wombat
+95. Sand Goanna
+96. Tasmanian Tiger
+97. Pademelon
+98. Tasmanian Devil
+99. Spotted Quoll
+100. Eastern Grey Kangaroo

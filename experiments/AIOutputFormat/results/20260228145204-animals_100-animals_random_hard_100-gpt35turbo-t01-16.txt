@@ -1,0 +1,100 @@
+1. Elephant
+2. Giraffe
+3. Lion
+4. Tiger
+5. Zebra
+6. Bear
+7. Wolf
+8. Kangaroo
+9. Panda
+10. Gorilla
+11. Rhino
+12. Hippo
+13. Koala
+14. Cheetah
+15. Dolphin
+16. Ostrich
+17. Penguin
+18. Flamingo
+19. Chimpanzee
+20. Crocodile
+21. Leopard
+22. Octopus
+23. Eagle
+24. Jellyfish
+25. Squirrel
+26. Hedgehog
+27. Peacock
+28. Alligator
+29. Platypus
+30. Orangutan
+31. Komodo Dragon
+32. Meerkat
+33. Bison
+34. Antelope
+35. Raccoon
+36. Wolverine
+37. Armadillo
+38. Otter
+39. Seal
+40. Walrus
+41. Sloth
+42. Ocelot
+43. Parrot
+44. Caiman
+45. Lemur
+46. Toucan
+47. Hyena
+48. Gazelle
+49. Manatee
+50. Sloth Bear
+51. Snow Leopard
+52. Boa Constrictor
+53. Tortoise
+54. Chameleon
+55. Bobcat
+56. Anteater
+57. Tapir
+58. Llama
+59. Vulture
+60. Axolotl
+61. Flounder
+62. Pufferfish
+63. Swordfish
+64. Hammerhead Shark
+65. Manta Ray
+66. Angelfish
+67. Clownfish
+68. Seahorse
+69. Tiger Shark
+70. Blue Whale
+71. Narwhal
+72. Beluga Whale
+73. Killer Whale
+74. Sperm Whale
+75. Humpback Whale
+76. Narwhal
+77. Stingray
+78. Electric Eel
+79. Piranha
+80. Barracuda
+81. Moray Eel
+82. Sea Turtle
+83. Sea Lion
+84. Sea Otter
+85. Dugong
+86. Manatee
+87. Octopus
+88. Cuttlefish
+89. Squid
+90. Jellyfish
+91. Blue-Ringed Octopus
+92. Sea Slug
+93. Starfish
+94. Sea Urchin
+95. Sand Dollar
+96. Hermit Crab
+97. Clownfish
+98. Angelfish
+99. Butterfly Fish
+100. Parrotfish

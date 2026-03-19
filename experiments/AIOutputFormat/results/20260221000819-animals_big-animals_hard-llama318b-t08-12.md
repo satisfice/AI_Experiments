@@ -1,0 +1,10 @@
+Lemur
+Cheetah
+Octopus
+Puma
+Rabbit
+Fox
+Donkey
+Kangaroo
+Giraffe
+Tiger

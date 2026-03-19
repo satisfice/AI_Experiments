@@ -1,0 +1,91 @@
+- Dog
+- Cat
+- Elephant
+- Lion
+- Giraffe
+- Tiger
+- Monkey
+- Bear
+- Zebra
+- Wolf
+- Dolphin
+- Kangaroo
+- Rhino
+- Hippo
+- Fox
+- Rabbit
+- Deer
+- Gorilla
+- Penguin
+- Eagle
+- Owl
+- Snake
+- Crocodile
+- Shark
+- Jellyfish
+- Octopus
+- Lobster
+- Crab
+- Dolphin
+- Polar bear
+- Panda
+- Koala
+- Camel
+- Horse
+- Cow
+- Sheep
+- Pig
+- Goat
+- Turkey
+- Duck
+- Chicken
+- Rooster
+- Ostrich
+- Parrot
+- Toucan
+- Flamingo
+- Peacock
+- Pigeon
+- Seagull
+- Blue jay
+- Robin
+- Sparrow
+- Swan
+- Owl
+- Woodpecker
+- Hummingbird
+- Cardinal
+- Dog
+- Cat
+- Rabbit
+- Hamster
+- Guinea pig
+- Ferret
+- Chinchilla
+- Parakeet
+- Cockatiel
+- Canary
+- Finch
+- Macaw
+- Conure
+- Cockatoo
+- Lovebird
+- Budgie
+- Quaker parrot
+- African grey
+- Eclectus
+- Senegal
+- Pionus
+- Amazon parrot
+- Caique
+- Umbrella cockatoo
+- Indian ringneck
+- Sun conure
+- Cape parrot
+- Cockatoo
+- Blue Fronted Amazon
+- Hyacinth macaw
+- Scarlet macaw
+- Cockatoo
+- Cockatoo
+- Cockatoo

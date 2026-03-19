@@ -1,0 +1,15 @@
+- Capybara
+- Flamingo
+- Otter
+- Lynx
+- Quokka
+- Narwhal
+- Pangolin
+- Cassowary
+- Meerkat
+- Axolotl
+- Numbat
+- Jackal
+- Kiwi
+- Tapir
+- Gharial

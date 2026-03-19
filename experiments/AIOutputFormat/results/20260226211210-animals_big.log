@@ -1,0 +1,15 @@
+Experiment Log
+==============
+
+Timestamp: 20260226211210
+Experiment: animals_big
+Model: gpt-3.5-turbo
+Prompt: animals_random.prompt
+Format(s): txt, txt1, md, json, yml, csv, html
+Temperature: 08
+Iterations: 20
+
+No files required UTF-8 encoding (all outputs contained only ASCII characters).
+
+Total Files Generated: 140
+Files with Non-ASCII Characters: 0

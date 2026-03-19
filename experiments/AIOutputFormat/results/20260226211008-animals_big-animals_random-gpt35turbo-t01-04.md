@@ -1,0 +1,10 @@
+- Lion
+- Elephant
+- Giraffe
+- Zebra
+- Kangaroo
+- Penguin
+- Dolphin
+- Tiger
+- Bear
+- Wolf

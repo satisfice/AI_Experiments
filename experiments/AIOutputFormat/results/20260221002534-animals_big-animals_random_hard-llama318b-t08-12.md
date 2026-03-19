@@ -1,0 +1,12 @@
+1. Armadillo
+2. Narwhal
+3. Quail
+4. Mongoose
+5. Lemur
+6. Ostrich
+7. Raccoon
+8. Koala
+9. Penguin
+10. Fennec 
+11. Meerkat
+12. Cheetah

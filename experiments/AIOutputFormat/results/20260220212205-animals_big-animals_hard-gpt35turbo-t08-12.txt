@@ -1,0 +1,12 @@
+Here is a list of names of animals:
+
+1. Lion
+2. Tiger
+3. Elephant
+4. Giraffe
+5. Zebra
+6. Gorilla
+7. Cheetah
+8. Hippopotamus
+9. Rhino
+10. Monkey

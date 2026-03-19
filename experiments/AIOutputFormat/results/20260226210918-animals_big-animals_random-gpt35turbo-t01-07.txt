@@ -1,0 +1,10 @@
+1. Giraffe
+2. Rhino
+3. Jaguar
+4. Koala
+5. Otter
+6. Falcon
+7. Penguin
+8. Zebra
+9. Armadillo
+10. Lemur

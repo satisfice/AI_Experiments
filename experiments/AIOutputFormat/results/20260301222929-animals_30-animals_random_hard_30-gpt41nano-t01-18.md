@@ -1,0 +1,30 @@
+Aardvark  
+Blue Jay  
+Cheetah  
+Dolphin  
+Echidna  
+Ferret  
+Gazelle  
+Hummingbird  
+Ibex  
+ Jaguar  
+Koala  
+Lemur  
+Meerkat  
+Narwhal  
+Ocelot  
+Pelican  
+Quokka  
+Rhinoceros  
+Salamander  
+Tiger  
+Uakari  
+Vulture  
+Wallaby  
+Xerus  
+Yak  
+Zebra  
+Anaconda  
+Beaver  
+Crab  
+Deer

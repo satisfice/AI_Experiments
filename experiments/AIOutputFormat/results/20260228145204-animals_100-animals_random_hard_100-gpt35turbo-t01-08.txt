@@ -1,0 +1,100 @@
+1. Lion
+2. Elephant
+3. Dolphin
+4. Tiger
+5. Giraffe
+6. Panda
+7. Koala
+8. Zebra
+9. Wolf
+10. Bear
+11. Penguin
+12. Kangaroo
+13. Cheetah
+14. Gorilla
+15. Rhino
+16. Hippo
+17. Octopus
+18. Eagle
+19. Orangutan
+20. Fox
+21. Owl
+22. Sloth
+23. Lemur
+24. Seal
+25. Jaguar
+26. Platypus
+27. Ostrich
+28. Polar bear
+29. Flamingo
+30. Chimpanzee
+31. Dingo
+32. Cockatoo
+33. Llama
+34. Alligator
+35. Komodo dragon
+36. Meerkat
+37. Raccoon
+38. Vulture
+39. Toucan
+40. Jellyfish
+41. Walrus
+42. Gazelle
+43. Hedgehog
+44. Baboon
+45. Hyena
+46. Bison
+47. Manta ray
+48. Tasmanian devil
+49. Tarantula
+50. Armadillo
+51. Otter
+52. Camel
+53. Wolverine
+54. Seagull
+55. Ocelot
+56. Caracal
+57. Ibex
+58. Tasmanian tiger
+59. Snow leopard
+60. Tapir
+61. Puffin
+62. Piranha
+63. Rattlesnake
+64. Antelope
+65. Skunk
+66. Quokka
+67. Koala
+68. Peacock
+69. Axolotl
+70. Praying mantis
+71. Salamander
+72. Electric eel
+73. Moth
+74. Caiman
+75. Tarsier
+76. Pika
+77. Mongoose
+78. Barracuda
+79. Humpback whale
+80. Hammerhead shark
+81. Albatross
+82. Sand dollar
+83. Wolverine
+84. Manatee
+85. Tortoise
+86. Puma
+87. Porcupine
+88. Falcon
+89. Emu
+90. Mandrill
+91. Chameleon
+92. Starfish
+93. Rattlesnake
+94. Tapir
+95. Snowy owl
+96. Toad
+97. Black panther
+98. Squirrel
+99. Hermit crab
+100. Komodo dragon

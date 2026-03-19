@@ -1,0 +1,11 @@
+Cat
+Dog
+Elephant
+Giraffe
+Horse
+Lion
+Monkey
+Tiger
+Wolf
+Bear 
+Fox

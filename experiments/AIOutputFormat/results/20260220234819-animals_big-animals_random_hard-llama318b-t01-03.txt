@@ -1,0 +1,10 @@
+Wolf
+Kangaroo
+Gorilla
+Tortoise
+Rabbit
+Hedgehog
+Ostrich
+Lemur
+Penguin
+Falcon

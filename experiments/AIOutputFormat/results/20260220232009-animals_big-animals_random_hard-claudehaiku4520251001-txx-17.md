@@ -1,0 +1,20 @@
+- Giraffe
+- Platypus
+- Mackerel
+- Okapi
+- Lemur
+- Narwhal
+- Pangolin
+- Capybara
+- Quokka
+- Axolotl
+- Numbat
+- Flamingo
+- Emu
+- Tapir
+- Caracal
+- Meerkat
+- Kiwi
+- Mantis shrimp
+- Wombat
+- Sloth

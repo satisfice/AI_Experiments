@@ -1,0 +1,27 @@
+* Koala
+* Chinchilla
+* Meerkat
+* Quail
+* Narwhal
+* Warthog
+* Mongoose
+* Rattlesnake
+* Fennec Fox
+* Armadillo
+* Okapi
+* Vulture
+* Lemur
+* Chimpanzee
+* Platypus
+* Ostrich
+* Tapir
+* Iguana
+* Otter
+* Salamander
+* Wolverine
+* Jaguar
+* Cheetah
+* Mole
+* Raccoon
+* Kangaroo
+* Puma

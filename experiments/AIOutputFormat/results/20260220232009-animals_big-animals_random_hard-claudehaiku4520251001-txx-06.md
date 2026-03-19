@@ -1,0 +1,20 @@
+- Giraffe
+- Platypus
+- Orca
+- Scarlet Tanager
+- Numbat
+- Axolotl
+- Capybara
+- Mantis Shrimp
+- Quokka
+- Pangolin
+- Cassowary
+- Fennec Fox
+- Okapi
+- Porcupine
+- Seahorse
+- Lemur
+- Tapir
+- Kiwi
+- Wombat
+- Sloth

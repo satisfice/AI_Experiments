@@ -1,0 +1,20 @@
+- Leopard
+- Quokka
+- Harpy Eagle
+- Axolotl
+- Pangolin
+- Kakapo
+- Ibex
+- Narwhal
+- Wombat
+- Agama
+- Fossa
+- Tamarin
+- Chameleon
+- Maned Wolf
+- Dhole
+- Red Panda
+- Tawny Frogmouth
+- Slow Loris
+- Macaw
+- Proboscis Monkey

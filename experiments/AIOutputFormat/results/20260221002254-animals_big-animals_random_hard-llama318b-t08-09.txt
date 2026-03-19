@@ -1,0 +1,15 @@
+Giraffe
+Toucan
+Kangaroo
+Squid
+Penguin
+Falcon
+Otter
+Hedgehog
+Rabbit
+Donkey 
+Flamingo 
+Walrus 
+Shark 
+Tapir 
+Mongoose

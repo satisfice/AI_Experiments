@@ -1,0 +1,109 @@
+Elephant  
+Kangaroo  
+Siberian Tiger  
+Cuttlefish  
+Giraffe  
+Snow Leopard  
+Dolphin  
+Hummingbird  
+Bearded Dragon  
+Cobra  
+American Bison  
+Barn Owl  
+Sea Otter  
+Otterhound  
+Red Fox  
+Komodo Dragon  
+Blue Jay  
+Manta Ray  
+Eagle  
+Mastiff  
+Puffin  
+Arctic Hare  
+Chameleon  
+Labrador Retriever  
+Gorilla  
+Rhinoceros  
+Penguin  
+Sandpiper  
+Bushbaby  
+Chihuahua  
+Hawk  
+Koala  
+Leopard Seal  
+Cheetah  
+Ox  
+Duck  
+Scorpion  
+Ibex  
+Hippopotamus  
+Fennec Fox  
+Mongoose  
+Parrot  
+Ocelot  
+Lemur  
+Walrus  
+Raccoon  
+Aardvark  
+Jaguar  
+Dung Beetle  
+Alligator  
+Hummingbird  
+Wombat  
+Tortoise  
+Kookaburra  
+Seahorse  
+Black Bear  
+Bald Eagle  
+Cicada  
+Meerkat  
+Pug  
+Camel  
+Echidna  
+Woodpecker  
+Crows  
+Jackal  
+Frog  
+Snail  
+Tamarin  
+Golden Retriever  
+Lizard  
+Vulture  
+Potto  
+Otter  
+Ibizan Hound  
+Porcupine  
+Fossa  
+Dingo  
+Tamarin  
+Seal  
+Anaconda  
+Salamander  
+Tiger  
+Mountain Gorilla  
+Antelope  
+Nguni Cow  
+Frilled Lizard  
+Crested Caracara  
+Bison  
+Chickadee  
+Tasmanian Devil  
+Koi Fish  
+Gibbon  
+Penguin  
+Eland  
+Tamarin  
+Crested Penguin  
+Macaque  
+Numbat  
+Mule  
+Komodo Dragon  
+Cuttlefish  
+Scorpion  
+Beaver  
+Nightingale  
+Ibizan Hound  
+Wallaby  
+Woodcock  
+Hummingbird  
+Tiger Shark
