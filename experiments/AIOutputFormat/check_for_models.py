@@ -12,6 +12,7 @@ import urllib.error
 from typing import Optional, List, Dict
 
 from config import load_models_config, resolve_model_name
+from utils import format_error, print_error
 
 # Configure logging
 logging.basicConfig(
@@ -251,8 +252,7 @@ def main():
 
     # Check connection
     if not check_ollama_connection(args.url):
-        logger.error("\nCannot reach Ollama. Exiting.")
-        sys.exit(1)
+        print_error("check_for_models", "Cannot reach Ollama. Exiting.", exit_code=1)
 
     print()
 
@@ -293,8 +293,7 @@ def main():
             logger.info(f"\nModel test passed")
             sys.exit(0)
         else:
-            logger.error(f"\nModel test failed")
-            sys.exit(1)
+            print_error("check_for_models", "Model test failed", exit_code=1)
 
     print("=" * 70)
     logger.info("Connection check complete (no model tested)")

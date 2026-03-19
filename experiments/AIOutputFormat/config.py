@@ -52,10 +52,109 @@ def resolve_model_name(model_shortcut: str) -> str:
     # Search all providers for the shortcut
     for provider, provider_config in config.items():
         if 'models' in provider_config and model_shortcut in provider_config['models']:
-            return provider_config['models'][model_shortcut]
+            model_entry = provider_config['models'][model_shortcut]
+            # Handle both old string format and new dict format
+            if isinstance(model_entry, dict):
+                return model_entry.get('name', model_shortcut)
+            else:
+                return model_entry
 
     # If not found, return as-is
     return model_shortcut
+
+
+def get_model_color(model_identifier: str) -> str:
+    """
+    Get the color for a model by shortcut, full name, or sanitized filename name.
+
+    The sanitized name is the full model name with punctuation stripped, which is
+    how models appear in result filenames (e.g. 'gpt41nano20250414' for
+    'gpt-4.1-nano-2025-04-14').  Accepting all three forms means adding a new
+    model to models.json with a color is sufficient -- no other code needs to
+    change.
+
+    Returns a hex color string.  Falls back to '#999999' (gray) if not found.
+    """
+    config = load_models_config()
+
+    for provider, provider_config in config.items():
+        if 'models' in provider_config:
+            for shortcut, model_entry in provider_config['models'].items():
+                if isinstance(model_entry, dict):
+                    full_name = model_entry.get('name', '')
+                    if (model_identifier == shortcut
+                            or model_identifier == full_name
+                            or model_identifier == sanitize_model_name(full_name)):
+                        return model_entry.get('color', '#999999')
+                else:
+                    # Old string format has no color
+                    if (model_identifier == shortcut
+                            or model_identifier == model_entry
+                            or model_identifier == sanitize_model_name(model_entry)):
+                        return '#999999'
+
+    return '#999999'
+
+
+def get_model_timeout(model_identifier: str, default: int = 600) -> int:
+    """
+    Get the timeout in seconds for a model by shortcut, full name, or sanitized filename name.
+
+    Accepts the same three forms as get_model_color(): shortcut key, full model name,
+    or sanitized filename name (punctuation stripped).  Adding timeout_seconds to a
+    model entry in models.json is sufficient -- no other code needs to change.
+
+    Returns the configured timeout_seconds value, or default (600) if not configured.
+    """
+    config = load_models_config()
+
+    for provider, provider_config in config.items():
+        if 'models' in provider_config:
+            for shortcut, model_entry in provider_config['models'].items():
+                if isinstance(model_entry, dict):
+                    full_name = model_entry.get('name', '')
+                    if (model_identifier == shortcut
+                            or model_identifier == full_name
+                            or model_identifier == sanitize_model_name(full_name)):
+                        return model_entry.get('timeout_seconds', default)
+                else:
+                    if (model_identifier == shortcut
+                            or model_identifier == model_entry
+                            or model_identifier == sanitize_model_name(model_entry)):
+                        return default
+
+    return default
+
+
+def get_all_models_with_colors() -> dict:
+    """
+    Get all models with their colors grouped by provider.
+    Returns: {provider: {shortcut: {name, color, supports_temp}}}
+    """
+    config = load_models_config()
+    result = {}
+
+    for provider, provider_config in config.items():
+        result[provider] = {}
+        supports_temp = provider_config.get('supports_temperature', True)
+
+        if 'models' in provider_config:
+            for shortcut, model_entry in provider_config['models'].items():
+                if isinstance(model_entry, dict):
+                    result[provider][shortcut] = {
+                        'name': model_entry.get('name', shortcut),
+                        'color': model_entry.get('color', '#999999'),
+                        'supports_temperature': supports_temp
+                    }
+                else:
+                    # Old format
+                    result[provider][shortcut] = {
+                        'name': model_entry,
+                        'color': '#999999',
+                        'supports_temperature': supports_temp
+                    }
+
+    return result
 
 
 def get_available_models() -> dict:
@@ -88,11 +187,22 @@ def model_supports_temperature(model_name: str) -> bool:
     """
     config = load_models_config()
 
-    # Search all providers for the model and check temperature support
+    # Search all providers for the model and check temperature support.
+    # Accept shortcut, full name, or sanitized filename name (punctuation stripped).
     for provider, provider_config in config.items():
         if 'models' in provider_config:
-            if model_name in provider_config['models'].values():
-                return provider_config.get('supports_temperature', True)
+            for shortcut, model_entry in provider_config['models'].items():
+                if isinstance(model_entry, dict):
+                    full_name = model_entry.get('name', shortcut)
+                    if (model_name == shortcut
+                            or model_name == full_name
+                            or model_name == sanitize_model_name(full_name)):
+                        return provider_config.get('supports_temperature', True)
+                else:
+                    if (model_name == shortcut
+                            or model_name == model_entry
+                            or model_name == sanitize_model_name(model_entry)):
+                        return provider_config.get('supports_temperature', True)
 
     # Default to True if provider not found (assume supports temperature)
     return True

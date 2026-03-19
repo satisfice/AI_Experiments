@@ -2,23 +2,49 @@
   "ollama": {
     "supports_temperature": true,
     "models": {
-      "llama": "llama3.1:8b",
-      "gemma": "gemma3:12b"
+      "llama318b": {
+        "name": "llama3.1:8b",
+        "color": "#C8A2C8",
+        "timeout_seconds": 900
+      },
+      "gemma": {
+        "name": "gemma3:12b",
+        "color": "#DA70D6"
+      },
+      "qwen38b": {
+        "name": "qwen3:8b",
+        "color": "#FFFF00"
+      }
     }
   },
   "anthropic": {
     "supports_temperature": false,
     "models": {
-      "haiku": "claude-haiku-4-5-20251001",
-      "sonnet35": "claude-3-5-sonnet-20241022",
-      "opus": "claude-3-opus-20250219"
+      "haiku": {
+        "name": "claude-haiku-4-5-20251001",
+        "color": "#FFB6D9"
+      },
+      "sonnet35": {
+        "name": "claude-3-5-sonnet-20241022",
+        "color": "#FF8A7F"
+      },
+      "opus": {
+        "name": "claude-3-opus-20250219",
+        "color": "#D63031"
+      }
     }
   },
   "openai": {
     "supports_temperature": true,
     "models": {
-      "gpt4": "gpt-4.1-nano-2025-04-14",
-      "gpt35turbo": "gpt-3.5-turbo"
+      "gpt41nano": {
+        "name": "gpt-4.1-nano-2025-04-14",
+        "color": "#92D050"
+      },
+      "gpt35turbo": {
+        "name": "gpt-3.5-turbo",
+        "color": "#739922"
+      }
     }
   }
 }

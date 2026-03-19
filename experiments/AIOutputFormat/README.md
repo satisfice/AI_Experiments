@@ -114,7 +114,7 @@ python experiment.py -m gpt4 -f all -p prompt1.txt -p prompt2.txt -e "test" -i 2
 
 ### summarize.py
 
-Parse all generated output files and create a consolidated JSON containing items extracted from each file.
+Parse all generated output files and create results.json containing items extracted from each file.
 
 ```bash
 python summarize.py [OPTIONS]
@@ -150,15 +150,15 @@ python summarize.py --model gpt4 --format json
 
 ### generate_report.py
 
-Generate an interactive HTML report with visualizations from consolidated results.
+Generate an interactive HTML report with visualizations from results.json.
 
 ```bash
-python generate_report.py -i <consolidated.json> -o <report.html>
+python generate_report.py -i <results.json> -o <report.html>
 ```
 
 **Parameters:**
 
-- `-i, --input`: Path to consolidated JSON file (default: results/consolidated.json)
+- `-i, --input`: Path to results.json file (default: results/results.json)
 - `-o, --output`: Output HTML report path (default: results/report.html)
 
 **Viewing the report:**
@@ -177,20 +177,20 @@ python generate_report.py
 
 Custom output:
 ```bash
-python generate_report.py -i results/consolidated.json -o reports/analysis.html
+python generate_report.py -i results/results.json -o reports/analysis.html
 ```
 
 ## Output Files
 
 Output files are named with the pattern:
 ```
-YYYYMMDDHHmmss-promptname-experimentname-modelname-tNN-ii.ext
+YYYYMMDDHHmmss-experimentname-promptname-modelname-tNN-ii.ext
 ```
 
 Where:
 - `YYYYMMDDHHmmss`: Timestamp with seconds
-- `promptname`: Prompt file name without extension
 - `experimentname`: Experiment name
+- `promptname`: Prompt file name without extension
 - `modelname`: Sanitized model name (e.g., gpt4, llama)
 - `tNN`: Temperature component (2 digits for supported models, "xx" for unsupported)
 - `ii`: Iteration number (01-99)
@@ -198,8 +198,8 @@ Where:
 
 Example:
 ```
-20260216175230-animals-animals5-gpt4-t10-01.json
-20260216175231-animals-animals5-llama-txx-02.txt
+20260216175230-animals5-animals-gpt4-t10-01.json
+20260216175231-animals5-animals-llama-txx-02.txt
 ```
 
 ## Workflow
@@ -213,7 +213,7 @@ Example:
    ```bash
    python summarize.py -a
    ```
-4. Generate HTML report from consolidated data:
+4. Generate HTML report from results.json:
    ```bash
    python generate_report.py
    ```

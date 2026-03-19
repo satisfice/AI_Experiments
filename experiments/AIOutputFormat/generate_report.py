@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 
+import csv
+import html as html_mod
 import json
 import sys
+import textwrap
 import click
 from pathlib import Path
 from collections import Counter, defaultdict
 import plotly.graph_objects as go
-from config import abbreviate_model_name
+from config import abbreviate_model_name, get_model_color, model_supports_temperature
+from utils import format_error, print_error
 
 # Color palette for formats (normalized to lowercase for matching)
 FORMAT_COLORS = {
@@ -18,6 +22,32 @@ FORMAT_COLORS = {
     'html': '#8c564b',         # brown
     'csv': '#e377c2',          # pink
 }
+
+# Map from data format names to filename extensions
+FORMAT_TO_EXTENSION = {
+    'text': 'txt',
+    'numberedtext': 'txt1',
+    'markdown': 'md',
+    'json': 'json',
+    'yaml': 'yml',
+    'csv': 'csv',
+    'html': 'html',
+    # Case-insensitive variants
+    'Text': 'txt',
+    'NumberedText': 'txt1',
+    'Markdown': 'md',
+    'JSON': 'json',
+    'YAML': 'yml',
+    'CSV': 'csv',
+    'HTML': 'html',
+}
+
+
+def get_file_extension(format_name):
+    """Convert data format name to filename extension."""
+    # Try exact match first, then try lowercase, then return lowercase as fallback
+    format_lower = format_name.lower()
+    return FORMAT_TO_EXTENSION.get(format_name, FORMAT_TO_EXTENSION.get(format_lower, format_lower))
 
 
 def is_preamble(item):
@@ -91,34 +121,41 @@ def hsl_to_rgb(h, s, l):
     return f'#{r:02x}{g:02x}{b:02x}'
 
 
-def get_model_color(model_name, models_list):
-    """
-    Get a primary color base for a model.
-    Assigns evenly spaced hues to each model.
-    Will be adjusted by temperature from soft to vivid.
-    """
-    if not models_list:
-        return '#6666cc'  # default blue
-
-    model_index = sorted(models_list).index(model_name)
-    hue = (model_index * 360 / len(models_list)) % 360
-
-    # Base saturation/lightness for low temperature (soft)
-    # Will be adjusted based on temperature
-    return hsl_to_rgb(hue, 60, 60)
 
 
-def adjust_color_by_temperature(base_color_hex, temperature_str, max_temperature=2.0):
+def adjust_color_by_temperature(base_color_hex, temperature_str, model_name=None, models_list=None, max_temperature=2.0):
     """
-    Adjust color from soft to vivid based on temperature.
-    Low temperature: soft, muted version of the color
-    High temperature: vivid, saturated primary version
-    base_color_hex: color in #rrggbb format
-    temperature_str: temperature as string (e.g., "0.0", "1.0", "2.0")
-    max_temperature: temperature value that gives maximum vividness
+    Adjust color based on temperature if model supports it.
+    For models that support temperature: adjust from soft to vivid based on temperature
+    For models that don't support temperature: return base color (more saturated)
+
+    Args:
+        base_color_hex: color in #rrggbb format
+        temperature_str: temperature as string (e.g., "0.0", "1.0", "2.0")
+        model_name: name of the model (for checking temperature support)
+        models_list: list of all models (for context)
+        max_temperature: temperature value that gives maximum vividness
     """
+    # Check if model supports temperature
+    supports_temp = True
+    if model_name:
+        try:
+            supports_temp = model_supports_temperature(model_name)
+        except:
+            supports_temp = True  # default to adjusting if we can't determine
+
+    # If model doesn't support temperature, increase saturation for the base color
+    if not supports_temp:
+        # Increase saturation of the base color
+        from color_picker import increase_saturation
+        return increase_saturation(base_color_hex, factor=1.4)
+
     try:
-        temp_value = float(temperature_str)
+        # Handle "None" string from JSON serialization of None values
+        if temperature_str == "None" or temperature_str is None:
+            temp_value = 1.0
+        else:
+            temp_value = float(temperature_str)
     except (ValueError, TypeError):
         temp_value = 1.0
 
@@ -162,10 +199,23 @@ def adjust_color_by_temperature(base_color_hex, temperature_str, max_temperature
     return hsl_to_rgb(h, new_saturation, new_lightness)
 
 
-def load_consolidated_data(json_path):
-    """Load and parse consolidated.json"""
-    with open(json_path, 'r') as f:
-        return json.load(f)
+def load_results_json(json_path):
+    """Load and parse results.json with UTF-8 encoding and error handling"""
+    try:
+        with open(json_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except UnicodeDecodeError as e:
+        # Find line number by counting newlines up to error position
+        with open(json_path, 'rb') as f:
+            content_before = f.read(e.start)
+            line_num = content_before.count(b'\n') + 1
+        raise ValueError(
+            f"Character encoding error in {json_path} at line {line_num}: {e.reason}"
+        )
+    except json.JSONDecodeError as e:
+        raise ValueError(
+            f"Invalid JSON in {json_path} at line {e.lineno}, column {e.colno}: {e.msg}"
+        )
 
 
 def aggregate_items_by_format_and_model(data):
@@ -175,7 +225,7 @@ def aggregate_items_by_format_and_model(data):
     Returns: dict[tuple] -> dict with Counter, trial_count, per_trial_counts, and metadata
     where tuple is (experiment, format, prompt, model, temperature)
     """
-    result = defaultdict(lambda: {"counter": Counter(), "trial_count": 0, "per_trial_counts": [], "metadata": {}})
+    result = defaultdict(lambda: {"counter": Counter(), "trial_count": 0, "per_trial_counts": [], "filenames": [], "metadata": {}})
 
     for file_type, entries in data.items():
         # Skip non-file-type entries (like malformedOutput metadata)
@@ -203,6 +253,8 @@ def aggregate_items_by_format_and_model(data):
             result[key]["per_trial_counts"].append(len(filtered_items))
             # Increment trial count for each file/entry
             result[key]["trial_count"] += 1
+            if "filename" in entry:
+                result[key]["filenames"].append(entry["filename"])
 
             # Store metadata
             result[key]["metadata"] = {
@@ -214,6 +266,71 @@ def aggregate_items_by_format_and_model(data):
             }
 
     return result
+
+
+def _trial_numbers_str(instances):
+    """Given a list of {"instance": ..., "source": filename} dicts, return a
+    parenthesised sorted list of trial numbers extracted from the source filenames,
+    e.g. '(3, 11, 17)'.  Returns an empty string if no sources are present."""
+    nums = set()
+    for entry in instances:
+        src = entry.get("source", "")
+        if src:
+            try:
+                nums.add(int(Path(src).stem.split('-')[-1]))
+            except (ValueError, IndexError):
+                pass
+    if not nums:
+        return ""
+    return "(" + ", ".join(str(n) for n in sorted(nums)) + ")"
+
+
+def get_cleanup_data_for_combo(quality_data, model, temperature, format_type, prompt):
+    """
+    Return (quality_issues, cleanup_rules) for a specific combo.
+    quality_issues: list of human-readable issue strings (empty list if none).
+    cleanup_rules: list of "rule (N)" strings showing trial counts (empty list if none).
+    quality_data is keyed by abbreviated model name.
+    """
+    if not quality_data:
+        return [], []
+
+    abbrev_model = abbreviate_model_name(model)
+    prompt_data = quality_data.get(abbrev_model, {}).get(str(temperature), {}).get(format_type, {}).get(prompt, {})
+    if not prompt_data:
+        return [], []
+
+    issues = []
+
+    # Prepend inconsistent format warning if flagged
+    if not prompt_data.get("consistentFormat", True):
+        issues.append("Inconsistent output format")
+
+    # Non-empty issue lists (skip metadata keys)
+    NON_ISSUE_KEYS = {"consistentFormat", "formatStyles", "cleanupRules"}
+    for key, value in prompt_data.items():
+        if key in NON_ISSUE_KEYS:
+            continue
+        if not value:
+            continue
+        if key == "parse-failed":
+            # List each failed file individually instead of just the category label.
+            for entry in sorted(value, key=lambda e: e.get("instance", "")):
+                issues.append(f"Parsing failed completely for {entry['instance']}")
+        elif key.startswith("inconsistent_"):
+            issues.append(key.replace('_', ' ').title())
+        else:
+            label = key.replace('_', ' ').title()
+            trial_str = _trial_numbers_str(value)
+            issues.append(f"{label} {trial_str}".strip() if trial_str else label)
+
+    # cleanupRules is a dict {rule: trial_count} in the current format, or a list in the old format.
+    raw = prompt_data.get("cleanupRules", {})
+    if isinstance(raw, dict):
+        cleanup_rules = [f"{rule} ({count})" for rule, count in sorted(raw.items())]
+    else:
+        cleanup_rules = list(raw)
+    return issues, cleanup_rules
 
 
 def get_unique_items_sorted(data):
@@ -238,14 +355,17 @@ def get_unique_items_sorted(data):
     return sorted_items
 
 
-def generate_html_report_with_filters(items_by_format_model, all_items_sorted, formats, models, temperatures, experiments, prompts, data, output_path):
+def generate_html_report_with_filters(items_by_format_model, all_items_sorted, formats, models, temperatures, experiments, prompts, data, output_path, quality_data=None, prompt_texts=None, format_prompts=None):
     """
     Generate individual charts for each (experiment, format, prompt, model, temperature) combination.
     Wrap each in divs with CSS classes for filtering based on experiment/prompt/format/model/temperature.
     Uses CSS display:none to show/hide based on checkbox selections.
     data: raw data for counting trials per combination
     items_by_format_model: dict with 5-tuple keys (experiment, format, prompt, model, temperature)
+    quality_data: dict with quality issues by model/temperature/format (from quality.json)
     """
+    if quality_data is None:
+        quality_data = {}
     # Build mapping from 5-tuple keys to metadata and counters
     combo_info = {}  # (fmt, model, temp, exp, prompt) -> {"counter": Counter, ...}
 
@@ -286,50 +406,23 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
     # Calculate max Y value for individual plots
     max_y = max(all_y_values) if all_y_values else 1
 
-    # Create aggregated plot first
-    aggregated_counter = Counter()
-    for info in combo_info.values():
-        aggregated_counter.update(info["counter"])
-
-    aggregated_y = [aggregated_counter.get(item, 0) for item in x_items]
-
-    agg_fig = go.Figure(
-        data=[go.Bar(
-            x=x_items_display,
-            y=aggregated_y,
-            marker=dict(color='#636363'),
-            hovertemplate='<b>%{x}</b><br>Count: %{y}<extra></extra>',
-        )]
-    )
-
-    agg_fig.update_layout(
-        height=400,
-        showlegend=False,
-        hovermode='x unified',
-        margin=dict(l=10, r=10, t=40, b=30),
-        xaxis=dict(tickangle=90),
-        autosize=True,
-    )
-
-    aggregated_plotly_html = agg_fig.to_html(include_plotlyjs=False, div_id="graph-aggregated")
-    agg_div_start = aggregated_plotly_html.find('<div id="graph-aggregated"')
-    agg_script_start = aggregated_plotly_html.find('<script', agg_div_start)
-    agg_script_end = aggregated_plotly_html.find('</script>', agg_script_start) + 9
-
-    if agg_div_start != -1 and agg_script_start != -1 and agg_script_end > agg_script_start:
-        aggregated_html = aggregated_plotly_html[agg_div_start:agg_script_end]
-    else:
-        aggregated_html = aggregated_plotly_html
-
-    # Generate a figure for each (format, model, temperature, experiment, prompt) combination
+# Generate a figure for each (format, model, temperature, experiment, prompt) combination
+    # The aggregated plot is rendered entirely by JavaScript after filters are applied.
     figures_html = {}
     figures_metadata = {}  # Store metadata for each plot
-    figures_html['aggregated'] = aggregated_html
+    plot_configs = []  # Plot data for deferred JavaScript rendering
+
+    # Store per-combo y_values for dynamic aggregation in JavaScript
+    combo_y_values = {}  # {combo_key_str: [y_values]}
 
     for combo_key, info in combo_info.items():
         fmt, model, temp, exp, prompt = combo_key
         counter = info["counter"]
         y_values = [counter.get(item, 0) for item in x_items]
+
+        # Store for JavaScript dynamic aggregation
+        combo_key_str = f"{fmt}|{model}|{temp}|{exp}|{prompt}"
+        combo_y_values[combo_key_str] = y_values
 
         # Build a simple bar chart with fixed Y axis range
         fig = go.Figure(
@@ -349,23 +442,17 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
             xaxis=dict(tickangle=90),
             yaxis=dict(range=[0, max_y]),
             autosize=True,
+            bargap=0.02,
+            hoverlabel=dict(font=dict(size=16)),
         )
 
-        # Get Plotly HTML
         chart_id = f"{fmt}-{model}-{temp}-{exp}-{prompt}".replace('.', '-').replace('+', '-').replace(' ', '-').replace('_', '-')
-        plotly_html = fig.to_html(include_plotlyjs=False, div_id=f"graph-{chart_id}")
+        div_id = f"graph-{chart_id}"
 
-        # Extract graph div and script
-        div_start = plotly_html.find(f'<div id="graph-{chart_id}"')
-        script_start = plotly_html.find('<script', div_start)
-        script_end = plotly_html.find('</script>', script_start) + 9
-
-        if div_start != -1 and script_start != -1 and script_end > script_start:
-            chart_html = plotly_html[div_start:script_end]
-        else:
-            chart_html = plotly_html
-
-        figures_html[combo_key] = chart_html
+        # Collect plot config for deferred JavaScript rendering; embed a bare placeholder div.
+        fig_dict = json.loads(fig.to_json())
+        plot_configs.append({"divId": div_id, "data": fig_dict["data"], "layout": fig_dict["layout"]})
+        figures_html[combo_key] = f'<div id="{div_id}" class="plotly-graph-div" style="height:400px; width:100%;"></div>'
         figures_metadata[combo_key] = {
             "format": fmt,
             "model": model,
@@ -473,6 +560,19 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
             border-radius: 5px;
             margin-bottom: 20px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: background-color 0.3s ease, min-height 0.3s ease;
+        }
+        .aggregated-section.loading {
+            background-color: #d3d3d3;
+            min-height: 600px;
+        }
+        .aggregated-section.loading .plot-wrapper {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .aggregated-section:not(.loading) .plot-wrapper {
+            opacity: 1;
+            transition: opacity 0.3s ease;
         }
         .prompt-column {
             display: contents;
@@ -480,14 +580,70 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
         .prompt-column-header {
             display: none;
         }
-        .zoom-indicator {
-            display: inline-block;
-            margin-left: 20px;
+        .column-toggle-btn {
+            padding: 8px 16px;
             font-size: 14px;
-            color: #666;
-            background-color: #f0f0f0;
-            padding: 5px 10px;
-            border-radius: 3px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .column-toggle-btn:hover {
+            background-color: #0056b3;
+        }
+        .column-toggle-btn:active {
+            background-color: #004085;
+        }
+        .column-btn-group {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .progress-section {
+            display: none;
+            margin-top: 4px;
+        }
+        .progress-section.visible {
+            display: block;
+        }
+        .progress-bar-container {
+            width: 100%;
+            height: 4px;
+            background-color: #e0e0e0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+        /* Hide button in header when in dual-column mode */
+        body.columns-2 #column-toggle-btn {
+            display: none;
+        }
+        /* Button in right column header (dual-column mode only) */
+        .right-column-toggle-btn {
+            padding: 8px 16px;
+            font-size: 14px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .right-column-toggle-btn:hover {
+            background-color: #0056b3;
+        }
+        .right-column-toggle-btn:active {
+            background-color: #004085;
         }
         .plot-title {
             font-weight: 600;
@@ -527,7 +683,30 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
         .plot-wrapper.hidden {
             display: none;
         }
+        .plot-section.plot-loading .plot-wrapper {
+            background-color: #e0e0e0;
+            min-height: 400px;
+        }
+        /* Cleanup tooltip */
+        #cleanup-tooltip {
+            display: none;
+            position: fixed;
+            background: #fff;
+            border: 1px solid #bbb;
+            border-radius: 4px;
+            padding: 8px 12px;
+            max-width: 640px;
+            z-index: 9999;
+            font-size: 13px;
+            line-height: 1.6;
+            box-shadow: 2px 4px 10px rgba(0,0,0,0.18);
+            pointer-events: none;
+            white-space: normal;
+        }
         /* Dual-column layout */
+        .column {
+            display: none;  /* Hidden by default, shown only in dual-column mode */
+        }
         body.columns-2 {
             margin: 0;
             display: flex;
@@ -558,7 +737,14 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
     <div class="header">
         <div class="header-top">
             <h1>Item Frequency Distribution Report</h1>
-            <div class="zoom-indicator">Zoom: <span id="zoom-level">100%</span> (Use +/- keys)</div>
+            <div class="column-btn-group">
+                <button id="column-toggle-btn" class="column-toggle-btn">Two Columns</button>
+                <div class="progress-section" id="progress-section">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="progress-bar-fill"></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="filter-section">
@@ -611,7 +797,7 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
     # Add model checkboxes with model-specific colors
     for model in models:
         safe_id = model.replace('.', '-').replace('+', '-').replace(' ', '-')
-        model_color = get_model_color(model, models)
+        model_color = get_model_color(model)
         html_content += f'                <div class="filter-item"><input type="checkbox" id="filter-model-{safe_id}" class="model-filter" value="{model}" checked style="border-color: {model_color};" data-model="{model}" data-color="{model_color}"><label for="filter-model-{safe_id}">{abbreviate_model_name(model)}</label></div>\n'
 
     html_content += """            </div>
@@ -635,14 +821,11 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
 """
 
     # Add aggregated plot at the top (spans all columns)
-    # Calculate total items across all combinations
-    aggregated_total_items = sum(aggregated_counter.values())
-    aggregated_unique_items = len(aggregated_counter)
-    agg_title = f"Aggregated Results ({aggregated_total_items} items; {aggregated_unique_items} unique)"
-    html_content += f'    <div class="aggregated-section">\n'
-    html_content += f'        <div class="plot-title" id="aggregated-title">{agg_title}</div>\n'
+    # Title and plot data are computed by JavaScript after filters are applied.
+    html_content += f'    <div class="aggregated-section loading" id="aggregated-section">\n'
+    html_content += f'        <div class="plot-title" id="aggregated-title">Aggregated Results</div>\n'
     html_content += f'        <div class="plot-wrapper" id="aggregated-plot">\n'
-    html_content += figures_html['aggregated']
+    html_content += '            <div id="graph-aggregated" style="height:600px;"></div>\n'
     html_content += '        </div>\n'
     html_content += '    </div>\n\n'
 
@@ -679,27 +862,93 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
 
             # Get colors
             format_color = FORMAT_COLORS.get(fmt.lower(), '#636363')
-            model_base_color = get_model_color(model, models)
-            background_color = adjust_color_by_temperature(model_base_color, temp)
+            model_base_color = get_model_color(model)
+            background_color = adjust_color_by_temperature(model_base_color, temp, model, models)
 
             # Calculate percentage of unique items and average per trial
             unique_pct = (unique_items / total_items * 100) if total_items > 0 else 0
             avg_per_trial = total_items / trial_count if trial_count > 0 else 0
 
+            # Build cleanup indicator with rich tooltip (quality issues in bold + cleanup rules).
+            # Always emitted: red if quality problems, #555 if cleanup only, #aaa if nothing to clean.
+            quality_issues, cleanup_rules = get_cleanup_data_for_combo(quality_data, model, temp, fmt, prompt)
+            if quality_issues or cleanup_rules:
+                # Build HTML tooltip content: quality issues in bold first, then cleanup rules.
+                # Use raw strings in tooltip_lines (no pre-escaping); html_mod.escape() is
+                # applied once to the assembled HTML for safe embedding in the attribute value.
+                # JavaScript's getAttribute() decodes the entities, then innerHTML renders the HTML.
+                tooltip_lines = []
+                for issue in quality_issues:
+                    tooltip_lines.append(f'<b>{issue}</b>')
+                if cleanup_rules:
+                    if quality_issues:
+                        tooltip_lines.append('<span style="display:block;margin-top:4px"></span>')
+                    for rule in cleanup_rules:
+                        tooltip_lines.append(rule)
+                tooltip_html = html_mod.escape('<br>'.join(tooltip_lines))
+                color = "red" if quality_issues else "#555"
+                quality_indicator = (
+                    f' | <span class="cleanup-indicator" data-tooltip-html="{tooltip_html}"'
+                    f' style="color: {color}; cursor: default;">Cleanup</span>'
+                )
+            else:
+                # No cleanup or quality issues: show grayed-out indicator with no tooltip.
+                quality_indicator = (
+                    ' | <span style="color: #aaa; cursor: default;">Cleanup</span>'
+                )
+
+            # Build clipboard string for "Load set" button using actual filenames in the set
+            set_filenames = sorted(combo_info[combo_key].get("filenames", []))
+            if set_filenames:
+                load_set_str = "np " + " ".join(set_filenames)
+            else:
+                # Fallback to wildcard if filenames were not recorded
+                abbr_model = abbreviate_model_name(model)
+                temp_code = "txx" if temp in ("None", None) else f"t{int(float(temp) * 10):02d}"
+                file_ext = get_file_extension(fmt)
+                load_set_str = f"np *{exp}-{prompt}-{abbr_model}-{temp_code}*.{file_ext}"
+
+            # Build button HTML with onclick handler for clipboard copy
+            load_set_button = (
+                f' | <button '
+                f'style="font-size: 0.85em; padding: 1px 6px; cursor: pointer;" '
+                f'title="{load_set_str}" '
+                f'onclick="var b=this; navigator.clipboard.writeText(\'{load_set_str}\').then(function(){{'
+                f'b.textContent=\'Copied!\'; setTimeout(function(){{b.textContent=\'Load set\';}},1000);}});"'
+                f'>Load set</button>'
+            )
+
+            # Build prompt tooltip: prompt text + double line break + format instruction.
+            # Text is wrapped at 80 chars; lines separated by <br> for HTML rendering.
+            _prompt_body = (prompt_texts or {}).get(prompt, '')
+            _fmt_ext = get_file_extension(fmt)
+            _fmt_instruction = (format_prompts or {}).get(_fmt_ext, '')
+            _tooltip_parts = []
+            if _prompt_body:
+                _tooltip_parts.append('<br>'.join(textwrap.wrap(_prompt_body, width=80)))
+            if _fmt_instruction:
+                if _tooltip_parts:
+                    _tooltip_parts.append('<br><br>')
+                _tooltip_parts.append('<br>'.join(textwrap.wrap(_fmt_instruction, width=80)))
+            _prompt_tooltip_attr = ''
+            if _tooltip_parts:
+                _escaped = html_mod.escape(''.join(_tooltip_parts))
+                _prompt_tooltip_attr = f' class="prompt-indicator" data-tooltip-html="{_escaped}"'
+
             # Build HTML title with colored text (two lines, second line starts with Model)
             title_html = (
                 f'Experiment: <span style="color: #333;">{exp}</span> | '
                 f'Format: <span style="color: {format_color}; font-weight: bold;">{fmt}</span> | '
-                f'Prompt: <span style="color: #333;">{prompt}</span> | <br>'
+                f'Prompt: <span style="color: #333;"{_prompt_tooltip_attr}>{prompt}</span> | <br>'
                 f'Model: <span style="color: {model_base_color}; font-weight: bold;">{abbreviate_model_name(model)}</span> | '
                 f'Temperature: <span style="color: {background_color}; font-weight: bold;">{temp}</span> | '
                 f'Trials: {trial_count} | Min: {min_items} | Max: {max_items} | Average: {avg_per_trial:.1f} | '
-                f'Total Items: {total_items} | Unique: {unique_items} ({unique_pct:.1f}%)'
+                f'Total: {total_items} | Unique: {unique_items} ({unique_pct:.1f}%){quality_indicator}{load_set_button}'
             )
 
             html_content += f'        <div class="plot-section" data-format="{fmt}" data-model="{model}" data-temperature="{temp}" data-prompt="{prompt}" data-experiment="{exp}">\n'
             html_content += f'            <div class="plot-title">{title_html}</div>\n'
-            html_content += f'            <div class="plot-wrapper" style="background-color: {background_color};">\n'
+            html_content += f'            <div class="plot-wrapper" style="background-color: {background_color}; border-color: {model_base_color};">\n'
             html_content += figures_html[combo_key]
             html_content += '            </div>\n'
             html_content += '        </div>\n\n'
@@ -709,82 +958,292 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
     html_content += """    </div>
     </div>
 
+    <div id="cleanup-tooltip"></div>
+
     <script>
-        // Handle dual-column layout if requested
-        function initializeDualColumns() {
-            const params = new URLSearchParams(window.location.search);
-            if (params.get('cols') !== '2') return;
+        // Shared tooltip for .cleanup-indicator and .prompt-indicator
+        (function() {
+            var tooltip = document.getElementById('cleanup-tooltip');
+            var SELECTOR = '.cleanup-indicator, .prompt-indicator';
+            document.addEventListener('mouseover', function(e) {
+                var el = e.target.closest(SELECTOR);
+                if (!el) return;
+                var raw = el.getAttribute('data-tooltip-html') || '';
+                tooltip.innerHTML = raw;
+                tooltip.style.display = 'block';
+            });
+            document.addEventListener('mousemove', function(e) {
+                if (tooltip.style.display === 'none') return;
+                var x = e.clientX + 14;
+                var y = e.clientY + 14;
+                // Keep tooltip within viewport
+                var tw = tooltip.offsetWidth, th = tooltip.offsetHeight;
+                if (x + tw > window.innerWidth)  x = e.clientX - tw - 6;
+                if (y + th > window.innerHeight) y = e.clientY - th - 6;
+                tooltip.style.left = x + 'px';
+                tooltip.style.top  = y + 'px';
+            });
+            document.addEventListener('mouseout', function(e) {
+                var el = e.target.closest(SELECTOR);
+                if (!el) return;
+                tooltip.style.display = 'none';
+            });
+        })();
 
-            const mainContent = document.getElementById('main-content');
+        // Store data for dynamic aggregation
+        const aggregationData = {
+            items: """ + json.dumps(x_items_display) + """,
+            comboData: """ + json.dumps(combo_y_values) + """,
+            globalMaxY: """ + str(int(max_y)) + """
+        };
+        const plotConfigs = """ + json.dumps(plot_configs) + """;
 
-            // Save Plotly chart data/layout before DOM manipulation.
-            // cloneNode(true) copies HTML structure but NOT Plotly's internal
-            // JavaScript state, so cloned charts are static snapshots that
-            // cannot be resized. We must re-create them with Plotly.newPlot().
-            const chartData = [];
-            mainContent.querySelectorAll('.plotly-graph-div').forEach(function(div) {
-                if (div.data && div.layout) {
-                    chartData.push({
-                        id: div.id,
-                        data: JSON.parse(JSON.stringify(div.data)),
-                        layout: JSON.parse(JSON.stringify(div.layout))
-                    });
+        // Snapshot of main-content HTML before any Plotly rendering — only bare <div>
+        // placeholders, no SVG. Used by initializeDualColumns instead of cloneNode(true).
+        const mainContentTemplate = document.getElementById('main-content').innerHTML;
+
+        // Build lookup map for O(1) access by divId, pre-compute per-plot max Y
+        const plotConfigMap = {};
+        plotConfigs.forEach(function(cfg) {
+            plotConfigMap[cfg.divId] = cfg;
+            cfg.maxY = Math.max.apply(null, cfg.data[0].y);
+        });
+
+        // Dynamic Y-axis max for individual plots (updated as filters change)
+        var currentMaxY = aggregationData.globalMaxY;
+
+        // Lazy rendering: IntersectionObserver renders plots as they scroll into view
+        var activeObservers = [];
+
+        function observePlots(container) {
+            // In two-column mode, columns are the scroll containers; otherwise use viewport
+            var scrollRoot = (container.classList && container.classList.contains('column')) ? container : null;
+
+            var observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        var div = entry.target;
+                        var cfg = plotConfigMap[div.id];
+                        if (cfg) {
+                            var layout = Object.assign({}, cfg.layout);
+                            layout.yaxis = Object.assign({}, cfg.layout.yaxis, {range: [0, currentMaxY]});
+                            Plotly.newPlot(div, cfg.data, layout);
+                            var section = div.closest('.plot-section');
+                            if (section) section.classList.remove('plot-loading');
+                        }
+                        observer.unobserve(div);
+                    }
+                });
+            }, { root: scrollRoot, rootMargin: '500px' });
+
+            container.querySelectorAll('.plotly-graph-div').forEach(function(div) {
+                if (!div.classList.contains('js-plotly-plot')) {
+                    var section = div.closest('.plot-section');
+                    if (section) section.classList.add('plot-loading');
+                    observer.observe(div);
                 }
             });
 
-            const clone = mainContent.cloneNode(true);
+            activeObservers.push(observer);
+            return observer;
+        }
 
-            // Create column wrappers
+        function cleanupObservers() {
+            activeObservers.forEach(function(obs) { obs.disconnect(); });
+            activeObservers = [];
+        }
+
+        // Update Y-axis scale for all individual plots based on visible plot maximums
+        var yAxisScaleTimeout;
+        function updatePlotYAxisScale() {
+            // Find all active containers
+            var containers = [];
+            if (isInTwoColumnMode && savedColumns) {
+                containers = [savedColumns.column1, savedColumns.column2];
+            } else {
+                var mc = document.getElementById('main-content');
+                if (mc) containers = [mc];
+            }
+
+            // Find max Y across all visible plots in all containers
+            var maxY = 0;
+            containers.forEach(function(container) {
+                container.querySelectorAll('.plot-section:not(.hidden)').forEach(function(section) {
+                    var plotDiv = section.querySelector('.plotly-graph-div');
+                    if (plotDiv) {
+                        var cfg = plotConfigMap[plotDiv.id];
+                        if (cfg && cfg.maxY > maxY) maxY = cfg.maxY;
+                    }
+                });
+            });
+
+            if (maxY === 0) maxY = 1;
+            if (maxY === currentMaxY) return;  // Skip relayout if scale unchanged
+            currentMaxY = maxY;
+
+            // Update only visible rendered individual plots' Y-axis ranges
+            containers.forEach(function(container) {
+                container.querySelectorAll('.plot-section:not(.hidden) .js-plotly-plot').forEach(function(plotDiv) {
+                    if (plotDiv.id === 'graph-aggregated') return;
+                    Plotly.relayout(plotDiv, {'yaxis.range': [0, maxY]});
+                });
+            });
+        }
+
+        // Recalculate aggregated plot based on visible plots, scoped to one container
+        function updateAggregatedPlot(primaryContainer) {
+            const selectedExps = new Set(Array.from(primaryContainer.querySelectorAll('.exp-filter'))
+                .filter(function(cb) { return cb.checked; }).map(function(cb) { return cb.value; }));
+            const selectedPrompts = new Set(Array.from(primaryContainer.querySelectorAll('.prompt-filter'))
+                .filter(function(cb) { return cb.checked; }).map(function(cb) { return cb.value; }));
+            const selectedFormats = new Set(Array.from(primaryContainer.querySelectorAll('.format-filter'))
+                .filter(function(cb) { return cb.checked && !cb.classList.contains('agg-toggle'); }).map(function(cb) { return cb.value; }));
+            const selectedModels = new Set(Array.from(primaryContainer.querySelectorAll('.model-filter'))
+                .filter(function(cb) { return cb.checked; }).map(function(cb) { return cb.value; }));
+            const selectedTemps = new Set(Array.from(primaryContainer.querySelectorAll('.temp-filter'))
+                .filter(function(cb) { return cb.checked; }).map(function(cb) { return cb.value; }));
+
+            // Sum y_values from all matching combos
+            const aggregatedY = new Array(aggregationData.items.length).fill(0);
+            const itemLen = aggregationData.items.length;
+
+            // Pre-build filter check for efficiency
+            const hasFilters = selectedExps.size > 0 && selectedPrompts.size > 0 &&
+                               selectedFormats.size > 0 && selectedModels.size > 0 && selectedTemps.size > 0;
+
+            if (hasFilters) {
+                const combos = Object.keys(aggregationData.comboData);
+                for (let i = 0; i < combos.length; i++) {
+                    const comboKeyStr = combos[i];
+                    const parts = comboKeyStr.split('|');
+                    const fmt = parts[0];
+                    const model = parts[1];
+                    const temp = parts[2];
+                    const exp = parts[3];
+                    const prompt = parts[4];
+
+                    // Check if this combo matches all selected filters
+                    if (selectedExps.has(exp) && selectedPrompts.has(prompt) &&
+                        selectedFormats.has(fmt) && selectedModels.has(model) && selectedTemps.has(temp)) {
+                        // Sum y values across all matching combos
+                        const yValues = aggregationData.comboData[comboKeyStr];
+                        for (let j = 0; j < itemLen; j++) {
+                            aggregatedY[j] += yValues[j];
+                        }
+                    }
+                }
+            }
+
+            // Render aggregated plot scoped to this container (full item set on X-axis)
+            // Y-axis max is the sum of the most frequently appearing item in selected filters
+            var aggMaxY = Math.max.apply(null, aggregatedY) || 1;
+            var aggPlot = primaryContainer.querySelector('[id="graph-aggregated"]');
+            if (aggPlot) {
+                Plotly.react(aggPlot, [{
+                    type: 'bar',
+                    x: aggregationData.items,
+                    y: aggregatedY,
+                    marker: {color: '#636363'},
+                    hovertemplate: '<b>%{x}</b><br>Count: %{y}<extra></extra>'
+                }], {
+                    height: 600,
+                    showlegend: false,
+                    hovermode: 'x unified',
+                    margin: {l: 50, r: 10, t: 40, b: 200},
+                    xaxis: {tickangle: 90},
+                    yaxis: {range: [0, aggMaxY]},
+                    autosize: true,
+                    bargap: 0.02,
+                    hoverlabel: {font: {size: 16}}
+                });
+            }
+
+            // Calculate and update aggregated plot header with statistics
+            const totalItems = aggregatedY.reduce(function(sum, val) { return sum + val; }, 0);
+            const uniqueItems = aggregatedY.filter(function(val) { return val > 0; }).length;
+            const newTitle = 'Aggregated Results (' + totalItems + ' items; ' + uniqueItems + ' unique)';
+
+            var titleDiv = primaryContainer.querySelector('[id="aggregated-title"]');
+            if (titleDiv) {
+                titleDiv.textContent = newTitle;
+            }
+
+            // Remove loading state from aggregated section
+            var aggSection = primaryContainer.querySelector('[id="aggregated-section"]');
+            if (aggSection) {
+                aggSection.classList.remove('loading');
+            }
+        }
+
+        // Handle dual-column layout if requested
+        function initializeDualColumns() {
+            const mainContent = document.getElementById('main-content');
+
+            // Build columns from the pre-render template (bare <div> placeholders, no SVG).
+            // This is nearly instant compared to cloneNode(true) on a rendered Plotly document.
+            const clone1 = document.createElement('div');
+            clone1.innerHTML = mainContentTemplate;
+            const clone2 = document.createElement('div');
+            clone2.innerHTML = mainContentTemplate;
+
             const column1 = document.createElement('div');
             column1.className = 'column';
-            column1.appendChild(mainContent);
+            column1.appendChild(clone1);
 
             const column2 = document.createElement('div');
             column2.className = 'column';
-            column2.appendChild(clone);
+            column2.appendChild(clone2);
 
-            // Replace body content with columns
-            document.body.innerHTML = '';
+            mainContent.style.display = 'none';
             document.body.classList.add('columns-2');
             document.body.appendChild(column1);
             document.body.appendChild(column2);
 
-            // Synchronized vertical scrolling
-            column1.addEventListener('scroll', function() {
-                column2.scrollTop = column1.scrollTop;
-            });
-            column2.addEventListener('scroll', function() {
-                column1.scrollTop = column2.scrollTop;
-            });
+            savedColumns = { column1: column1, column2: column2, mainContent: mainContent };
 
-            // Each column has independent filters (no syncing)
+            // Add toggle button to right column header
+            const rightHeader = column2.querySelector('.header');
+            if (rightHeader) {
+                const rightHeaderTop = rightHeader.querySelector('.header-top');
+                if (rightHeaderTop) {
+                    const rightToggleBtn = document.createElement('button');
+                    rightToggleBtn.id = 'right-column-toggle-btn';
+                    rightToggleBtn.className = 'right-column-toggle-btn';
+                    rightToggleBtn.textContent = 'Single Column';
+                    rightToggleBtn.addEventListener('click', function() {
+                        document.getElementById('column-toggle-btn').click();
+                    });
+                    rightHeaderTop.appendChild(rightToggleBtn);
+                }
+            }
 
-            // Re-initialize Plotly charts after DOM layout has settled
-            setTimeout(function() {
-                // Column 1: originals still have Plotly state, just resize
-                column1.querySelectorAll('.plotly-graph-div').forEach(function(div) {
-                    Plotly.Plots.resize(div);
-                });
+            column1.addEventListener('scroll', function() { column2.scrollTop = column1.scrollTop; });
+            column2.addEventListener('scroll', function() { column1.scrollTop = column2.scrollTop; });
 
-                // Column 2: cloned divs have no Plotly state, re-create from saved data
-                var col2Plots = column2.querySelectorAll('.plotly-graph-div');
-                chartData.forEach(function(saved, idx) {
-                    if (idx < col2Plots.length) {
-                        Plotly.newPlot(col2Plots[idx], saved.data, saved.layout, {responsive: true});
-                    }
-                });
-            }, 300);
+            // Set up event listeners and lazy-render plots via IntersectionObserver
+            cleanupObservers();
+            setupColumnEventListeners(column1);
+            setupColumnEventListeners(column2);
+            observePlots(column1);
+            observePlots(column2);
+            updatePlotYAxisScale();
         }
 
-        // Initialize dual columns before setting up event listeners
-        initializeDualColumns();
+        // Don't initialize dual columns on page load - start in single column mode
+        // User can toggle to dual columns with the button
 
         // Column-scoped visibility: each column's checkboxes control only
         // that column's plots. In single-column mode, scope is the document.
         var columnContainers = document.querySelectorAll('.column');
+        var primaryContainer;  // The container used for aggregated plot calculation
         if (columnContainers.length === 0) {
             columnContainers = [document];
+            primaryContainer = document;
+        } else {
+            primaryContainer = columnContainers[0];  // Left column in dual-column mode
         }
+
+        var aggregatedPlotTimeouts = new WeakMap();  // Per-container debounce timers
 
         function updateColumnVisibility(container) {
             var selectedExps = new Set(Array.from(container.querySelectorAll('.exp-filter'))
@@ -806,10 +1265,21 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
                                  selectedTemps.has(section.getAttribute('data-temperature'));
                 section.classList.toggle('hidden', !shouldShow);
             });
+
+            // Debounce aggregated plot update per container
+            var existingTimeout = aggregatedPlotTimeouts.get(container);
+            if (existingTimeout) clearTimeout(existingTimeout);
+            aggregatedPlotTimeouts.set(container, setTimeout(function() {
+                updateAggregatedPlot(container);
+            }, 100));
+
+            // Debounce global Y-axis scale update (cross-column)
+            clearTimeout(yAxisScaleTimeout);
+            yAxisScaleTimeout = setTimeout(updatePlotYAxisScale, 100);
         }
 
         function resizeColumnPlots(container) {
-            container.querySelectorAll('.plotly-graph-div').forEach(function(plotDiv) {
+            container.querySelectorAll('.js-plotly-plot').forEach(function(plotDiv) {
                 var plotSection = plotDiv.closest('.plot-section');
                 if (!plotSection || !plotSection.classList.contains('hidden')) {
                     Plotly.Plots.resize(plotDiv);
@@ -824,8 +1294,10 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
             });
         }
 
-        // Set up each column container independently
-        columnContainers.forEach(function(container) {
+        function setupColumnEventListeners(container) {
+            // This function sets up all event listeners for a column
+            // It needs to be called both on page load and after creating dual columns
+
             // Style format checkboxes: outline with format color, fill on check
             container.querySelectorAll('.format-filter').forEach(function(checkbox) {
                 var color = checkbox.getAttribute('data-color');
@@ -874,45 +1346,85 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
                 .forEach(function(checkbox) {
                     checkbox.addEventListener('change', function() {
                         updateColumnVisibility(container);
-                        resizeColumnPlots(container);
                     });
                 });
 
             // Initialize visibility for this column
             updateColumnVisibility(container);
+        }
+
+        // Set up event listeners for initial column containers
+        columnContainers.forEach(function(container) {
+            setupColumnEventListeners(container);
         });
 
-        // Zoom is intentionally global (affects both columns via CSS variable)
-        var zoomLevel = 1.0;
-        var minPlotWidth = 300;
-        var maxPlotWidth = 1200;
-        var baseWidth = 600;
-
-        function updateZoom() {
-            var newWidth = Math.round(baseWidth * zoomLevel);
-            document.documentElement.style.setProperty('--plot-min-width', newWidth + 'px');
-            document.querySelectorAll('[id="zoom-level"]').forEach(function(el) {
-                el.textContent = Math.round(zoomLevel * 100) + '%';
+        // Lazy-render individual plots via IntersectionObserver
+        if (columnContainers[0] === document) {
+            observePlots(document.getElementById('main-content') || document.body);
+        } else {
+            columnContainers.forEach(function(container) {
+                observePlots(container);
             });
         }
 
-        document.addEventListener('keydown', function(event) {
-            if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
-                if (event.key === '+' || event.key === '=') {
-                    event.preventDefault();
-                    zoomLevel = Math.min(zoomLevel + 0.1, maxPlotWidth / baseWidth);
-                    updateZoom();
-                } else if (event.key === '-' || event.key === '_') {
-                    event.preventDefault();
-                    zoomLevel = Math.max(zoomLevel - 0.1, minPlotWidth / baseWidth);
-                    updateZoom();
-                } else if (event.key === '0') {
-                    event.preventDefault();
-                    zoomLevel = 1.0;
-                    updateZoom();
-                }
-            }
+        // Update aggregated plot immediately (always visible at the top)
+        columnContainers.forEach(function(container) {
+            updateAggregatedPlot(container);
         });
+
+        // Initialize Y-axis scale for individual plots
+        updatePlotYAxisScale();
+
+        // Column mode toggle
+        var isInTwoColumnMode = false;
+        var columnToggleBtn = document.getElementById('column-toggle-btn');
+        var savedColumns = null;  // Store column references for cleanup
+
+        function updateColumnModeButton() {
+            if (isInTwoColumnMode) {
+                columnToggleBtn.textContent = 'Single Column';
+            } else {
+                columnToggleBtn.textContent = 'Two Columns';
+            }
+        }
+
+        columnToggleBtn.addEventListener('click', function() {
+            if (isInTwoColumnMode) {
+                // Switch to single column mode
+                isInTwoColumnMode = false;
+                document.body.classList.remove('columns-2');
+
+                // Remove columns from DOM and show main content
+                cleanupObservers();
+                if (savedColumns) {
+                    savedColumns.column1.remove();
+                    savedColumns.column2.remove();
+                    savedColumns.mainContent.style.display = 'block';
+                    savedColumns = null;
+                }
+
+                // Re-setup listeners and re-observe any unrendered plots
+                var mainContent = document.getElementById('main-content');
+                if (mainContent) {
+                    setupColumnEventListeners(mainContent);
+                    observePlots(mainContent);
+                    updatePlotYAxisScale();
+                    // Resize already-rendered plots after layout reflow
+                    setTimeout(function() {
+                        mainContent.querySelectorAll('.js-plotly-plot').forEach(function(plotDiv) {
+                            Plotly.Plots.resize(plotDiv);
+                        });
+                    }, 50);
+                }
+            } else {
+                // Switch to two column mode
+                isInTwoColumnMode = true;
+                initializeDualColumns();
+            }
+            updateColumnModeButton();
+        });
+
+        updateColumnModeButton();
     </script>
 
 </body>
@@ -920,6 +1432,66 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
 
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html_content)
+
+
+def write_spreadsheet_csv(items_by_format_model, output_path):
+    """Write summary spreadsheet CSV with one row per (experiment, prompt, model, temperature, format).
+
+    Columns: experiment, prompt, model, temperature, format, trials,
+             min items, max items, average items, variance, total items,
+             unique items, percent unique.
+
+    'unique items' counts distinct items across all trials in the group.
+    'total items' is the sum of item counts across all trials.
+    'percent unique' is unique / total * 100.
+    Variance is sample variance (n-1 denominator); 0 when trials <= 1.
+    """
+    rows = []
+    for (experiment, format_type, prompt, model, temperature), group in items_by_format_model.items():
+        counts = group["per_trial_counts"]
+        counter = group["counter"]
+        trials = group["trial_count"]
+
+        if counts:
+            min_items = min(counts)
+            max_items = max(counts)
+            avg_items = sum(counts) / len(counts)
+            variance = (sum((x - avg_items) ** 2 for x in counts) / (len(counts) - 1)
+                        if len(counts) > 1 else 0.0)
+        else:
+            min_items = max_items = avg_items = variance = 0.0
+
+        total_items = sum(counter.values())
+        unique_items = len(counter)
+        percent_unique = round(unique_items / total_items * 100, 1) if total_items > 0 else 0.0
+
+        rows.append({
+            "experiment": experiment,
+            "prompt": prompt,
+            "model": model,
+            "temperature": temperature,
+            "format": format_type,
+            "trials": trials,
+            "min items": min_items,
+            "max items": max_items,
+            "average items": round(avg_items, 2),
+            "variance": round(variance, 2),
+            "total items": total_items,
+            "unique items": unique_items,
+            "percent unique": percent_unique,
+        })
+
+    rows.sort(key=lambda r: (r["experiment"], r["prompt"], r["model"], str(r["temperature"]), r["format"]))
+
+    fieldnames = [
+        "experiment", "prompt", "model", "temperature", "format",
+        "trials", "min items", "max items", "average items", "variance",
+        "total items", "unique items", "percent unique",
+    ]
+    with open(output_path, 'w', newline='', encoding='utf-8') as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
 
 
 @click.command()
@@ -945,13 +1517,22 @@ def main(experiment, input, output):
     output_path = Path(output)
 
     if not input_path.exists():
-        click.echo(f"Error: Input file not found: {input_path}", err=True)
+        click.echo(format_error("generate_report", f"Input file not found: {input_path}"), err=True)
         sys.exit(1)
 
     try:
         # Load data
-        click.echo("Loading consolidated data...")
-        data = load_consolidated_data(input_path)
+        click.echo("Loading results.json...")
+        data = load_results_json(input_path)
+
+        # Load quality data if available
+        quality_data = {}
+        quality_path = input_path.parent / 'quality.json'
+        if quality_path.exists():
+            click.echo("Loading quality data...")
+            quality_data = load_results_json(quality_path)
+        else:
+            click.echo("Quality data not found (run summarize --analysis to generate)")
 
         # Extract unique values for filtering
         formats = set()
@@ -1005,6 +1586,21 @@ def main(experiment, input, output):
                     filtered_data[file_type] = filtered_entries
             data = filtered_data
 
+        # Load formats.json for format instructions (keyed by extension, e.g. "html", "json")
+        format_prompts = {}
+        formats_json_path = Path(__file__).parent / 'formats.json'
+        if formats_json_path.exists():
+            formats_data = json.loads(formats_json_path.read_text(encoding='utf-8'))
+            format_prompts = {k: v.get('prompt', '') for k, v in formats_data.items()}
+
+        # Load .prompt files for each discovered prompt name
+        script_dir = Path(__file__).parent
+        prompt_texts = {}
+        for prompt_name in prompts:
+            prompt_file = script_dir / f'{prompt_name}.prompt'
+            if prompt_file.exists():
+                prompt_texts[prompt_name] = prompt_file.read_text(encoding='utf-8').strip()
+
         # Aggregate items
         click.echo("Aggregating items by format and model...")
         items_by_format_model = aggregate_items_by_format_and_model(data)
@@ -1017,12 +1613,17 @@ def main(experiment, input, output):
         # Export to HTML with filters (generates separate charts for each format)
         click.echo(f"Writing report to {output_path}...")
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        generate_html_report_with_filters(items_by_format_model, all_items_sorted, formats, models, temperatures, experiments, prompts, data, str(output_path))
+        generate_html_report_with_filters(items_by_format_model, all_items_sorted, formats, models, temperatures, experiments, prompts, data, str(output_path), quality_data, prompt_texts=prompt_texts, format_prompts=format_prompts)
 
         click.echo(f"Success. Report generated at {output_path}")
 
+        # Write summary spreadsheet alongside the report
+        spreadsheet_path = output_path.parent / "spreadsheet.csv"
+        write_spreadsheet_csv(items_by_format_model, spreadsheet_path)
+        click.echo(f"Wrote spreadsheet to {spreadsheet_path}")
+
     except Exception as e:
-        click.echo(f"Error: {e}", err=True)
+        click.echo(format_error("generate_report", str(e)), err=True)
         sys.exit(1)
 
 

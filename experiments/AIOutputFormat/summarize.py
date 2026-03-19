@@ -6,10 +6,13 @@ import yaml
 import re
 import sys
 import click
+from html.parser import HTMLParser
 from pathlib import Path
 from collections import defaultdict, Counter
 from io import StringIO
+from fnmatch import fnmatch
 from config import abbreviate_model_name
+from utils import format_error, print_error
 
 RESULTS_DIR = Path("results")
 RESULTS_FILE = RESULTS_DIR / "results.json"
@@ -17,7 +20,7 @@ QUALITY_FILE = RESULTS_DIR / "quality.json"
 UNIQUE_ITEMS_FILE = RESULTS_DIR / "unique_items.txt"
 UNIQUE_SOURCE_ITEMS_FILE = RESULTS_DIR / "unique_source_items.txt"
 SKIP_EXTENSIONS = {".xlsx", ".log"}
-SKIP_PATTERNS = {"results.json", "quality.json", "unique_items.txt", "unique_source_items.txt", "consolidated.json", "consolidated_items.json"}
+SKIP_PATTERNS = {"results.json", "quality.json", "unique_items.txt", "unique_source_items.txt", "spreadsheet.csv"}
 
 # Map file extensions to format types
 FORMAT_MAP = {
@@ -25,10 +28,89 @@ FORMAT_MAP = {
     '.txt1': 'numberedText',
     '.json': 'JSON',
     '.yml': 'YAML',
+    '.yaml': 'YAML',
     '.html': 'HTML',
     '.csv': 'CSV',
     '.md': 'markdown',
 }
+
+
+def detect_format_style(content, ext):
+    """Detect the formatting style of the content based on extension and content structure."""
+    content_stripped = content.strip()
+
+    if ext == '.json':
+        has_backticks = content_stripped.startswith('```') and content_stripped.endswith('```')
+        # Check for newlines inside the backticks (if present) to detect format style
+        inner_content = content_stripped
+        if has_backticks:
+            start = content_stripped.find('\n')
+            end = content_stripped.rfind('\n')
+            if start != -1 and end != -1 and start != end:
+                inner_content = content_stripped[start:end]
+        has_newlines = '\n' in inner_content
+
+        if has_backticks and has_newlines:
+            return "format and markdown backticks"
+        elif has_backticks:
+            return "markdown backticks"
+        elif has_newlines:
+            return "multiple lines"
+        else:
+            return "single lines"
+
+    elif ext == '.html':
+        has_backticks = content_stripped.startswith('```') and content_stripped.endswith('```')
+        has_newlines = '\n' in content_stripped
+
+        if has_backticks:
+            return "markdown backticks"
+        elif has_newlines:
+            return "multiple lines"
+        else:
+            return "single line"
+
+    elif ext == '.csv':
+        has_backticks = content_stripped.startswith('```') and content_stripped.endswith('```')
+        if has_backticks:
+            return "markdown backticks"
+
+        non_empty_lines = [l for l in content_stripped.split('\n') if l.strip()]
+        if len(non_empty_lines) <= 1:
+            return "single row"
+        # Multiple lines: check whether any line contains commas
+        has_commas = any(',' in line for line in non_empty_lines)
+        if has_commas:
+            return "multiple rows"
+        else:
+            return "one per line"
+
+    elif ext == '.yml':
+        has_backticks = content_stripped.startswith('```') and content_stripped.endswith('```')
+        if has_backticks:
+            return "markdown backticks"
+
+        non_empty_lines = [l for l in content_stripped.split('\n') if l.strip()]
+        # "leading hyphen" if any line uses YAML list syntax (- item)
+        if any(l.strip().startswith('- ') or l.strip() == '-' for l in non_empty_lines):
+            return "leading hyphen"
+        return "plain text"
+
+    elif ext in ('.txt', '.txt1'):
+        non_empty_lines = [l for l in content_stripped.split('\n') if l.strip()]
+        if not non_empty_lines:
+            return "plain text"
+        # A line is "numbered" if it starts with digits followed by a period, parenthesis, colon, or dash
+        is_numbered = lambda l: bool(re.match(r'^\d+[.):\-]', l.strip()))
+        if ext == '.txt':
+            # Plain text is the expected style; any numbered line makes it "numbered text"
+            return "numbered text" if any(is_numbered(l) for l in non_empty_lines) else "plain text"
+        else:  # .txt1
+            # Numbered text is the expected style; any un-numbered line makes it "plain text"
+            return "plain text" if any(not is_numbered(l) for l in non_empty_lines) else "numbered text"
+
+    else:
+        return "unknown"
 
 
 def parse_txt(content):
@@ -41,17 +123,82 @@ def parse_txt(content):
 
 def parse_json(content):
     """Parse JSON file: if array, each element; if object, each value. Flatten any list items.
-    Handles JSON with Python dict syntax (non-standard format) (single quotes instead of double quotes).
+    Handles multiple JSON formats:
+    - Standard arrays: ["item1", "item2"]
+    - Standard objects: {"key": "item"}
+    - Set-like format: {"item1", "item2"} (converted to array)
+    - JSON with single quotes (Python dict syntax)
+    - JSON wrapped in triple backticks (markdown code fence format)
     Extracts values from list of dicts with common keys.
     Returns (items, fixups)."""
     fixups = []
+
+    # Strip triple backticks if present (markdown code fence format)
+    content_to_parse = content.strip()
+    if content_to_parse.startswith('```') and content_to_parse.endswith('```'):
+        # Remove opening backticks and everything up to and including the first newline
+        start_idx = content_to_parse.find('\n')
+        if start_idx != -1:
+            content_to_parse = content_to_parse[start_idx+1:]
+        else:
+            # No newline, just remove the opening backticks
+            content_to_parse = content_to_parse[3:]
+        # Remove closing backticks
+        content_to_parse = content_to_parse[:-3].strip()
+        fixups.append("Extract-from-JSON-Codefence-Markdown")
+
+    # Try to detect and convert set-like format {item1, item2, ...} to array format
+    # Set-like format has { } with strings separated by commas, but no colons (no key-value pairs)
+    if content_to_parse.startswith('{') and content_to_parse.rstrip().endswith('}'):
+        # Check if this looks like a set-like format (no colons outside of strings)
+        # Count colons not in quotes
+        in_quotes = False
+        colon_count = 0
+        for char in content_to_parse:
+            if char == '"':
+                in_quotes = not in_quotes
+            elif char == ':' and not in_quotes:
+                colon_count += 1
+
+        if colon_count == 0:
+            # Looks like a set-like format - convert to array format
+            converted = content_to_parse.replace('{', '[').replace('}', ']')
+            # Remove trailing commas before closing bracket
+            converted = converted.replace(',\n]', '\n]').replace(', ]', ']').replace(',]', ']')
+            content_to_parse = converted
+            fixups.append("JSON-Set-Format-Conversion")
+
+    # Detect repeated-key JSON objects: {"key":"v1","key":"v2",...}
+    # Standard json.loads silently drops duplicates; use object_pairs_hook to preserve them.
+    if content_to_parse.startswith('{'):
+        _pairs_by_level = []
+        try:
+            json.loads(content_to_parse, object_pairs_hook=lambda p: _pairs_by_level.append(p) or dict(p))
+        except json.JSONDecodeError:
+            pass
+        else:
+            if _pairs_by_level:
+                top_pairs = _pairs_by_level[-1]   # last call = top-level object
+                top_keys = [k for k, v in top_pairs]
+                if len(top_keys) > len(set(top_keys)):
+                    items = [v for k, v in top_pairs]
+                    # Flatten any list values (consistent with rest of parse_json)
+                    flattened = []
+                    for item in items:
+                        if isinstance(item, list):
+                            flattened.extend(item)
+                        else:
+                            flattened.append(item)
+                    fixups.append("QUALITY: Repeated JSON object keys (same key used for multiple values)")
+                    return flattened, fixups
+
     try:
-        data = json.loads(content)
+        data = json.loads(content_to_parse)
         if isinstance(data, list):
             items = data
         elif isinstance(data, dict):
             items = list(data.values())
-            fixups.append("Extracted values from JSON object")
+            fixups.append("JSON-Dict-Value-Extraction")
         else:
             items = [data]
 
@@ -69,17 +216,54 @@ def parse_json(content):
                 flattened.append(item)
 
         if had_nested_lists:
-            fixups.append("Flattened nested list items")
+            fixups.append("JSON-Nested-List-Flattening")
 
         return flattened, fixups
 
     except json.JSONDecodeError as e:
+        # Try other conversions before giving up
+        fixed_content = None
+
+        # First, try to fix set-like format if not already converted
+        if content_to_parse.startswith('{') and content_to_parse.rstrip().endswith('}'):
+            # Check if no colons (set-like format)
+            in_quotes = False
+            colon_count = 0
+            for char in content_to_parse:
+                if char == '"':
+                    in_quotes = not in_quotes
+                elif char == ':' and not in_quotes:
+                    colon_count += 1
+
+            if colon_count == 0:
+                try:
+                    converted = content_to_parse.replace('{', '[').replace('}', ']')
+                    converted = converted.replace(',\n]', '\n]').replace(', ]', ']').replace(',]', ']')
+                    data = json.loads(converted)
+                    fixups.append("JSON-Set-Format-Conversion")
+                    if isinstance(data, list):
+                        items = data
+                    elif isinstance(data, dict):
+                        items = list(data.values())
+                    else:
+                        items = [data]
+                    items = _extract_from_dict_list(items, fixups)
+                    flattened = []
+                    for item in items:
+                        if isinstance(item, list):
+                            flattened.extend(item)
+                        else:
+                            flattened.append(item)
+                    return flattened, fixups
+                except json.JSONDecodeError:
+                    pass  # Try next method
+
         # Try to fix non-standard JSON (Python dict syntax) (single quotes)
-        if "'" in content and "{" in content:
+        if "'" in content_to_parse and "{" in content_to_parse:
             try:
                 # Replace single quotes with double quotes for dict/list syntax
                 # This is a heuristic that works for simple Python dicts in JSON
-                fixed_content = content.replace("'", '"')
+                fixed_content = content_to_parse.replace("'", '"')
                 data = json.loads(fixed_content)
 
                 if isinstance(data, list):
@@ -100,14 +284,14 @@ def parse_json(content):
                     else:
                         flattened.append(item)
 
-                fixups.append("Converted non-standard JSON (Python dict syntax) to valid JSON")
+                fixups.append("JSON-Python-Syntax-Repair")
                 return flattened, fixups
             except json.JSONDecodeError:
                 # If the fix didn't work, return empty list with error note
-                fixups.append("Non-standard JSON with Python dict syntax - could not repair")
+                fixups.append("QUALITY: Parse-Failed")
                 return [], fixups
         else:
-            fixups.append("JSON parse error - returned empty list")
+            fixups.append("QUALITY: Parse-Failed")
             return [], fixups
 
 
@@ -137,54 +321,109 @@ def _extract_from_dict_list(items, fixups):
             for item in items:
                 value = item[key]
                 extracted.append(value)
-            fixups.append(f"Extracted '{key}' values from JSON dict list")
+            fixups.append("JSON-Dict-List-Key-Extraction")
             return extracted
 
     return items
 
 
+# ── General Parsing Functions ─────────────────────────────────────────────────
+# Format-agnostic helpers that operate on already-separated data. CSV uses them
+# now; other format parsers can call them in future passes.
+
+def parse_single_row(row):
+    """Return items from a single sequence (one row of already-parsed values).
+    Rule: Parse-Single-Row.
+    Returns (items, fixup_str)."""
+    return list(row), "Parse-Single-Row"
+
+
+def parse_one_per_line(lines):
+    """Return items from a sequence where each element is one item (one per line).
+    Strips whitespace and drops empty entries.
+    Rule: Parse-One-Per-Line.
+    Returns (items, fixup_str)."""
+    return [str(line).strip() for line in lines if str(line).strip()], "Parse-One-Per-Line"
+
+
+# ── CSV Parser Functions ──────────────────────────────────────────────────────
+
+def csv_parse_single_row(rows):
+    """Extract items from a single-row CSV where each column is one item.
+    Rule: CSV-Parse-Single-Row. Delegates to parse_single_row.
+    Returns (items, fixup_str)."""
+    items, _ = parse_single_row(rows[0])
+    return items, "CSV-Parse-Single-Row"
+
+
+def csv_parse_one_per_line(rows):
+    """Extract items from a CSV where each row contains exactly one item (no commas).
+    Rule: CSV-Parse-One-Per-Line. Delegates to parse_one_per_line.
+    Returns (items, fixup_str)."""
+    items, _ = parse_one_per_line([row[0] for row in rows])
+    return items, "CSV-Parse-One-Per-Line"
+
+
+def csv_parse_multi_row(rows):
+    """Extract items from a multi-row CSV where each row contains multiple
+    comma-separated items; all items from all rows are collected.
+    Rule: CSV-Parse-Multi-Row.
+    Returns (items, fixup_str)."""
+    return [item for row in rows for item in row], "CSV-Parse-Multi-Row"
+
+
+def csv_parse_rows(content):
+    """Read CSV content via csv.reader, detect format style, and dispatch to the
+    appropriate per-format parser: csv_parse_single_row, csv_parse_one_per_line,
+    or csv_parse_multi_row.
+    Returns (items, fixup_str_or_none)."""
+    reader = csv.reader(StringIO(content))
+    rows = [row for row in reader if row]
+
+    if not rows:
+        return [], None
+
+    if len(rows) == 1:
+        return csv_parse_single_row(rows)
+
+    max_cols = max(len(row) for row in rows)
+    if max_cols == 1:
+        return csv_parse_one_per_line(rows)
+
+    return csv_parse_multi_row(rows)
+
+
+def csv_strip_leading_markers(items):
+    """Remove leading bullet markers and number prefixes from CSV items.
+    Delegates to clean_strip_leading_bullets then clean_strip_leading_numbers.
+    Returns (items, fixups_list)."""
+    fixups = []
+    items, fixup = clean_strip_leading_bullets(items)
+    if fixup:
+        fixups.append(fixup)
+    items, fixup = clean_strip_leading_numbers(items)
+    if fixup:
+        fixups.append(fixup)
+    return items, fixups
+
+
 def parse_csv(content):
-    """Parse CSV: single row = each item; multiple rows = first column values.
-    Removes quote characters that are part of CSV formatting.
+    """Parse CSV content. Orchestrates csv_parse_rows -> clean_strip_quotes.
     Returns (items, fixups)."""
     fixups = []
     try:
-        reader = csv.reader(StringIO(content))
-        rows = list(reader)
+        items, fixup = csv_parse_rows(content)
+        if fixup:
+            fixups.append(fixup)
 
-        if not rows:
-            return [], fixups
+        items, fixup = clean_strip_quotes(items)
+        if fixup:
+            fixups.append(fixup)
 
-        if len(rows) == 1:
-            # Single row: each item in the row is a value
-            items = rows[0]
-            fixups.append("Parsed single-row CSV - each column as item")
-        else:
-            # Multiple rows: extract first column
-            items = [row[0] for row in rows if row]
-            fixups.append("Parsed multi-row CSV - extracted first column")
-
-        # Clean up items: remove leading/trailing quotes and spaces if they're CSV formatting artifacts
-        cleaned_items = []
-        removed_quotes_count = 0
-        for item in items:
-            original = item
-            # Strip whitespace first, then remove quotes
-            cleaned = item.strip()  # Remove leading/trailing spaces
-            # Remove outer quotes (handle both single and double quotes)
-            while cleaned and cleaned[0] in ('"', "'") and cleaned[-1] == cleaned[0]:
-                cleaned = cleaned[1:-1].strip()
-            if cleaned != original:
-                removed_quotes_count += 1
-            cleaned_items.append(cleaned)
-
-        if removed_quotes_count > 0:
-            fixups.append(f"Removed CSV quote formatting from {removed_quotes_count} items")
-
-        return cleaned_items, fixups
+        return items, fixups
 
     except Exception as e:
-        fixups.append(f"CSV parse error: {type(e).__name__}")
+        fixups.append("QUALITY: Parse-Failed")
         return [], fixups
 
 
@@ -211,9 +450,9 @@ def parse_md(content):
                 items.append(cleaned)
 
     if header_count > 0:
-        fixups.append(f"Skipped {header_count} markdown header(s)")
+        fixups.append("MD-Header-Removal")
     if bullet_count > 0:
-        fixups.append(f"Removed markdown bullets from {bullet_count} line(s)")
+        fixups.append("Bullet-Removal")
 
     return items, fixups
 
@@ -224,6 +463,15 @@ def parse_yaml(content):
     Returns (items, fixups)."""
     fixups = []
     try:
+        # Check for a YAML end-of-directives / document-separator marker (---) on a non-first
+        # line; strip everything from that line onward so it doesn't corrupt the parse.
+        all_lines = content.strip().split('\n')
+        for i, line in enumerate(all_lines):
+            if i > 0 and line.strip() == '---':
+                fixups.append("YAML-Directive-Marker-Handling")
+                content = '\n'.join(all_lines[:i])
+                break
+
         # Check if content looks like plain text list (newline-separated, no YAML syntax)
         lines = content.strip().split('\n')
         # If content has multiple lines AND none start with YAML list markers or numbers+period,
@@ -238,7 +486,7 @@ def parse_yaml(content):
         if is_plain_text_list:
             # Plain text list: one item per line
             items = [line.strip() for line in lines if line.strip()]
-            fixups.append("Parsed as plain text list (no YAML syntax detected)")
+            fixups.append("YAML-Plain-Text-Detection")
         else:
             # Parse as YAML
             data = yaml.safe_load(content)
@@ -246,7 +494,7 @@ def parse_yaml(content):
                 items = data
             elif isinstance(data, dict):
                 items = list(data.values())
-                fixups.append("Extracted values from YAML object")
+                fixups.append("YAML-Dict-Value-Extraction")
             elif isinstance(data, str):
                 # YAML parsed as a plain string (likely non-standard YAML with numbered/bulleted lines)
                 # Try to parse as text with numbered items (1. item 2. item 3. item, etc.)
@@ -255,7 +503,7 @@ def parse_yaml(content):
                 if numbered_items:
                     # Found numbered items - use them, stripping whitespace
                     items = [item.strip() for item in numbered_items if item.strip()]
-                    fixups.append("Extracted numbered items from YAML string")
+                    fixups.append("YAML-Numbered-Item-Extraction")
                 else:
                     # No numbered items found, treat as single item
                     items = [data] if data else []
@@ -265,70 +513,338 @@ def parse_yaml(content):
         # If only one item and it's a list, flatten it
         if len(items) == 1 and isinstance(items[0], list):
             items = items[0]
-            fixups.append("Flattened single-item list")
+            fixups.append("YAML-Single-List-Flattening")
 
         return items, fixups
 
     except yaml.YAMLError as e:
-        fixups.append(f"YAML parse error - {type(e).__name__}")
+        # YAML parse error - fall back to plain text parsing with YAML list markers
+        fixups.append("YAML-Parse-Error-Fallback")
+
+        # Try to extract items with YAML list markers (-, *, •) as fallback
+        try:
+            lines = content.strip().split('\n')
+            items = []
+            for line in lines:
+                stripped = line.strip()
+                if stripped and stripped[0] in ('-', '*', '•'):
+                    # Remove the marker and following whitespace
+                    item = re.sub(r'^[-*•]\s*', '', stripped).strip()
+                    items.append(item)
+
+            if items:
+                return items, fixups
+        except Exception:
+            pass
+
         return [], fixups
 
 
-def parse_html(content):
-    """Parse HTML: extract items from <li> tags, removing all <li> tags.
-    Returns (items, fixups)."""
-    fixups = []
-    pattern = r'<li[^>]*>(.*?)</li>'
-    matches = re.findall(pattern, content, re.IGNORECASE | re.DOTALL)
-    # Clean up HTML entities and tags
+# ── HTML Tree-Building Helpers ────────────────────────────────────────────────
+
+# Maps lowercase HTML tag names to their display form used in fixup key names.
+_HTML_TAG_DISPLAY = {
+    'html': 'HTML', 'body': 'Body', 'head': 'Head',
+    'ul': 'UL', 'ol': 'OL', 'li': 'LI',
+    'p': 'P', 'div': 'Div', 'span': 'Span',
+    'article': 'Article', 'section': 'Section', 'br': 'BR',
+}
+
+def _tag_fixup_name(tag):
+    """Return the fixup key name for a given HTML tag, e.g. 'li' -> 'Extract-From-LI-Tags'."""
+    display = _HTML_TAG_DISPLAY.get(tag.lower(), tag.capitalize())
+    return f"Extract-From-{display}-Tags"
+
+
+class _HtmlNode:
+    """Minimal DOM tree node for HTML parsing."""
+    __slots__ = ('tag', 'children', 'parent')
+
+    def __init__(self, tag):
+        self.tag = tag          # string tag name, or None for virtual root / text nodes
+        self.children = []      # list of _HtmlNode or str
+        self.parent = None
+
+    def append(self, child):
+        """Append a child node or text string, setting parent if it's a node."""
+        self.children.append(child)
+        if isinstance(child, _HtmlNode):
+            child.parent = self
+
+    def iter_tag(self, tag):
+        """Depth-first generator of descendant nodes with the given tag name."""
+        for child in self.children:
+            if isinstance(child, _HtmlNode):
+                if child.tag == tag:
+                    yield child
+                yield from child.iter_tag(tag)
+
+    def ancestor_tags(self):
+        """Return list of ancestor tag names from outermost to parent (excludes virtual root)."""
+        tags = []
+        node = self.parent
+        while node is not None and node.tag is not None:
+            tags.append(node.tag)
+            node = node.parent
+        tags.reverse()
+        return tags
+
+    def text_content(self, br_as_newline=False):
+        """Recursively collect text, optionally replacing <br> children with newline.
+        Returns (text, had_br) where had_br is True if any <br> was encountered."""
+        parts = []
+        had_br = False
+        for child in self.children:
+            if isinstance(child, str):
+                parts.append(child)
+            elif isinstance(child, _HtmlNode):
+                if child.tag == 'br':
+                    had_br = True
+                    if br_as_newline:
+                        parts.append('\n')
+                else:
+                    sub_text, sub_br = child.text_content(br_as_newline)
+                    parts.append(sub_text)
+                    if sub_br:
+                        had_br = True
+        return ''.join(parts), had_br
+
+
+class _HtmlTreeBuilder(HTMLParser):
+    """Builds an _HtmlNode tree from HTML content."""
+
+    _VOID_TAGS = frozenset({
+        'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
+        'link', 'meta', 'param', 'source', 'track', 'wbr',
+    })
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.root = _HtmlNode(None)   # virtual root
+        self.stack = [self.root]
+
+    def handle_starttag(self, tag, attrs):
+        node = _HtmlNode(tag)
+        self.stack[-1].append(node)
+        if tag not in self._VOID_TAGS:
+            self.stack.append(node)
+
+    def handle_endtag(self, tag):
+        # Pop back to the matching open tag (handles malformed/unclosed HTML)
+        for i in range(len(self.stack) - 1, 0, -1):
+            if self.stack[i].tag == tag:
+                self.stack = self.stack[:i]
+                return
+
+    def handle_data(self, data):
+        self.stack[-1].append(data)
+
+
+def _parse_html_tree(content):
+    """Parse HTML content into an _HtmlNode tree. Returns virtual root node.
+    Swallows all exceptions so callers never crash on malformed HTML."""
+    builder = _HtmlTreeBuilder()
+    try:
+        builder.feed(content)
+    except Exception:
+        pass
+    return builder.root
+
+
+def _find_leaf_tag_nodes(root, tag):
+    """Return all nodes with the given tag that have no descendant of the same tag.
+    This prevents double-counting from nested same-tag containers (e.g. <div><div>)."""
+    results = []
+    for node in root.iter_tag(tag):
+        # Check if this node contains any descendant with the same tag
+        has_nested = any(True for _ in node.iter_tag(tag))
+        if not has_nested:
+            results.append(node)
+    return results
+
+
+def _items_from_nodes(nodes):
+    """Extract text items from a list of _HtmlNode objects.
+    For each node: if the text content (after br-splitting) contains newlines,
+    splits into multiple items. Otherwise yields a single item.
+    Returns (items, had_br, was_line_split)."""
     items = []
-    html_tag_count = 0
-    entity_count = 0
+    had_br = False
+    was_line_split = False
+    for node in nodes:
+        text, node_had_br = node.text_content(br_as_newline=True)
+        if node_had_br:
+            had_br = True
+        stripped = text.strip()
+        if '\n' in stripped:
+            # Split by newlines and treat each non-empty line as an item
+            lines = [ln.strip() for ln in stripped.split('\n') if ln.strip()]
+            items.extend(lines)
+            was_line_split = True
+        elif stripped:
+            items.append(stripped)
+    return items, had_br, was_line_split
 
-    for match in matches:
-        original = match
-        # Remove all HTML tags including <li> tags
-        text = re.sub(r'<[^>]+>', '', match)
-        text = re.sub(r'</?li[^>]*>', '', text, flags=re.IGNORECASE)
-        if text != original:
-            html_tag_count += 1
-        # Unescape HTML entities
-        entity_refs = len(re.findall(r'&(?:lt|gt|amp);', text))
-        if '&' in text:
-            text = text.replace('&lt;', '<').replace('&gt;', '>').replace('&amp;', '&')
-            entity_count += entity_refs
-        text = text.strip()
-        if text:
-            items.append(text)
 
-    if matches:
-        fixups.append(f"Extracted {len(matches)} items from <li> tags")
-    if html_tag_count > 0:
-        fixups.append("Removed HTML tags")
-    if entity_count > 0:
-        fixups.append(f"Unescaped {entity_count} HTML entities")
+def _path_tag_fixups(item_nodes, item_tag):
+    """Return an ordered list of Extract-From-X-Tags fixup keys representing the
+    DOM path from root to item_tag.  Uses item_nodes[0]'s ancestor chain as the
+    representative path.  Deduplicates while preserving outermost-to-innermost order,
+    then appends item_tag at the end."""
+    if not item_nodes:
+        return [_tag_fixup_name(item_tag)]
+    ancestor_tags = item_nodes[0].ancestor_tags()
+    # Deduplicate while preserving order
+    seen = set()
+    ordered = []
+    for t in ancestor_tags + [item_tag]:
+        if t not in seen:
+            seen.add(t)
+            ordered.append(t)
+    return [_tag_fixup_name(t) for t in ordered]
+
+
+# Tags tried as fallbacks when no <li> tags are found, in priority order.
+_HTML_FALLBACK_TAGS = ['p', 'span', 'div', 'article', 'section']
+
+
+def parse_html(content):
+    """Parse HTML using a DOM tree. Extracts items from <li> tags (primary) or falls back
+    to <p>/<span>/<div>/<article>/<section>. Each tag in the ancestor path emits its own
+    fixup key. Returns (items, fixups)."""
+    fixups = []
+    items = []
+
+    # ── Codefence fallback (unchanged logic) ────────────────────────────────
+    if content.strip().startswith('```'):
+        code_block_pattern = r'^```[\w]*\n(.*?)\n```\s*$'
+        match = re.search(code_block_pattern, content.strip(), re.DOTALL)
+        if match:
+            extracted_content = match.group(1)
+            fixups.append("Extract-from-HTML-Codefence-Markdown")
+            fixups.append("QUALITY: Invalid HTML format (content wrapped in markdown code fence instead of proper HTML markup)")
+
+            # If inner content is an all-numbered list, return it immediately
+            numbered_pattern = r'^\d+\.\s+(.+)$'
+            numbered_items = [
+                re.match(numbered_pattern, line.strip()).group(1)
+                for line in extracted_content.split('\n')
+                if re.match(numbered_pattern, line.strip())
+            ]
+            if numbered_items:
+                items = numbered_items
+                return items, fixups
+
+            # Otherwise fall through with extracted content (drop the fence)
+            content = extracted_content
+
+    # ── Build DOM tree ───────────────────────────────────────────────────────
+    root = _parse_html_tree(content)
+
+    # ── Primary path: <li> tags ──────────────────────────────────────────────
+    li_nodes = _find_leaf_tag_nodes(root, 'li')
+    if li_nodes:
+        items, had_br, _ = _items_from_nodes(li_nodes)
+        fixups.extend(_path_tag_fixups(li_nodes, 'li'))
+        if had_br:
+            fixups.append("Remove-BR-Tags")
+        return items, fixups
+
+    # ── Fallback path: try each tag in priority order ────────────────────────
+    for tag in _HTML_FALLBACK_TAGS:
+        tag_nodes = _find_leaf_tag_nodes(root, tag)
+        if not tag_nodes:
+            continue
+        raw_items, had_br, was_line_split = _items_from_nodes(tag_nodes)
+        if not raw_items:
+            continue
+
+        # Check if every item is a numbered entry (e.g. "<span>1. Lion</span>")
+        num_matches = [re.match(r'^\d+\.\s+(.+)$', it) for it in raw_items]
+        if raw_items and all(num_matches):
+            items = [m.group(1) for m in num_matches]
+            fixups.extend(_path_tag_fixups(tag_nodes, tag))
+            if had_br:
+                fixups.append("Remove-BR-Tags")
+            fixups.append("HTML-Numbered-Items-In-Tags")
+            fixups.append("QUALITY: Numbered items in separate tags format (each item in its own <span>/<p> tag with number prefix instead of proper <li> list)")
+            break
+
+        # Per-item comma-split check for inline comma-separated values
+        final_items = []
+        comma_split_used = False
+        for item in raw_items:
+            if ',' in item and tag in ['p', 'span', 'div']:
+                parts = [p.strip() for p in item.split(',') if p.strip()]
+                if len(parts) > 1 and all(len(p) < 100 for p in parts):
+                    final_items.extend(parts)
+                    comma_split_used = True
+                    continue
+            final_items.append(item)
+
+        items = final_items
+        fixups.extend(_path_tag_fixups(tag_nodes, tag))
+        if had_br:
+            fixups.append("Remove-BR-Tags")
+        if comma_split_used:
+            fixups.append(f"QUALITY: Comma-separated items in single <{tag}> tag (items should be in separate tags or list markers)")
+        if not was_line_split:
+            fixups.append("QUALITY: Single-span tag format (items in separate <p>/<span> tags instead of <li> list)")
+        break
+
+    # ── Plain text fallback: no HTML structure detected ──────────────────────
+    if not items:
+        plain_items = [line.rstrip('\n\r') for line in content.split('\n') if line.strip()]
+        if plain_items:
+            # Strip HTML tags from each line before classification.  Files that mix an
+            # HTML-tagged title line (e.g. <u>Animal Names</u>) with plain numbered items
+            # need the tags removed first so the numbered-list check works correctly.
+            clean_lines = [re.sub(r'<[^>]+>', '', line).strip() for line in plain_items]
+            clean_lines = [l for l in clean_lines if l]
+
+            numbered_pattern = r'^\d+\.\s+(.+)$'
+            num_matches = [re.match(numbered_pattern, l) for l in clean_lines]
+            numbered_items = [m.group(1) for m in num_matches if m]
+
+            if numbered_items and all(num_matches):
+                # Every line is a numbered item — clean numbered list in plain text.
+                items = numbered_items
+                fixups.append("HTML-Numbered-List-Stripping")
+                fixups.append("QUALITY: Invalid HTML (contains plain numbered list instead of HTML markup)")
+            elif numbered_items:
+                # Mix of numbered items and non-numbered lines (e.g. a title).
+                # If the non-numbered lines are all short (≤5 words), treat them as
+                # header/title noise and extract only the numbered items.
+                non_numbered = [clean_lines[i] for i, m in enumerate(num_matches) if not m]
+                if all(len(l.split()) <= 5 for l in non_numbered):
+                    items = numbered_items
+                    fixups.append("HTML-Numbered-List-Stripping")
+                    fixups.append("QUALITY: Invalid HTML (contains plain numbered list instead of HTML markup)")
+                else:
+                    items = clean_lines
+                    fixups.append("HTML-PlainText-Fallback")
+                    fixups.append("QUALITY: Requested HTML; response was plain text")
+            else:
+                items = clean_lines
+                fixups.append("HTML-PlainText-Fallback")
+                fixups.append("QUALITY: Requested HTML; response was plain text")
 
     return items, fixups
 
 
 def parse_txt1(content):
-    """Parse .txt1 file: each line is an item, removing leading numbers/punctuation.
+    """Parse .txt1 file: each line is an item, removing leading numbers.
+    Delegates to clean_strip_leading_numbers for consistent cleanup and logging.
+    Emits a QUALITY flag when no leading numbers are present (unexpected for this format).
     Returns (items, fixups)."""
     fixups = []
     items = [line.rstrip('\n\r') for line in content.split('\n') if line.strip()]
-    # Remove leading numbers and punctuation
-    cleaned = []
-    removed_count = 0
-    for item in items:
-        # Remove leading digits, dots, parentheses, hyphens, colons, etc.
-        cleaned_item = re.sub(r'^[0-9\.\)\-:]+\s*', '', item)
-        if cleaned_item != item:
-            removed_count += 1
-        cleaned.append(cleaned_item)
-
-    if removed_count > 0:
-        fixups.append(f"Removed leading numbers/punctuation from {removed_count} items")
-
+    cleaned, fixup = clean_strip_leading_numbers(items)
+    if fixup:
+        fixups.append(fixup)
+    elif cleaned:
+        # numberedText format expected leading numbers; their absence is a quality issue
+        fixups.append("QUALITY: TXT1-No-Numbers (file has no leading numbers; expected numbered format)")
     return cleaned, fixups
 
 
@@ -338,6 +854,7 @@ PARSERS = {
     '.csv': parse_csv,
     '.md': parse_md,
     '.yml': parse_yaml,
+    '.yaml': parse_yaml,
     '.html': parse_html,
     '.txt1': parse_txt1,
 }
@@ -350,26 +867,87 @@ def extract_code_block(content):
     Returns (extracted_content, had_codeblock, fixups) tuple.
     If code blocks found, returns the content inside them.
     If no code blocks found, returns original content.
+    Fixup key emitted is named by the language specifier of the first block:
+      ```json  -> Extract-from-JSON-Codefence-Markdown
+      ```yaml / ```yml -> Extract-from-YAML-Codefence-Markdown
+      ```html  -> Extract-from-HTML-Codefence-Markdown
+      ```csv   -> Extract-from-CSV-Codefence-Markdown
+      ``` (no specifier or unrecognized) -> Extract-from-Generic-Codefence-Markdown
     """
+    _LANG_FIXUP_MAP = {
+        'json': 'Extract-from-JSON-Codefence-Markdown',
+        'yaml': 'Extract-from-YAML-Codefence-Markdown',
+        'yml':  'Extract-from-YAML-Codefence-Markdown',
+        'html': 'Extract-from-HTML-Codefence-Markdown',
+        'csv':  'Extract-from-CSV-Codefence-Markdown',
+    }
     fixups = []
-    # Look for markdown code blocks with ``` delimiters
-    code_block_pattern = r'```[\w]*\n(.*?)\n```'
+    # Capture language specifier and block content separately
+    code_block_pattern = r'```([\w]*)\n(.*?)\n```'
     matches = re.findall(code_block_pattern, content, re.DOTALL)
 
     if matches:
         # Found code blocks - concatenate content from all blocks
-        extracted = '\n'.join(matches)
-        fixups.append(f"Extracted {len(matches)} code block(s)")
+        extracted = '\n'.join(m[1] for m in matches)
+        # Name the fixup from the language specifier of the first block
+        lang_spec = matches[0][0].lower()
+        fixups.append(_LANG_FIXUP_MAP.get(lang_spec, 'Extract-from-Generic-Codefence-Markdown'))
         return extracted, True, fixups
     else:
         # No code blocks found
         return content, False, fixups
 
 
+# Maps substrings found in QUALITY fixup strings to short canonical format-style labels.
+# Used by fixups_to_cleanup() to route these observations to metadata["formatStyles"].
+QUALITY_FORMAT_STYLE_MAP = {
+    "Single-span tag format":             "single-span-tag",
+    "Requested HTML; response was plain": "html_no_markup",
+    "Invalid HTML":                       "html_no_markup",
+    "YAML end-of-directives marker":      "end-of-directives",
+    "Numbered items in separate tags":    "numbered-items-in-tags",
+    "Repeated JSON object keys":          "repeated-json-keys",
+    "Non-Western characters":             "non-western-characters",
+    "Comma-separated items in single":    "comma-separated",
+    "TXT1-No-Numbers":                    "txt1-no-numbers",
+    "parsing failed completely":          "parse-failed",
+    "HTML markup found in items":         "stray-html-markup",
+    "Blockquote markers in items":        "blockquote-markup",
+}
+
+
+def fixups_to_cleanup(fixups):
+    """Convert a fixup string list to (cleanup_dict, format_style_labels).
+
+    'Rule: N items' → {Rule: N}
+    Other strings    → {string: True}
+    QUALITY strings  → excluded from cleanup; returned as short labels list instead.
+    """
+    cleanup = {}
+    format_styles = []
+    for fixup in fixups:
+        matched = False
+        for substr, label in QUALITY_FORMAT_STYLE_MAP.items():
+            if substr in fixup:
+                format_styles.append(label)
+                matched = True
+                break
+        if matched:
+            continue
+        m = re.match(r'^(.+?):\s+(\d+)\s+items?$', fixup)
+        if m:
+            cleanup[m.group(1)] = int(m.group(2))
+        else:
+            cleanup[fixup] = True
+    return cleanup, format_styles
+
+
 def reorder_metadata(metadata):
-    """Reorder metadata keys: time, experiment, prompt, model, temperature, format, iteration, codeblock, fixups, then others.
-    Note: prompt is optional for old format files. codeblock and fixups are optional."""
-    key_order = ["time", "experiment", "prompt", "model", "temperature", "format", "iteration", "codeblock", "fixups"]
+    """Reorder metadata keys: time, experiment, prompt, model, temperature, format,
+    formatStyle, formatStyles, iteration, codeblock, cleanup, then others.
+    Note: prompt is optional for old format files. codeblock, formatStyles, and cleanup are optional."""
+    key_order = ["time", "experiment", "prompt", "model", "temperature", "format",
+                 "formatStyle", "formatStyles", "iteration", "codeblock", "cleanup"]
     ordered = {}
 
     # Add keys in specified order (if they exist)
@@ -410,7 +988,7 @@ def is_standard_filename(filename):
     Check if filename follows standard naming convention.
     Supports both old and new formats:
     - Old: YYYYMMDDHHMM-EXPERIMENT-MODEL-TEMP-ITERATION.EXT (12-digit timestamp, 5+ parts)
-    - New: YYYYMMDDHHMMSS-PROMPT-EXPERIMENT-MODEL-TEMP-ITERATION.EXT (14-digit timestamp, 6+ parts)
+    - New: YYYYMMDDHHMMSS-EXPERIMENT-PROMPT-MODEL-TEMP-ITERATION.EXT (14-digit timestamp, 6+ parts)
     """
     name_without_ext = Path(filename).stem
     parts = name_without_ext.split('-')
@@ -426,7 +1004,7 @@ def is_standard_filename(filename):
         if len(parts) < 5:
             return False
     elif timestamp_len == 14:
-        # New format: need at least 6 parts (timestamp, prompt, experiment, model, temp, iteration)
+        # New format: need at least 6 parts (timestamp, experiment, prompt, model, temp, iteration)
         if len(parts) < 6:
             return False
     else:
@@ -468,8 +1046,8 @@ def parse_filename_metadata(filename):
     Supports both old and new formats:
     - Old: TIMESTAMP-EXPERIMENT-MODEL-TEMP-ITERATION.EXT (12-digit timestamp, no prompt)
       Example: 202602161623-animals_plain-gpt4-t10-01.md
-    - New: TIMESTAMP-PROMPT-EXPERIMENT-MODEL-TEMP-ITERATION.EXT (14-digit timestamp)
-      Example: 20250216160215-animals-test1-gpt4-t10-01.md
+    - New: TIMESTAMP-EXPERIMENT-PROMPT-MODEL-TEMP-ITERATION.EXT (14-digit timestamp)
+      Example: 20250216160215-test1-animals-gpt4-t10-01.md
     Returns dict with time, prompt, experiment, model, temperature, and iteration.
     """
     # Remove extension
@@ -501,22 +1079,34 @@ def parse_filename_metadata(filename):
     is_old_format = len(timestamp_raw) == 12
 
     if is_new_format:
-        # New format: TIMESTAMP-PROMPT-EXPERIMENT-MODEL-TEMP-ITERATION
+        # New format: TIMESTAMP-EXPERIMENT-PROMPT-MODEL-TEMP-ITERATION
         if len(parts) < 6:
             return {"time": timestamp}
 
-        prompt = parts[1]
-        experiment = parts[2]
+        experiment = parts[1]
+        prompt = parts[2]
         model = '-'.join(parts[3:-2])
 
     elif is_old_format:
-        # Old format: TIMESTAMP-EXPERIMENT-MODEL-TEMP-ITERATION (no prompt)
+        # Old format: TIMESTAMP-EXPERIMENT-[PROMPT/VARIANT]-MODEL-TEMP-ITERATION
+        # Note: Some files have PROMPT/VARIANT field, some don't
         if len(parts) < 5:
             return {"time": timestamp}
 
         prompt = None
         experiment = parts[1]
-        model = '-'.join(parts[2:-2])
+
+        # Determine if there's a prompt/variant field
+        # Temperature is parts[-2] and iteration is parts[-1]
+        # If we have 6+ parts, then parts[2] is the prompt/variant and parts[3] is the model
+        # If we have exactly 5 parts, then parts[2] is the model
+        if len(parts) >= 6:
+            # Has prompt/variant: TIMESTAMP-EXPERIMENT-PROMPT-MODEL-TEMP-ITERATION
+            prompt = parts[2]
+            model = '-'.join(parts[3:-2])
+        else:
+            # No prompt: TIMESTAMP-EXPERIMENT-MODEL-TEMP-ITERATION
+            model = '-'.join(parts[2:-2])
 
     else:
         return {"time": timestamp}
@@ -586,55 +1176,29 @@ def detect_case(items):
         return "mixed", False
 
 
-def has_inappropriate_punctuation(item):
-    """
-    Check if item has inappropriate or excessive punctuation.
-    After format-specific parsing is complete, any remaining punctuation is problematic.
-
-    Allows: letters (including diacriticals), digits, spaces, apostrophes, hyphens
-    Disallows: other punctuation marks like }, ::, **, etc.
-
-    Examples:
-    - '10. Crocodile' in CSV with quotes: excessive (redundant formatting)
-    - 'Animals**': inappropriate (markdown bold markers left over)
-    """
-    for char in item:
-        # Allow: letters (including diacriticals via isalpha), digits, spaces, apostrophe, hyphen
-        if not (char.isalpha() or char.isdigit() or char in " '-"):
-            return True
-    return False
+# Shared punctuation character class used by both detection and cleanup functions.
+_PUNCT_CHARS = r'\s\*\-+:;,\.!?\}\[\]{}()\[\]'
+_LEADING_PUNCT_RE = re.compile(r'^[' + _PUNCT_CHARS + r']+')
+_TRAILING_PUNCT_RE = re.compile(r'[' + _PUNCT_CHARS + r']+$')
 
 
-def classify_inappropriate_pattern(item):
-    """
-    Classify the type of inappropriate punctuation pattern.
-    Returns a class identifier (e.g., 'asterisk', 'parenthesis', 'colon', etc.)
-    """
-    # Check for specific patterns
-    if '**' in item or '*' in item:
-        return 'asterisk'
-    if '::' in item:
-        return 'double_colon'
-    if '}' in item:
-        return 'brace'
-    if '<' in item or '>' in item:
-        return 'angle_bracket'
-    if '(' in item or ')' in item:
-        return 'parenthesis'
-    if '{' in item:
-        return 'curly_brace'
-    if '/' in item:
-        return 'slash'
-    if ',' in item:
-        return 'comma'
-    if '.' in item:
-        return 'period'
-    if '!' in item:
-        return 'exclamation'
-    if '?' in item:
-        return 'question'
-    # Default for any other punctuation
-    return 'other_punctuation'
+def detect_leading_punctuation(item):
+    """Return True if item begins with a punctuation/formatting character."""
+    return bool(_LEADING_PUNCT_RE.match(item))
+
+
+def detect_trailing_punctuation(item):
+    """Return True if item ends with a punctuation/formatting character."""
+    return bool(_TRAILING_PUNCT_RE.search(item))
+
+
+def detect_internal_punctuation(item):
+    """Return True if item contains a special character in its interior
+    (i.e. after stripping leading/trailing formatting chars the cleanup pipeline
+    would remove). Catches things like slashes or colons inside words."""
+    inner = _LEADING_PUNCT_RE.sub('', item)
+    inner = _TRAILING_PUNCT_RE.sub('', inner)
+    return any(not (c.isalpha() or c.isdigit() or c in " '-") for c in inner)
 
 
 def extract_first_alpha_string(item):
@@ -697,60 +1261,204 @@ def detect_repeated_chars(item):
     return bool(re.search(r'(.)\1{2,}', item, re.IGNORECASE))
 
 
+# ── General Item Cleanup Functions ───────────────────────────────────────────
+# Each function takes a list of strings, applies one transformation, and returns
+# (modified_items, fixup_str_or_none). A fixup string is emitted only when at
+# least one item was actually changed. These apply to all formats; CSV uses them
+# as part of its pipeline established in this pass.
+
+def clean_strip_leading_format(items):
+    """Strip leading markdown/format characters (* - + : ; , . ! ? { } [ ] etc.).
+    Rule: Strip-Leading-Formatting.
+    Returns (items, fixup_str_or_none)."""
+    result = []
+    changed = 0
+    for item in items:
+        cleaned = _LEADING_PUNCT_RE.sub('', item).strip()
+        if cleaned != item:
+            changed += 1
+        result.append(cleaned)
+    fixup = f"Strip-Leading-Formatting: {changed} items" if changed else None
+    return result, fixup
+
+
+def clean_strip_number_word_prefix(items):
+    """Strip a numeric prefix attached directly to a word (e.g. '48eagle' -> 'eagle').
+    Rule: Strip-Number-Word-Prefix.
+    Returns (items, fixup_str_or_none)."""
+    result = []
+    changed = 0
+    for item in items:
+        cleaned = re.sub(r'^[0-9]+([a-zA-Z])', r'\1', item).strip()
+        if cleaned != item:
+            changed += 1
+        result.append(cleaned)
+    fixup = f"Strip-Number-Word-Prefix: {changed} items" if changed else None
+    return result, fixup
+
+
+def clean_remove_parenthetical(items):
+    """Remove parenthetical content (e.g. 'camelopard (giraffe)' -> 'camelopard').
+    Rule: Remove-Parenthetical.
+    Returns (items, fixup_str_or_none)."""
+    result = []
+    changed = 0
+    for item in items:
+        cleaned = re.sub(r'\s*\([^)]*\)', '', item).strip()
+        if cleaned != item:
+            changed += 1
+        result.append(cleaned)
+    fixup = f"Remove-Parenthetical: {changed} items" if changed else None
+    return result, fixup
+
+
+def clean_strip_trailing_punct(items):
+    """Strip trailing punctuation and format characters from items.
+    Rule: Strip-Trailing-Punctuation.
+    Returns (items, fixup_str_or_none)."""
+    result = []
+    changed = 0
+    for item in items:
+        cleaned = _TRAILING_PUNCT_RE.sub('', item).strip()
+        if cleaned != item:
+            changed += 1
+        result.append(cleaned)
+    fixup = f"Strip-Trailing-Punctuation: {changed} items" if changed else None
+    return result, fixup
+
+
+def clean_strip_doubled_punct(items):
+    """Remove doubled or tripled internal punctuation (e.g. 'ti::ger' -> 'tiger').
+    Rule: Strip-Doubled-Punctuation.
+    Returns (items, fixup_str_or_none)."""
+    result = []
+    changed = 0
+    for item in items:
+        cleaned = re.sub(r'([a-zA-Z])([:.;,\-_/\\|])\2+([a-zA-Z])', r'\1\3', item)
+        if cleaned != item:
+            changed += 1
+        result.append(cleaned)
+    fixup = f"Strip-Doubled-Punctuation: {changed} items" if changed else None
+    return result, fixup
+
+
+def clean_strip_leading_hyphens(items):
+    """Strip any remaining leading hyphens and spaces (final normalization).
+    Rule: Strip-Leading-Hyphens.
+    Returns (items, fixup_str_or_none)."""
+    result = []
+    changed = 0
+    for item in items:
+        cleaned = item.lstrip('- ').strip()
+        if cleaned != item:
+            changed += 1
+        result.append(cleaned)
+    fixup = f"Strip-Leading-Hyphens: {changed} items" if changed else None
+    return result, fixup
+
+
+def clean_lowercase(items):
+    """Lowercase all items.
+    Rule: Lowercase.
+    No fixup emitted; case consistency is tracked cross-trial in summarize_results()."""
+    result = [item.lower() for item in items]
+    return result, None
+
+
+def clean_strip_quotes(items):
+    """Remove outer quote wrapping (single or double) from items.
+    Rule: Strip-Quotes.
+    Returns (items, fixup_str_or_none)."""
+    cleaned = []
+    changed = 0
+    for item in items:
+        original = item
+        c = item.strip()
+        while c and c[0] in ('"', "'") and c[-1] == c[0]:
+            c = c[1:-1].strip()
+        if c != original:
+            changed += 1
+        cleaned.append(c)
+    fixup = f"Strip-Quotes: {changed} items" if changed else None
+    return cleaned, fixup
+
+
+def clean_strip_leading_bullets(items):
+    """Remove leading bullet list markers (* - +) from items.
+    Rule: Strip-Leading-Bullets.
+    Returns (items, fixup_str_or_none)."""
+    result = []
+    changed = 0
+    for item in items:
+        cleaned = re.sub(r'^[\s*\-+]+', '', item).strip()
+        if cleaned != item:
+            changed += 1
+        result.append(cleaned)
+    fixup = f"Strip-Leading-Bullets: {changed} items" if changed else None
+    return result, fixup
+
+
+def clean_strip_leading_numbers(items):
+    """Remove leading number prefixes with punctuation (e.g. '1. ', '2) ', '3: ') from items.
+    Rule: Strip-Leading-Numbers.
+    Returns (items, fixup_str_or_none)."""
+    result = []
+    changed = 0
+    for item in items:
+        cleaned = re.sub(r'^\d+[\.\):\-\s]+', '', item).strip()
+        if cleaned != item:
+            changed += 1
+        result.append(cleaned)
+    fixup = f"Strip-Leading-Numbers: {changed} items" if changed else None
+    return result, fixup
+
+
 def clean_format_specific(items, ext):
     """
     Clean up format-specific formatting FIRST (before quality checks).
-    Removes bullets, numbers, HTML tags appropriate to the file format.
+    Removes bullets, numbers, HTML tags, and blockquote markers from items.
+    Applies to all formats; HTML markup or blockquote markers in any format are
+    both cleaned and flagged as quality issues.
+    For CSV, delegates leading-marker removal to csv_strip_leading_markers().
     Returns (cleaned_items, fixups_list).
     """
     fixups = []
-    cleaned = []
-    removed_leading_numbers = False
-    removed_leading_punctuation = False
-    removed_html_tags = False
+    cleaned = list(items)
 
-    for item in items:
-        original = item
-        cleaned_item = item
+    # Strip HTML tags and blockquote markers from all formats.
+    # Residual HTML tags in HTML files indicate malformed structure; in any other
+    # format they indicate the model leaked markup into its response.
+    # Blockquote '>' markers are similarly out of place in structured output.
+    new_cleaned = []
+    html_tag_count = 0
+    blockquote_count = 0
+    for item in cleaned:
+        stripped_tags = re.sub(r'</?[a-zA-Z][^>]*>?', '', item)
+        if stripped_tags != item:
+            html_tag_count += 1
+        item = stripped_tags
+        stripped_bq = re.sub(r'^>+|>+$', '', item).strip()
+        if stripped_bq != item:
+            blockquote_count += 1
+        item = stripped_bq
+        new_cleaned.append(item)
+    cleaned = new_cleaned
+    if html_tag_count:
+        fixups.append("HTML-Stray-Tag-Cleanup")
+        fixups.append("QUALITY: HTML markup found in items")
+    if blockquote_count:
+        fixups.append("Blockquote-Marker-Cleanup")
+        fixups.append("QUALITY: Blockquote markers in items")
 
-        # Remove HTML tags from HTML and markdown files
-        if ext in ['.html', '.md']:
-            before_html = cleaned_item
-            cleaned_item = re.sub(r'</?[a-zA-Z][^>]*>?', '', cleaned_item)
-            cleaned_item = re.sub(r'^>+|>+$', '', cleaned_item).strip()
-            if cleaned_item != before_html:
-                removed_html_tags = True
+    # CSV: delegate to named function that tracks bullets and numbers separately
+    if ext == '.csv':
+        cleaned, csv_fixups = csv_strip_leading_markers(cleaned)
+        fixups.extend(csv_fixups)
 
-        # For markdown, text, and CSV files, remove leading bullets and numbers (format-specific)
-        if ext in ['.md', '.txt', '.csv']:
-            before_list = cleaned_item
-            # Remove leading bullets/list markers (* - +) and whitespace
-            cleaned_item = re.sub(r'^[\s*\-+]+', '', cleaned_item).strip()
-            # Remove leading numbers with punctuation (1. 2) 3: etc.)
-            cleaned_item = re.sub(r'^\d+[\.\):\-\s]+', '', cleaned_item).strip()
-            if cleaned_item != before_list:
-                if re.match(r'^\d+[\.\):\-\s]', before_list):
-                    removed_leading_numbers = True
-                else:
-                    removed_leading_punctuation = True
-
-        # Check if remaining text is in quotes (markdown issue)
-        if cleaned_item and re.match(r'^["\'].*["\']$', cleaned_item):
-            # Text is embedded in quotes - this is inappropriate punctuation for markdown
-            pass  # Will be caught as inappropriate_punctuation later
-
-        cleaned.append(cleaned_item)
-
-    if removed_leading_numbers:
-        if removed_leading_punctuation:
-            fixups.append("Removed leading numbers and punctuation")
-        else:
-            fixups.append("Removed leading numbers")
-    elif removed_leading_punctuation:
-        fixups.append("Removed leading punctuation")
-
-    if removed_html_tags:
-        fixups.append("Removed stray HTML tags from items")
+    # Markdown and plain text: delegate to shared cleanup functions
+    elif ext in ['.md', '.txt']:
+        cleaned, csv_fixups = csv_strip_leading_markers(cleaned)
+        fixups.extend(csv_fixups)
 
     return cleaned, fixups
 
@@ -759,10 +1467,9 @@ def process_and_track(items, ext, max_item_length=25):
     """
     Process items in the correct order:
     1. Trim items
-    2. Detect leading numbers/bullets in original items
-    3. Clean format-specific formatting
-    4. Check quality issues on cleaned items
-    5. Continue with other processing
+    2. Clean format-specific formatting
+    3. Check quality issues on cleaned items
+    4. Apply general item cleanup pipeline
 
     Args:
         items: List of items to process
@@ -771,19 +1478,15 @@ def process_and_track(items, ext, max_item_length=25):
     Returns (processed_items, processing_metadata, metadata).
     """
     processing = {
-        "leadingBullets": False,
-        "leadingNumbers": False,
-        "listItemTags": False,
         "consistentCase": True,
         "case": "lower",
     }
-    quality_issues = {
-        "inappropriate_punctuation": [],
-        "exceeds_max_length": [],
-        "preamble_leak": [],
-        "markup_artifact": [],
-        "repeated_chars": [],
-    }
+    # quality_issues stores one example string per issue type (first occurrence only).
+    # Keys are added only when an issue is found, so no empty keys are stored.
+    quality_issues = {}
+    # preamble_set collects ALL preamble items for filtering; quality_issues["preamble_leak"]
+    # holds only the first example for reporting purposes.
+    preamble_set = set()
     processing_fixups = []
 
     if not items:
@@ -796,38 +1499,10 @@ def process_and_track(items, ext, max_item_length=25):
     # Step 1: Trim items
     trimmed = trim_items(items)
 
-    # Step 2: Detect leading numbers and bullets in ORIGINAL items (before cleaning)
-    has_leading_bullets = False
-    has_leading_numbers = False
-    for item in trimmed:
-        # Bullets: asterisks, hyphens, plus signs at the start (possibly with spaces/dots)
-        if re.match(r'^[\s*\-+]+', item):
-            has_leading_bullets = True
-        # Numbers: digits followed by punctuation (. ) : - space) at the start
-        # For markdown, "1. Dog" should be flagged as leading numbers
-        if re.match(r'^\d+[\.\):\-\s]', item):
-            has_leading_numbers = True
-
-    processing["leadingBullets"] = has_leading_bullets
-    processing["leadingNumbers"] = has_leading_numbers
-
-    # Step 3: Clean format-specific formatting FIRST
+    # Step 2: Clean format-specific formatting FIRST
     cleaned_items, format_fixups = clean_format_specific(trimmed, ext)
     if format_fixups:
         processing_fixups.extend(format_fixups)
-
-    # After format-specific cleaning, check for HTML tags in HTML files
-    if ext == '.html':
-        processing["listItemTags"] = True
-
-    # Check for quality issues with leading digits attached to letters (e.g., "48eagle")
-    quality_problem_items = []
-    for item in cleaned_items:
-        if re.match(r'^\d+[a-zA-Z]', item):
-            quality_problem_items.append(item)
-
-    if quality_problem_items:
-        processing["qualityIssueNumberWord"] = True
 
     # Check alphabetical order of original items
     alphabetical = is_alphabetical_order(trimmed)
@@ -837,71 +1512,64 @@ def process_and_track(items, ext, max_item_length=25):
     processing["case"] = case_type
     processing["consistentCase"] = consistent_case
 
-    # Step 4: Check for quality issues on CLEANED items (after format-specific removal)
-    # For markdown, "1. Dog" won't be in cleaned_items anymore, so we won't flag it as inappropriate
+    # Step 3: Check for quality issues on CLEANED items (after format-specific removal).
+    # For markdown, "1. Dog" won't be in cleaned_items anymore, so we won't flag it as inappropriate.
+    # Only the first example of each issue type is stored (sufficient for reporting).
     for item in cleaned_items:
-        # Check for inappropriate punctuation
-        # Allowed: letters (including diacriticals), digits, spaces, apostrophes, hyphens
-        # Disallowed: other punctuation marks
-        if has_inappropriate_punctuation(item):
-            quality_issues["inappropriate_punctuation"].append(item)
+        # Check for specific punctuation issues
+        if detect_leading_punctuation(item) and "leading_punctuation" not in quality_issues:
+            quality_issues["leading_punctuation"] = item
+        if detect_trailing_punctuation(item) and "trailing_punctuation" not in quality_issues:
+            quality_issues["trailing_punctuation"] = item
+        if detect_internal_punctuation(item) and "internal_punctuation" not in quality_issues:
+            quality_issues["internal_punctuation"] = item
 
         # Check for items exceeding maximum length
-        if len(item) > max_item_length:
-            quality_issues["exceeds_max_length"].append(item)
+        if len(item) > max_item_length and "exceeds_max_length" not in quality_issues:
+            quality_issues["exceeds_max_length"] = item
 
-        # Check for LLM preamble leaks
+        # Check for LLM preamble leaks — collect all for filtering; store only first as example
         if detect_preamble_leak(item):
-            quality_issues["preamble_leak"].append(item)
+            preamble_set.add(item)
+            if "preamble_leak" not in quality_issues:
+                quality_issues["preamble_leak"] = item
 
         # Check for residual markup
-        if detect_markup_artifact(item):
-            quality_issues["markup_artifact"].append(item)
+        if detect_markup_artifact(item) and "markup_artifact" not in quality_issues:
+            quality_issues["markup_artifact"] = item
 
         # Check for repeated characters (likely typos)
-        if detect_repeated_chars(item):
-            quality_issues["repeated_chars"].append(item)
+        if detect_repeated_chars(item) and "repeated_chars" not in quality_issues:
+            quality_issues["repeated_chars"] = item
+
+    # Check for non-Western (non-ASCII) characters across all items; applies to any format.
+    if any(ord(c) > 127 for item in cleaned_items for c in item):
+        processing_fixups.append("QUALITY: Non-Western characters detected in items")
 
     # Note: misspelling detection is deferred to a second pass in summarize_results()
     # after the corpus word frequency table is built across all files.
 
-    # Step 5: Process cleaned items further (additional cleanup, lowercase)
-    # First, filter out items with quality issues
-    processed = []
+    # Step 4: Filter preamble items then apply general item cleanup pipeline.
+    # Preamble items are LLM contamination and are excluded entirely.
+    # All other items pass through each named cleanup function in order;
+    # each function reports a fixup only when it actually changed something.
+    filtered = [item for item in cleaned_items if item not in preamble_set]
 
-    for item in cleaned_items:
-        # Skip items with inappropriate punctuation, preamble leaks, or markup artifacts
-        if item in quality_issues["inappropriate_punctuation"]:
-            continue
-        if item in quality_issues["preamble_leak"]:
-            continue
-        if item in quality_issues["markup_artifact"]:
-            continue
+    cleanup_pipeline = [
+        clean_strip_leading_format,
+        clean_strip_number_word_prefix,
+        clean_remove_parenthetical,
+        clean_strip_trailing_punct,
+        clean_strip_doubled_punct,
+        clean_strip_leading_hyphens,
+        clean_lowercase,
+    ]
 
-        processed_item = item
-
-        # Continue with additional cleanup for all items
-        # Handle numbers directly attached to letters (e.g., "48eagle" -> "eagle")
-        processed_item = re.sub(r'^[0-9]+([a-zA-Z])', r'\1', processed_item)
-
-        processed_item = processed_item.strip()  # Strip any remaining whitespace
-
-        # Remove parentheses and their contents (e.g., "camelopard (giraffe)" -> "camelopard")
-        processed_item = re.sub(r'\s*\([^)]*\)', '', processed_item)
-        processed_item = processed_item.strip()
-
-        # Strip trailing punctuation (but keep alphanumeric at end)
-        processed_item = re.sub(r'[\s\*\-+:;,\.!?\}\[\]{}()\[\]]+$', '', processed_item)
-        processed_item = processed_item.strip()
-
-        # Remove doubled and tripled punctuation that appears between letters (e.g., ti::ger -> tiger, do--g -> dog)
-        # This catches cases where punctuation is doubled within words
-        processed_item = re.sub(r'([a-zA-Z])([:.;,\-_/\\|])\2+([a-zA-Z])', r'\1\3', processed_item)
-
-        # Lowercase the item
-        processed_item = processed_item.lower()
-
-        processed.append(processed_item)
+    processed = filtered
+    for step in cleanup_pipeline:
+        processed, fixup = step(processed)
+        if fixup:
+            processing_fixups.append(fixup)
 
     # Create metadata
     metadata = {
@@ -909,8 +1577,8 @@ def process_and_track(items, ext, max_item_length=25):
         "alphabeticalOrder": alphabetical
     }
 
-    # Store quality issue flags if any found
-    if any(quality_issues[k] for k in quality_issues):
+    # Store quality issues (only non-empty; each value is a single example string)
+    if quality_issues:
         metadata["qualityIssues"] = quality_issues
 
     # Store processing fixups
@@ -972,35 +1640,62 @@ def calculate_statistics(counts):
     }
 
 
-def summarize_results(filename_filter=None, model=None, format_type=None, experiment=None, timestamp=None, temperature=None, max_item_length=25, analysis=False):
+def summarize_results(filename_filter=None, model=None, format_type=None, experiment=None, timestamp=None, temperature=None, max_item_length=25, analysis=False, exclude_model=None):
     """
     Read all result files by type, parse items, and summarize into a single JSON.
     Structure: {filetype: [{filename: str, items: [...]}, ...], ...}
 
     Args:
         filename_filter: Optional string to filter files by name (legacy, e.g., "experiment1")
-        model: Optional model name to filter by (e.g., "gpt4")
+        model: Optional model name to INCLUDE (e.g., "gpt4"). If not specified, all models included.
         format_type: Optional file format/extension to filter by (e.g., "json", "txt")
         experiment: Optional experiment name to filter by (e.g., "animals5")
         timestamp: Optional timestamp to filter by (e.g., "202602061922")
         temperature: Optional temperature to filter by (e.g., "1.0", "10" as int/10)
         max_item_length: Maximum allowed item length in characters (default 25, items longer are flagged)
+        analysis: Whether to generate analysis report by model and temperature
+        exclude_model: Optional tuple of model names to EXCLUDE (e.g., ("gpt4", "llama318b"))
     """
     if not RESULTS_DIR.exists():
-        click.echo(f"Error: {RESULTS_DIR} directory not found", err=True)
+        click.echo(format_error("summarize", f"{RESULTS_DIR} directory not found"), err=True)
         return False
 
     consolidated = defaultdict(list)
-    # All tracked issue types
-    ISSUE_TYPES = ["inappropriate_punctuation", "exceeds_max_length", "preamble_leak", "markup_artifact", "repeated_chars"]
-    # Track quality issues: model -> temperature -> file_type -> issue_type -> set of items
-    quality_issues_output = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: {k: set() for k in ISSUE_TYPES})))
-    # Track example filenames: model -> temperature -> file_type -> issue_type -> {item: filename}
-    quality_issues_examples = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: {k: {} for k in ISSUE_TYPES})))
+    # All tracked issue types (item-level first, then format-style-derived using dash-separated names)
+    ISSUE_TYPES = [
+        "leading_punctuation", "trailing_punctuation", "internal_punctuation",
+        "exceeds_max_length", "preamble_leak",
+        "markup_artifact", "repeated_chars",
+        "single-span-tag", "plain-text", "end-of-directives",
+        "numbered-items-in-tags", "repeated-json-keys", "non-western-characters",
+        "comma-separated", "txt1-no-numbers", "html_no_markup",
+        "inconsistent_case", "inconsistent_md_format", "inconsistent_html_format",
+        "inconsistent_json_format",
+        "parse-failed", "stray-html-markup", "blockquote-markup",
+    ]
+    # Track quality issues: model -> temperature -> file_type -> prompt -> issue_type -> set of items
+    quality_issues_output = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: {k: set() for k in ISSUE_TYPES}))))
+    # Track example filenames: model -> temperature -> file_type -> prompt -> issue_type -> {item: filename}
+    quality_issues_examples = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: {k: {} for k in ISSUE_TYPES}))))
+    # Track formatStyle counts per prompt: model -> temperature -> file_type -> prompt -> formatStyle -> count
+    format_style_counts = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(int)))))
     # Track item counts for statistics: model -> temperature -> file_type -> [list of item counts]
     item_count_stats = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
-    # Track leading bullets/numbers prevalence: model -> temperature -> file_type -> {leading_bullets: [], leading_numbers: []}
-    leading_chars_stats = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: {"leading_bullets": [], "leading_numbers": []})))
+    # Count cleanup rule invocations per trial set: model -> temperature -> file_type -> prompt -> Counter
+    # Each Counter maps rule_name -> number of trials in the set that triggered that rule.
+    cleanup_rules_agg = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(Counter))))
+    # Track case values per trial set for cross-trial inconsistency detection:
+    # model -> temperature -> file_type -> prompt -> [(case_value, filename)]
+    case_values_agg = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(list))))
+    # Track per-file cleanup rule sets for markdown trial sets (detects inconsistent formatting):
+    # model -> temperature -> prompt -> [(frozenset(cleanup_keys), filename)]
+    md_cleanup_agg = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
+    # Track per-file cleanup rule sets for HTML trial sets (detects inconsistent formatting):
+    # model -> temperature -> prompt -> [(frozenset(cleanup_keys), filename)]
+    html_cleanup_agg = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
+    # Track per-file cleanup rule sets for JSON trial sets (detects inconsistent formatting):
+    # model -> temperature -> prompt -> [(frozenset(cleanup_keys), filename)]
+    json_cleanup_agg = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
     file_count = 0
     skip_count = 0
     source_items = set()  # Track unique items from raw parsed data
@@ -1009,12 +1704,14 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
     filters_applied = []
     if filename_filter:
         filters_applied.append(f"filename: {filename_filter}")
-    if model:
-        filters_applied.append(f"model: {model}")
-    if format_type:
-        filters_applied.append(f"format: {format_type}")
     if experiment:
         filters_applied.append(f"experiment: {experiment}")
+    if model:
+        filters_applied.append(f"model: {model} (include only)")
+    if exclude_model:
+        filters_applied.append(f"exclude-model: {', '.join(exclude_model)}")
+    if format_type:
+        filters_applied.append(f"format: {format_type}")
     if timestamp:
         filters_applied.append(f"timestamp: {timestamp}")
     if temperature:
@@ -1028,7 +1725,7 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
         if not file_path.is_file():
             continue
 
-        # Skip consolidated.json itself
+        # Skip results.json and other generated output files
         if file_path.name in SKIP_PATTERNS:
             continue
 
@@ -1084,7 +1781,37 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
             # Parse the (possibly cleaned) content
             items, parser_fixups = parser(cleaned_content)
 
-            # Collect source items (raw parsed items before processing)
+            # Parse filename for experiment, model, temperature FIRST (needed for filtering)
+            filename_metadata = parse_filename_metadata(file_path.name)
+
+            # Apply metadata filters BEFORE collecting source items
+            # This prevents filtered files from being included in unique items
+            if experiment and filename_metadata.get("experiment") != experiment:
+                continue
+            # Model filtering: include only specific model if specified, or exclude specific models
+            file_model = filename_metadata.get("model")
+            if model and file_model != model:
+                continue
+            # Exclude models by pattern (supports wildcards like gpt*, *llama*, etc.)
+            if exclude_model:
+                if any(matches_model_pattern(file_model, pattern) for pattern in exclude_model):
+                    continue
+            # Temperature filtering
+            if temperature is not None:
+                file_temp = filename_metadata.get("temperature")
+                try:
+                    temp_filter = float(temperature)
+                    if file_temp != temp_filter:
+                        continue
+                except (ValueError, TypeError):
+                    continue
+            # Timestamp filtering
+            if timestamp:
+                file_timestamp = Path(file_path.name).stem.split('-')[0]
+                if file_timestamp != timestamp:
+                    continue
+
+            # NOW collect source items (only after filtering passes)
             for item in items:
                 if item:  # Only track non-empty items
                     source_items.add(item)
@@ -1102,43 +1829,32 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
             # Add format from extension
             metadata["format"] = FORMAT_MAP.get(ext, "unknown")
 
-            # Collect all fixups
-            all_fixups = codeblock_fixups + parser_fixups
+            # Add format style (how the data was structured in the file)
+            metadata["formatStyle"] = detect_format_style(content, ext)
 
-            # Add processing fixups (format-specific cleanup)
+            # Collect all fixup strings from parsers, codeblock processing, and cleanup pipeline
+            all_fixups = codeblock_fixups + parser_fixups
+            # Expand parse-failure sentinel now that we have the filename
+            all_fixups = [
+                f"QUALITY: parsing failed completely for {file_path.name}"
+                if f == "QUALITY: Parse-Failed" else f
+                for f in all_fixups
+            ]
             if metadata.get("processingFixups"):
                 all_fixups.extend(metadata.pop("processingFixups"))
 
-            # Add HTML tag removal fixup if it occurred
-            if processing.get("strayHTMLTags"):
-                all_fixups.append("Removed stray HTML tags from items")
-
+            # Convert fixup strings to structured cleanup dict and format-style label list.
+            # QUALITY fixup strings (format observations) go to metadata["formatStyles"];
+            # all other fixup strings go to metadata["cleanup"].
             if all_fixups:
-                metadata["fixups"] = all_fixups
+                cleanup_dict, format_style_labels = fixups_to_cleanup(all_fixups)
+                if cleanup_dict:
+                    metadata["cleanup"] = cleanup_dict
+                if format_style_labels:
+                    metadata["formatStyles"] = format_style_labels
 
-            # Parse filename for experiment, model, temperature
-            filename_metadata = parse_filename_metadata(file_path.name)
+            # Merge filename metadata with processing metadata
             metadata.update(filename_metadata)
-
-            # Apply metadata filters
-            if model and metadata.get("model") != model:
-                continue
-            if experiment and metadata.get("experiment") != experiment:
-                continue
-            if timestamp and metadata.get("experiment", "").startswith(timestamp):
-                # Check if timestamp matches (first 12 chars of timestamp part)
-                file_timestamp = Path(file_path.name).stem.split('-')[0]
-                if file_timestamp != timestamp:
-                    continue
-            if temperature is not None:
-                file_temp = metadata.get("temperature")
-                # Handle temperature as either float or string
-                try:
-                    temp_filter = float(temperature)
-                    if file_temp != temp_filter:
-                        continue
-                except (ValueError, TypeError):
-                    continue
 
             # Count duplicate items (items appearing more than once)
             item_counts = Counter(items)
@@ -1150,41 +1866,78 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
             # Reorder metadata keys
             metadata = reorder_metadata(metadata)
 
-            # Get model, temperature, file type for tracking
+            # Get model, temperature, file type, and prompt for tracking
             model_name = abbreviate_model_name(metadata.get("model", "unknown"))
             temp_value = metadata.get("temperature", "unknown")
             file_type = FORMAT_MAP.get(ext, ext)
+            prompt_name = metadata.get("prompt", "unknown")
 
-            # Track quality issues by model, temperature, and file type
+            # Count how many trials in this set triggered each cleanup rule
+            for rule_name in metadata.get("cleanup", {}).keys():
+                cleanup_rules_agg[model_name][str(temp_value)][file_type][prompt_name][rule_name] += 1
+
+            # Remove case keys from per-file metadata (case consistency is tracked cross-trial).
+            case_value = metadata.pop("case", "lower")
+            metadata.pop("consistentCase", None)
+            case_values_agg[model_name][str(temp_value)][file_type][prompt_name].append((case_value, file_path.name))
+
+            # For markdown files, track the full set of cleanup keys applied to each file.
+            # After the file loop, trial sets where rule sets differ are flagged as inconsistent.
+            if ext == '.md':
+                md_rules = frozenset(metadata.get("cleanup", {}).keys())
+                md_cleanup_agg[model_name][str(temp_value)][prompt_name].append((md_rules, file_path.name))
+
+            # For HTML files, track the full set of cleanup keys applied to each file.
+            # After the file loop, trial sets where rule sets differ are flagged as inconsistent.
+            if ext == '.html':
+                html_rules = frozenset(metadata.get("cleanup", {}).keys())
+                html_cleanup_agg[model_name][str(temp_value)][prompt_name].append((html_rules, file_path.name))
+
+            # For JSON files, track the full set of cleanup keys applied to each file.
+            # After the file loop, trial sets where rule sets differ are flagged as inconsistent.
+            if ext == '.json':
+                json_rules = frozenset(metadata.get("cleanup", {}).keys())
+                json_cleanup_agg[model_name][str(temp_value)][prompt_name].append((json_rules, file_path.name))
+
+            # Track formatStyle counts per prompt (primary detect_format_style() value)
+            format_style_counts[model_name][str(temp_value)][file_type][prompt_name][metadata.get("formatStyle", "unknown")] += 1
+            # Also count QUALITY-derived format-style labels (from metadata["formatStyles"])
+            for fs_label in metadata.get("formatStyles", []):
+                format_style_counts[model_name][str(temp_value)][file_type][prompt_name][fs_label] += 1
+
+            # Track quality issues by model, temperature, file type, and prompt
+            # Track item-level quality issues (qualityIssues now stores one example per type)
             if "qualityIssues" in metadata:
-                quality_issues = metadata["qualityIssues"]
+                qi = metadata["qualityIssues"]
                 filename = file_path.name
-
-                for inappropriate_item in quality_issues.get("inappropriate_punctuation", []):
-                    # Skip leading numbers for txt1 files (they're expected in numbered text)
-                    if ext == '.txt1' and re.match(r'^\d+[\.\)\-\s]', inappropriate_item):
+                for issue_type in ["leading_punctuation", "trailing_punctuation", "internal_punctuation",
+                                   "exceeds_max_length", "preamble_leak",
+                                   "markup_artifact", "repeated_chars"]:
+                    example = qi.get(issue_type)
+                    if not example:
                         continue
-                    quality_issues_output[model_name][temp_value][file_type]["inappropriate_punctuation"].add(inappropriate_item)
-                    # Store example filename (keep first occurrence)
-                    # Use str(temp_value) to match the keys used in quality_issues_dict for reporting
-                    if inappropriate_item not in quality_issues_examples[model_name][str(temp_value)][file_type]["inappropriate_punctuation"]:
-                        quality_issues_examples[model_name][str(temp_value)][file_type]["inappropriate_punctuation"][inappropriate_item] = filename
-                for long_item in quality_issues.get("exceeds_max_length", []):
-                    quality_issues_output[model_name][temp_value][file_type]["exceeds_max_length"].add(long_item)
-                    if long_item not in quality_issues_examples[model_name][str(temp_value)][file_type]["exceeds_max_length"]:
-                        quality_issues_examples[model_name][str(temp_value)][file_type]["exceeds_max_length"][long_item] = filename
-                for preamble_item in quality_issues.get("preamble_leak", []):
-                    quality_issues_output[model_name][temp_value][file_type]["preamble_leak"].add(preamble_item)
-                    if preamble_item not in quality_issues_examples[model_name][str(temp_value)][file_type]["preamble_leak"]:
-                        quality_issues_examples[model_name][str(temp_value)][file_type]["preamble_leak"][preamble_item] = filename
-                for markup_item in quality_issues.get("markup_artifact", []):
-                    quality_issues_output[model_name][temp_value][file_type]["markup_artifact"].add(markup_item)
-                    if markup_item not in quality_issues_examples[model_name][str(temp_value)][file_type]["markup_artifact"]:
-                        quality_issues_examples[model_name][str(temp_value)][file_type]["markup_artifact"][markup_item] = filename
-                for repeated_item in quality_issues.get("repeated_chars", []):
-                    quality_issues_output[model_name][temp_value][file_type]["repeated_chars"].add(repeated_item)
-                    if repeated_item not in quality_issues_examples[model_name][str(temp_value)][file_type]["repeated_chars"]:
-                        quality_issues_examples[model_name][str(temp_value)][file_type]["repeated_chars"][repeated_item] = filename
+                    # txt1 exception: leading-number items are expected format, not quality issues
+                    if issue_type == "leading_punctuation" and ext == '.txt1' \
+                            and re.match(r'^\d+[\.\)\-\s]', example):
+                        continue
+                    quality_issues_output[model_name][str(temp_value)][file_type][prompt_name][issue_type].add(example)
+                    if example not in quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][issue_type]:
+                        quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][issue_type][example] = filename
+
+            # Track format-style quality issues from metadata["formatStyles"]
+            # (QUALITY fixup strings were routed here by fixups_to_cleanup())
+            if "formatStyles" in metadata:
+                filename = file_path.name
+                for fs_label in metadata["formatStyles"]:
+                    if fs_label == "parse-failed":
+                        # For parse failures, use the filename itself as the example so
+                        # the report can show which specific files failed to parse.
+                        quality_issues_output[model_name][str(temp_value)][file_type][prompt_name][fs_label].add(filename)
+                        quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][fs_label][filename] = filename
+                    else:
+                        quality_issues_output[model_name][str(temp_value)][file_type][prompt_name][fs_label].add(fs_label)
+                        if fs_label not in quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][fs_label]:
+                            quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][fs_label][fs_label] = filename
 
             # Count duplicate items (items appearing more than once)
             item_counts = Counter(items)
@@ -1192,10 +1945,6 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
 
             # Track item count for statistics
             item_count_stats[model_name][str(temp_value)][file_type].append(len(items))
-
-            # Track leading bullets and numbers prevalence
-            leading_chars_stats[model_name][str(temp_value)][file_type]["leading_bullets"].append(metadata.get("leadingBullets", False))
-            leading_chars_stats[model_name][str(temp_value)][file_type]["leading_numbers"].append(metadata.get("leadingNumbers", False))
 
             # Add to consolidated data
             consolidated[ext].append({
@@ -1214,28 +1963,153 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
     # Convert defaultdict to regular dict for JSON serialization
     consolidated_dict = dict(consolidated)
 
-    # Convert quality_issues_output sets to sorted lists with source info for JSON serialization
-    # Structure: model -> temperature -> file_type -> issue_type -> [{"instance": item, "source": filename}, ...]
+    # Detect treatment consistency for each trial set.
+    # Tracks all fields that indicate how output was structured or cleaned up.
+    # Group by (abbreviated_model, str(temperature), file_type, prompt) — no experiment level.
+    # Structure: {(model, temp, file_type, prompt): {field: [values]}}
+    TREATMENT_FIELDS = ["formatStyle", "codeblock"]
+    format_consistency = {}
+    for ext, entries in consolidated_dict.items():
+        file_type = FORMAT_MAP.get(ext, ext)
+        for entry in entries:
+            metadata = entry["metadata"]
+            prompt = metadata.get("prompt", "unknown")
+            model = abbreviate_model_name(metadata.get("model", "unknown"))
+            temperature = str(metadata.get("temperature", "unknown"))
+
+            key = (model, temperature, file_type, prompt)
+            if key not in format_consistency:
+                format_consistency[key] = {field: [] for field in TREATMENT_FIELDS}
+
+            for field in TREATMENT_FIELDS:
+                # codeblock is absent when False; treat absence as False
+                format_consistency[key][field].append(metadata.get(field, False))
+
+    # Compute cross-trial case inconsistency and populate quality_issues_output.
+    # A trial set is flagged when more than one distinct case type is observed across files.
+    for model_name in case_values_agg:
+        for temp_value in case_values_agg[model_name]:
+            for file_type in case_values_agg[model_name][temp_value]:
+                for prompt_name in case_values_agg[model_name][temp_value][file_type]:
+                    entries = case_values_agg[model_name][temp_value][file_type][prompt_name]
+                    distinct = set(v for v, _ in entries)
+                    if len(distinct) > 1:
+                        for case_val, fname in entries:
+                            quality_issues_output[model_name][temp_value][file_type][prompt_name]["inconsistent_case"].add(case_val)
+                            if case_val not in quality_issues_examples[model_name][temp_value][file_type][prompt_name]["inconsistent_case"]:
+                                quality_issues_examples[model_name][temp_value][file_type][prompt_name]["inconsistent_case"][case_val] = fname
+
+    # Compute markdown format inconsistency across trials.
+    # A markdown trial set is flagged when files have differing sets of cleanup rules applied,
+    # indicating the model produced different structural formats across trials.
+    # Instances are the rule names that appeared in some files but not all.
+    for model_name in md_cleanup_agg:
+        for temp_value in md_cleanup_agg[model_name]:
+            for prompt_name in md_cleanup_agg[model_name][temp_value]:
+                entries = md_cleanup_agg[model_name][temp_value][prompt_name]
+                rule_sets = [rules for rules, _ in entries]
+                if len(set(rule_sets)) > 1:
+                    all_rules = set().union(*rule_sets)
+                    common_rules = set.intersection(*[set(r) for r in rule_sets])
+                    varying_rules = all_rules - common_rules
+                    for rule in varying_rules:
+                        quality_issues_output[model_name][temp_value]["markdown"][prompt_name]["inconsistent_md_format"].add(rule)
+                        if rule not in quality_issues_examples[model_name][temp_value]["markdown"][prompt_name]["inconsistent_md_format"]:
+                            example_fname = next((fname for rules, fname in entries if rule in rules), "unknown")
+                            quality_issues_examples[model_name][temp_value]["markdown"][prompt_name]["inconsistent_md_format"][rule] = example_fname
+
+    # Compute HTML format inconsistency across trials.
+    # An HTML trial set is flagged when files have differing sets of cleanup rules applied,
+    # indicating the model produced different structural formats across trials.
+    # Instances are the rule names that appeared in some files but not all.
+    for model_name in html_cleanup_agg:
+        for temp_value in html_cleanup_agg[model_name]:
+            for prompt_name in html_cleanup_agg[model_name][temp_value]:
+                entries = html_cleanup_agg[model_name][temp_value][prompt_name]
+                rule_sets = [rules for rules, _ in entries]
+                if len(set(rule_sets)) > 1:
+                    all_rules = set().union(*rule_sets)
+                    common_rules = set.intersection(*[set(r) for r in rule_sets])
+                    varying_rules = all_rules - common_rules
+                    for rule in varying_rules:
+                        quality_issues_output[model_name][temp_value]["HTML"][prompt_name]["inconsistent_html_format"].add(rule)
+                        if rule not in quality_issues_examples[model_name][temp_value]["HTML"][prompt_name]["inconsistent_html_format"]:
+                            example_fname = next((fname for rules, fname in entries if rule in rules), "unknown")
+                            quality_issues_examples[model_name][temp_value]["HTML"][prompt_name]["inconsistent_html_format"][rule] = example_fname
+
+    # Compute JSON format inconsistency across trials.
+    # A JSON trial set is flagged when files have differing sets of cleanup rules applied,
+    # indicating the model produced different structural formats across trials.
+    # Instances are the rule names that appeared in some files but not all.
+    for model_name in json_cleanup_agg:
+        for temp_value in json_cleanup_agg[model_name]:
+            for prompt_name in json_cleanup_agg[model_name][temp_value]:
+                entries = json_cleanup_agg[model_name][temp_value][prompt_name]
+                rule_sets = [rules for rules, _ in entries]
+                if len(set(rule_sets)) > 1:
+                    all_rules = set().union(*rule_sets)
+                    common_rules = set.intersection(*[set(r) for r in rule_sets])
+                    varying_rules = all_rules - common_rules
+                    for rule in varying_rules:
+                        quality_issues_output[model_name][temp_value]["JSON"][prompt_name]["inconsistent_json_format"].add(rule)
+                        if rule not in quality_issues_examples[model_name][temp_value]["JSON"][prompt_name]["inconsistent_json_format"]:
+                            example_fname = next((fname for rules, fname in entries if rule in rules), "unknown")
+                            quality_issues_examples[model_name][temp_value]["JSON"][prompt_name]["inconsistent_json_format"][rule] = example_fname
+
+    # Build quality_issues_dict with hierarchy: model -> temperature -> file_type -> prompt
+    # Each prompt entry contains: issue lists, consistentFormat (bool), formatStyles (counts)
     quality_issues_dict = {}
-    if quality_issues_output or analysis:
-        for model_name in sorted(quality_issues_output.keys()):
-            quality_issues_dict[model_name] = {}
-            for temp_value in sorted(quality_issues_output[model_name].keys(), key=lambda x: (x == "unknown", x)):
-                quality_issues_dict[model_name][str(temp_value)] = {}
-                for file_type in sorted(quality_issues_output[model_name][temp_value].keys()):
-                    quality_issues_dict[model_name][str(temp_value)][file_type] = {}
-                    for issue_type in ISSUE_TYPES:
-                        # Create list of objects with instance and source
-                        items_with_source = []
-                        for item in quality_issues_output[model_name][temp_value][file_type][issue_type]:
-                            source = quality_issues_examples[model_name][str(temp_value)][file_type][issue_type].get(item, "unknown")
-                            items_with_source.append({
-                                "instance": item,
-                                "source": source
-                            })
-                        # Sort by instance (case-insensitive)
-                        items_with_source.sort(key=lambda x: x["instance"].lower())
-                        quality_issues_dict[model_name][str(temp_value)][file_type][issue_type] = items_with_source
+
+    # Gather all (model, temp, file_type, prompt) combos from all sources
+    all_combos = set(format_consistency.keys())
+    for model_name in format_style_counts:
+        for temp_value in format_style_counts[model_name]:
+            for file_type in format_style_counts[model_name][temp_value]:
+                for prompt_name in format_style_counts[model_name][temp_value][file_type]:
+                    all_combos.add((model_name, temp_value, file_type, prompt_name))
+    for model_name in quality_issues_output:
+        for temp_value in quality_issues_output[model_name]:
+            for file_type in quality_issues_output[model_name][temp_value]:
+                for prompt_name in quality_issues_output[model_name][temp_value][file_type]:
+                    all_combos.add((model_name, str(temp_value), file_type, prompt_name))
+
+    for (model_name, temp_value, file_type, prompt_name) in sorted(all_combos, key=lambda x: (x[0], x[1], x[2].casefold(), x[3])):
+        prompt_data = {}
+
+        # Add quality issues (omit empty lists)
+        issues = quality_issues_output.get(model_name, {}).get(temp_value, {}).get(file_type, {}).get(prompt_name, {})
+        for issue_type in ISSUE_TYPES:
+            raw_items = issues.get(issue_type, set())
+            if raw_items:
+                items_with_source = []
+                for item in raw_items:
+                    source = quality_issues_examples[model_name][temp_value][file_type][prompt_name][issue_type].get(item, "unknown")
+                    items_with_source.append({"instance": item, "source": source})
+                items_with_source.sort(key=lambda x: x["instance"].lower())
+                prompt_data[issue_type] = items_with_source
+
+        # Add consistentFormat: True if no treatment field varies across trials
+        fc = format_consistency.get((model_name, temp_value, file_type, prompt_name), {})
+        if fc:
+            varying = [f for f in TREATMENT_FIELDS if len(set(fc[f])) > 1]
+            prompt_data["consistentFormat"] = len(varying) == 0
+        else:
+            prompt_data["consistentFormat"] = True
+
+        # Add formatStyles: count of each style seen for this prompt
+        style_counts = format_style_counts.get(model_name, {}).get(temp_value, {}).get(file_type, {}).get(prompt_name, {})
+        if style_counts:
+            prompt_data["formatStyles"] = dict(style_counts)
+
+        # Add cleanupRules: dict of {rule_name: trial_count} sorted by rule name
+        rules_counter = cleanup_rules_agg.get(model_name, {}).get(temp_value, {}).get(file_type, {}).get(prompt_name, {})
+        if rules_counter:
+            prompt_data["cleanupRules"] = dict(sorted(rules_counter.items()))
+
+        quality_issues_dict \
+            .setdefault(model_name, {}) \
+            .setdefault(temp_value, {}) \
+            .setdefault(file_type, {})[prompt_name] = prompt_data
 
     # Write results JSON (without quality issues)
     try:
@@ -1281,94 +2155,94 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
                     safe_write(f"\n{model_name}:")
                     for temp_value in sorted(item_count_stats[model_name].keys(), key=lambda x: (x == "unknown", x)):
                         safe_write(f"  Temperature {temp_value}:")
-                        for file_type in sorted(item_count_stats[model_name][temp_value].keys()):
+                        for file_type in sorted(item_count_stats[model_name][temp_value].keys(), key=str.casefold):
                             counts = item_count_stats[model_name][temp_value][file_type]
                             stats = calculate_statistics(counts)
                             safe_write(f"    {file_type} ({len(counts)} files):")
                             safe_write(f"      Items: max={stats['max']}, min={stats['min']}, avg={stats['avg']}, var={stats['var']}, mode={stats['mode']}")
 
-                            # Leading bullets and numbers prevalence
-                            if file_type in leading_chars_stats[model_name][temp_value]:
-                                bullets_data = leading_chars_stats[model_name][temp_value][file_type]["leading_bullets"]
-                                numbers_data = leading_chars_stats[model_name][temp_value][file_type]["leading_numbers"]
-                                if bullets_data and numbers_data:
-                                    bullets_prevalence = classify_prevalence(sum(bullets_data), len(bullets_data))
-                                    numbers_prevalence = classify_prevalence(sum(numbers_data), len(numbers_data))
-                                    safe_write(f"      Leading bullets: {bullets_prevalence}; Leading numbers: {numbers_prevalence}")
 
-                            # Quality issues (only if present for this combination)
-                            issues = quality_issues_dict.get(model_name, {}).get(str(temp_value), {}).get(file_type, {})
-                            inapp_items = issues.get("inappropriate_punctuation", [])
-                            exceed_items = issues.get("exceeds_max_length", [])
+                            # Per-prompt quality details
+                            prompts_data = quality_issues_dict.get(model_name, {}).get(str(temp_value), {}).get(file_type, {})
+                            for prompt_name in sorted(prompts_data.keys()):
+                                pd = prompts_data[prompt_name]
+                                safe_write(f"      {prompt_name}:")
 
-                            if inapp_items:
-                                pattern_groups = {}
-                                for item in inapp_items:
-                                    pattern = classify_inappropriate_pattern(item)
-                                    if pattern not in pattern_groups:
-                                        pattern_groups[pattern] = item
+                                # Format consistency
+                                is_consistent = pd.get("consistentFormat", True)
+                                if is_consistent:
+                                    safe_write(f"        Format: ✓ consistent")
+                                else:
+                                    fc = format_consistency.get((model_name, str(temp_value), file_type, prompt_name), {})
+                                    varying = [f for f in TREATMENT_FIELDS if len(set(fc.get(f, []))) > 1]
 
-                                safe_write(f"      Inappropriate punctuation ({len(pattern_groups)} classes):")
-                                for pattern in sorted(pattern_groups.keys())[:5]:
-                                    item = pattern_groups[pattern]
-                                    item_repr = ascii(item)
-                                    example_file = quality_issues_examples[model_name][temp_value][file_type]["inappropriate_punctuation"].get(item)
-                                    if example_file:
-                                        safe_write(f"        - {item_repr} Example: {example_file}")
-                                    else:
-                                        safe_write(f"        - {item_repr}")
-                                if len(pattern_groups) > 5:
-                                    remaining_patterns = sorted(pattern_groups.keys())[5:]
-                                    item = pattern_groups[remaining_patterns[0]]
-                                    example_file = quality_issues_examples[model_name][temp_value][file_type]["inappropriate_punctuation"].get(item)
-                                    if example_file:
-                                        safe_write(f"        ... and {len(pattern_groups) - 5} more classes Example: {example_file}")
-                                    else:
-                                        safe_write(f"        ... and {len(pattern_groups) - 5} more classes")
+                                    # Build human-readable description of what varies.
+                                    # TREATMENT_FIELDS is ["formatStyle", "codeblock"]; list
+                                    # all distinct formatStyle values when that field varies.
+                                    parts = []
+                                    if "formatStyle" in varying:
+                                        parts.extend(sorted(set(fc.get("formatStyle", []))))
+                                    if "codeblock" in varying:
+                                        parts.append("codeblock")
+                                    safe_write(f"        Format: ✗ inconsistent ({', '.join(parts)})")
 
-                            if exceed_items:
-                                safe_write(f"      Exceeds max length ({len(exceed_items)} unique):")
-                                for item in exceed_items[:5]:
-                                    item_repr = ascii(item)
-                                    example_file = quality_issues_examples[model_name][temp_value][file_type]["exceeds_max_length"].get(item)
-                                    if example_file:
-                                        safe_write(f"        - {item_repr} Example: {example_file}")
-                                    else:
-                                        safe_write(f"        - {item_repr}")
-                                if len(exceed_items) > 5:
-                                    remaining_items = exceed_items[5:]
-                                    example_file = quality_issues_examples[model_name][temp_value][file_type]["exceeds_max_length"].get(remaining_items[0])
-                                    if example_file:
-                                        safe_write(f"        ... and {len(exceed_items) - 5} more Example: {example_file}")
-                                    else:
-                                        safe_write(f"        ... and {len(exceed_items) - 5} more")
+                                # Format styles breakdown
+                                style_counts = pd.get("formatStyles", {})
+                                if style_counts:
+                                    styles_str = ", ".join(f"{s}: {c}" for s, c in sorted(style_counts.items()))
+                                    safe_write(f"        Styles: {styles_str}")
 
-                            # Preamble leaks
-                            preamble_items = issues.get("preamble_leak", [])
-                            if preamble_items:
-                                safe_write(f"      Preamble leaks ({len(preamble_items)} unique):")
-                                for item in preamble_items[:5]:
-                                    safe_write(f"        - {ascii(item)}")
-                                if len(preamble_items) > 5:
-                                    safe_write(f"        ... and {len(preamble_items) - 5} more")
+                                # Punctuation issues (leading / trailing / internal)
+                                for punct_type, label in [
+                                    ("leading_punctuation",   "Leading punctuation"),
+                                    ("trailing_punctuation",  "Trailing punctuation"),
+                                    ("internal_punctuation",  "Internal punctuation"),
+                                ]:
+                                    punct_items = [e["instance"] for e in pd.get(punct_type, [])]
+                                    if punct_items:
+                                        safe_write(f"        {label} ({len(punct_items)} unique):")
+                                        for item in punct_items[:5]:
+                                            example_file = quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][punct_type].get(item)
+                                            suffix = f" Example: {example_file}" if example_file else ""
+                                            safe_write(f"          - {ascii(item)}{suffix}")
+                                        if len(punct_items) > 5:
+                                            safe_write(f"          ... and {len(punct_items) - 5} more")
 
-                            # Markup artifacts
-                            markup_items = issues.get("markup_artifact", [])
-                            if markup_items:
-                                safe_write(f"      Markup artifacts ({len(markup_items)} unique):")
-                                for item in markup_items[:5]:
-                                    safe_write(f"        - {ascii(item)}")
-                                if len(markup_items) > 5:
-                                    safe_write(f"        ... and {len(markup_items) - 5} more")
+                                # Exceeds max length
+                                exceed_items = [e["instance"] for e in pd.get("exceeds_max_length", [])]
+                                if exceed_items:
+                                    safe_write(f"        Exceeds max length ({len(exceed_items)} unique):")
+                                    for item in exceed_items[:5]:
+                                        safe_write(f"          - {ascii(item)}")
+                                    if len(exceed_items) > 5:
+                                        safe_write(f"          ... and {len(exceed_items) - 5} more")
 
-                            # Repeated characters
-                            repeated_items = issues.get("repeated_chars", [])
-                            if repeated_items:
-                                safe_write(f"      Repeated characters ({len(repeated_items)} unique):")
-                                for item in repeated_items[:5]:
-                                    safe_write(f"        - {ascii(item)}")
-                                if len(repeated_items) > 5:
-                                    safe_write(f"        ... and {len(repeated_items) - 5} more")
+                                # Preamble leaks
+                                preamble_items = [e["instance"] for e in pd.get("preamble_leak", [])]
+                                if preamble_items:
+                                    safe_write(f"        Preamble leaks ({len(preamble_items)} unique):")
+                                    for item in preamble_items[:5]:
+                                        safe_write(f"          - {ascii(item)}")
+                                    if len(preamble_items) > 5:
+                                        safe_write(f"          ... and {len(preamble_items) - 5} more")
+
+                                # Markup artifacts
+                                markup_items = [e["instance"] for e in pd.get("markup_artifact", [])]
+                                if markup_items:
+                                    safe_write(f"        Markup artifacts ({len(markup_items)} unique):")
+                                    for item in markup_items[:5]:
+                                        safe_write(f"          - {ascii(item)}")
+                                    if len(markup_items) > 5:
+                                        safe_write(f"          ... and {len(markup_items) - 5} more")
+
+                                # Repeated characters
+                                repeated_items = [e["instance"] for e in pd.get("repeated_chars", [])]
+                                if repeated_items:
+                                    safe_write(f"        Repeated characters ({len(repeated_items)} unique):")
+                                    for item in repeated_items[:5]:
+                                        safe_write(f"          - {ascii(item)}")
+                                    if len(repeated_items) > 5:
+                                        safe_write(f"          ... and {len(repeated_items) - 5} more")
 
             except Exception as report_err:
                 click.echo(f"Warning: Could not generate full analysis report ({report_err})")
@@ -1397,30 +2271,129 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
         return True
 
     except Exception as e:
-        click.echo(f"Error writing consolidated JSON: {e}", err=True)
+        click.echo(format_error("summarize", f"Error writing results.json: {e}"), err=True)
         return False
+
+
+def matches_model_pattern(model_name, pattern):
+    """
+    Check if model name matches pattern.
+    Supports:
+    - Exact matches: haiku matches claudehaiku4520251001
+    - Wildcards: gpt*, *llama*, t0*
+    - Case-insensitive matching
+    """
+    model_lower = model_name.lower()
+    pattern_lower = pattern.lower()
+
+    # If pattern contains wildcards, use fnmatch
+    if '*' in pattern_lower or '?' in pattern_lower:
+        return fnmatch(model_lower, pattern_lower)
+
+    # Otherwise, check if pattern is contained in model name (case-insensitive substring match)
+    # This allows "haiku" to match "claudehaiku4520251001"
+    return pattern_lower in model_lower
+
+
+def prompt_for_selections(title, choices):
+    """
+    Prompt user to select from a list of choices by number or space-separated numbers.
+    Returns list of selected items.
+    """
+    if not choices:
+        return []
+
+    click.echo(f"\n{title}:")
+    for idx, choice in enumerate(choices, 1):
+        click.echo(f"  {idx:2d}. {choice}")
+    click.echo(f"   0. (none/skip)")
+
+    while True:
+        selection = click.prompt("Enter number(s) separated by spaces", default='0').strip()
+        if selection == '0' or selection == '':
+            return []
+
+        try:
+            selected_indices = [int(x) - 1 for x in selection.split()]
+            # Validate indices
+            if any(idx < 0 or idx >= len(choices) for idx in selected_indices):
+                click.echo("Invalid selection. Please enter valid numbers.")
+                continue
+            return [choices[idx] for idx in selected_indices]
+        except ValueError:
+            click.echo("Invalid input. Please enter space-separated numbers.")
+
+
+def collect_available_values():
+    """Scan results directory and collect available experiments, models, temperatures."""
+    experiments = set()
+    models = set()
+    temperatures = set()
+
+    for file_path in RESULTS_DIR.iterdir():
+        if not file_path.is_file():
+            continue
+        if file_path.name in SKIP_PATTERNS:
+            continue
+        if not is_standard_filename(file_path.name):
+            continue
+
+        try:
+            metadata = parse_filename_metadata(file_path.name)
+            if metadata.get("experiment"):
+                experiments.add(metadata["experiment"])
+            if metadata.get("model"):
+                models.add(metadata["model"])
+            if metadata.get("temperature") is not None:
+                temperatures.add(metadata["temperature"])
+        except Exception:
+            pass
+
+    return sorted(experiments), sorted(models), sorted(temperatures)
 
 
 @click.command()
 @click.option('--filter', type=str, default=None,
               help='Filter files by string in filename (legacy, e.g., "experiment1")')
+@click.option('-e', '--experiment', type=str, default=None,
+              help='Filter by experiment name (e.g., "animals5")')
+@click.option('-x', '--exclude-model', type=str, multiple=True, default=None,
+              help='Exclude models by pattern (supports wildcards: gpt*, *llama*, etc.)')
 @click.option('--model', type=str, default=None,
-              help='Filter by model name (e.g., "gpt4", "llama318b")')
+              help='Filter to include ONLY this model (e.g., "gpt4", "llama318b")')
 @click.option('--format', 'format_type', type=str, default=None,
               help='Filter by file format (e.g., "json", "txt", "md")')
-@click.option('--experiment', type=str, default=None,
-              help='Filter by experiment name (e.g., "animals5")')
 @click.option('--timestamp', type=str, default=None,
               help='Filter by timestamp (e.g., "202602061922")')
 @click.option('--temperature', type=float, default=None,
               help='Filter by temperature (e.g., "1.0", "0.7")')
 @click.option('--max-item-length', type=int, default=25,
               help='Maximum allowed item length in characters (items longer are flagged)')
-@click.option('-a', '--analysis', is_flag=True, default=False,
+@click.option('-a', '--analysis', is_flag=True, default=True,
               help='Generate data analysis report by model and temperature')
-def main(filter, model, format_type, experiment, timestamp, temperature, max_item_length, analysis):
+@click.option('--no-prompt', is_flag=True, default=False,
+              help='Skip interactive prompting (use defaults or cli args only)')
+def main(filter, experiment, exclude_model, model, format_type, timestamp, temperature, max_item_length, analysis, no_prompt):
     """Summarize result files into a single JSON by type and parsed items."""
-    success = summarize_results(filter, model, format_type, experiment, timestamp, temperature, max_item_length, analysis)
+    # If no filters specified and not in --no-prompt mode, offer interactive selection
+    if not no_prompt and not any([filter, experiment, exclude_model, model, format_type, timestamp, temperature is not None]):
+        click.echo("No filters specified. Starting interactive mode...\n")
+        experiments, models, temperatures = collect_available_values()
+
+        # Prompt for experiment
+        selected_experiments = prompt_for_selections("Available Experiments", experiments)
+        if selected_experiments:
+            experiment = selected_experiments[0] if len(selected_experiments) == 1 else None
+            if len(selected_experiments) > 1:
+                click.echo(f"Selected experiments: {', '.join(selected_experiments)}")
+                click.echo("(Note: summarize currently supports filtering by one experiment at a time)")
+
+        # Prompt for models to exclude
+        exclude_models_list = prompt_for_selections("Available Models to Exclude", models)
+        if exclude_models_list:
+            exclude_model = tuple(exclude_models_list)
+
+    success = summarize_results(filter, model, format_type, experiment, timestamp, temperature, max_item_length, analysis, exclude_model)
     raise SystemExit(0 if success else 1)
 
 

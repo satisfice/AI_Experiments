@@ -9,20 +9,55 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Optional, Tuple
 
-from providers import generate, get_provider
-from config import VALID_FORMATS, FORMAT_EXTENSIONS, sanitize_model_name, resolve_model_name, get_available_models, get_format_instruction, model_supports_temperature, parse_temperature
+from providers import generate, get_provider, reinitialize_ollama_model
+from config import VALID_FORMATS, FORMAT_EXTENSIONS, sanitize_model_name, resolve_model_name, get_available_models, get_format_instruction, model_supports_temperature, parse_temperature, get_model_timeout
+from utils import format_error, print_error
 import json
 
 logger = logging.getLogger(__name__)
 
 LAST_RUN_FILE = Path(".experiment_last_run.json")
+MAX_GENERATION_RETRIES = 3  # Number of retries after initial attempt on timeout
+
+
+def find_completed_iterations(model_name: str, experiment: str, prompt_name: str, format_type: str) -> dict:
+    """
+    Scan results folder to find which iterations exist for this (model, experiment, prompt, format).
+    Returns dict: {iteration_num: (filepath, timestamp), ...}
+    Used to detect incomplete experiments and support resuming.
+    """
+    completed = {}
+    results_dir = Path("results")
+
+    if not results_dir.exists():
+        return completed
+
+    ext = FORMAT_EXTENSIONS.get(format_type, format_type)
+
+    # Search for files matching pattern: *-EXPERIMENT-PROMPT-MODEL-*-*.FORMAT
+    # Iteration number is the second-to-last part when split by '-'
+    for filepath in results_dir.glob(f"*-{experiment}-{prompt_name}-{model_name}-*-*.{ext}"):
+        try:
+            stem = filepath.stem
+            parts = stem.split('-')
+            # iteration is second-to-last part; extract it
+            iteration_str = parts[-1]
+            iteration = int(iteration_str)
+            # timestamp is first part (14 digits)
+            timestamp = parts[0]
+            completed[iteration] = (filepath, timestamp)
+        except (ValueError, IndexError):
+            # Skip files that don't match expected pattern
+            pass
+
+    return completed
 
 
 def save_run_config(model, format_type, prompts, experiments, iterations, temperatures, batch_file, debug):
     """Save experiment configuration to file for quick re-run."""
     config = {
         "model": list(model) if model else [],
-        "format_type": format_type,
+        "format_type": list(format_type) if format_type else [],
         "prompts": list(prompts) if prompts else [],
         "experiments": list(experiments) if experiments else [],
         "iterations": iterations,
@@ -105,7 +140,7 @@ def check_model_access_times(models_to_check: List[str]) -> Dict[str, Optional[f
             provider = get_provider(actual_model)
 
             # Quick test invoke to ensure it's responsive (with 10 second timeout)
-            response = generate(actual_model, "test", provider=provider, timeout_seconds=10)
+            response = generate(actual_model, "test", provider=provider, timeout=10)
             elapsed = time.time() - start
 
             access_times[model] = elapsed
@@ -154,7 +189,7 @@ def present_model_access_report(access_times: Dict[str, Optional[float]]) -> boo
         click.echo(f"Working models: {', '.join([m[0] for m in working_models])}")
 
     if problem_models:
-        click.echo(f"Unavailable models: {', '.join(problem_models)}", err=True)
+        click.echo(format_error("experiment", f"Unavailable models: {', '.join(problem_models)}"), err=True)
 
     click.echo()
 
@@ -168,7 +203,7 @@ def present_model_access_report(access_times: Dict[str, Optional[float]]) -> boo
 
 def generate_filename(timestamp: str, prompt_name: str, experiment: str, model: str, index: int, format_type: str, temp_component: str = None, supports_temp: bool = True) -> str:
     """
-    Generate output filename: YYYYMMDDHHMMSS-promptname-experimentname-modelname-tNN-nn.ext
+    Generate output filename: YYYYMMDDHHMMSS-experimentname-promptname-modelname-tNN-nn.ext
     where NN is the temperature component (two digits for supported models, or "xx" for unsupported).
     """
     ext = FORMAT_EXTENSIONS[format_type]
@@ -180,7 +215,7 @@ def generate_filename(timestamp: str, prompt_name: str, experiment: str, model: 
     else:
         temp_str = "-txx"
 
-    return f"{timestamp}-{prompt_name}-{experiment}-{sanitized_model}{temp_str}-{index_str}.{ext}"
+    return f"{timestamp}-{experiment}-{prompt_name}-{sanitized_model}{temp_str}-{index_str}.{ext}"
 
 
 def get_first_iteration_timestamp() -> str:
@@ -198,7 +233,7 @@ def get_model_help():
     return f"Model shortcut or full name (configured: {', '.join(sorted(shortcuts))})"
 
 
-def process_format(actual_model, format_type, master_prompt, experiment, prompt_name, iterations, temperature, batch_file, temp_float, temp_component, supports_temp, provider=None, prompt_file_idx=None, total_prompt_files=None, format_instructions_cache=None):
+def process_format(actual_model, format_type, master_prompt, experiment, prompt_name, iterations, temperature, batch_file, temp_float, temp_component, supports_temp, provider=None, prompt_file_idx=None, total_prompt_files=None, format_instructions_cache=None, resume_mode=False):
     """
     Process a single format: append format instruction and generate output files.
     Returns tuple: (processed_files, timestamp) for successful processing
@@ -212,8 +247,25 @@ def process_format(actual_model, format_type, master_prompt, experiment, prompt_
     """
     logger.info(f"Starting format processing - Format: {format_type}, Model: {actual_model}, Iterations: {iterations}")
 
-    # Get timestamp for this format's first iteration
-    timestamp = get_first_iteration_timestamp()
+    # Check for completed iterations if resuming
+    completed_iterations = {}
+    skip_iterations_msg = None
+    if resume_mode:
+        completed_iterations = find_completed_iterations(actual_model, experiment, prompt_name, format_type)
+        if completed_iterations:
+            max_completed = max(completed_iterations.keys())
+            # Preserve the original timestamp from the first completed iteration
+            first_completed_timestamp = completed_iterations[min(completed_iterations.keys())][1]
+            timestamp = first_completed_timestamp
+            if max_completed >= iterations:
+                logger.info(f"All {iterations} iterations already completed")
+                return [], timestamp
+            skip_iterations_msg = f"Skipping iterations 1-{max_completed} (already completed)"
+            logger.info(skip_iterations_msg)
+
+    # Get timestamp for this format's first iteration (if not already set by resume)
+    if not completed_iterations:
+        timestamp = get_first_iteration_timestamp()
 
     # Get format instruction (use cache if provided, otherwise compute)
     if format_instructions_cache and format_type in format_instructions_cache:
@@ -242,6 +294,10 @@ def process_format(actual_model, format_type, master_prompt, experiment, prompt_
     for prompt_idx, prompt in enumerate(prompts, 1):
         # Run iterations for this prompt
         for iteration in range(1, iterations + 1):
+            # Skip if already completed (in resume mode)
+            if resume_mode and iteration in completed_iterations:
+                continue
+
             # Build message with command-line prompt file info if available
             if prompt_file_idx is not None and total_prompt_files is not None:
                 prompt_part = f"prompt file {prompt_file_idx}/{total_prompt_files}"
@@ -257,85 +313,139 @@ def process_format(actual_model, format_type, master_prompt, experiment, prompt_
             click.echo(msg)
             logger.info(msg)
 
-            try:
-                # Generate LLM output
-                logger.debug(f"Calling generate() for {actual_model}")
-                output = generate(actual_model, prompt, provider=provider)
+            timeout_secs = get_model_timeout(actual_model)
+            gen_error = None
+            timed_out = False
+            output = None
 
-                logger.debug(f"Generated output, length: {len(output)} characters")
+            for attempt in range(1, MAX_GENERATION_RETRIES + 2):
+                try:
+                    logger.debug(f"Calling generate() for {actual_model} (attempt {attempt}/{MAX_GENERATION_RETRIES + 1})")
+                    output = generate(actual_model, prompt, provider=provider)
+                    gen_error = None
+                    timed_out = False
+                    break  # Success
+                except KeyboardInterrupt:
+                    logger.warning("Processing interrupted by user")
+                    click.echo(format_error("experiment", "Processing cancelled by user"), err=True)
+                    sys.exit(1)
+                except TimeoutError:
+                    timed_out = True
+                    timeout_msg = (
+                        f"TIMEOUT: {actual_model} exceeded {timeout_secs}s on prompt {prompt_idx},"
+                        f" iteration {iteration}, attempt {attempt}/{MAX_GENERATION_RETRIES + 1}"
+                    )
+                    click.echo(format_error("experiment", timeout_msg), err=True)
+                    logger.error(timeout_msg)
+                    if attempt <= MAX_GENERATION_RETRIES:
+                        reinit_msg = (
+                            f"Reinitializing {actual_model} before retry"
+                            f" {attempt + 1}/{MAX_GENERATION_RETRIES + 1}..."
+                        )
+                        click.echo(reinit_msg)
+                        logger.warning(reinit_msg)
+                        try:
+                            reinitialize_ollama_model(actual_model)
+                        except KeyboardInterrupt:
+                            # User pressed Ctrl-C during reinitialize; propagate immediately
+                            raise
+                except Exception as e:
+                    gen_error = e
+                    err_msg = f"Error processing prompt {prompt_idx}, iteration {iteration}: {type(e).__name__}: {e}"
+                    click.echo(format_error("experiment", err_msg), err=True)
+                    logger.error(err_msg, exc_info=True)
+                    break  # Non-timeout errors are not retried
 
-                # Generate filename
-                filename = generate_filename(timestamp, prompt_name, experiment, actual_model, iteration, format_type, temp_component, supports_temp)
-
-                # Write to file in results folder
-                output_path = Path("results") / filename
-
-                # Check if file already exists
-                if output_path.exists():
-                    err_msg = f"Error: File already exists: {output_path}"
-                    click.echo(err_msg, err=True)
-                    logger.error(err_msg)
-                    continue
-
-                # Write with UTF-8 encoding to handle any Unicode characters
-                logger.debug(f"Writing output to {output_path}")
-                with open(output_path, 'w', encoding='utf-8') as f:
-                    f.write(output)
-
-                # Check if output contains non-ASCII characters
-                has_non_ascii = any(ord(char) > 127 for char in output)
-                processed_files.append((filename, has_non_ascii))
-
-                if has_non_ascii:
-                    logger.info(f"Saved (with non-ASCII): {output_path}")
-                else:
-                    logger.info(f"Saved: {output_path}")
-                click.echo(f"Saved: {output_path}")
-
-            except KeyboardInterrupt:
-                logger.warning("Processing interrupted by user")
-                click.echo("\nProcessing cancelled by user", err=True)
-                sys.exit(1)
-            except TimeoutError as e:
-                err_msg = f"TIMEOUT: {actual_model} exceeded 300 seconds on prompt {prompt_idx}, iteration {iteration}"
-                click.echo(err_msg, err=True)
-                logger.error(err_msg)
+            if timed_out and output is None:
+                # All retry attempts exhausted
                 return processed_files, timestamp, {"timed_out": True, "model": actual_model}
-            except Exception as e:
-                err_msg = f"Error processing prompt {prompt_idx}, iteration {iteration}: {type(e).__name__}: {e}"
-                click.echo(err_msg, err=True)
-                logger.error(err_msg, exc_info=True)
+
+            if gen_error is not None:
+                continue  # Skip file save; move on to next iteration
+
+            logger.debug(f"Generated output, length: {len(output)} characters")
+
+            # Generate filename
+            filename = generate_filename(timestamp, prompt_name, experiment, actual_model, iteration, format_type, temp_component, supports_temp)
+
+            # Write to file in results folder
+            output_path = Path("results") / filename
+
+            # Check if file already exists
+            if output_path.exists():
+                err_msg = f"File already exists: {output_path}"
+                click.echo(format_error("experiment", err_msg), err=True)
+                logger.error(err_msg)
+                continue
+
+            # Write with UTF-8 encoding to handle any Unicode characters
+            logger.debug(f"Writing output to {output_path}")
+            with open(output_path, 'w', encoding='utf-8') as f:
+                f.write(output)
+
+            # Check if output contains non-ASCII characters
+            has_non_ascii = any(ord(char) > 127 for char in output)
+            processed_files.append((filename, has_non_ascii))
+
+            if has_non_ascii:
+                logger.info(f"Saved (with non-ASCII): {output_path}")
+            else:
+                logger.info(f"Saved: {output_path}")
+            click.echo(f"Saved: {output_path}")
 
     logger.info(f"Format {format_type} processing complete. Processed {len(processed_files)} files.")
     return processed_files, timestamp
 
 
-def prompt_for_multiple(prompt_text, is_path=False, validate_fn=None):
+def prompt_for_multiple(prompt_text, is_path=False, validate_fn=None, previous_value=None):
     """
     Prompt user for multiple values. Press Enter to finish.
     If is_path=True, verify files exist.
     If validate_fn provided, calls it with the value and expects (is_valid, error_msg) tuple.
+    If previous_value provided (tuple), offer Option 0 to use previous configuration.
     """
     values = []
     index = 1
+
+    # Show Option 0 if previous value exists
+    if previous_value:
+        click.echo(f"  0) Use previous: {', '.join(previous_value)}")
+
     while True:
         if is_path:
-            prompt_msg = f"{prompt_text} #{index} (or press Enter to finish): "
+            prompt_msg = f"{prompt_text} #{index} (or press Enter to finish, or '0' for previous): "
         else:
-            prompt_msg = f"{prompt_text} #{index} (or press Enter to finish): "
+            prompt_msg = f"{prompt_text} #{index} (or press Enter to finish, or '0' for previous): "
+
         value = click.prompt(prompt_msg, default='').strip()
+
+        # Check for Option 0 (use previous)
+        if value == '0':
+            if previous_value:
+                return previous_value
+            else:
+                click.echo(format_error("experiment", "No previous configuration available"), err=True)
+                continue
+
+        # Empty input finishes
         if not value:
             break
+
+        # Validate file exists if needed
         if is_path and not Path(value).exists():
-            click.echo(f"Error: File does not exist: {value}", err=True)
+            click.echo(format_error("experiment", f"File does not exist: {value}"), err=True)
             continue
+
+        # Validate with custom function if provided
         if validate_fn:
             is_valid, error_msg = validate_fn(value)
             if not is_valid:
-                click.echo(f"Error: {error_msg}", err=True)
+                click.echo(format_error("experiment", error_msg), err=True)
                 continue
+
         values.append(value)
         index += 1
+
     return tuple(values)
 
 
@@ -363,13 +473,58 @@ def validate_model(model_name):
     return False, f"Model '{model_name}' not found. Available: {available_str}"
 
 
-def prompt_for_format():
-    """Prompt user to select output format."""
-    formats = VALID_FORMATS + ['all']
-    click.echo("Available formats: " + ", ".join(formats))
+def prompt_for_format(previous_value=None):
+    """
+    Prompt user to select output format(s).
+    Returns tuple of formats. If user types 'all', returns all valid formats.
+    If previous_value provided (tuple), offer Option 0 to use previous configuration.
+    Press Enter with no input to finish selection.
+    """
+    click.echo("Available formats: " + ", ".join(VALID_FORMATS))
+
+    # Show Option 0 if previous value exists
+    if previous_value:
+        click.echo(f"  0) Use previous: {', '.join(previous_value)}")
+
+    selected_formats = []
+    index = 1
+
     while True:
-        fmt = click.prompt("Enter format", type=click.Choice(formats))
-        return fmt
+        prompt_msg = f"Enter format #{index} (or press Enter to finish, or '0' for previous, or type 'all' for all formats): "
+        fmt = click.prompt(prompt_msg, default='').strip()
+
+        # Check for Option 0 (use previous)
+        if fmt == '0':
+            if previous_value:
+                return previous_value
+            else:
+                click.echo(format_error("experiment", "No previous configuration available"), err=True)
+                continue
+
+        # Empty input finishes
+        if not fmt:
+            if not selected_formats:
+                click.echo(format_error("experiment", "At least one format is required"), err=True)
+                continue
+            return tuple(selected_formats)
+
+        # User selected all - return all valid formats
+        if fmt == 'all':
+            return tuple(VALID_FORMATS)
+
+        # Validate format
+        if fmt not in VALID_FORMATS:
+            click.echo(format_error("experiment", f"Unknown format: {fmt}. Available: {', '.join(VALID_FORMATS)}"), err=True)
+            continue
+
+        # Add format if not duplicate
+        if fmt not in selected_formats:
+            selected_formats.append(fmt)
+            click.echo(f"  Added: {fmt}")
+        else:
+            click.echo(f"  {fmt} already selected")
+
+        index += 1
 
 
 @click.command()
@@ -387,82 +542,107 @@ def prompt_for_format():
               help='Optional file with multiple prompts (one per line)')
 @click.option('--debug', is_flag=True, default=False,
               help='Enable debug logging to stdout and file')
-def main(model, format_type, prompts, experiments, iterations, temperatures, batch_file, debug):
+@click.option('--restart', is_flag=True, default=False,
+              help='Force restart: regenerate all iterations even if some exist')
+def main(model, format_type, prompts, experiments, iterations, temperatures, batch_file, debug, restart):
     """
     Generate LLM outputs with specified format(s), model(s), prompt(s), experiment(s), and temperature(s).
     Logs experiment details and any encoding translations required.
     """
-    # Sanity check: Test model access times before starting
-    click.echo("\n" + "=" * 70)
-    click.echo("SANITY CHECK: Testing model access times")
-    click.echo("=" * 70 + "\n")
-
     available = get_available_models()
     all_shortcuts = []
     for provider, models_dict in available.items():
         all_shortcuts.extend(models_dict.keys())
 
-    access_times = check_model_access_times(all_shortcuts)
-
-    # Present results and ask for confirmation
-    if not present_model_access_report(access_times):
-        click.echo("Experiment cancelled by user", err=True)
-        sys.exit(0)
-
-    click.echo()
-
     # Check for previous run configuration
     previous_config = load_run_config()
-    use_previous = False
 
     if previous_config and not model and not format_type and not prompts and not experiments:
-        # Only offer previous config if no command-line args were provided
-        use_previous = display_last_run_offer(previous_config)
+        # Display previous run configuration for reference
+        click.echo("\n" + "=" * 70)
+        click.echo("PREVIOUS EXPERIMENT CONFIGURATION (available as Option 0)")
+        click.echo("=" * 70 + "\n")
 
-        if use_previous:
-            # Use previous configuration
-            model = tuple(previous_config.get("model", []))
-            format_type = previous_config.get("format_type")
-            prompts = tuple(previous_config.get("prompts", []))
-            experiments = tuple(previous_config.get("experiments", []))
-            iterations = previous_config.get("iterations", 1)
-            temperatures = tuple(previous_config.get("temperatures", []))
-            batch_file = previous_config.get("batch_file")
+        timestamp = previous_config.get("timestamp", "unknown")
+        click.echo(f"Last run: {timestamp}\n")
 
-            logger.info("Using previous experiment configuration")
-            click.echo("\n" + "=" * 70)
-            click.echo("STARTING EXPERIMENT WITH PREVIOUS CONFIGURATION")
-            click.echo("=" * 70 + "\n")
+        click.echo("Configuration:")
+        click.echo(f"  Models:       {', '.join(previous_config.get('model', []))}")
+        # Handle both old-style (string) and new-style (list) format_type
+        fmt_config = previous_config.get('format_type', [])
+        fmt_display = fmt_config if isinstance(fmt_config, str) else ', '.join(fmt_config)
+        click.echo(f"  Formats:      {fmt_display}")
+        click.echo(f"  Prompts:      {', '.join(previous_config.get('prompts', []))}")
+        click.echo(f"  Experiments:  {', '.join(previous_config.get('experiments', []))}")
+        click.echo(f"  Iterations:   {previous_config.get('iterations', 'not set')}")
+        click.echo(f"  Temperatures: {', '.join(previous_config.get('temperatures', [])) if previous_config.get('temperatures') else 'default'}")
+        if previous_config.get('batch_file'):
+            click.echo(f"  Batch file:   {previous_config.get('batch_file')}")
+        click.echo()
 
     # Prompt for missing required parameters
     if not model:
         click.echo(f"Available models: {', '.join(sorted(all_shortcuts))}")
-        model = prompt_for_multiple("Enter model", validate_fn=validate_model)
+        previous_models = tuple(previous_config.get('model', [])) if previous_config else None
+        model = prompt_for_multiple("Enter model", validate_fn=validate_model, previous_value=previous_models)
         if not model:
-            click.echo("Error: At least one model is required", err=True)
+            click.echo(format_error("experiment", "At least one model is required"), err=True)
             sys.exit(1)
 
+    # Test model access times AFTER models have been selected
+    click.echo("\n" + "=" * 70)
+    click.echo("SANITY CHECK: Testing selected model access times")
+    click.echo("=" * 70 + "\n")
+
+    access_times = check_model_access_times(list(model))
+
+    # Present results and ask for confirmation only if there are problems
+    problem_models = [m for m, t in access_times.items() if t is None]
+    if problem_models:
+        if not present_model_access_report(access_times):
+            click.echo(format_error("experiment", "Experiment cancelled by user"), err=True)
+            sys.exit(0)
+    else:
+        # All selected models are available, show brief status
+        click.echo("All selected models are available.\n")
+
+    click.echo()
+
     if not format_type:
-        format_type = prompt_for_format()
+        # Handle both old-style (string) and new-style (list) format_type in config
+        previous_formats = None
+        if previous_config:
+            fmt_config = previous_config.get('format_type', [])
+            if isinstance(fmt_config, str):
+                # Old style: single string
+                previous_formats = (fmt_config,) if fmt_config else None
+            else:
+                # New style: list
+                previous_formats = tuple(fmt_config) if fmt_config else None
+        format_type = prompt_for_format(previous_value=previous_formats)
 
     if not prompts:
-        prompts = prompt_for_multiple("Enter prompt file path", is_path=True)
+        previous_prompts = tuple(previous_config.get('prompts', [])) if previous_config else None
+        prompts = prompt_for_multiple("Enter prompt file path", is_path=True, previous_value=previous_prompts)
         if not prompts:
-            click.echo("Error: At least one prompt file is required", err=True)
+            click.echo(format_error("experiment", "At least one prompt file is required"), err=True)
             sys.exit(1)
 
     if not experiments:
-        experiments = prompt_for_multiple("Enter experiment name")
+        previous_experiments = tuple(previous_config.get('experiments', [])) if previous_config else None
+        experiments = prompt_for_multiple("Enter experiment name", previous_value=previous_experiments)
         if not experiments:
-            click.echo("Error: At least one experiment name is required", err=True)
+            click.echo(format_error("experiment", "At least one experiment name is required"), err=True)
             sys.exit(1)
 
     if iterations is None:
-        iterations = click.prompt("Enter number of iterations (1-99)", type=click.IntRange(1, 99), default=1)
+        previous_iterations = previous_config.get('iterations', 1) if previous_config else 1
+        iterations = click.prompt("Enter number of iterations (1-99)", type=click.IntRange(1, 99), default=previous_iterations)
 
     if not temperatures:
         click.echo("Enter temperature values (2-digit format like 08 for 0.8, or leave blank for default)")
-        temperatures = prompt_for_multiple("Enter temperature")
+        previous_temps = tuple(previous_config.get('temperatures', [])) if previous_config else None
+        temperatures = prompt_for_multiple("Enter temperature", previous_value=previous_temps)
 
     # Configure logging based on debug flag
     log_level = logging.DEBUG if debug else logging.WARNING
@@ -482,7 +662,7 @@ def main(model, format_type, prompts, experiments, iterations, temperatures, bat
     logger.info(f"Experiments: {', '.join(experiments)}")
     logger.info(f"Prompts: {', '.join(prompts)}")
     logger.info(f"Temperatures: {', '.join(temperatures) if temperatures else 'default'}")
-    logger.info(f"Format: {format_type}, Iterations: {iterations}")
+    logger.info(f"Formats: {', '.join(format_type) if format_type else 'all'}, Iterations: {iterations}")
     logger.info(f"Debug mode: {debug}")
     logger.info("=" * 80)
 
@@ -493,8 +673,51 @@ def main(model, format_type, prompts, experiments, iterations, temperatures, bat
     for m in model:
         is_valid, error_msg = validate_model(m)
         if not is_valid:
-            click.echo(f"Error: {error_msg}", err=True)
+            click.echo(format_error("experiment", error_msg), err=True)
             sys.exit(1)
+
+    # Detect incomplete experiments and ask about resuming
+    resume_mode = True  # Default to resuming
+    if not restart:
+        # Check if any experiments are incomplete
+        logger.info("Checking for incomplete experiments...")
+        incomplete_combos = []
+        for m in model:
+            actual_model = resolve_model_name(m)
+            for exp in experiments:
+                for prompt_file in prompts:
+                    prompt_name = Path(prompt_file).stem
+                    for fmt in format_type if isinstance(format_type, (list, tuple)) else [format_type]:
+                        if fmt == 'all':
+                            formats_check = VALID_FORMATS
+                        else:
+                            formats_check = [fmt]
+                        for fmt_check in formats_check:
+                            completed = find_completed_iterations(actual_model, exp, prompt_name, fmt_check)
+                            if completed and max(completed.keys()) < iterations:
+                                incomplete_combos.append(
+                                    (m, exp, prompt_file, fmt_check, max(completed.keys()))
+                                )
+                                break
+
+        if incomplete_combos and not restart:
+            click.echo(f"\nFound {len(set((c[0], c[1], c[2]) for c in incomplete_combos))} incomplete experiment combination(s)")
+            for combo in incomplete_combos[:3]:
+                m, exp, prompt_file, fmt, max_iter = combo
+                click.echo(f"  {m} / {exp} / {Path(prompt_file).stem} / {fmt}: up to iteration {max_iter}")
+            if len(incomplete_combos) > 3:
+                click.echo(f"  ... and {len(incomplete_combos) - 3} more")
+            click.echo()
+
+            if not click.confirm("Resume from where you left off?", default=True):
+                resume_mode = False
+                click.echo("Restarting from iteration 1 (may overwrite existing files)\n")
+            else:
+                click.echo("Resuming incomplete experiments\n")
+                logger.info("Resume mode enabled: will skip completed iterations")
+    else:
+        resume_mode = False
+        logger.info("--restart flag set: regenerating all iterations")
 
     # Track models that timed out and should be skipped
     timed_out_models = set()
@@ -509,7 +732,15 @@ def main(model, format_type, prompts, experiments, iterations, temperatures, bat
         logger.info(f"Cached {len(prompts_cache)} prompt file(s)")
 
         # Optimization 2: Cache format instructions (compute once)
-        formats_to_process = VALID_FORMATS if format_type == 'all' else [format_type]
+        # format_type can be a string (from command-line) or tuple (from prompt_for_format)
+        if not format_type:
+            formats_to_process = VALID_FORMATS
+        elif isinstance(format_type, str):
+            # Handle string from command-line option
+            formats_to_process = [format_type] if format_type != 'all' else VALID_FORMATS
+        else:
+            # Handle tuple from prompt_for_format
+            formats_to_process = list(format_type)
         logger.info(f"Formats to process: {', '.join(formats_to_process)}")
 
         logger.info("Pre-computing format instructions...")
@@ -530,8 +761,8 @@ def main(model, format_type, prompts, experiments, iterations, temperatures, bat
 
             # Check if this model has already timed out
             if actual_model in timed_out_models:
-                skip_msg = f"SKIPPING {actual_model} - previously timed out (exceeded 300 seconds)"
-                click.echo(skip_msg, err=True)
+                skip_msg = f"SKIPPING {actual_model} - previously timed out (all retries exhausted)"
+                click.echo(format_error("experiment", skip_msg), err=True)
                 logger.warning(skip_msg)
                 continue
 
@@ -557,11 +788,16 @@ def main(model, format_type, prompts, experiments, iterations, temperatures, bat
                 for temp_idx, temperature in enumerate(temps_to_use, 1):
                     # Parse temperature parameter (once per temperature)
                     try:
-                        temp_float, temp_component = parse_temperature(temperature)
-                        logger.info(f"Temperature: {temp_float if temp_float is not None else 'default'}")
+                        # Handle 'default' temperature for models that don't support temperature
+                        if temperature == 'default':
+                            temp_float, temp_component = None, None
+                            logger.info(f"Temperature: default (model does not support temperature parameter)")
+                        else:
+                            temp_float, temp_component = parse_temperature(temperature)
+                            logger.info(f"Temperature: {temp_float if temp_float is not None else 'default'}")
                     except ValueError as e:
-                        err_msg = f"Error: {e}"
-                        click.echo(err_msg, err=True)
+                        err_msg = str(e)
+                        click.echo(format_error("experiment", err_msg), err=True)
                         logger.error(err_msg)
                         sys.exit(1)
 
@@ -585,13 +821,14 @@ def main(model, format_type, prompts, experiments, iterations, temperatures, bat
 
                         # Process each format (pass format_instructions_cache for Optimization 2)
                         for fmt in formats_to_process:
-                            result = process_format(actual_model, fmt, master_prompt, exp, prompt_name, iterations, temperature, batch_file, temp_float, temp_component, supports_temp, provider=provider, prompt_file_idx=prompt_file_idx, total_prompt_files=len(prompts), format_instructions_cache=format_instructions_cache)
+                            result = process_format(actual_model, fmt, master_prompt, exp, prompt_name, iterations, temperature, batch_file, temp_float, temp_component, supports_temp, provider=provider, prompt_file_idx=prompt_file_idx, total_prompt_files=len(prompts), format_instructions_cache=format_instructions_cache, resume_mode=resume_mode)
 
                             # Check if result indicates a timeout
                             if len(result) == 3 and isinstance(result[2], dict) and result[2].get("timed_out"):
                                 timed_out_models.add(actual_model)
-                                timeout_msg = f"\n!!! TIMEOUT: {actual_model} exceeded 300 seconds - skipping remaining formats and experiments for this model !!!\n"
-                                click.echo(timeout_msg, err=True)
+                                timeout_secs = get_model_timeout(actual_model)
+                                timeout_msg = f"TIMEOUT: {actual_model} exceeded {timeout_secs}s (all retries exhausted) - skipping remaining formats and experiments for this model"
+                                click.echo(format_error("experiment", timeout_msg), err=True)
                                 logger.error(timeout_msg)
                                 break  # Break out of format loop
 
@@ -651,11 +888,11 @@ def main(model, format_type, prompts, experiments, iterations, temperatures, bat
         logger.info("=" * 80)
 
         if timed_out_models:
-            timeout_summary = f"\n!!! EXPERIMENT COMPLETED WITH TIMEOUTS !!!\n\nModels that exceeded 300-second timeout and were skipped:\n"
+            timeout_summary = f"\n!!! EXPERIMENT COMPLETED WITH TIMEOUTS !!!\n\nModels that timed out (all retries exhausted) and were skipped:\n"
             for timed_out_model in sorted(timed_out_models):
                 timeout_summary += f"  - {timed_out_model}\n"
-            timeout_summary += "\nThese models were not processed for remaining experiments.\n"
-            click.echo(timeout_summary, err=True)
+            timeout_summary += "\nThese models were not processed for remaining experiments."
+            click.echo(format_error("experiment", timeout_summary), err=True)
             logger.error(timeout_summary)
         else:
             logger.info("EXPERIMENT BATCH COMPLETED SUCCESSFULLY")
@@ -666,11 +903,11 @@ def main(model, format_type, prompts, experiments, iterations, temperatures, bat
 
     except KeyboardInterrupt:
         logger.warning("Experiment interrupted by user")
-        click.echo("\nExperiment cancelled by user", err=True)
+        click.echo(format_error("experiment", "Experiment cancelled by user"), err=True)
         sys.exit(1)
     except Exception as e:
         logger.error(f"Unexpected error during experiment: {type(e).__name__}: {e}", exc_info=True)
-        click.echo(f"Error: {type(e).__name__}: {e}", err=True)
+        click.echo(format_error("experiment", f"{type(e).__name__}: {e}"), err=True)
         sys.exit(1)
 
 

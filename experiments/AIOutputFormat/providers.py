@@ -10,6 +10,8 @@ import urllib.request
 import urllib.error
 from typing import Optional
 from dotenv import load_dotenv
+from config import get_model_timeout
+from utils import format_error, print_error
 
 # Load environment variables from .env file if it exists
 load_dotenv()
@@ -44,19 +46,57 @@ def get_provider(model_name: str):
         return invoke_ollama
 
 
-def invoke_ollama(model_name: str, prompt: str, base_url: str = "http://localhost:11434") -> str:
+def reinitialize_ollama_model(model_name: str, base_url: str = "http://localhost:11434") -> bool:
+    """
+    Reinitialize an Ollama model by unloading it from memory via keep_alive=0.
+    The next generation request will reload it fresh.
+
+    Args:
+        model_name: Model name to unload (e.g., "llama3.1:8b")
+        base_url: Ollama server base URL
+
+    Returns:
+        True if the unload request succeeded, False otherwise.
+    """
+    url = f"{base_url}/api/generate"
+    payload = {
+        "model": model_name,
+        "prompt": "Hi",
+        "stream": False,
+        "keep_alive": 0
+    }
+    try:
+        logger.info(f"Reinitializing Ollama model {model_name} (keep_alive=0)")
+        data = json.dumps(payload).encode('utf-8')
+        req = urllib.request.Request(
+            url,
+            data=data,
+            headers={"Content-Type": "application/json"}
+        )
+        with urllib.request.urlopen(req, timeout=60) as response:
+            response.read()
+        logger.info(f"Ollama model {model_name} unloaded successfully")
+        return True
+    except Exception as e:
+        logger.warning(f"Could not reinitialize Ollama model {model_name}: {type(e).__name__}: {e}")
+        return False
+
+
+def invoke_ollama(model_name: str, prompt: str, timeout: int = 600, base_url: str = "http://localhost:11434") -> str:
     """
     Invoke Ollama model via HTTP API.
 
     Args:
         model_name: Model name (e.g., "llama3.1:8b")
         prompt: Prompt text to send
+        timeout: Request timeout in seconds (default 600)
         base_url: Ollama server base URL
 
     Returns:
         Model response text
 
     Raises:
+        TimeoutError: If the request times out
         ConnectionError: If cannot connect to Ollama
         ValueError: If Ollama returns an error
     """
@@ -68,7 +108,7 @@ def invoke_ollama(model_name: str, prompt: str, base_url: str = "http://localhos
     }
 
     try:
-        logger.debug(f"Ollama HTTP POST to {url}")
+        logger.debug(f"Ollama HTTP POST to {url} (timeout={timeout}s)")
         logger.debug(f"Model: {model_name}, Prompt length: {len(prompt)}")
 
         data = json.dumps(payload).encode('utf-8')
@@ -78,7 +118,7 @@ def invoke_ollama(model_name: str, prompt: str, base_url: str = "http://localhos
             headers={"Content-Type": "application/json"}
         )
 
-        with urllib.request.urlopen(req, timeout=600) as response:
+        with urllib.request.urlopen(req, timeout=timeout) as response:
             result = json.loads(response.read().decode('utf-8'))
 
             if "response" in result:
@@ -88,10 +128,13 @@ def invoke_ollama(model_name: str, prompt: str, base_url: str = "http://localhos
                 raise ValueError(f"Unexpected Ollama response: {result}")
 
     except urllib.error.URLError as e:
+        # urllib wraps socket.timeout in URLError; surface it as TimeoutError
+        if isinstance(e.reason, TimeoutError):
+            logger.error(f"Ollama request timed out after {timeout}s for {model_name}")
+            raise TimeoutError(f"Ollama request timed out after {timeout}s") from e
         logger.error(f"Cannot connect to Ollama at {base_url}")
-        sys.stderr.write(f"[{model_name}] ERROR: Cannot connect to Ollama\n")
-        sys.stderr.write(f"  Is Ollama running? Try: ollama serve\n")
-        sys.stderr.flush()
+        msg = f"Cannot connect to Ollama at {base_url}\nIs Ollama running? Try: ollama serve"
+        print_error("providers", msg)
         raise ConnectionError(f"Cannot reach Ollama at {base_url}: {e}")
 
     except json.JSONDecodeError as e:
@@ -100,8 +143,7 @@ def invoke_ollama(model_name: str, prompt: str, base_url: str = "http://localhos
 
     except Exception as e:
         logger.error(f"Error invoking Ollama: {type(e).__name__}: {e}")
-        sys.stderr.write(f"[{model_name}] ERROR: {type(e).__name__}: {e}\n")
-        sys.stderr.flush()
+        print_error("providers", f"{type(e).__name__}: {e}")
         raise
 
 
@@ -149,8 +191,7 @@ def invoke_openai(model_name: str, prompt: str) -> str:
 
     except Exception as e:
         logger.error(f"Error invoking OpenAI: {type(e).__name__}: {e}")
-        sys.stderr.write(f"[{model_name}] ERROR: {type(e).__name__}: {e}\n")
-        sys.stderr.flush()
+        print_error("providers", f"{type(e).__name__}: {e}")
         raise
 
 
@@ -197,34 +238,36 @@ def invoke_anthropic(model_name: str, prompt: str) -> str:
 
     except Exception as e:
         logger.error(f"Error invoking Anthropic: {type(e).__name__}: {e}")
-        sys.stderr.write(f"[{model_name}] ERROR: {type(e).__name__}: {e}\n")
-        sys.stderr.flush()
+        print_error("providers", f"{type(e).__name__}: {e}")
         raise
 
 
-def generate(model_name: str, prompt: str, provider=None, timeout_seconds: int = 300) -> str:
+def generate(model_name: str, prompt: str, provider=None, timeout: int = None) -> str:
     """
     Invoke LLM with prompt and return raw response text.
 
-    Note: timeout_seconds parameter kept for API compatibility but enforcement
-    happens at OS level. For Ollama, consider system-level timeout configuration.
+    For Ollama models the per-model timeout from models.json is used (default 600s)
+    unless overridden by the timeout argument.  OpenAI and Anthropic providers use
+    their own internal timeout handling.
 
     Args:
         model_name: Name of the model to invoke
         prompt: Prompt text to send to the model
-        provider: Optional pre-computed provider function (for future use)
-        timeout_seconds: Timeout for the model invocation (default 300 seconds)
+        provider: Optional pre-computed provider function
+        timeout: Override the configured timeout in seconds (None = use models.json value)
 
     Returns:
         Model response text
 
     Raises:
+        TimeoutError: If an Ollama request times out
         ConnectionError: If cannot reach model service
         ValueError: If model fails or API key missing
     """
+    timeout = timeout if timeout is not None else get_model_timeout(model_name)
     logger.debug(f"Generating response for model: {model_name}")
     logger.debug(f"Prompt length: {len(prompt)} characters")
-    logger.info(f"Timeout parameter: {timeout_seconds} seconds (enforced at OS level)")
+    logger.info(f"Timeout: {timeout} seconds")
 
     try:
         # Get provider function based on model name
@@ -234,29 +277,31 @@ def generate(model_name: str, prompt: str, provider=None, timeout_seconds: int =
             logger.debug("Using provided provider function")
 
         logger.info(f"Invoking model {model_name}...")
-        sys.stderr.write(f"[{model_name}] Waiting for model response...\n")
-        sys.stderr.flush()
 
-        # Direct invocation - complete isolation, no state management
-        response = provider(model_name, prompt)
+        # Pass the configured timeout to Ollama; other providers handle it internally
+        if provider is invoke_ollama:
+            response = invoke_ollama(model_name, prompt, timeout=timeout)
+        else:
+            response = provider(model_name, prompt)
 
         logger.info(f"Model response received ({len(response)} characters)")
         return response
 
     except KeyboardInterrupt:
         logger.warning("Generation interrupted by user")
-        sys.stderr.write(f"[{model_name}] Generation cancelled by user\n")
-        sys.stderr.flush()
+        print_error("providers", "Generation cancelled by user")
+        raise
+
+    except TimeoutError:
+        # Let the caller handle timeout reporting and retry logic
         raise
 
     except ConnectionError as e:
         logger.error(f"Connection error with {model_name}: {e}")
-        sys.stderr.write(f"[{model_name}] ERROR: Cannot connect to model service\n")
-        sys.stderr.flush()
+        print_error("providers", "Cannot connect to model service")
         raise
 
     except Exception as e:
         logger.error(f"Error invoking {model_name}: {type(e).__name__}: {e}")
-        sys.stderr.write(f"[{model_name}] ERROR: {type(e).__name__}: {e}\n")
-        sys.stderr.flush()
+        print_error("providers", f"{type(e).__name__}: {e}")
         raise
