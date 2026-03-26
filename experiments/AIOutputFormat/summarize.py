@@ -1698,7 +1698,7 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
     # model -> temperature -> prompt -> [(frozenset(cleanup_keys), filename)]
     json_cleanup_agg = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
     file_count = 0
-    skip_count = 0
+    skipped_trials = []  # Track trial filenames that were skipped
     source_items = set()  # Track unique items from raw parsed data
 
     # Display filter parameters
@@ -1732,7 +1732,6 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
 
         # Skip files that don't follow standard naming convention
         if not is_standard_filename(file_path.name):
-            skip_count += 1
             continue
 
         # Filter by filename if specified (legacy filter)
@@ -1750,7 +1749,7 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
 
         # Skip certain extensions
         if ext in SKIP_EXTENSIONS:
-            skip_count += 1
+            skipped_trials.append(file_path.name)
             continue
 
         # Read file content
@@ -1764,13 +1763,13 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
                     content = f.read()
             except UnicodeDecodeError:
                 click.echo(f"Skipping (encoding error): {file_path.name}")
-                skip_count += 1
+                skipped_trials.append(file_path.name)
                 continue
 
         # Parse content based on file type
         if ext not in PARSERS:
             click.echo(f"Skipping (no parser): {file_path.name}")
-            skip_count += 1
+            skipped_trials.append(file_path.name)
             continue
 
         try:
@@ -1958,7 +1957,7 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
 
         except Exception as e:
             click.echo(f"Error parsing {file_path.name}: {e}")
-            skip_count += 1
+            skipped_trials.append(file_path.name)
             continue
 
     # Convert defaultdict to regular dict for JSON serialization
@@ -2141,8 +2140,10 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
                 with open(QUALITY_FILE, 'w', encoding='utf-8') as f:
                     json.dump(quality_issues_dict, f, indent=2, ensure_ascii=False)
 
-        if skip_count > 0:
-            click.echo(f"Skipped {skip_count} files")
+        if skipped_trials:
+            click.echo(f"Skipped {len(skipped_trials)} trials:")
+            for trial_name in sorted(skipped_trials):
+                click.echo(f"  {trial_name}")
 
         # Print analysis report for all file types per model and temperature
         if analysis and verbose:
