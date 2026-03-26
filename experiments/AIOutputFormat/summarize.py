@@ -2145,7 +2145,7 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
             click.echo(f"Skipped {skip_count} files")
 
         # Print analysis report for all file types per model and temperature
-        if analysis:
+        if analysis and verbose:
             try:
                 def safe_write(text):
                     """Write text to stdout with error handling for encoding issues"""
