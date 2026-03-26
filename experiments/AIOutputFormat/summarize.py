@@ -1640,7 +1640,7 @@ def calculate_statistics(counts):
     }
 
 
-def summarize_results(filename_filter=None, model=None, format_type=None, experiment=None, timestamp=None, temperature=None, max_item_length=25, analysis=False, exclude_model=None):
+def summarize_results(filename_filter=None, model=None, format_type=None, experiment=None, timestamp=None, temperature=None, max_item_length=25, analysis=False, exclude_model=None, verbose=False):
     """
     Read all result files by type, parse items, and summarize into a single JSON.
     Structure: {filetype: [{filename: str, items: [...]}, ...], ...}
@@ -1655,6 +1655,7 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
         max_item_length: Maximum allowed item length in characters (default 25, items longer are flagged)
         analysis: Whether to generate analysis report by model and temperature
         exclude_model: Optional tuple of model names to EXCLUDE (e.g., ("gpt4", "llama318b"))
+        verbose: If True, show detailed summary output; skipped files always shown regardless
     """
     if not RESULTS_DIR.exists():
         click.echo(format_error("summarize", f"{RESULTS_DIR} directory not found"), err=True)
@@ -2116,23 +2117,29 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
         with open(RESULTS_FILE, 'w', encoding='utf-8') as f:
             json.dump(consolidated_dict, f, indent=2, ensure_ascii=False)
 
-        click.echo(f"\nConsolidated {file_count} files into {RESULTS_FILE}")
-        file_types = sorted(consolidated_dict.keys())
-        click.echo(f"File types: {', '.join(file_types)}")
+        if verbose:
+            click.echo(f"\nConsolidated {file_count} files into {RESULTS_FILE}")
+            file_types = sorted(consolidated_dict.keys())
+            click.echo(f"File types: {', '.join(file_types)}")
 
-        # Write quality JSON (quality issues by model)
-        if quality_issues_dict:
-            with open(QUALITY_FILE, 'w', encoding='utf-8') as f:
-                json.dump(quality_issues_dict, f, indent=2, ensure_ascii=False)
-            click.echo(f"Wrote quality issues to {QUALITY_FILE}")
-        total_items = 0
-        for ext in file_types:
-            items = consolidated_dict[ext]
-            item_count = sum(len(entry['items']) for entry in items)
-            total_items += item_count
-            click.echo(f"  {ext}: {len(items)} files, {item_count} items")
+            # Write quality JSON (quality issues by model)
+            if quality_issues_dict:
+                with open(QUALITY_FILE, 'w', encoding='utf-8') as f:
+                    json.dump(quality_issues_dict, f, indent=2, ensure_ascii=False)
+                click.echo(f"Wrote quality issues to {QUALITY_FILE}")
+            total_items = 0
+            for ext in file_types:
+                items = consolidated_dict[ext]
+                item_count = sum(len(entry['items']) for entry in items)
+                total_items += item_count
+                click.echo(f"  {ext}: {len(items)} files, {item_count} items")
 
-        click.echo(f"Total items: {total_items}")
+            click.echo(f"Total items: {total_items}")
+        else:
+            # Still write quality JSON even if not verbose
+            if quality_issues_dict:
+                with open(QUALITY_FILE, 'w', encoding='utf-8') as f:
+                    json.dump(quality_issues_dict, f, indent=2, ensure_ascii=False)
 
         if skip_count > 0:
             click.echo(f"Skipped {skip_count} files")
@@ -2258,7 +2265,8 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
         with open(UNIQUE_ITEMS_FILE, 'w', encoding='utf-8') as f:
             for item in sorted_items:
                 f.write(item + '\n')
-        click.echo(f"Wrote {len(sorted_items)} unique items to {UNIQUE_ITEMS_FILE}")
+        if verbose:
+            click.echo(f"Wrote {len(sorted_items)} unique items to {UNIQUE_ITEMS_FILE}")
 
         # Write unique source items file (raw parsed items before processing)
         # Sort by first alphabetical string (case-insensitive), preserving original case in output
@@ -2266,7 +2274,8 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
         with open(UNIQUE_SOURCE_ITEMS_FILE, 'w', encoding='utf-8') as f:
             for item in sorted_source_items:
                 f.write(item + '\n')
-        click.echo(f"Wrote {len(sorted_source_items)} unique source items to {UNIQUE_SOURCE_ITEMS_FILE}")
+        if verbose:
+            click.echo(f"Wrote {len(sorted_source_items)} unique source items to {UNIQUE_SOURCE_ITEMS_FILE}")
 
         return True
 
@@ -2373,7 +2382,9 @@ def collect_available_values():
               help='Generate data analysis report by model and temperature')
 @click.option('--no-prompt', is_flag=True, default=False,
               help='Skip interactive prompting (use defaults or cli args only)')
-def main(filter, experiment, exclude_model, model, format_type, timestamp, temperature, max_item_length, analysis, no_prompt):
+@click.option('-v', '--verbose', is_flag=True, default=False,
+              help='Show detailed summary output')
+def main(filter, experiment, exclude_model, model, format_type, timestamp, temperature, max_item_length, analysis, no_prompt, verbose):
     """Summarize result files into a single JSON by type and parsed items."""
     # If no filters specified and not in --no-prompt mode, offer interactive selection
     if not no_prompt and not any([filter, experiment, exclude_model, model, format_type, timestamp, temperature is not None]):
@@ -2393,7 +2404,7 @@ def main(filter, experiment, exclude_model, model, format_type, timestamp, tempe
         if exclude_models_list:
             exclude_model = tuple(exclude_models_list)
 
-    success = summarize_results(filter, model, format_type, experiment, timestamp, temperature, max_item_length, analysis, exclude_model)
+    success = summarize_results(filter, model, format_type, experiment, timestamp, temperature, max_item_length, analysis, exclude_model, verbose)
     raise SystemExit(0 if success else 1)
 
 
