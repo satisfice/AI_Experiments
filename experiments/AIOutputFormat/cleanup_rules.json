@@ -384,8 +384,8 @@
       ]
     },
     {
-      "name": "MD-Bullet-Removal",
-      "description": "Removes leading markdown bullet characters (*, -, +) and following whitespace from line items.",
+      "name": "Bullet-Removal",
+      "description": "Detects and removes leading bullet characters (*, -, +) from line items during markdown parsing. Can apply to any format where bullets appear. This is a general cleanup operation, not specific to markdown.",
       "function": "parse_md",
       "subfunctions": [
         "bullet_character_removal_via_regex"
