@@ -1699,6 +1699,7 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
     json_cleanup_agg = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
     file_count = 0
     skipped_trials = []  # Track trial filenames that were skipped
+    zero_item_files = []  # Track files that produced 0 items
     source_items = set()  # Track unique items from raw parsed data
 
     # Display filter parameters
@@ -1946,6 +1947,10 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
             # Track item count for statistics
             item_count_stats[model_name][str(temp_value)][file_type].append(len(items))
 
+            # Track files that produced 0 items
+            if len(items) == 0:
+                zero_item_files.append(file_path.name)
+
             # Add to consolidated data
             consolidated[ext].append({
                 "filename": file_path.name,
@@ -2144,6 +2149,11 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
             click.echo(f"Skipped {len(skipped_trials)} trials:")
             for trial_name in sorted(skipped_trials):
                 click.echo(f"  {trial_name}")
+
+        if zero_item_files:
+            click.echo(f"Files with 0 items ({len(zero_item_files)}):")
+            for filename in sorted(zero_item_files):
+                click.echo(f"  {filename}")
 
         # Print analysis report for all file types per model and temperature
         if analysis and verbose:
