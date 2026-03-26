@@ -704,6 +704,17 @@ def _path_tag_fixups(item_nodes, item_tag):
     return [_tag_fixup_name(t) for t in ordered]
 
 
+def _find_nodes_with_unknown_tags(root, known_tags):
+    """Depth-first search for nodes whose tag name is not in known_tags."""
+    result = []
+    for child in root.children:
+        if isinstance(child, _HtmlNode) and child.tag is not None:
+            if child.tag not in known_tags:
+                result.append(child)
+            result.extend(_find_nodes_with_unknown_tags(child, known_tags))
+    return result
+
+
 # Tags tried as fallbacks when no <li> tags are found, in priority order.
 _HTML_FALLBACK_TAGS = ['p', 'span', 'div', 'article', 'section']
 
@@ -791,6 +802,15 @@ def parse_html(content):
         if not was_line_split:
             fixups.append("QUALITY: Single-span tag format (items in separate <p>/<span> tags instead of <li> list)")
         break
+
+    # ── Invalid tag fallback: tag names rendered as items ───────────────────
+    if not items:
+        known_tags = set(_HTML_TAG_DISPLAY.keys()) | _HtmlTreeBuilder._VOID_TAGS
+        invalid_nodes = _find_nodes_with_unknown_tags(root, known_tags)
+        if invalid_nodes:
+            items = [node.tag for node in invalid_nodes]
+            fixups.append("Extract-From-Invalid-HTML-Tags")
+            fixups.append("QUALITY: Invalid HTML (item text rendered as tags)")
 
     # ── Plain text fallback: no HTML structure detected ──────────────────────
     if not items:
@@ -904,6 +924,7 @@ QUALITY_FORMAT_STYLE_MAP = {
     "Single-span tag format":             "single-span-tag",
     "Requested HTML; response was plain": "html_no_markup",
     "Invalid HTML":                       "html_no_markup",
+    "Invalid HTML (item text rendered as tags)": "invalid-html-tags",
     "YAML end-of-directives marker":      "end-of-directives",
     "Numbered items in separate tags":    "numbered-items-in-tags",
     "Repeated JSON object keys":          "repeated-json-keys",
@@ -1669,7 +1690,7 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
         "markup_artifact", "repeated_chars",
         "single-span-tag", "plain-text", "end-of-directives",
         "numbered-items-in-tags", "repeated-json-keys", "non-western-characters",
-        "comma-separated", "txt1-no-numbers", "html_no_markup",
+        "comma-separated", "txt1-no-numbers", "html_no_markup", "invalid-html-tags",
         "inconsistent_case", "inconsistent_md_format", "inconsistent_html_format",
         "inconsistent_json_format",
         "parse-failed", "stray-html-markup", "blockquote-markup",

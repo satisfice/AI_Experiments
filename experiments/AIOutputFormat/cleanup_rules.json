@@ -1,0 +1,474 @@
+{
+  "general": [
+    {
+      "name": "Punctuation-Cleanup",
+      "description": "Detects and tracks three categories of punctuation issues after format-specific parsing. Leading punctuation (items beginning with formatting chars) is cleaned by clean_strip_leading_format and tracked as 'leading_punctuation'. Trailing punctuation is cleaned by clean_strip_trailing_punct and tracked as 'trailing_punctuation'. Internal punctuation (special chars inside words, e.g. slashes or colons between letters) is tracked as 'internal_punctuation' but not automatically removed. Applies to all file formats.",
+      "function": "process_and_track",
+      "subfunctions": [
+        "detect_leading_punctuation",
+        "detect_trailing_punctuation",
+        "detect_internal_punctuation",
+        "clean_strip_leading_format",
+        "clean_strip_trailing_punct"
+      ]
+    },
+    {
+      "name": "Markup-Artifact-Cleanup",
+      "description": "Items with residual markup artifacts (HTML tags, extra punctuation, etc.) are cleaned and included in output rather than skipped. Quality issues are recorded for tracking/reporting. Applies to all file formats.",
+      "function": "process_and_track",
+      "subfunctions": [
+        "detect_markup_artifact",
+        "clean_strip_leading_format",
+        "clean_strip_trailing_punct"
+      ]
+    },
+    {
+      "name": "Preamble-Leak-Filtering",
+      "description": "Items containing LLM preamble/boilerplate text (actual contamination) are filtered out and not included in output. Only quality issue type that results in item exclusion.",
+      "function": "process_and_track",
+      "subfunctions": [
+        "detect_preamble_leak"
+      ]
+    },
+    {
+      "name": "Extract-from-Generic-Codefence-Markdown",
+      "description": "Content wrapped in triple-backtick code fences with no language specifier (``` ... ```) or an unrecognized specifier. Applies when extract_code_block() finds a code fence whose opening line has no recognized language tag. Content inside the fence is extracted and passed to the format-specific parser.",
+      "function": "extract_code_block"
+    },
+    {
+      "name": "Parse-Single-Row",
+      "description": "Returns items from a single already-parsed sequence (one row of values). Format-agnostic; called by csv_parse_single_row and available to other format parsers.",
+      "function": "parse_single_row"
+    },
+    {
+      "name": "Parse-One-Per-Line",
+      "description": "Returns items from a sequence where each element is one item (one per line). Strips whitespace and drops empty entries. Format-agnostic; called by csv_parse_one_per_line and available to other format parsers.",
+      "function": "parse_one_per_line"
+    },
+    {
+      "name": "Strip-Quotes",
+      "description": "Removes outer quote wrapping (single or double) from items. Applies to any format where items may arrive already-quoted. Reports count of items changed.",
+      "function": "clean_strip_quotes"
+    },
+    {
+      "name": "Strip-Leading-Bullets",
+      "description": "Removes leading bullet list markers (* - +) from items. Applies to any format. Reports count of items changed.",
+      "function": "clean_strip_leading_bullets"
+    },
+    {
+      "name": "Strip-Leading-Numbers",
+      "description": "Removes leading number prefixes with punctuation (e.g., '1. ', '2) ', '3: ') from items. Applies to any format. Reports count of items changed.",
+      "function": "clean_strip_leading_numbers"
+    },
+    {
+      "name": "Strip-Leading-Formatting",
+      "description": "Removes leading markdown and format characters (* - + : ; , . ! ? { } [ ]) from items. Applies to all formats after format-specific cleaning. Reports count of items changed.",
+      "function": "clean_strip_leading_format"
+    },
+    {
+      "name": "Strip-Number-Word-Prefix",
+      "description": "Removes a numeric prefix that is directly attached to a word without whitespace (e.g., '48eagle' -> 'eagle'). Distinct from Strip-Leading-Numbers which requires punctuation between number and text.",
+      "function": "clean_strip_number_word_prefix"
+    },
+    {
+      "name": "Remove-Parenthetical",
+      "description": "Removes parenthetical content and its surrounding whitespace from items (e.g., 'camelopard (giraffe)' -> 'camelopard'). Useful when models include common names or qualifiers in parentheses.",
+      "function": "clean_remove_parenthetical"
+    },
+    {
+      "name": "Strip-Trailing-Punctuation",
+      "description": "Removes trailing punctuation and format characters (* - + : ; , . ! ? { } [ ]) from items. Complements Strip-Leading-Formatting.",
+      "function": "clean_strip_trailing_punct"
+    },
+    {
+      "name": "Strip-Doubled-Punctuation",
+      "description": "Removes doubled or tripled internal punctuation that appears between alphabetic characters (e.g., 'ti::ger' -> 'tiger', 'do--g' -> 'dog'). Handles typos and formatting artifacts within words.",
+      "function": "clean_strip_doubled_punct"
+    },
+    {
+      "name": "Strip-Leading-Hyphens",
+      "description": "Final normalization step that strips any remaining leading hyphens and spaces from items after all other cleanup has run.",
+      "function": "clean_strip_leading_hyphens"
+    },
+    {
+      "name": "Lowercase",
+      "description": "Lowercases all items. Applied last in the general cleanup pipeline. No per-file fixup is emitted; case inconsistency is detected cross-trial in summarize_results() and reported as the 'inconsistent_case' quality issue in quality.json.",
+      "function": "clean_lowercase"
+    },
+    {
+      "name": "HTML-Stray-Tag-Cleanup",
+      "description": "Strips residual HTML tags from items after format-specific parsing. Applies to all formats. In HTML files, surviving tags indicate malformed structure the HTML parser could not fully unwrap. In any other format, HTML tags indicate the model leaked markup into a non-HTML response. Also emits 'QUALITY: HTML markup found in items' to flag the issue in quality.json.",
+      "function": "clean_format_specific",
+      "quality_issue": "stray-html-markup"
+    },
+    {
+      "name": "Blockquote-Marker-Cleanup",
+      "description": "Strips leading and trailing blockquote '>' markers from items. Applies to all formats. Blockquote markers are out of place in structured list output and indicate the model used markdown-style quoting. Also emits 'QUALITY: Blockquote markers in items' to flag the issue in quality.json.",
+      "function": "clean_format_specific",
+      "quality_issue": "blockquote-markup"
+    },
+    {
+      "name": "Non-Western-Characters",
+      "description": "Detects items containing non-Western characters (Unicode code points > 127). Items are included in output but the quality issue is recorded for tracking. Applies to all file formats after format-specific parsing completes.",
+      "function": "process_and_track",
+      "subfunctions": [
+        "non_western_character_detection"
+      ]
+    }
+  ],
+  "csv": [
+    {
+      "name": "CSV-Parse-Single-Row",
+      "description": "Parses a single-row CSV where each column is one item. Applied when csv.reader returns exactly one row. Delegates to parse_single_row.",
+      "function": "csv_parse_single_row",
+      "subfunctions": [
+        "parse_single_row"
+      ]
+    },
+    {
+      "name": "CSV-Parse-One-Per-Line",
+      "description": "Parses a CSV where each line contains exactly one item with no commas. Applied when csv.reader returns multiple rows each with a single column. Delegates to parse_one_per_line.",
+      "function": "csv_parse_one_per_line",
+      "subfunctions": [
+        "parse_one_per_line"
+      ]
+    },
+    {
+      "name": "CSV-Parse-Multi-Row",
+      "description": "Parses a multi-row CSV where each row contains multiple comma-separated items; all items from all rows are collected into a flat list.",
+      "function": "csv_parse_multi_row"
+    },
+    {
+      "name": "CSV-Parse-Failed",
+      "description": "Emitted when the CSV parser throws an unexpected exception and no items can be recovered. Returns an empty item list and emits 'QUALITY: parsing failed completely for <filename>', routed to the parse-failed format-style label for per-file tracking in quality.json.",
+      "function": "parse_csv",
+      "quality_issue": "parse-failed"
+    },
+    {
+      "name": "Extract-from-CSV-Codefence-Markdown",
+      "description": "CSV content wrapped in a markdown code fence (```csv ... ```) is detected and the inner CSV is extracted for parsing. Emitted by extract_code_block() when the opening fence line contains 'csv'.",
+      "function": "extract_code_block"
+    }
+  ],
+  "html": [
+    {
+      "name": "Extract-from-HTML-Codefence-Markdown",
+      "description": "HTML content improperly wrapped in a markdown code fence (```html ... ```) is detected and the inner HTML is extracted for normal parsing. Primary path: extract_code_block() fires before parse_html() and emits this fixup when it finds a ```html fence. Fallback path: parse_html() itself detects the fence when extract_code_block() did not. Both paths flag this as a quality issue (invalid HTML format).",
+      "function": "extract_code_block",
+      "subfunctions": [
+        "markdown_code_fence_detection_and_extraction",
+        "numbered_list_parsing_from_extracted_code"
+      ]
+    },
+    {
+      "name": "Extract-From-HTML-Tags",
+      "description": "Traversed the <html> root element while walking the DOM path to item nodes. Emitted when the ancestor chain of the extracted item nodes includes <html>.",
+      "function": "parse_html",
+      "subfunctions": [
+        "_path_tag_fixups"
+      ]
+    },
+    {
+      "name": "Extract-From-Body-Tags",
+      "description": "Traversed the <body> element while walking the DOM path to item nodes. Emitted when the ancestor chain of the extracted item nodes includes <body>.",
+      "function": "parse_html",
+      "subfunctions": [
+        "_path_tag_fixups"
+      ]
+    },
+    {
+      "name": "Extract-From-Head-Tags",
+      "description": "Traversed the <head> element while walking the DOM path to item nodes. Emitted when the ancestor chain of the extracted item nodes includes <head> (unusual but recorded when present).",
+      "function": "parse_html",
+      "subfunctions": [
+        "_path_tag_fixups"
+      ]
+    },
+    {
+      "name": "Extract-From-UL-Tags",
+      "description": "Traversed a <ul> unordered-list container while walking the DOM path to item nodes. Emitted when items were found inside a <ul> element.",
+      "function": "parse_html",
+      "subfunctions": [
+        "_path_tag_fixups"
+      ]
+    },
+    {
+      "name": "Extract-From-OL-Tags",
+      "description": "Traversed an <ol> ordered-list container while walking the DOM path to item nodes. Emitted when items were found inside an <ol> element.",
+      "function": "parse_html",
+      "subfunctions": [
+        "_path_tag_fixups"
+      ]
+    },
+    {
+      "name": "Extract-From-LI-Tags",
+      "description": "Items were extracted from <li> tags (the primary/preferred HTML list structure). This is the final tag in the DOM path and indicates the normal, well-formed case. Replaces the old Extract-From-li-Tags key (now uppercase LI).",
+      "function": "parse_html",
+      "subfunctions": [
+        "_find_leaf_tag_nodes",
+        "_items_from_nodes"
+      ]
+    },
+    {
+      "name": "Extract-From-P-Tags",
+      "description": "Items were extracted from <p> paragraph tags (fallback from <li>). This is the final tag in the DOM path and indicates the model used paragraph tags instead of a list.",
+      "function": "parse_html",
+      "subfunctions": [
+        "_find_leaf_tag_nodes",
+        "_items_from_nodes"
+      ]
+    },
+    {
+      "name": "Extract-From-Div-Tags",
+      "description": "Items were extracted from <div> tags (fallback from <li>) or <div> appeared in the ancestor path to item nodes. Emitted when items came from a <div> container or were traversed through one.",
+      "function": "parse_html",
+      "subfunctions": [
+        "_find_leaf_tag_nodes",
+        "_items_from_nodes"
+      ]
+    },
+    {
+      "name": "Extract-From-Span-Tags",
+      "description": "Items were extracted from <span> tags (fallback from <li>). Typically indicates items are in separate inline-span tags rather than a proper list.",
+      "function": "parse_html",
+      "subfunctions": [
+        "_find_leaf_tag_nodes",
+        "_items_from_nodes"
+      ]
+    },
+    {
+      "name": "Extract-From-Article-Tags",
+      "description": "Items were extracted from <article> tags (fallback from <li>). Indicates the model used semantic article tags to wrap individual items.",
+      "function": "parse_html",
+      "subfunctions": [
+        "_find_leaf_tag_nodes",
+        "_items_from_nodes"
+      ]
+    },
+    {
+      "name": "Extract-From-Section-Tags",
+      "description": "Items were extracted from <section> tags (fallback from <li>). Indicates the model used semantic section tags to wrap individual items.",
+      "function": "parse_html",
+      "subfunctions": [
+        "_find_leaf_tag_nodes",
+        "_items_from_nodes"
+      ]
+    },
+    {
+      "name": "Remove-BR-Tags",
+      "description": "<br> tags were used as item separators within a container element. During extraction, each <br> was treated as a newline delimiter to split the container's content into separate items.",
+      "function": "parse_html",
+      "subfunctions": [
+        "_items_from_nodes"
+      ]
+    },
+    {
+      "name": "HTML-PlainText-Fallback",
+      "description": "If no HTML tags are found in the content, falls back to plain text parsing (each line is an item). Marks this as a quality issue indicating the response was plain text instead of HTML.",
+      "function": "parse_html",
+      "subfunctions": [
+        "plain_text_fallback_with_detection"
+      ]
+    },
+    {
+      "name": "HTML-Numbered-List-Stripping",
+      "description": "When plain text fallback detects a numbered list format (1. item, 2. item, etc.), strips the leading numbers and periods from each item. Flags this as a quality issue (invalid HTML format containing plain numbered list instead of proper HTML markup).",
+      "function": "parse_html",
+      "subfunctions": [
+        "numbered_list_pattern_detection_and_stripping"
+      ]
+    },
+    {
+      "name": "HTML-Single-Tag-Format-Detection",
+      "description": "Detects and reports when items are in separate single-span tags (e.g., each item in its own <p> tag) instead of a proper <li>-based list. This is flagged as a format consistency quality issue.",
+      "function": "parse_html",
+      "subfunctions": [
+        "single_tag_format_detection"
+      ]
+    },
+    {
+      "name": "HTML-Numbered-Items-In-Tags",
+      "description": "Detects when numbered items (e.g., '<span>1. Lion</span><br/><span>2. Elephant</span>') are wrapped in individual HTML tags with each item containing a number prefix. Strips the leading numbers and flags as a quality issue indicating inconsistent format (items should be in <li> tags without manual numbering).",
+      "function": "parse_html",
+      "subfunctions": [
+        "numbered_item_detection_and_stripping"
+      ]
+    },
+    {
+      "name": "HTML-Comma-Separated-Items",
+      "description": "Detects when multiple items are comma-separated within a single container tag (e.g., '<p>Item1, Item2, Item3</p>'). Splits items by commas, extracts them individually, and includes in output while flagging as a quality issue. Indicates improper formatting (items should be in separate tags or proper list structure).",
+      "function": "parse_html",
+      "subfunctions": [
+        "comma_separated_item_detection",
+        "item_splitting_and_validation"
+      ]
+    },
+    {
+      "name": "Extract-From-Invalid-HTML-Tags",
+      "description": "Detects when item text has been rendered as custom XML-like tag names (e.g., <tiger>, <baboon>) rather than as text content in standard HTML tags. Extracts tag names as items and flags as a quality issue (invalid-html-tags).",
+      "function": "_find_nodes_with_unknown_tags",
+      "quality_issue": "invalid-html-tags"
+    }
+  ],
+  "json": [
+    {
+      "name": "Extract-from-JSON-Codefence-Markdown",
+      "description": "JSON content wrapped in a markdown code fence (```json ... ```) is detected and the inner JSON is extracted for parsing. Primary path: extract_code_block() fires first and emits this fixup when it finds a ```json fence. Fallback path: parse_json() itself detects and strips the backticks when extract_code_block() did not.",
+      "function": "extract_code_block",
+      "subfunctions": [
+        "backtick_removal"
+      ]
+    },
+    {
+      "name": "JSON-Set-Format-Conversion",
+      "description": "Converts set-like format {item1, item2} (without key-value pairs) to standard JSON array format [item1, item2].",
+      "function": "parse_json",
+      "subfunctions": [
+        "set_like_detection_and_conversion"
+      ]
+    },
+    {
+      "name": "JSON-Dict-Value-Extraction",
+      "description": "Extracts values from JSON objects/dictionaries, converting {key: value} format to a list of values.",
+      "function": "parse_json",
+      "subfunctions": [
+        "object_to_list_conversion"
+      ]
+    },
+    {
+      "name": "JSON-Nested-List-Flattening",
+      "description": "Flattens nested lists within JSON to a single-level list of items.",
+      "function": "parse_json",
+      "subfunctions": [
+        "nested_list_detection_and_flattening"
+      ]
+    },
+    {
+      "name": "JSON-Dict-List-Key-Extraction",
+      "description": "When items are a list of dicts with a common key, extracts values from that key (e.g., [{'name': 'lion'}, {'name': 'tiger'}] -> ['lion', 'tiger']).",
+      "function": "_extract_from_dict_list",
+      "subfunctions": [
+        "common_key_detection_and_value_extraction"
+      ]
+    },
+    {
+      "name": "JSON-Python-Syntax-Repair",
+      "description": "Converts Python dict syntax with single quotes to valid JSON by replacing single quotes with double quotes.",
+      "function": "parse_json",
+      "subfunctions": [
+        "single_quote_to_double_quote_conversion"
+      ]
+    },
+    {
+      "name": "JSON-Parse-Failed",
+      "description": "Emitted when JSON parsing fails completely and no items can be recovered. Covers two cases: (1) the general JSONDecodeError path where no repair is attempted, and (2) the Python-dict-syntax repair attempt (single-quote substitution) that still fails. Both cases return an empty item list and emit 'QUALITY: parsing failed completely for <filename>', which is routed to the parse-failed format-style label for per-file tracking in quality.json.",
+      "function": "parse_json",
+      "quality_issue": "parse-failed"
+    },
+    {
+      "name": "JSON-Repeated-Keys-Extraction",
+      "description": "Detects JSON objects with repeated keys (e.g., {\"animal\":\"Lion\",\"animal\":\"Tiger\",...}) which Python's json.loads silently reduces to only the last value. Uses object_pairs_hook to preserve all key-value pairs and extract all values in order. Flags this as a quality issue.",
+      "function": "parse_json",
+      "subfunctions": [
+        "repeated_key_detection_via_object_pairs_hook"
+      ]
+    }
+  ],
+  "md": [
+    {
+      "name": "MD-Header-Removal",
+      "description": "Skips markdown header lines (lines starting with # symbols) and does not include them as items.",
+      "function": "parse_md",
+      "subfunctions": [
+        "header_detection_and_skipping"
+      ]
+    },
+    {
+      "name": "MD-Bullet-Removal",
+      "description": "Removes leading markdown bullet characters (*, -, +) and following whitespace from line items.",
+      "function": "parse_md",
+      "subfunctions": [
+        "bullet_character_removal_via_regex"
+      ]
+    }
+  ],
+  "txt": [
+    {
+      "name": "TXT-Line-Parsing",
+      "description": "Parses plain text files by treating each non-empty line as a separate item. Removes line ending characters (\\n, \\r).",
+      "function": "parse_txt"
+    }
+  ],
+  "txt1": [
+    {
+      "name": "TXT1-Line-Parsing",
+      "description": "Parses .txt1 files by treating each non-empty line as a separate item.",
+      "function": "parse_txt1",
+      "subfunctions": [
+        "line_splitting"
+      ]
+    },
+    {
+      "name": "TXT1-No-Numbers",
+      "description": "Quality flag emitted when a .txt1 file contains no items with leading numbers. The .txt1 format is expected to have auto-numbered items; their absence indicates an unexpected response format.",
+      "function": "parse_txt1",
+      "quality_issue": "txt1-no-numbers"
+    }
+  ],
+  "yml": [
+    {
+      "name": "YAML-Parse-Error-Fallback",
+      "description": "When the YAML parser encounters a ScannerError, falls back to parsing items with YAML list markers (-, *, \u2022). Items are extracted and included in output. Applies to both .yml and .yaml files.",
+      "function": "parse_yaml",
+      "subfunctions": [
+        "yaml_parse_error_detection_and_fallback",
+        "yaml_list_marker_extraction"
+      ]
+    },
+    {
+      "name": "YAML-Directive-Marker-Handling",
+      "description": "Detects YAML end-of-directives markers (---) that appear after content and strips everything from that point onward to prevent parse corruption.",
+      "function": "parse_yaml",
+      "subfunctions": [
+        "end_of_directives_detection_and_stripping"
+      ]
+    },
+    {
+      "name": "YAML-Plain-Text-Detection",
+      "description": "Detects plain text lists (newline-separated items with no YAML syntax) and parses them as text instead of YAML to avoid corruption.",
+      "function": "parse_yaml",
+      "subfunctions": [
+        "plain_text_list_detection"
+      ]
+    },
+    {
+      "name": "YAML-Dict-Value-Extraction",
+      "description": "Extracts values from YAML objects/dictionaries when the root structure is an object rather than a list.",
+      "function": "parse_yaml",
+      "subfunctions": [
+        "object_to_list_conversion"
+      ]
+    },
+    {
+      "name": "YAML-Numbered-Item-Extraction",
+      "description": "When YAML parses as a single string (non-standard YAML), attempts to extract numbered items matching the pattern 'digit(s). item'.",
+      "function": "parse_yaml",
+      "subfunctions": [
+        "numbered_item_regex_extraction"
+      ]
+    },
+    {
+      "name": "YAML-Single-List-Flattening",
+      "description": "If the parsed result is a single item that is itself a list, flattens it to merge one level of nesting.",
+      "function": "parse_yaml",
+      "subfunctions": [
+        "single_item_list_flattening"
+      ]
+    },
+    {
+      "name": "Extract-from-YAML-Codefence-Markdown",
+      "description": "YAML content wrapped in a markdown code fence (```yaml or ```yml ... ```) is detected and the inner YAML is extracted for parsing. Emitted by extract_code_block() when the opening fence line contains 'yaml' or 'yml'.",
+      "function": "extract_code_block"
+    }
+  ]
+}
