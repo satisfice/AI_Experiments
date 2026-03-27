@@ -542,7 +542,7 @@ def parse_yaml(content):
 
 # ── HTML Tree-Building Helpers ────────────────────────────────────────────────
 
-# Maps lowercase HTML tag names to their display form used in fixup key names.
+# Maps lowercase HTML tag names to their display form used in cleanup key names.
 _HTML_TAG_DISPLAY = {
     'html': 'HTML', 'body': 'Body', 'head': 'Head',
     'ul': 'UL', 'ol': 'OL', 'li': 'LI',
@@ -550,8 +550,8 @@ _HTML_TAG_DISPLAY = {
     'article': 'Article', 'section': 'Section', 'br': 'BR',
 }
 
-def _tag_fixup_name(tag):
-    """Return the fixup key name for a given HTML tag, e.g. 'li' -> 'Extract-From-LI-Tags'."""
+def _tag_cleanup_name(tag):
+    """Return the cleanup key name for a given HTML tag, e.g. 'li' -> 'Extract-From-LI-Tags'."""
     display = _HTML_TAG_DISPLAY.get(tag.lower(), tag.capitalize())
     return f"Extract-From-{display}-Tags"
 
@@ -686,13 +686,13 @@ def _items_from_nodes(nodes):
     return items, had_br, was_line_split
 
 
-def _path_tag_fixups(item_nodes, item_tag):
-    """Return an ordered list of Extract-From-X-Tags fixup keys representing the
+def _path_tag_cleanups(item_nodes, item_tag):
+    """Return an ordered list of Extract-From-X-Tags cleanup keys representing the
     DOM path from root to item_tag.  Uses item_nodes[0]'s ancestor chain as the
     representative path.  Deduplicates while preserving outermost-to-innermost order,
     then appends item_tag at the end."""
     if not item_nodes:
-        return [_tag_fixup_name(item_tag)]
+        return [_tag_cleanup_name(item_tag)]
     ancestor_tags = item_nodes[0].ancestor_tags()
     # Deduplicate while preserving order
     seen = set()
@@ -701,7 +701,7 @@ def _path_tag_fixups(item_nodes, item_tag):
         if t not in seen:
             seen.add(t)
             ordered.append(t)
-    return [_tag_fixup_name(t) for t in ordered]
+    return [_tag_cleanup_name(t) for t in ordered]
 
 
 def _find_nodes_with_unknown_tags(root, known_tags):
@@ -756,7 +756,7 @@ def parse_html(content):
     li_nodes = _find_leaf_tag_nodes(root, 'li')
     if li_nodes:
         items, had_br, _ = _items_from_nodes(li_nodes)
-        fixups.extend(_path_tag_fixups(li_nodes, 'li'))
+        fixups.extend(_path_tag_cleanups(li_nodes, 'li'))
         if had_br:
             fixups.append("Remove-BR-Tags")
         return items, fixups
@@ -774,7 +774,7 @@ def parse_html(content):
         num_matches = [re.match(r'^\d+\.\s+(.+)$', it) for it in raw_items]
         if raw_items and all(num_matches):
             items = [m.group(1) for m in num_matches]
-            fixups.extend(_path_tag_fixups(tag_nodes, tag))
+            fixups.extend(_path_tag_cleanups(tag_nodes, tag))
             if had_br:
                 fixups.append("Remove-BR-Tags")
             fixups.append("HTML-Numbered-Items-In-Tags")
@@ -794,7 +794,7 @@ def parse_html(content):
             final_items.append(item)
 
         items = final_items
-        fixups.extend(_path_tag_fixups(tag_nodes, tag))
+        fixups.extend(_path_tag_cleanups(tag_nodes, tag))
         if had_br:
             fixups.append("Remove-BR-Tags")
         if comma_split_used:
@@ -918,7 +918,7 @@ def extract_code_block(content):
         return content, False, fixups
 
 
-# Maps substrings found in QUALITY fixup strings to short canonical format-style labels.
+# Maps substrings found in QUALITY cleanup strings to short canonical format-style labels.
 # Used by fixups_to_cleanup() to route these observations to metadata["formatStyles"].
 QUALITY_FORMAT_STYLE_MAP = {
     "Single-span tag format":             "single-span-tag",
@@ -1381,9 +1381,9 @@ def clean_strip_leading_hyphens(items):
 def clean_lowercase(items):
     """Lowercase all items.
     Rule: Lowercase.
-    No fixup emitted; case consistency is tracked cross-trial in summarize_results()."""
+    Returns (items, fixup_str)."""
     result = [item.lower() for item in items]
-    return result, None
+    return result, "Lowercase"
 
 
 def clean_strip_quotes(items):
@@ -1583,12 +1583,17 @@ def process_and_track(items, ext, max_item_length=25):
         clean_strip_trailing_punct,
         clean_strip_doubled_punct,
         clean_strip_leading_hyphens,
-        clean_lowercase,
     ]
 
     processed = filtered
     for step in cleanup_pipeline:
         processed, fixup = step(processed)
+        if fixup:
+            processing_fixups.append(fixup)
+
+    # Conditional lowercasing: only if uppercase characters are found
+    if any(any(c.isupper() for c in item) for item in processed):
+        processed, fixup = clean_lowercase(processed)
         if fixup:
             processing_fixups.append(fixup)
 

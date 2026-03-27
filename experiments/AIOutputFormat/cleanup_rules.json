@@ -92,7 +92,7 @@
     },
     {
       "name": "Lowercase",
-      "description": "Lowercases all items. Applied last in the general cleanup pipeline. No per-file fixup is emitted; case inconsistency is detected cross-trial in summarize_results() and reported as the 'inconsistent_case' quality issue in quality.json.",
+      "description": "Lowercases all items, but only when uppercase characters are detected in the item set. Applied at the end of item extraction if any item contains uppercase characters. Reports count of items changed when lowercasing is performed. Additionally, case inconsistency is detected cross-trial in summarize_results() and reported as the 'inconsistent_case' quality issue in quality.json.",
       "function": "clean_lowercase"
     },
     {
@@ -385,7 +385,7 @@
     },
     {
       "name": "Bullet-Removal",
-      "description": "Detects and removes leading bullet characters (*, -, +) from line items during markdown parsing. Can apply to any format where bullets appear. This is a general cleanup operation, not specific to markdown.",
+      "description": "Detects and removes leading bullet characters (*, -, +) from line items. Can apply to any format where bullets appear. This is a general cleanup operation, not specific to markdown.",
       "function": "parse_md",
       "subfunctions": [
         "bullet_character_removal_via_regex"
