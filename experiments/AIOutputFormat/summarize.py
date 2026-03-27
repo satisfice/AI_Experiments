@@ -115,10 +115,10 @@ def detect_format_style(content, ext):
 
 def parse_txt(content):
     """Parse text file: each line is an item.
-    Returns (items, fixups)."""
+    Returns (items, cleanups)."""
     items = [line.rstrip('\n\r') for line in content.split('\n') if line.strip()]
-    fixups = []
-    return items, fixups
+    cleanups = []
+    return items, cleanups
 
 
 def parse_json(content):
@@ -409,29 +409,29 @@ def csv_strip_leading_markers(items):
 
 def parse_csv(content):
     """Parse CSV content. Orchestrates csv_parse_rows -> clean_strip_quotes.
-    Returns (items, fixups)."""
-    fixups = []
+    Returns (items, cleanups)."""
+    cleanups = []
     try:
-        items, fixup = csv_parse_rows(content)
-        if fixup:
-            fixups.append(fixup)
+        items, cleanup = csv_parse_rows(content)
+        if cleanup:
+            cleanups.append(cleanup)
 
-        items, fixup = clean_strip_quotes(items)
-        if fixup:
-            fixups.append(fixup)
+        items, cleanup = clean_strip_quotes(items)
+        if cleanup:
+            cleanups.append(cleanup)
 
-        return items, fixups
+        return items, cleanups
 
     except Exception as e:
-        fixups.append("QUALITY: Parse-Failed")
-        return [], fixups
+        cleanups.append("QUALITY: Parse-Failed")
+        return [], cleanups
 
 
 def parse_md(content):
     """Parse Markdown file: each line is an item, with markdown bullets and headers removed.
-    Returns (items, fixups) where fixups is a list of cleanup operations performed."""
+    Returns (items, cleanups) where cleanups is a list of cleanup operations performed."""
     items = []
-    fixups = []
+    cleanups = []
     header_count = 0
     bullet_count = 0
 
@@ -450,25 +450,25 @@ def parse_md(content):
                 items.append(cleaned)
 
     if header_count > 0:
-        fixups.append("MD-Header-Removal")
+        cleanups.append("MD-Header-Removal")
     if bullet_count > 0:
-        fixups.append("Bullet-Removal")
+        cleanups.append("Bullet-Removal")
 
-    return items, fixups
+    return items, cleanups
 
 
 def parse_yaml(content):
     """Parse YAML: extract items from structure. If single item is a list, flatten it.
     Falls back to text parsing if content looks like plain text list.
-    Returns (items, fixups)."""
-    fixups = []
+    Returns (items, cleanups)."""
+    cleanups = []
     try:
         # Check for a YAML end-of-directives / document-separator marker (---) on a non-first
         # line; strip everything from that line onward so it doesn't corrupt the parse.
         all_lines = content.strip().split('\n')
         for i, line in enumerate(all_lines):
             if i > 0 and line.strip() == '---':
-                fixups.append("YAML-Directive-Marker-Handling")
+                cleanups.append("YAML-Directive-Marker-Handling")
                 content = '\n'.join(all_lines[:i])
                 break
 
@@ -486,7 +486,7 @@ def parse_yaml(content):
         if is_plain_text_list:
             # Plain text list: one item per line
             items = [line.strip() for line in lines if line.strip()]
-            fixups.append("YAML-Plain-Text-Detection")
+            cleanups.append("YAML-Plain-Text-Detection")
         else:
             # Parse as YAML
             data = yaml.safe_load(content)
@@ -494,7 +494,7 @@ def parse_yaml(content):
                 items = data
             elif isinstance(data, dict):
                 items = list(data.values())
-                fixups.append("YAML-Dict-Value-Extraction")
+                cleanups.append("YAML-Dict-Value-Extraction")
             elif isinstance(data, str):
                 # YAML parsed as a plain string (likely non-standard YAML with numbered/bulleted lines)
                 # Try to parse as text with numbered items (1. item 2. item 3. item, etc.)
@@ -503,7 +503,7 @@ def parse_yaml(content):
                 if numbered_items:
                     # Found numbered items - use them, stripping whitespace
                     items = [item.strip() for item in numbered_items if item.strip()]
-                    fixups.append("YAML-Numbered-Item-Extraction")
+                    cleanups.append("YAML-Numbered-Item-Extraction")
                 else:
                     # No numbered items found, treat as single item
                     items = [data] if data else []
@@ -513,13 +513,13 @@ def parse_yaml(content):
         # If only one item and it's a list, flatten it
         if len(items) == 1 and isinstance(items[0], list):
             items = items[0]
-            fixups.append("YAML-Single-List-Flattening")
+            cleanups.append("YAML-Single-List-Flattening")
 
-        return items, fixups
+        return items, cleanups
 
     except yaml.YAMLError as e:
         # YAML parse error - fall back to plain text parsing with YAML list markers
-        fixups.append("YAML-Parse-Error-Fallback")
+        cleanups.append("YAML-Parse-Error-Fallback")
 
         # Try to extract items with YAML list markers (-, *, •) as fallback
         try:
@@ -533,11 +533,11 @@ def parse_yaml(content):
                     items.append(item)
 
             if items:
-                return items, fixups
+                return items, cleanups
         except Exception:
             pass
 
-        return [], fixups
+        return [], cleanups
 
 
 # ── HTML Tree-Building Helpers ────────────────────────────────────────────────
