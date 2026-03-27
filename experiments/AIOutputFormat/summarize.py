@@ -130,8 +130,8 @@ def parse_json(content):
     - JSON with single quotes (Python dict syntax)
     - JSON wrapped in triple backticks (markdown code fence format)
     Extracts values from list of dicts with common keys.
-    Returns (items, fixups)."""
-    fixups = []
+    Returns (items, cleanups)."""
+    cleanups = []
 
     # Strip triple backticks if present (markdown code fence format)
     content_to_parse = content.strip()
@@ -145,7 +145,7 @@ def parse_json(content):
             content_to_parse = content_to_parse[3:]
         # Remove closing backticks
         content_to_parse = content_to_parse[:-3].strip()
-        fixups.append("Extract-from-JSON-Codefence-Markdown")
+        cleanups.append("Extract-from-JSON-Codefence-Markdown")
 
     # Try to detect and convert set-like format {item1, item2, ...} to array format
     # Set-like format has { } with strings separated by commas, but no colons (no key-value pairs)
@@ -166,7 +166,7 @@ def parse_json(content):
             # Remove trailing commas before closing bracket
             converted = converted.replace(',\n]', '\n]').replace(', ]', ']').replace(',]', ']')
             content_to_parse = converted
-            fixups.append("JSON-Set-Format-Conversion")
+            cleanups.append("JSON-Set-Format-Conversion")
 
     # Detect repeated-key JSON objects: {"key":"v1","key":"v2",...}
     # Standard json.loads silently drops duplicates; use object_pairs_hook to preserve them.
@@ -189,8 +189,8 @@ def parse_json(content):
                             flattened.extend(item)
                         else:
                             flattened.append(item)
-                    fixups.append("QUALITY: Repeated JSON object keys (same key used for multiple values)")
-                    return flattened, fixups
+                    cleanups.append("QUALITY: Repeated JSON object keys (same key used for multiple values)")
+                    return flattened, cleanups
 
     try:
         data = json.loads(content_to_parse)
@@ -198,12 +198,12 @@ def parse_json(content):
             items = data
         elif isinstance(data, dict):
             items = list(data.values())
-            fixups.append("JSON-Dict-Value-Extraction")
+            cleanups.append("JSON-Dict-Value-Extraction")
         else:
             items = [data]
 
         # Check if items are dicts with a common key that should be extracted
-        items = _extract_from_dict_list(items, fixups)
+        items = _extract_from_dict_list(items, cleanups)
 
         # Flatten any list items
         flattened = []
@@ -216,9 +216,9 @@ def parse_json(content):
                 flattened.append(item)
 
         if had_nested_lists:
-            fixups.append("JSON-Nested-List-Flattening")
+            cleanups.append("JSON-Nested-List-Flattening")
 
-        return flattened, fixups
+        return flattened, cleanups
 
     except json.JSONDecodeError as e:
         # Try other conversions before giving up
@@ -240,14 +240,14 @@ def parse_json(content):
                     converted = content_to_parse.replace('{', '[').replace('}', ']')
                     converted = converted.replace(',\n]', '\n]').replace(', ]', ']').replace(',]', ']')
                     data = json.loads(converted)
-                    fixups.append("JSON-Set-Format-Conversion")
+                    cleanups.append("JSON-Set-Format-Conversion")
                     if isinstance(data, list):
                         items = data
                     elif isinstance(data, dict):
                         items = list(data.values())
                     else:
                         items = [data]
-                    items = _extract_from_dict_list(items, fixups)
+                    items = _extract_from_dict_list(items, cleanups)
                     flattened = []
                     for item in items:
                         if isinstance(item, list):
@@ -274,7 +274,7 @@ def parse_json(content):
                     items = [data]
 
                 # Check if items are dicts with a common key that should be extracted
-                items = _extract_from_dict_list(items, fixups)
+                items = _extract_from_dict_list(items, cleanups)
 
                 # Flatten any list items
                 flattened = []
@@ -284,22 +284,22 @@ def parse_json(content):
                     else:
                         flattened.append(item)
 
-                fixups.append("JSON-Python-Syntax-Repair")
-                return flattened, fixups
+                cleanups.append("JSON-Python-Syntax-Repair")
+                return flattened, cleanups
             except json.JSONDecodeError:
                 # If the fix didn't work, return empty list with error note
-                fixups.append("QUALITY: Parse-Failed")
-                return [], fixups
+                cleanups.append("QUALITY: Parse-Failed")
+                return [], cleanups
         else:
-            fixups.append("QUALITY: Parse-Failed")
-            return [], fixups
+            cleanups.append("QUALITY: Parse-Failed")
+            return [], cleanups
 
 
-def _extract_from_dict_list(items, fixups):
+def _extract_from_dict_list(items, cleanups):
     """
     If items is a list of dicts with a common key, extract values from that key.
     For example: [{"name": "lion"}, {"name": "tiger"}] -> ["lion", "tiger"]
-    Returns modified items list and updates fixups list.
+    Returns modified items list and updates cleanups list.
     """
     if not items or not isinstance(items, list):
         return items
@@ -321,7 +321,7 @@ def _extract_from_dict_list(items, fixups):
             for item in items:
                 value = item[key]
                 extracted.append(value)
-            fixups.append("JSON-Dict-List-Key-Extraction")
+            cleanups.append("JSON-Dict-List-Key-Extraction")
             return extracted
 
     return items
