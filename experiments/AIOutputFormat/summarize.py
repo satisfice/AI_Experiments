@@ -334,7 +334,7 @@ def _extract_from_dict_list(items, cleanups):
 def parse_single_row(row):
     """Return items from a single sequence (one row of already-parsed values).
     Rule: Parse-Single-Row.
-    Returns (items, fixup_str)."""
+    Returns (items, cleanup_str)."""
     return list(row), "Parse-Single-Row"
 
 
@@ -342,7 +342,7 @@ def parse_one_per_line(lines):
     """Return items from a sequence where each element is one item (one per line).
     Strips whitespace and drops empty entries.
     Rule: Parse-One-Per-Line.
-    Returns (items, fixup_str)."""
+    Returns (items, cleanup_str)."""
     return [str(line).strip() for line in lines if str(line).strip()], "Parse-One-Per-Line"
 
 
@@ -351,7 +351,7 @@ def parse_one_per_line(lines):
 def csv_parse_single_row(rows):
     """Extract items from a single-row CSV where each column is one item.
     Rule: CSV-Parse-Single-Row. Delegates to parse_single_row.
-    Returns (items, fixup_str)."""
+    Returns (items, cleanup_str)."""
     items, _ = parse_single_row(rows[0])
     return items, "CSV-Parse-Single-Row"
 
@@ -359,7 +359,7 @@ def csv_parse_single_row(rows):
 def csv_parse_one_per_line(rows):
     """Extract items from a CSV where each row contains exactly one item (no commas).
     Rule: CSV-Parse-One-Per-Line. Delegates to parse_one_per_line.
-    Returns (items, fixup_str)."""
+    Returns (items, cleanup_str)."""
     items, _ = parse_one_per_line([row[0] for row in rows])
     return items, "CSV-Parse-One-Per-Line"
 
@@ -368,7 +368,7 @@ def csv_parse_multi_row(rows):
     """Extract items from a multi-row CSV where each row contains multiple
     comma-separated items; all items from all rows are collected.
     Rule: CSV-Parse-Multi-Row.
-    Returns (items, fixup_str)."""
+    Returns (items, cleanup_str)."""
     return [item for row in rows for item in row], "CSV-Parse-Multi-Row"
 
 
@@ -376,7 +376,7 @@ def csv_parse_rows(content):
     """Read CSV content via csv.reader, detect format style, and dispatch to the
     appropriate per-format parser: csv_parse_single_row, csv_parse_one_per_line,
     or csv_parse_multi_row.
-    Returns (items, fixup_str_or_none)."""
+    Returns (items, cleanup_str_or_none)."""
     reader = csv.reader(StringIO(content))
     rows = [row for row in reader if row]
 
@@ -396,15 +396,15 @@ def csv_parse_rows(content):
 def csv_strip_leading_markers(items):
     """Remove leading bullet markers and number prefixes from CSV items.
     Delegates to clean_strip_leading_bullets then clean_strip_leading_numbers.
-    Returns (items, fixups_list)."""
-    fixups = []
-    items, fixup = clean_strip_leading_bullets(items)
-    if fixup:
-        fixups.append(fixup)
-    items, fixup = clean_strip_leading_numbers(items)
-    if fixup:
-        fixups.append(fixup)
-    return items, fixups
+    Returns (items, cleanups_list)."""
+    cleanups = []
+    items, cleanup = clean_strip_leading_bullets(items)
+    if cleanup:
+        cleanups.append(cleanup)
+    items, cleanup = clean_strip_leading_numbers(items)
+    if cleanup:
+        cleanups.append(cleanup)
+    return items, cleanups
 
 
 def parse_csv(content):
