@@ -1284,14 +1284,14 @@ def detect_repeated_chars(item):
 
 # ── General Item Cleanup Functions ───────────────────────────────────────────
 # Each function takes a list of strings, applies one transformation, and returns
-# (modified_items, fixup_str_or_none). A fixup string is emitted only when at
+# (modified_items, cleanup_str_or_none). A cleanup string is emitted only when at
 # least one item was actually changed. These apply to all formats; CSV uses them
 # as part of its pipeline established in this pass.
 
 def clean_strip_leading_format(items):
     """Strip leading markdown/format characters (* - + : ; , . ! ? { } [ ] etc.).
     Rule: Strip-Leading-Formatting.
-    Returns (items, fixup_str_or_none)."""
+    Returns (items, cleanup_str_or_none)."""
     result = []
     changed = 0
     for item in items:
@@ -1306,7 +1306,7 @@ def clean_strip_leading_format(items):
 def clean_strip_number_word_prefix(items):
     """Strip a numeric prefix attached directly to a word (e.g. '48eagle' -> 'eagle').
     Rule: Strip-Number-Word-Prefix.
-    Returns (items, fixup_str_or_none)."""
+    Returns (items, cleanup_str_or_none)."""
     result = []
     changed = 0
     for item in items:
@@ -1321,7 +1321,7 @@ def clean_strip_number_word_prefix(items):
 def clean_remove_parenthetical(items):
     """Remove parenthetical content (e.g. 'camelopard (giraffe)' -> 'camelopard').
     Rule: Remove-Parenthetical.
-    Returns (items, fixup_str_or_none)."""
+    Returns (items, cleanup_str_or_none)."""
     result = []
     changed = 0
     for item in items:
@@ -1336,7 +1336,7 @@ def clean_remove_parenthetical(items):
 def clean_strip_trailing_punct(items):
     """Strip trailing punctuation and format characters from items.
     Rule: Strip-Trailing-Punctuation.
-    Returns (items, fixup_str_or_none)."""
+    Returns (items, cleanup_str_or_none)."""
     result = []
     changed = 0
     for item in items:
@@ -1351,7 +1351,7 @@ def clean_strip_trailing_punct(items):
 def clean_strip_doubled_punct(items):
     """Remove doubled or tripled internal punctuation (e.g. 'ti::ger' -> 'tiger').
     Rule: Strip-Doubled-Punctuation.
-    Returns (items, fixup_str_or_none)."""
+    Returns (items, cleanup_str_or_none)."""
     result = []
     changed = 0
     for item in items:
@@ -1366,7 +1366,7 @@ def clean_strip_doubled_punct(items):
 def clean_strip_leading_hyphens(items):
     """Strip any remaining leading hyphens and spaces (final normalization).
     Rule: Strip-Leading-Hyphens.
-    Returns (items, fixup_str_or_none)."""
+    Returns (items, cleanup_str_or_none)."""
     result = []
     changed = 0
     for item in items:
@@ -1389,7 +1389,7 @@ def clean_lowercase(items):
 def clean_strip_quotes(items):
     """Remove outer quote wrapping (single or double) from items.
     Rule: Strip-Quotes.
-    Returns (items, fixup_str_or_none)."""
+    Returns (items, cleanup_str_or_none)."""
     cleaned = []
     changed = 0
     for item in items:
@@ -1400,14 +1400,14 @@ def clean_strip_quotes(items):
         if c != original:
             changed += 1
         cleaned.append(c)
-    fixup = f"Strip-Quotes: {changed} items" if changed else None
-    return cleaned, fixup
+    cleanup = f"Strip-Quotes: {changed} items" if changed else None
+    return cleaned, cleanup
 
 
 def clean_strip_leading_bullets(items):
     """Remove leading bullet list markers (* - +) from items.
     Rule: Strip-Leading-Bullets.
-    Returns (items, fixup_str_or_none)."""
+    Returns (items, cleanup_str_or_none)."""
     result = []
     changed = 0
     for item in items:
@@ -1422,7 +1422,7 @@ def clean_strip_leading_bullets(items):
 def clean_strip_leading_numbers(items):
     """Remove leading number prefixes with punctuation (e.g. '1. ', '2) ', '3: ') from items.
     Rule: Strip-Leading-Numbers.
-    Returns (items, fixup_str_or_none)."""
+    Returns (items, cleanup_str_or_none)."""
     result = []
     changed = 0
     for item in items:
