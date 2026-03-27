@@ -153,7 +153,7 @@
   "html": [
     {
       "name": "Extract-from-HTML-Codefence-Markdown",
-      "description": "HTML content improperly wrapped in a markdown code fence (```html ... ```) is detected and the inner HTML is extracted for normal parsing. Primary path: extract_code_block() fires before parse_html() and emits this fixup when it finds a ```html fence. Fallback path: parse_html() itself detects the fence when extract_code_block() did not. Both paths flag this as a quality issue (invalid HTML format).",
+      "description": "HTML content improperly wrapped in a markdown code fence (```html ... ```) is detected and the inner HTML is extracted for normal parsing. Primary path: extract_code_block() fires before parse_html() and emits this cleanup when it finds a ```html fence. Fallback path: parse_html() itself detects the fence when extract_code_block() did not. Both paths flag this as a quality issue (invalid HTML format).",
       "function": "extract_code_block",
       "subfunctions": [
         "markdown_code_fence_detection_and_extraction",
@@ -165,7 +165,7 @@
       "description": "Traversed the <html> root element while walking the DOM path to item nodes. Emitted when the ancestor chain of the extracted item nodes includes <html>.",
       "function": "parse_html",
       "subfunctions": [
-        "_path_tag_fixups"
+        "_path_tag_cleanups"
       ]
     },
     {
@@ -173,7 +173,7 @@
       "description": "Traversed the <body> element while walking the DOM path to item nodes. Emitted when the ancestor chain of the extracted item nodes includes <body>.",
       "function": "parse_html",
       "subfunctions": [
-        "_path_tag_fixups"
+        "_path_tag_cleanups"
       ]
     },
     {
@@ -181,7 +181,7 @@
       "description": "Traversed the <head> element while walking the DOM path to item nodes. Emitted when the ancestor chain of the extracted item nodes includes <head> (unusual but recorded when present).",
       "function": "parse_html",
       "subfunctions": [
-        "_path_tag_fixups"
+        "_path_tag_cleanups"
       ]
     },
     {
@@ -189,7 +189,7 @@
       "description": "Traversed a <ul> unordered-list container while walking the DOM path to item nodes. Emitted when items were found inside a <ul> element.",
       "function": "parse_html",
       "subfunctions": [
-        "_path_tag_fixups"
+        "_path_tag_cleanups"
       ]
     },
     {
@@ -197,7 +197,7 @@
       "description": "Traversed an <ol> ordered-list container while walking the DOM path to item nodes. Emitted when items were found inside an <ol> element.",
       "function": "parse_html",
       "subfunctions": [
-        "_path_tag_fixups"
+        "_path_tag_cleanups"
       ]
     },
     {
@@ -313,7 +313,7 @@
   "json": [
     {
       "name": "Extract-from-JSON-Codefence-Markdown",
-      "description": "JSON content wrapped in a markdown code fence (```json ... ```) is detected and the inner JSON is extracted for parsing. Primary path: extract_code_block() fires first and emits this fixup when it finds a ```json fence. Fallback path: parse_json() itself detects and strips the backticks when extract_code_block() did not.",
+      "description": "JSON content wrapped in a markdown code fence (```json ... ```) is detected and the inner JSON is extracted for parsing. Primary path: extract_code_block() fires first and emits this cleanup when it finds a ```json fence. Fallback path: parse_json() itself detects and strips the backticks when extract_code_block() did not.",
       "function": "extract_code_block",
       "subfunctions": [
         "backtick_removal"
