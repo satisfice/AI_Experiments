@@ -859,9 +859,9 @@ def parse_txt1(content):
     Returns (items, cleanups)."""
     cleanups = []
     items = [line.rstrip('\n\r') for line in content.split('\n') if line.strip()]
-    cleaned, fixup = clean_strip_leading_numbers(items)
-    if fixup:
-        cleanups.append(fixup)
+    cleaned, cleanup = clean_strip_leading_numbers(items)
+    if cleanup:
+        cleanups.append(cleanup)
     elif cleaned:
         # numberedText format expected leading numbers; their absence is a quality issue
         cleanups.append("QUALITY: TXT1-No-Numbers (file has no leading numbers; expected numbered format)")
@@ -919,7 +919,7 @@ def extract_code_block(content):
 
 
 # Maps substrings found in QUALITY cleanup strings to short canonical format-style labels.
-# Used by fixups_to_cleanup() to route these observations to metadata["formatStyles"].
+# Used by fixups_to_cleanup() to route cleanup strings to metadata["formatStyles"].
 QUALITY_FORMAT_STYLE_MAP = {
     "Single-span tag format":             "single-span-tag",
     "Requested HTML; response was plain": "html_no_markup",
@@ -937,8 +937,8 @@ QUALITY_FORMAT_STYLE_MAP = {
 }
 
 
-def fixups_to_cleanup(fixups):
-    """Convert a fixup string list to (cleanup_dict, format_style_labels).
+def fixups_to_cleanup(cleanup_keys):
+    """Convert a cleanup string list to (cleanup_dict, format_style_labels).
 
     'Rule: N items' → {Rule: N}
     Other strings    → {string: True}
@@ -946,20 +946,20 @@ def fixups_to_cleanup(fixups):
     """
     cleanup = {}
     format_styles = []
-    for fixup in fixups:
+    for cleanup_key in cleanup_keys:
         matched = False
         for substr, label in QUALITY_FORMAT_STYLE_MAP.items():
-            if substr in fixup:
+            if substr in cleanup_key:
                 format_styles.append(label)
                 matched = True
                 break
         if matched:
             continue
-        m = re.match(r'^(.+?):\s+(\d+)\s+items?$', fixup)
+        m = re.match(r'^(.+?):\s+(\d+)\s+items?$', cleanup_key)
         if m:
             cleanup[m.group(1)] = int(m.group(2))
         else:
-            cleanup[fixup] = True
+            cleanup[cleanup_key] = True
     return cleanup, format_styles
 
 
@@ -1441,9 +1441,9 @@ def clean_format_specific(items, ext):
     Applies to all formats; HTML markup or blockquote markers in any format are
     both cleaned and flagged as quality issues.
     For CSV, delegates leading-marker removal to csv_strip_leading_markers().
-    Returns (cleaned_items, fixups_list).
+    Returns (cleaned_items, cleanups_list).
     """
-    fixups = []
+    cleanups = []
     cleaned = list(items)
 
     # Strip HTML tags and blockquote markers from all formats.
@@ -1465,23 +1465,23 @@ def clean_format_specific(items, ext):
         new_cleaned.append(item)
     cleaned = new_cleaned
     if html_tag_count:
-        fixups.append("HTML-Stray-Tag-Cleanup")
-        fixups.append("QUALITY: HTML markup found in items")
+        cleanups.append("HTML-Stray-Tag-Cleanup")
+        cleanups.append("QUALITY: HTML markup found in items")
     if blockquote_count:
-        fixups.append("Blockquote-Marker-Cleanup")
-        fixups.append("QUALITY: Blockquote markers in items")
+        cleanups.append("Blockquote-Marker-Cleanup")
+        cleanups.append("QUALITY: Blockquote markers in items")
 
     # CSV: delegate to named function that tracks bullets and numbers separately
     if ext == '.csv':
-        cleaned, csv_fixups = csv_strip_leading_markers(cleaned)
-        fixups.extend(csv_fixups)
+        cleaned, csv_cleanups = csv_strip_leading_markers(cleaned)
+        cleanups.extend(csv_cleanups)
 
     # Markdown and plain text: delegate to shared cleanup functions
     elif ext in ['.md', '.txt']:
-        cleaned, csv_fixups = csv_strip_leading_markers(cleaned)
-        fixups.extend(csv_fixups)
+        cleaned, csv_cleanups = csv_strip_leading_markers(cleaned)
+        cleanups.extend(csv_cleanups)
 
-    return cleaned, fixups
+    return cleaned, cleanups
 
 
 def process_and_track(items, ext, max_item_length=25):
@@ -1521,9 +1521,9 @@ def process_and_track(items, ext, max_item_length=25):
     trimmed = trim_items(items)
 
     # Step 2: Clean format-specific formatting FIRST
-    cleaned_items, format_fixups = clean_format_specific(trimmed, ext)
-    if format_fixups:
-        processing_cleanups.extend(format_fixups)
+    cleaned_items, format_cleanups = clean_format_specific(trimmed, ext)
+    if format_cleanups:
+        processing_cleanups.extend(format_cleanups)
 
     # Check alphabetical order of original items
     alphabetical = is_alphabetical_order(trimmed)
@@ -1573,7 +1573,7 @@ def process_and_track(items, ext, max_item_length=25):
     # Step 4: Filter preamble items then apply general item cleanup pipeline.
     # Preamble items are LLM contamination and are excluded entirely.
     # All other items pass through each named cleanup function in order;
-    # each function reports a fixup only when it actually changed something.
+    # each function reports a cleanup only when it actually changed something.
     filtered = [item for item in cleaned_items if item not in preamble_set]
 
     cleanup_pipeline = [
@@ -1587,15 +1587,15 @@ def process_and_track(items, ext, max_item_length=25):
 
     processed = filtered
     for step in cleanup_pipeline:
-        processed, fixup = step(processed)
-        if fixup:
-            processing_cleanups.append(fixup)
+        processed, cleanup = step(processed)
+        if cleanup:
+            processing_cleanups.append(cleanup)
 
     # Conditional lowercasing: only if uppercase characters are found
     if any(any(c.isupper() for c in item) for item in processed):
-        processed, fixup = clean_lowercase(processed)
-        if fixup:
-            processing_cleanups.append(fixup)
+        processed, cleanup = clean_lowercase(processed)
+        if cleanup:
+            processing_cleanups.append(cleanup)
 
     # Create metadata
     metadata = {
@@ -1607,7 +1607,7 @@ def process_and_track(items, ext, max_item_length=25):
     if quality_issues:
         metadata["qualityIssues"] = quality_issues
 
-    # Store processing fixups
+    # Store processing cleanups
     if processing_cleanups:
         metadata["processingCleanups"] = processing_cleanups
 
@@ -1803,10 +1803,10 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
             parser = PARSERS[ext]
 
             # Extract content from code blocks if present
-            cleaned_content, had_codeblock, codeblock_fixups = extract_code_block(content)
+            cleaned_content, had_codeblock, codeblock_cleanups = extract_code_block(content)
 
             # Parse the (possibly cleaned) content
-            items, parser_fixups = parser(cleaned_content)
+            items, parser_cleanups = parser(cleaned_content)
 
             # Parse filename for experiment, model, temperature FIRST (needed for filtering)
             filename_metadata = parse_filename_metadata(file_path.name)
@@ -1859,22 +1859,22 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
             # Add format style (how the data was structured in the file)
             metadata["formatStyle"] = detect_format_style(content, ext)
 
-            # Collect all fixup strings from parsers, codeblock processing, and cleanup pipeline
-            all_fixups = codeblock_fixups + parser_fixups
+            # Collect all cleanup strings from parsers, codeblock processing, and cleanup pipeline
+            all_cleanups = codeblock_cleanups + parser_cleanups
             # Expand parse-failure sentinel now that we have the filename
-            all_fixups = [
+            all_cleanups = [
                 f"QUALITY: parsing failed completely for {file_path.name}"
                 if f == "QUALITY: Parse-Failed" else f
-                for f in all_fixups
+                for f in all_cleanups
             ]
-            if metadata.get("processingFixups"):
-                all_fixups.extend(metadata.pop("processingFixups"))
+            if metadata.get("processingCleanups"):
+                all_cleanups.extend(metadata.pop("processingCleanups"))
 
-            # Convert fixup strings to structured cleanup dict and format-style label list.
-            # QUALITY fixup strings (format observations) go to metadata["formatStyles"];
-            # all other fixup strings go to metadata["cleanup"].
-            if all_fixups:
-                cleanup_dict, format_style_labels = fixups_to_cleanup(all_fixups)
+            # Convert cleanup strings to structured cleanup dict and format-style label list.
+            # QUALITY cleanup strings (format observations) go to metadata["formatStyles"];
+            # all other cleanup strings go to metadata["cleanup"].
+            if all_cleanups:
+                cleanup_dict, format_style_labels = fixups_to_cleanup(all_cleanups)
                 if cleanup_dict:
                     metadata["cleanup"] = cleanup_dict
                 if format_style_labels:
@@ -1952,7 +1952,7 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
                         quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][issue_type][example] = filename
 
             # Track format-style quality issues from metadata["formatStyles"]
-            # (QUALITY fixup strings were routed here by fixups_to_cleanup())
+            # (QUALITY cleanup strings were routed here by fixups_to_cleanup())
             if "formatStyles" in metadata:
                 filename = file_path.name
                 for fs_label in metadata["formatStyles"]:
