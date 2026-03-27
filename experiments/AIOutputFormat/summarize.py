@@ -1299,8 +1299,8 @@ def clean_strip_leading_format(items):
         if cleaned != item:
             changed += 1
         result.append(cleaned)
-    fixup = f"Strip-Leading-Formatting: {changed} items" if changed else None
-    return result, fixup
+    cleanup = f"Strip-Leading-Formatting: {changed} items" if changed else None
+    return result, cleanup
 
 
 def clean_strip_number_word_prefix(items):
@@ -1314,8 +1314,8 @@ def clean_strip_number_word_prefix(items):
         if cleaned != item:
             changed += 1
         result.append(cleaned)
-    fixup = f"Strip-Number-Word-Prefix: {changed} items" if changed else None
-    return result, fixup
+    cleanup = f"Strip-Number-Word-Prefix: {changed} items" if changed else None
+    return result, cleanup
 
 
 def clean_remove_parenthetical(items):
@@ -1329,8 +1329,8 @@ def clean_remove_parenthetical(items):
         if cleaned != item:
             changed += 1
         result.append(cleaned)
-    fixup = f"Remove-Parenthetical: {changed} items" if changed else None
-    return result, fixup
+    cleanup = f"Remove-Parenthetical: {changed} items" if changed else None
+    return result, cleanup
 
 
 def clean_strip_trailing_punct(items):
@@ -1344,8 +1344,8 @@ def clean_strip_trailing_punct(items):
         if cleaned != item:
             changed += 1
         result.append(cleaned)
-    fixup = f"Strip-Trailing-Punctuation: {changed} items" if changed else None
-    return result, fixup
+    cleanup = f"Strip-Trailing-Punctuation: {changed} items" if changed else None
+    return result, cleanup
 
 
 def clean_strip_doubled_punct(items):
@@ -1359,8 +1359,8 @@ def clean_strip_doubled_punct(items):
         if cleaned != item:
             changed += 1
         result.append(cleaned)
-    fixup = f"Strip-Doubled-Punctuation: {changed} items" if changed else None
-    return result, fixup
+    cleanup = f"Strip-Doubled-Punctuation: {changed} items" if changed else None
+    return result, cleanup
 
 
 def clean_strip_leading_hyphens(items):
@@ -1374,8 +1374,8 @@ def clean_strip_leading_hyphens(items):
         if cleaned != item:
             changed += 1
         result.append(cleaned)
-    fixup = f"Strip-Leading-Hyphens: {changed} items" if changed else None
-    return result, fixup
+    cleanup = f"Strip-Leading-Hyphens: {changed} items" if changed else None
+    return result, cleanup
 
 
 def clean_lowercase(items):
@@ -1415,8 +1415,8 @@ def clean_strip_leading_bullets(items):
         if cleaned != item:
             changed += 1
         result.append(cleaned)
-    fixup = f"Strip-Leading-Bullets: {changed} items" if changed else None
-    return result, fixup
+    cleanup = f"Strip-Leading-Bullets: {changed} items" if changed else None
+    return result, cleanup
 
 
 def clean_strip_leading_numbers(items):
@@ -1430,8 +1430,8 @@ def clean_strip_leading_numbers(items):
         if cleaned != item:
             changed += 1
         result.append(cleaned)
-    fixup = f"Strip-Leading-Numbers: {changed} items" if changed else None
-    return result, fixup
+    cleanup = f"Strip-Leading-Numbers: {changed} items" if changed else None
+    return result, cleanup
 
 
 def clean_format_specific(items, ext):
