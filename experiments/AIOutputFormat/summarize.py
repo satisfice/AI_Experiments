@@ -254,7 +254,7 @@ def parse_json(content):
                             flattened.extend(item)
                         else:
                             flattened.append(item)
-                    return flattened, fixups
+                    return flattened, cleanups
                 except json.JSONDecodeError:
                     pass  # Try next method
 
@@ -759,7 +759,7 @@ def parse_html(content):
         cleanups.extend(_path_tag_cleanups(li_nodes, 'li'))
         if had_br:
             cleanups.append("Remove-BR-Tags")
-        return items, fixups
+        return items, cleanups
 
     # ── Fallback path: try each tag in priority order ────────────────────────
     for tag in _HTML_FALLBACK_TAGS:
@@ -1381,7 +1381,7 @@ def clean_strip_leading_hyphens(items):
 def clean_lowercase(items):
     """Lowercase all items.
     Rule: Lowercase.
-    Returns (items, fixup_str)."""
+    Returns (items, cleanup_str)."""
     result = [item.lower() for item in items]
     return result, "Lowercase"
 
@@ -1495,7 +1495,7 @@ def process_and_track(items, ext, max_item_length=25):
     Args:
         items: List of items to process
         ext: File extension
-        max_item_length: Maximum allowed item length (items longer are flagged in fixups)
+        max_item_length: Maximum allowed item length (items longer are flagged in cleanups)
     Returns (processed_items, processing_metadata, metadata).
     """
     processing = {
@@ -1508,7 +1508,7 @@ def process_and_track(items, ext, max_item_length=25):
     # preamble_set collects ALL preamble items for filtering; quality_issues["preamble_leak"]
     # holds only the first example for reporting purposes.
     preamble_set = set()
-    processing_fixups = []
+    processing_cleanups = []
 
     if not items:
         metadata = {
@@ -1523,7 +1523,7 @@ def process_and_track(items, ext, max_item_length=25):
     # Step 2: Clean format-specific formatting FIRST
     cleaned_items, format_fixups = clean_format_specific(trimmed, ext)
     if format_fixups:
-        processing_fixups.extend(format_fixups)
+        processing_cleanups.extend(format_fixups)
 
     # Check alphabetical order of original items
     alphabetical = is_alphabetical_order(trimmed)
@@ -1565,7 +1565,7 @@ def process_and_track(items, ext, max_item_length=25):
 
     # Check for non-Western (non-ASCII) characters across all items; applies to any format.
     if any(ord(c) > 127 for item in cleaned_items for c in item):
-        processing_fixups.append("QUALITY: Non-Western characters detected in items")
+        processing_cleanups.append("QUALITY: Non-Western characters detected in items")
 
     # Note: misspelling detection is deferred to a second pass in summarize_results()
     # after the corpus word frequency table is built across all files.
@@ -1589,13 +1589,13 @@ def process_and_track(items, ext, max_item_length=25):
     for step in cleanup_pipeline:
         processed, fixup = step(processed)
         if fixup:
-            processing_fixups.append(fixup)
+            processing_cleanups.append(fixup)
 
     # Conditional lowercasing: only if uppercase characters are found
     if any(any(c.isupper() for c in item) for item in processed):
         processed, fixup = clean_lowercase(processed)
         if fixup:
-            processing_fixups.append(fixup)
+            processing_cleanups.append(fixup)
 
     # Create metadata
     metadata = {
@@ -1608,8 +1608,8 @@ def process_and_track(items, ext, max_item_length=25):
         metadata["qualityIssues"] = quality_issues
 
     # Store processing fixups
-    if processing_fixups:
-        metadata["processingFixups"] = processing_fixups
+    if processing_cleanups:
+        metadata["processingCleanups"] = processing_cleanups
 
     return processed, processing, metadata
 
