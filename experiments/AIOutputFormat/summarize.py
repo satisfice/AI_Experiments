@@ -722,8 +722,8 @@ _HTML_FALLBACK_TAGS = ['p', 'span', 'div', 'article', 'section']
 def parse_html(content):
     """Parse HTML using a DOM tree. Extracts items from <li> tags (primary) or falls back
     to <p>/<span>/<div>/<article>/<section>. Each tag in the ancestor path emits its own
-    fixup key. Returns (items, fixups)."""
-    fixups = []
+    cleanup key. Returns (items, cleanups)."""
+    cleanups = []
     items = []
 
     # ── Codefence fallback (unchanged logic) ────────────────────────────────
@@ -732,8 +732,8 @@ def parse_html(content):
         match = re.search(code_block_pattern, content.strip(), re.DOTALL)
         if match:
             extracted_content = match.group(1)
-            fixups.append("Extract-from-HTML-Codefence-Markdown")
-            fixups.append("QUALITY: Invalid HTML format (content wrapped in markdown code fence instead of proper HTML markup)")
+            cleanups.append("Extract-from-HTML-Codefence-Markdown")
+            cleanups.append("QUALITY: Invalid HTML format (content wrapped in markdown code fence instead of proper HTML markup)")
 
             # If inner content is an all-numbered list, return it immediately
             numbered_pattern = r'^\d+\.\s+(.+)$'
@@ -744,7 +744,7 @@ def parse_html(content):
             ]
             if numbered_items:
                 items = numbered_items
-                return items, fixups
+                return items, cleanups
 
             # Otherwise fall through with extracted content (drop the fence)
             content = extracted_content
@@ -756,9 +756,9 @@ def parse_html(content):
     li_nodes = _find_leaf_tag_nodes(root, 'li')
     if li_nodes:
         items, had_br, _ = _items_from_nodes(li_nodes)
-        fixups.extend(_path_tag_cleanups(li_nodes, 'li'))
+        cleanups.extend(_path_tag_cleanups(li_nodes, 'li'))
         if had_br:
-            fixups.append("Remove-BR-Tags")
+            cleanups.append("Remove-BR-Tags")
         return items, fixups
 
     # ── Fallback path: try each tag in priority order ────────────────────────
@@ -774,11 +774,11 @@ def parse_html(content):
         num_matches = [re.match(r'^\d+\.\s+(.+)$', it) for it in raw_items]
         if raw_items and all(num_matches):
             items = [m.group(1) for m in num_matches]
-            fixups.extend(_path_tag_cleanups(tag_nodes, tag))
+            cleanups.extend(_path_tag_cleanups(tag_nodes, tag))
             if had_br:
-                fixups.append("Remove-BR-Tags")
-            fixups.append("HTML-Numbered-Items-In-Tags")
-            fixups.append("QUALITY: Numbered items in separate tags format (each item in its own <span>/<p> tag with number prefix instead of proper <li> list)")
+                cleanups.append("Remove-BR-Tags")
+            cleanups.append("HTML-Numbered-Items-In-Tags")
+            cleanups.append("QUALITY: Numbered items in separate tags format (each item in its own <span>/<p> tag with number prefix instead of proper <li> list)")
             break
 
         # Per-item comma-split check for inline comma-separated values
@@ -794,13 +794,13 @@ def parse_html(content):
             final_items.append(item)
 
         items = final_items
-        fixups.extend(_path_tag_cleanups(tag_nodes, tag))
+        cleanups.extend(_path_tag_cleanups(tag_nodes, tag))
         if had_br:
-            fixups.append("Remove-BR-Tags")
+            cleanups.append("Remove-BR-Tags")
         if comma_split_used:
-            fixups.append(f"QUALITY: Comma-separated items in single <{tag}> tag (items should be in separate tags or list markers)")
+            cleanups.append(f"QUALITY: Comma-separated items in single <{tag}> tag (items should be in separate tags or list markers)")
         if not was_line_split:
-            fixups.append("QUALITY: Single-span tag format (items in separate <p>/<span> tags instead of <li> list)")
+            cleanups.append("QUALITY: Single-span tag format (items in separate <p>/<span> tags instead of <li> list)")
         break
 
     # ── Invalid tag fallback: tag names rendered as items ───────────────────
@@ -809,8 +809,8 @@ def parse_html(content):
         invalid_nodes = _find_nodes_with_unknown_tags(root, known_tags)
         if invalid_nodes:
             items = [node.tag for node in invalid_nodes]
-            fixups.append("Extract-From-Invalid-HTML-Tags")
-            fixups.append("QUALITY: Invalid HTML (item text rendered as tags)")
+            cleanups.append("Extract-From-Invalid-HTML-Tags")
+            cleanups.append("QUALITY: Invalid HTML (item text rendered as tags)")
 
     # ── Plain text fallback: no HTML structure detected ──────────────────────
     if not items:
@@ -829,8 +829,8 @@ def parse_html(content):
             if numbered_items and all(num_matches):
                 # Every line is a numbered item — clean numbered list in plain text.
                 items = numbered_items
-                fixups.append("HTML-Numbered-List-Stripping")
-                fixups.append("QUALITY: Invalid HTML (contains plain numbered list instead of HTML markup)")
+                cleanups.append("HTML-Numbered-List-Stripping")
+                cleanups.append("QUALITY: Invalid HTML (contains plain numbered list instead of HTML markup)")
             elif numbered_items:
                 # Mix of numbered items and non-numbered lines (e.g. a title).
                 # If the non-numbered lines are all short (≤5 words), treat them as
@@ -838,34 +838,34 @@ def parse_html(content):
                 non_numbered = [clean_lines[i] for i, m in enumerate(num_matches) if not m]
                 if all(len(l.split()) <= 5 for l in non_numbered):
                     items = numbered_items
-                    fixups.append("HTML-Numbered-List-Stripping")
-                    fixups.append("QUALITY: Invalid HTML (contains plain numbered list instead of HTML markup)")
+                    cleanups.append("HTML-Numbered-List-Stripping")
+                    cleanups.append("QUALITY: Invalid HTML (contains plain numbered list instead of HTML markup)")
                 else:
                     items = clean_lines
-                    fixups.append("HTML-PlainText-Fallback")
-                    fixups.append("QUALITY: Requested HTML; response was plain text")
+                    cleanups.append("HTML-PlainText-Fallback")
+                    cleanups.append("QUALITY: Requested HTML; response was plain text")
             else:
                 items = clean_lines
-                fixups.append("HTML-PlainText-Fallback")
-                fixups.append("QUALITY: Requested HTML; response was plain text")
+                cleanups.append("HTML-PlainText-Fallback")
+                cleanups.append("QUALITY: Requested HTML; response was plain text")
 
-    return items, fixups
+    return items, cleanups
 
 
 def parse_txt1(content):
     """Parse .txt1 file: each line is an item, removing leading numbers.
     Delegates to clean_strip_leading_numbers for consistent cleanup and logging.
     Emits a QUALITY flag when no leading numbers are present (unexpected for this format).
-    Returns (items, fixups)."""
-    fixups = []
+    Returns (items, cleanups)."""
+    cleanups = []
     items = [line.rstrip('\n\r') for line in content.split('\n') if line.strip()]
     cleaned, fixup = clean_strip_leading_numbers(items)
     if fixup:
-        fixups.append(fixup)
+        cleanups.append(fixup)
     elif cleaned:
         # numberedText format expected leading numbers; their absence is a quality issue
-        fixups.append("QUALITY: TXT1-No-Numbers (file has no leading numbers; expected numbered format)")
-    return cleaned, fixups
+        cleanups.append("QUALITY: TXT1-No-Numbers (file has no leading numbers; expected numbered format)")
+    return cleaned, cleanups
 
 
 PARSERS = {
@@ -884,24 +884,24 @@ def extract_code_block(content):
     """
     Extract content from markdown code blocks (```...```).
     Looks for code blocks with optional language specifier (```json, ```yaml, etc).
-    Returns (extracted_content, had_codeblock, fixups) tuple.
+    Returns (extracted_content, had_codeblock, cleanups) tuple.
     If code blocks found, returns the content inside them.
     If no code blocks found, returns original content.
-    Fixup key emitted is named by the language specifier of the first block:
+    Cleanup key emitted is named by the language specifier of the first block:
       ```json  -> Extract-from-JSON-Codefence-Markdown
       ```yaml / ```yml -> Extract-from-YAML-Codefence-Markdown
       ```html  -> Extract-from-HTML-Codefence-Markdown
       ```csv   -> Extract-from-CSV-Codefence-Markdown
       ``` (no specifier or unrecognized) -> Extract-from-Generic-Codefence-Markdown
     """
-    _LANG_FIXUP_MAP = {
+    _LANG_CLEANUP_MAP = {
         'json': 'Extract-from-JSON-Codefence-Markdown',
         'yaml': 'Extract-from-YAML-Codefence-Markdown',
         'yml':  'Extract-from-YAML-Codefence-Markdown',
         'html': 'Extract-from-HTML-Codefence-Markdown',
         'csv':  'Extract-from-CSV-Codefence-Markdown',
     }
-    fixups = []
+    cleanups = []
     # Capture language specifier and block content separately
     code_block_pattern = r'```([\w]*)\n(.*?)\n```'
     matches = re.findall(code_block_pattern, content, re.DOTALL)
@@ -909,13 +909,13 @@ def extract_code_block(content):
     if matches:
         # Found code blocks - concatenate content from all blocks
         extracted = '\n'.join(m[1] for m in matches)
-        # Name the fixup from the language specifier of the first block
+        # Name the cleanup from the language specifier of the first block
         lang_spec = matches[0][0].lower()
-        fixups.append(_LANG_FIXUP_MAP.get(lang_spec, 'Extract-from-Generic-Codefence-Markdown'))
-        return extracted, True, fixups
+        cleanups.append(_LANG_CLEANUP_MAP.get(lang_spec, 'Extract-from-Generic-Codefence-Markdown'))
+        return extracted, True, cleanups
     else:
         # No code blocks found
-        return content, False, fixups
+        return content, False, cleanups
 
 
 # Maps substrings found in QUALITY cleanup strings to short canonical format-style labels.
