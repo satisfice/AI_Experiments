@@ -429,28 +429,59 @@ def parse_csv(content):
 
 def parse_md(content):
     """Parse Markdown file: each line is an item, with markdown bullets and headers removed.
+    Lines that are entirely bold (**text**), italic (*text* or _text_), or a heading (#)
+    are skipped as extraneous text and recorded as MD-Extraneous-Text (cleanup, not quality).
+    Non-alphabetic characters that remain in regular items are handled downstream as
+    both cleanup and quality issues by the standard pipeline.
     Returns (items, cleanups) where cleanups is a list of cleanup operations performed."""
     items = []
     cleanups = []
     header_count = 0
     bullet_count = 0
+    extraneous_count = 0
+
+    # Bullet: -, +, or * only when NOT followed by another * (distinguishes * bullet from ** bold)
+    _BULLET_RE = re.compile(r'^([-+]|\*(?!\*)|\d+[.):]) +')
+    # Bold: **text** — content must not start with *
+    _BOLD_RE = re.compile(r'^\*\*[^*].*\*\*$')
+    # Italic with *: *text* — second char must not be * or space (to avoid matching * bullet)
+    _ITALIC_STAR_RE = re.compile(r'^\*[^*\s].*\*$')
+    # Italic with _: _text_
+    _ITALIC_UNDER_RE = re.compile(r'^_[^_]+_$')
 
     for line in content.split('\n'):
-        if line.strip():
-            # Skip markdown headers (lines starting with #)
-            if line.lstrip().startswith('#'):
-                header_count += 1
-                continue
-            # Remove leading markdown bullets (*, -, +) and following whitespace
-            original = line
-            cleaned = re.sub(r'^[\s*\-+]+', '', line).rstrip('\n\r').strip()
-            if cleaned:
-                if cleaned != original.strip():
-                    bullet_count += 1
-                items.append(cleaned)
+        if not line.strip():
+            continue
+
+        stripped = line.strip()
+
+        # Skip markdown headers (lines starting with #)
+        if stripped.startswith('#'):
+            header_count += 1
+            continue
+
+        # Determine if line has a bullet/number prefix
+        bullet_m = _BULLET_RE.match(stripped)
+        content_part = stripped[bullet_m.end():].strip() if bullet_m else stripped
+
+        # Skip lines where the content (after optional bullet) is entirely bold or italic
+        if (_BOLD_RE.match(content_part) or
+                _ITALIC_STAR_RE.match(content_part) or
+                _ITALIC_UNDER_RE.match(content_part)):
+            extraneous_count += 1
+            continue
+
+        # Regular item: record that a bullet was stripped if applicable
+        if bullet_m:
+            bullet_count += 1
+
+        if content_part:
+            items.append(content_part)
 
     if header_count > 0:
         cleanups.append("MD-Header-Removal")
+    if extraneous_count > 0:
+        cleanups.append("MD-Extraneous-Text")
     if bullet_count > 0:
         cleanups.append("Bullet-Removal")
 

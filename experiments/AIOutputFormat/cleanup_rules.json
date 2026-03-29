@@ -390,6 +390,14 @@
       "subfunctions": [
         "bullet_character_removal_via_regex"
       ]
+    },
+    {
+      "name": "MD-Extraneous-Text",
+      "description": "Skips lines whose content (after any optional bullet prefix) is entirely a markdown bold (**text**), italic (*text* or _text_), or heading (#) element. These lines are not included as items and are not flagged as quality issues — they are purely structural/decorative markdown that carries no list content.",
+      "function": "parse_md",
+      "subfunctions": [
+        "bold_italic_heading_detection_and_skipping"
+      ]
     }
   ],
   "txt": [
