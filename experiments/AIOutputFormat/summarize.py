@@ -1843,12 +1843,12 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
                 if item:  # Only track non-empty items
                     source_items.add(item)
 
-            # Track files that produced 0 items (immediately after extraction, before processing)
-            if len(items) == 0:
-                zero_item_files.append(file_path.name)
-
             # Process and track normalization
             items, processing, metadata = process_and_track(items, ext, max_item_length)
+
+            # Track files where itemCount is 0
+            if metadata.get("itemCount") == 0:
+                zero_item_files.append(file_path.name)
 
             # Merge processing into metadata
             metadata.update(processing)
