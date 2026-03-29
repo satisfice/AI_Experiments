@@ -37,6 +37,7 @@
           "cleanupRules": {
             "CSV-Parse-Multi-Row": 2,
             "CSV-Parse-Single-Row": 18,
+            "Lowercase": 10,
             "Strip-Quotes": 12,
             "Strip-Trailing-Punctuation": 2
           }
@@ -59,7 +60,8 @@
           },
           "cleanupRules": {
             "CSV-Parse-Multi-Row": 12,
-            "CSV-Parse-One-Per-Line": 8
+            "CSV-Parse-One-Per-Line": 8,
+            "Lowercase": 7
           }
         },
         "animals_random": {
@@ -93,6 +95,7 @@
             "CSV-Parse-Multi-Row": 1,
             "CSV-Parse-One-Per-Line": 2,
             "CSV-Parse-Single-Row": 17,
+            "Lowercase": 15,
             "Strip-Leading-Numbers": 2,
             "Strip-Quotes": 4,
             "Strip-Trailing-Punctuation": 2
@@ -116,7 +119,8 @@
           },
           "cleanupRules": {
             "CSV-Parse-Multi-Row": 5,
-            "CSV-Parse-One-Per-Line": 15
+            "CSV-Parse-One-Per-Line": 15,
+            "Lowercase": 16
           }
         }
       },
@@ -126,6 +130,16 @@
             {
               "instance": "html_no_markup",
               "source": "20260220210956-animals_big-animals-gpt35turbo-t01-02.html"
+            }
+          ],
+          "inconsistent_case": [
+            {
+              "instance": "lower",
+              "source": "20260220210956-animals_big-animals-gpt35turbo-t01-02.html"
+            },
+            {
+              "instance": "mixed",
+              "source": "20260220210956-animals_big-animals-gpt35turbo-t01-01.html"
             }
           ],
           "inconsistent_html_format": [
@@ -142,6 +156,10 @@
               "source": "20260220210956-animals_big-animals-gpt35turbo-t01-08.html"
             },
             {
+              "instance": "Extract-From-Invalid-HTML-Tags",
+              "source": "20260220210956-animals_big-animals-gpt35turbo-t01-02.html"
+            },
+            {
               "instance": "Extract-From-LI-Tags",
               "source": "20260220210956-animals_big-animals-gpt35turbo-t01-01.html"
             },
@@ -150,8 +168,8 @@
               "source": "20260220210956-animals_big-animals-gpt35turbo-t01-01.html"
             },
             {
-              "instance": "HTML-PlainText-Fallback",
-              "source": "20260220210956-animals_big-animals-gpt35turbo-t01-02.html"
+              "instance": "Lowercase",
+              "source": "20260220210956-animals_big-animals-gpt35turbo-t01-01.html"
             }
           ],
           "consistentFormat": false,
@@ -163,10 +181,11 @@
           "cleanupRules": {
             "Extract-From-Body-Tags": 2,
             "Extract-From-HTML-Tags": 4,
+            "Extract-From-Invalid-HTML-Tags": 1,
             "Extract-From-LI-Tags": 19,
             "Extract-From-UL-Tags": 19,
             "Extract-from-HTML-Codefence-Markdown": 2,
-            "HTML-PlainText-Fallback": 1
+            "Lowercase": 19
           }
         },
         "animals_hard": {
@@ -188,7 +207,8 @@
             "Extract-From-Body-Tags": 14,
             "Extract-From-HTML-Tags": 15,
             "Extract-From-LI-Tags": 20,
-            "Extract-From-UL-Tags": 20
+            "Extract-From-UL-Tags": 20,
+            "Lowercase": 20
           }
         },
         "animals_random": {
@@ -205,7 +225,8 @@
           "cleanupRules": {
             "Extract-From-HTML-Tags": 6,
             "Extract-From-LI-Tags": 20,
-            "Extract-From-UL-Tags": 20
+            "Extract-From-UL-Tags": 20,
+            "Lowercase": 20
           }
         },
         "animals_random_hard": {
@@ -247,7 +268,8 @@
             "Extract-From-HTML-Tags": 13,
             "Extract-From-LI-Tags": 19,
             "Extract-From-UL-Tags": 18,
-            "HTML-Numbered-List-Stripping": 1
+            "HTML-Numbered-List-Stripping": 1,
+            "Lowercase": 20
           }
         }
       },
@@ -263,13 +285,20 @@
               "source": "20260220210841-animals_big-animals-gpt35turbo-t01-01.json"
             }
           ],
+          "inconsistent_json_format": [
+            {
+              "instance": "Lowercase",
+              "source": "20260220210841-animals_big-animals-gpt35turbo-t01-01.json"
+            }
+          ],
           "consistentFormat": true,
           "formatStyles": {
             "multiple lines": 20
           },
           "cleanupRules": {
             "JSON-Dict-Value-Extraction": 20,
-            "JSON-Nested-List-Flattening": 20
+            "JSON-Nested-List-Flattening": 20,
+            "Lowercase": 10
           }
         },
         "animals_hard": {
@@ -283,13 +312,20 @@
               "source": "20260220211127-animals_big-animals_hard-gpt35turbo-t01-01.json"
             }
           ],
+          "inconsistent_json_format": [
+            {
+              "instance": "Lowercase",
+              "source": "20260220211127-animals_big-animals_hard-gpt35turbo-t01-01.json"
+            }
+          ],
           "consistentFormat": true,
           "formatStyles": {
             "multiple lines": 20
           },
           "cleanupRules": {
             "JSON-Dict-Value-Extraction": 20,
-            "JSON-Nested-List-Flattening": 20
+            "JSON-Nested-List-Flattening": 20,
+            "Lowercase": 15
           }
         },
         "animals_random": {
@@ -303,13 +339,20 @@
               "source": "20260226211029-animals_big-animals_random-gpt35turbo-t01-01.json"
             }
           ],
+          "inconsistent_json_format": [
+            {
+              "instance": "Lowercase",
+              "source": "20260226211029-animals_big-animals_random-gpt35turbo-t01-01.json"
+            }
+          ],
           "consistentFormat": true,
           "formatStyles": {
             "multiple lines": 20
           },
           "cleanupRules": {
             "JSON-Dict-Value-Extraction": 20,
-            "JSON-Nested-List-Flattening": 20
+            "JSON-Nested-List-Flattening": 20,
+            "Lowercase": 18
           }
         },
         "animals_random_hard": {
@@ -319,7 +362,8 @@
           },
           "cleanupRules": {
             "JSON-Dict-Value-Extraction": 20,
-            "JSON-Nested-List-Flattening": 20
+            "JSON-Nested-List-Flattening": 20,
+            "Lowercase": 20
           }
         }
       },
@@ -330,7 +374,8 @@
             "unknown": 20
           },
           "cleanupRules": {
-            "Bullet-Removal": 20
+            "Bullet-Removal": 20,
+            "Lowercase": 20
           }
         },
         "animals_hard": {
@@ -339,7 +384,8 @@
             "unknown": 20
           },
           "cleanupRules": {
-            "Bullet-Removal": 20
+            "Bullet-Removal": 20,
+            "Lowercase": 20
           }
         },
         "animals_random": {
@@ -348,7 +394,8 @@
             "unknown": 20
           },
           "cleanupRules": {
-            "Bullet-Removal": 20
+            "Bullet-Removal": 20,
+            "Lowercase": 20
           }
         },
         "animals_random_hard": {
@@ -357,7 +404,8 @@
             "unknown": 20
           },
           "cleanupRules": {
-            "Bullet-Removal": 20
+            "Bullet-Removal": 20,
+            "Lowercase": 20
           }
         }
       },
@@ -368,6 +416,7 @@
             "numbered text": 20
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 20
           }
         },
@@ -377,6 +426,7 @@
             "numbered text": 20
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 20
           }
         },
@@ -386,6 +436,7 @@
             "numbered text": 20
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 20
           }
         },
@@ -395,6 +446,7 @@
             "numbered text": 20
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 20
           }
         }
@@ -407,6 +459,7 @@
             "plain text": 1
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Bullets": 1,
             "Strip-Leading-Numbers": 19
           }
@@ -428,6 +481,7 @@
             "plain text": 11
           },
           "cleanupRules": {
+            "Lowercase": 18,
             "Strip-Leading-Bullets": 3,
             "Strip-Leading-Numbers": 9
           }
@@ -439,6 +493,7 @@
             "plain text": 1
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Bullets": 1,
             "Strip-Leading-Numbers": 19
           }
@@ -450,6 +505,7 @@
             "numbered text": 5
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 5
           }
         }
@@ -471,7 +527,8 @@
             "markdown backticks": 20
           },
           "cleanupRules": {
-            "Extract-from-YAML-Codefence-Markdown": 20
+            "Extract-from-YAML-Codefence-Markdown": 20,
+            "Lowercase": 19
           }
         },
         "animals_hard": {
@@ -490,7 +547,8 @@
             "markdown backticks": 20
           },
           "cleanupRules": {
-            "Extract-from-YAML-Codefence-Markdown": 20
+            "Extract-from-YAML-Codefence-Markdown": 20,
+            "Lowercase": 15
           }
         },
         "animals_random": {
@@ -509,7 +567,8 @@
             "markdown backticks": 20
           },
           "cleanupRules": {
-            "Extract-from-YAML-Codefence-Markdown": 20
+            "Extract-from-YAML-Codefence-Markdown": 20,
+            "Lowercase": 19
           }
         },
         "animals_random_hard": {
@@ -529,7 +588,8 @@
             "leading hyphen": 11
           },
           "cleanupRules": {
-            "Extract-from-YAML-Codefence-Markdown": 9
+            "Extract-from-YAML-Codefence-Markdown": 9,
+            "Lowercase": 19
           }
         }
       }
@@ -561,6 +621,7 @@
           "cleanupRules": {
             "CSV-Parse-One-Per-Line": 2,
             "CSV-Parse-Single-Row": 18,
+            "Lowercase": 12,
             "Strip-Leading-Numbers": 2,
             "Strip-Quotes": 9,
             "Strip-Trailing-Punctuation": 1
@@ -586,7 +647,8 @@
           "cleanupRules": {
             "CSV-Parse-Multi-Row": 7,
             "CSV-Parse-One-Per-Line": 11,
-            "CSV-Parse-Single-Row": 2
+            "CSV-Parse-Single-Row": 2,
+            "Lowercase": 7
           }
         },
         "animals_random": {
@@ -628,6 +690,7 @@
             "CSV-Parse-Multi-Row": 1,
             "CSV-Parse-One-Per-Line": 3,
             "CSV-Parse-Single-Row": 16,
+            "Lowercase": 17,
             "Strip-Leading-Numbers": 3,
             "Strip-Quotes": 4
           }
@@ -650,7 +713,8 @@
           },
           "cleanupRules": {
             "CSV-Parse-Multi-Row": 1,
-            "CSV-Parse-One-Per-Line": 19
+            "CSV-Parse-One-Per-Line": 19,
+            "Lowercase": 15
           }
         }
       },
@@ -674,7 +738,8 @@
             "Extract-From-Body-Tags": 8,
             "Extract-From-HTML-Tags": 8,
             "Extract-From-LI-Tags": 20,
-            "Extract-From-UL-Tags": 20
+            "Extract-From-UL-Tags": 20,
+            "Lowercase": 20
           }
         },
         "animals_hard": {
@@ -696,7 +761,8 @@
             "Extract-From-Body-Tags": 13,
             "Extract-From-HTML-Tags": 15,
             "Extract-From-LI-Tags": 20,
-            "Extract-From-UL-Tags": 20
+            "Extract-From-UL-Tags": 20,
+            "Lowercase": 20
           }
         },
         "animals_random": {
@@ -724,7 +790,8 @@
             "Extract-From-HTML-Tags": 8,
             "Extract-From-LI-Tags": 20,
             "Extract-From-UL-Tags": 20,
-            "Extract-from-HTML-Codefence-Markdown": 1
+            "Extract-from-HTML-Codefence-Markdown": 1,
+            "Lowercase": 20
           }
         },
         "animals_random_hard": {
@@ -766,7 +833,8 @@
             "Extract-From-HTML-Tags": 9,
             "Extract-From-LI-Tags": 19,
             "Extract-From-P-Tags": 1,
-            "Extract-From-UL-Tags": 19
+            "Extract-From-UL-Tags": 19,
+            "Lowercase": 20
           }
         }
       },
@@ -782,13 +850,20 @@
               "source": "20260220212021-animals_big-animals-gpt35turbo-t08-02.json"
             }
           ],
+          "inconsistent_json_format": [
+            {
+              "instance": "Lowercase",
+              "source": "20260220212021-animals_big-animals-gpt35turbo-t08-02.json"
+            }
+          ],
           "consistentFormat": true,
           "formatStyles": {
             "multiple lines": 20
           },
           "cleanupRules": {
             "JSON-Dict-Value-Extraction": 20,
-            "JSON-Nested-List-Flattening": 20
+            "JSON-Nested-List-Flattening": 20,
+            "Lowercase": 9
           }
         },
         "animals_hard": {
@@ -802,6 +877,12 @@
               "source": "20260220212310-animals_big-animals_hard-gpt35turbo-t08-01.json"
             }
           ],
+          "inconsistent_json_format": [
+            {
+              "instance": "Lowercase",
+              "source": "20260220212310-animals_big-animals_hard-gpt35turbo-t08-01.json"
+            }
+          ],
           "consistentFormat": false,
           "formatStyles": {
             "multiple lines": 19,
@@ -809,7 +890,8 @@
           },
           "cleanupRules": {
             "JSON-Dict-Value-Extraction": 20,
-            "JSON-Nested-List-Flattening": 20
+            "JSON-Nested-List-Flattening": 20,
+            "Lowercase": 15
           }
         },
         "animals_random": {
@@ -819,7 +901,8 @@
           },
           "cleanupRules": {
             "JSON-Dict-Value-Extraction": 20,
-            "JSON-Nested-List-Flattening": 20
+            "JSON-Nested-List-Flattening": 20,
+            "Lowercase": 20
           }
         },
         "animals_random_hard": {
@@ -833,13 +916,20 @@
               "source": "20260220212841-animals_big-animals_random_hard-gpt35turbo-t08-01.json"
             }
           ],
+          "inconsistent_json_format": [
+            {
+              "instance": "Lowercase",
+              "source": "20260220212841-animals_big-animals_random_hard-gpt35turbo-t08-01.json"
+            }
+          ],
           "consistentFormat": true,
           "formatStyles": {
             "multiple lines": 20
           },
           "cleanupRules": {
             "JSON-Dict-Value-Extraction": 20,
-            "JSON-Nested-List-Flattening": 20
+            "JSON-Nested-List-Flattening": 20,
+            "Lowercase": 19
           }
         }
       },
@@ -850,7 +940,8 @@
             "unknown": 20
           },
           "cleanupRules": {
-            "Bullet-Removal": 20
+            "Bullet-Removal": 20,
+            "Lowercase": 20
           }
         },
         "animals_hard": {
@@ -859,7 +950,8 @@
             "unknown": 20
           },
           "cleanupRules": {
-            "Bullet-Removal": 20
+            "Bullet-Removal": 20,
+            "Lowercase": 20
           }
         },
         "animals_random": {
@@ -868,7 +960,8 @@
             "unknown": 20
           },
           "cleanupRules": {
-            "Bullet-Removal": 20
+            "Bullet-Removal": 20,
+            "Lowercase": 20
           }
         },
         "animals_random_hard": {
@@ -877,7 +970,8 @@
             "unknown": 20
           },
           "cleanupRules": {
-            "Bullet-Removal": 20
+            "Bullet-Removal": 20,
+            "Lowercase": 20
           }
         }
       },
@@ -888,6 +982,7 @@
             "numbered text": 20
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 20
           }
         },
@@ -897,6 +992,7 @@
             "numbered text": 20
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 20
           }
         },
@@ -906,6 +1002,7 @@
             "numbered text": 20
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 20
           }
         },
@@ -915,6 +1012,7 @@
             "numbered text": 20
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 20
           }
         }
@@ -926,6 +1024,7 @@
             "numbered text": 20
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 20
           }
         },
@@ -964,6 +1063,7 @@
             "numbered text": 10
           },
           "cleanupRules": {
+            "Lowercase": 19,
             "Strip-Leading-Bullets": 1,
             "Strip-Leading-Numbers": 10
           }
@@ -975,6 +1075,7 @@
             "plain text": 2
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Bullets": 2,
             "Strip-Leading-Numbers": 18
           }
@@ -986,6 +1087,7 @@
             "numbered text": 7
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Bullets": 1,
             "Strip-Leading-Numbers": 7
           }
@@ -1009,7 +1111,8 @@
             "leading hyphen": 1
           },
           "cleanupRules": {
-            "Extract-from-YAML-Codefence-Markdown": 19
+            "Extract-from-YAML-Codefence-Markdown": 19,
+            "Lowercase": 17
           }
         },
         "animals_hard": {
@@ -1029,7 +1132,8 @@
             "leading hyphen": 1
           },
           "cleanupRules": {
-            "Extract-from-YAML-Codefence-Markdown": 19
+            "Extract-from-YAML-Codefence-Markdown": 19,
+            "Lowercase": 14
           }
         },
         "animals_random": {
@@ -1038,7 +1142,8 @@
             "markdown backticks": 20
           },
           "cleanupRules": {
-            "Extract-from-YAML-Codefence-Markdown": 20
+            "Extract-from-YAML-Codefence-Markdown": 20,
+            "Lowercase": 20
           }
         },
         "animals_random_hard": {
@@ -1048,7 +1153,8 @@
             "markdown backticks": 4
           },
           "cleanupRules": {
-            "Extract-from-YAML-Codefence-Markdown": 4
+            "Extract-from-YAML-Codefence-Markdown": 4,
+            "Lowercase": 20
           }
         }
       }
@@ -1070,6 +1176,7 @@
           },
           "cleanupRules": {
             "CSV-Parse-Single-Row": 20,
+            "Lowercase": 20,
             "Strip-Quotes": 4,
             "Strip-Trailing-Punctuation": 1
           }
@@ -1080,7 +1187,8 @@
             "one per line": 20
           },
           "cleanupRules": {
-            "CSV-Parse-One-Per-Line": 20
+            "CSV-Parse-One-Per-Line": 20,
+            "Lowercase": 20
           }
         },
         "animals_random": {
@@ -1090,6 +1198,7 @@
           },
           "cleanupRules": {
             "CSV-Parse-Single-Row": 20,
+            "Lowercase": 20,
             "Strip-Quotes": 1
           }
         },
@@ -1099,7 +1208,8 @@
             "one per line": 20
           },
           "cleanupRules": {
-            "CSV-Parse-One-Per-Line": 20
+            "CSV-Parse-One-Per-Line": 20,
+            "Lowercase": 20
           }
         }
       },
@@ -1119,7 +1229,8 @@
           "cleanupRules": {
             "Extract-From-LI-Tags": 20,
             "Extract-From-UL-Tags": 20,
-            "Extract-from-HTML-Codefence-Markdown": 12
+            "Extract-from-HTML-Codefence-Markdown": 12,
+            "Lowercase": 20
           }
         },
         "animals_hard": {
@@ -1137,7 +1248,8 @@
           "cleanupRules": {
             "Extract-From-LI-Tags": 20,
             "Extract-From-UL-Tags": 20,
-            "Extract-from-HTML-Codefence-Markdown": 16
+            "Extract-from-HTML-Codefence-Markdown": 16,
+            "Lowercase": 20
           }
         },
         "animals_random": {
@@ -1162,7 +1274,8 @@
           "cleanupRules": {
             "Extract-From-LI-Tags": 20,
             "Extract-From-UL-Tags": 20,
-            "Extract-from-HTML-Codefence-Markdown": 5
+            "Extract-from-HTML-Codefence-Markdown": 5,
+            "Lowercase": 20
           }
         },
         "animals_random_hard": {
@@ -1187,7 +1300,8 @@
           "cleanupRules": {
             "Extract-From-LI-Tags": 20,
             "Extract-From-UL-Tags": 20,
-            "Extract-from-HTML-Codefence-Markdown": 2
+            "Extract-from-HTML-Codefence-Markdown": 2,
+            "Lowercase": 20
           }
         }
       },
@@ -1219,13 +1333,17 @@
             "non-western-characters": 1
           },
           "cleanupRules": {
-            "Extract-from-JSON-Codefence-Markdown": 5
+            "Extract-from-JSON-Codefence-Markdown": 5,
+            "Lowercase": 20
           }
         },
         "animals_hard": {
           "consistentFormat": true,
           "formatStyles": {
             "multiple lines": 20
+          },
+          "cleanupRules": {
+            "Lowercase": 20
           }
         },
         "animals_random": {
@@ -1241,13 +1359,17 @@
             "multiple lines": 13
           },
           "cleanupRules": {
-            "Extract-from-JSON-Codefence-Markdown": 7
+            "Extract-from-JSON-Codefence-Markdown": 7,
+            "Lowercase": 20
           }
         },
         "animals_random_hard": {
           "consistentFormat": true,
           "formatStyles": {
             "multiple lines": 20
+          },
+          "cleanupRules": {
+            "Lowercase": 20
           }
         }
       },
@@ -1258,29 +1380,18 @@
             "unknown": 20
           },
           "cleanupRules": {
-            "Bullet-Removal": 20
+            "Bullet-Removal": 20,
+            "Lowercase": 20
           }
         },
         "animals_hard": {
-          "trailing_punctuation": [
-            {
-              "instance": "Cats**",
-              "source": "20260220213446-animals_big-animals_hard-gpt41nano-t01-09.md"
-            }
-          ],
-          "markup_artifact": [
-            {
-              "instance": "Cats**",
-              "source": "20260220213446-animals_big-animals_hard-gpt41nano-t01-09.md"
-            }
-          ],
           "inconsistent_md_format": [
             {
               "instance": "Bullet-Removal",
               "source": "20260220213446-animals_big-animals_hard-gpt41nano-t01-01.md"
             },
             {
-              "instance": "Strip-Trailing-Punctuation",
+              "instance": "MD-Extraneous-Text",
               "source": "20260220213446-animals_big-animals_hard-gpt41nano-t01-09.md"
             }
           ],
@@ -1289,8 +1400,9 @@
             "unknown": 20
           },
           "cleanupRules": {
-            "Bullet-Removal": 13,
-            "Strip-Trailing-Punctuation": 1
+            "Bullet-Removal": 12,
+            "Lowercase": 20,
+            "MD-Extraneous-Text": 1
           }
         },
         "animals_random": {
@@ -1299,7 +1411,8 @@
             "unknown": 20
           },
           "cleanupRules": {
-            "Bullet-Removal": 20
+            "Bullet-Removal": 20,
+            "Lowercase": 20
           }
         },
         "animals_random_hard": {
@@ -1326,7 +1439,8 @@
           },
           "cleanupRules": {
             "Bullet-Removal": 11,
-            "Extract-from-Generic-Codefence-Markdown": 3
+            "Extract-from-Generic-Codefence-Markdown": 3,
+            "Lowercase": 20
           }
         }
       },
@@ -1337,6 +1451,7 @@
             "numbered text": 20
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 20
           }
         },
@@ -1346,6 +1461,7 @@
             "numbered text": 20
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 20
           }
         },
@@ -1355,6 +1471,7 @@
             "numbered text": 20
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 20
           }
         },
@@ -1364,6 +1481,7 @@
             "numbered text": 20
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 20
           }
         }
@@ -1373,24 +1491,36 @@
           "consistentFormat": true,
           "formatStyles": {
             "plain text": 20
+          },
+          "cleanupRules": {
+            "Lowercase": 20
           }
         },
         "animals_hard": {
           "consistentFormat": true,
           "formatStyles": {
             "plain text": 20
+          },
+          "cleanupRules": {
+            "Lowercase": 20
           }
         },
         "animals_random": {
           "consistentFormat": true,
           "formatStyles": {
             "plain text": 20
+          },
+          "cleanupRules": {
+            "Lowercase": 20
           }
         },
         "animals_random_hard": {
           "consistentFormat": true,
           "formatStyles": {
             "plain text": 20
+          },
+          "cleanupRules": {
+            "Lowercase": 20
           }
         }
       },
@@ -1401,6 +1531,7 @@
             "leading hyphen": 20
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "YAML-Dict-Value-Extraction": 2,
             "YAML-Single-List-Flattening": 2
           }
@@ -1418,6 +1549,7 @@
             "non-western-characters": 1
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "YAML-Parse-Error-Fallback": 1
           }
         },
@@ -1425,12 +1557,18 @@
           "consistentFormat": true,
           "formatStyles": {
             "leading hyphen": 20
+          },
+          "cleanupRules": {
+            "Lowercase": 20
           }
         },
         "animals_random_hard": {
           "consistentFormat": true,
           "formatStyles": {
             "leading hyphen": 20
+          },
+          "cleanupRules": {
+            "Lowercase": 20
           }
         }
       }
@@ -1457,6 +1595,7 @@
           },
           "cleanupRules": {
             "CSV-Parse-Single-Row": 20,
+            "Lowercase": 20,
             "Strip-Quotes": 4
           }
         },
@@ -1466,7 +1605,8 @@
             "one per line": 20
           },
           "cleanupRules": {
-            "CSV-Parse-One-Per-Line": 20
+            "CSV-Parse-One-Per-Line": 20,
+            "Lowercase": 20
           }
         },
         "animals_random": {
@@ -1492,6 +1632,7 @@
           },
           "cleanupRules": {
             "CSV-Parse-Single-Row": 20,
+            "Lowercase": 19,
             "Strip-Quotes": 1,
             "Strip-Trailing-Punctuation": 1
           }
@@ -1502,7 +1643,8 @@
             "one per line": 20
           },
           "cleanupRules": {
-            "CSV-Parse-One-Per-Line": 20
+            "CSV-Parse-One-Per-Line": 20,
+            "Lowercase": 20
           }
         }
       },
@@ -1522,7 +1664,8 @@
           "cleanupRules": {
             "Extract-From-LI-Tags": 20,
             "Extract-From-UL-Tags": 20,
-            "Extract-from-HTML-Codefence-Markdown": 13
+            "Extract-from-HTML-Codefence-Markdown": 13,
+            "Lowercase": 20
           }
         },
         "animals_hard": {
@@ -1549,7 +1692,8 @@
             "Extract-From-LI-Tags": 20,
             "Extract-From-OL-Tags": 1,
             "Extract-From-UL-Tags": 19,
-            "Extract-from-HTML-Codefence-Markdown": 11
+            "Extract-from-HTML-Codefence-Markdown": 11,
+            "Lowercase": 20
           }
         },
         "animals_random": {
@@ -1567,7 +1711,8 @@
           "cleanupRules": {
             "Extract-From-LI-Tags": 20,
             "Extract-From-UL-Tags": 20,
-            "Extract-from-HTML-Codefence-Markdown": 5
+            "Extract-from-HTML-Codefence-Markdown": 5,
+            "Lowercase": 20
           }
         },
         "animals_random_hard": {
@@ -1585,7 +1730,8 @@
           "cleanupRules": {
             "Extract-From-LI-Tags": 20,
             "Extract-From-UL-Tags": 20,
-            "Extract-from-HTML-Codefence-Markdown": 3
+            "Extract-from-HTML-Codefence-Markdown": 3,
+            "Lowercase": 20
           }
         }
       },
@@ -1604,13 +1750,17 @@
             "single lines": 1
           },
           "cleanupRules": {
-            "Extract-from-JSON-Codefence-Markdown": 8
+            "Extract-from-JSON-Codefence-Markdown": 8,
+            "Lowercase": 20
           }
         },
         "animals_hard": {
           "consistentFormat": true,
           "formatStyles": {
             "multiple lines": 20
+          },
+          "cleanupRules": {
+            "Lowercase": 20
           }
         },
         "animals_random": {
@@ -1627,7 +1777,8 @@
             "single lines": 1
           },
           "cleanupRules": {
-            "Extract-from-JSON-Codefence-Markdown": 5
+            "Extract-from-JSON-Codefence-Markdown": 5,
+            "Lowercase": 20
           }
         },
         "animals_random_hard": {
@@ -1643,7 +1794,8 @@
             "format and markdown backticks": 1
           },
           "cleanupRules": {
-            "Extract-from-JSON-Codefence-Markdown": 1
+            "Extract-from-JSON-Codefence-Markdown": 1,
+            "Lowercase": 20
           }
         }
       },
@@ -1654,7 +1806,8 @@
             "unknown": 20
           },
           "cleanupRules": {
-            "Bullet-Removal": 20
+            "Bullet-Removal": 20,
+            "Lowercase": 20
           }
         },
         "animals_hard": {
@@ -1669,7 +1822,8 @@
             "unknown": 20
           },
           "cleanupRules": {
-            "Bullet-Removal": 14
+            "Bullet-Removal": 14,
+            "Lowercase": 20
           }
         },
         "animals_random": {
@@ -1685,7 +1839,8 @@
             "non-western-characters": 1
           },
           "cleanupRules": {
-            "Bullet-Removal": 20
+            "Bullet-Removal": 20,
+            "Lowercase": 20
           }
         },
         "animals_random_hard": {
@@ -1705,7 +1860,8 @@
           },
           "cleanupRules": {
             "Bullet-Removal": 15,
-            "Extract-from-Generic-Codefence-Markdown": 1
+            "Extract-from-Generic-Codefence-Markdown": 1,
+            "Lowercase": 20
           }
         }
       },
@@ -1716,6 +1872,7 @@
             "numbered text": 20
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 20
           }
         },
@@ -1725,6 +1882,7 @@
             "numbered text": 20
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 20
           }
         },
@@ -1734,6 +1892,7 @@
             "numbered text": 20
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 20
           }
         },
@@ -1743,6 +1902,7 @@
             "numbered text": 20
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 20
           }
         }
@@ -1752,24 +1912,36 @@
           "consistentFormat": true,
           "formatStyles": {
             "plain text": 20
+          },
+          "cleanupRules": {
+            "Lowercase": 20
           }
         },
         "animals_hard": {
           "consistentFormat": true,
           "formatStyles": {
             "plain text": 20
+          },
+          "cleanupRules": {
+            "Lowercase": 20
           }
         },
         "animals_random": {
           "consistentFormat": true,
           "formatStyles": {
             "plain text": 20
+          },
+          "cleanupRules": {
+            "Lowercase": 20
           }
         },
         "animals_random_hard": {
           "consistentFormat": true,
           "formatStyles": {
             "plain text": 20
+          },
+          "cleanupRules": {
+            "Lowercase": 20
           }
         }
       },
@@ -1788,12 +1960,18 @@
           "consistentFormat": true,
           "formatStyles": {
             "leading hyphen": 20
+          },
+          "cleanupRules": {
+            "Lowercase": 19
           }
         },
         "animals_hard": {
           "consistentFormat": true,
           "formatStyles": {
             "leading hyphen": 20
+          },
+          "cleanupRules": {
+            "Lowercase": 20
           }
         },
         "animals_random": {
@@ -1803,7 +1981,8 @@
             "markdown backticks": 3
           },
           "cleanupRules": {
-            "Extract-from-YAML-Codefence-Markdown": 3
+            "Extract-from-YAML-Codefence-Markdown": 3,
+            "Lowercase": 20
           }
         },
         "animals_random_hard": {
@@ -1820,6 +1999,9 @@
           "consistentFormat": true,
           "formatStyles": {
             "leading hyphen": 20
+          },
+          "cleanupRules": {
+            "Lowercase": 19
           }
         }
       }
@@ -1839,6 +2021,7 @@
             "CSV-Parse-Multi-Row": 4,
             "CSV-Parse-One-Per-Line": 12,
             "CSV-Parse-Single-Row": 4,
+            "Lowercase": 20,
             "Strip-Quotes": 2
           }
         },
@@ -1848,7 +2031,8 @@
             "one per line": 20
           },
           "cleanupRules": {
-            "CSV-Parse-One-Per-Line": 20
+            "CSV-Parse-One-Per-Line": 20,
+            "Lowercase": 20
           }
         },
         "animals_random": {
@@ -1862,6 +2046,7 @@
             "CSV-Parse-Multi-Row": 6,
             "CSV-Parse-One-Per-Line": 8,
             "CSV-Parse-Single-Row": 6,
+            "Lowercase": 20,
             "Strip-Quotes": 7
           }
         },
@@ -1871,7 +2056,8 @@
             "one per line": 20
           },
           "cleanupRules": {
-            "CSV-Parse-One-Per-Line": 20
+            "CSV-Parse-One-Per-Line": 20,
+            "Lowercase": 20
           }
         }
       },
@@ -1901,6 +2087,10 @@
           ],
           "inconsistent_html_format": [
             {
+              "instance": "Extract-From-Invalid-HTML-Tags",
+              "source": "20260220232953-animals_big-animals-llama318b-t01-15.html"
+            },
+            {
               "instance": "Extract-From-LI-Tags",
               "source": "20260220232953-animals_big-animals-llama318b-t01-11.html"
             },
@@ -1919,6 +2109,10 @@
             {
               "instance": "HTML-PlainText-Fallback",
               "source": "20260220232953-animals_big-animals-llama318b-t01-07.html"
+            },
+            {
+              "instance": "Lowercase",
+              "source": "20260220232953-animals_big-animals-llama318b-t01-01.html"
             }
           ],
           "consistentFormat": true,
@@ -1928,11 +2122,13 @@
             "html_no_markup": 3
           },
           "cleanupRules": {
+            "Extract-From-Invalid-HTML-Tags": 1,
             "Extract-From-LI-Tags": 5,
             "Extract-From-OL-Tags": 5,
             "Extract-From-P-Tags": 11,
             "Extract-From-Span-Tags": 1,
-            "HTML-PlainText-Fallback": 3
+            "HTML-PlainText-Fallback": 2,
+            "Lowercase": 18
           }
         },
         "animals_hard": {
@@ -1948,7 +2144,8 @@
             "html_no_markup": 20
           },
           "cleanupRules": {
-            "HTML-PlainText-Fallback": 20
+            "HTML-PlainText-Fallback": 20,
+            "Lowercase": 20
           }
         },
         "animals_random": {
@@ -1970,7 +2167,21 @@
               "source": "20260227120434-animals_big-animals_random-llama318b-t01-07.html"
             }
           ],
+          "inconsistent_case": [
+            {
+              "instance": "lower",
+              "source": "20260227120434-animals_big-animals_random-llama318b-t01-15.html"
+            },
+            {
+              "instance": "mixed",
+              "source": "20260227120434-animals_big-animals_random-llama318b-t01-01.html"
+            }
+          ],
           "inconsistent_html_format": [
+            {
+              "instance": "Extract-From-Invalid-HTML-Tags",
+              "source": "20260227120434-animals_big-animals_random-llama318b-t01-15.html"
+            },
             {
               "instance": "Extract-From-LI-Tags",
               "source": "20260227120434-animals_big-animals_random-llama318b-t01-01.html"
@@ -1988,12 +2199,12 @@
               "source": "20260227120434-animals_big-animals_random-llama318b-t01-09.html"
             },
             {
-              "instance": "HTML-Numbered-List-Stripping",
-              "source": "20260227120434-animals_big-animals_random-llama318b-t01-16.html"
-            },
-            {
               "instance": "HTML-PlainText-Fallback",
               "source": "20260227120434-animals_big-animals_random-llama318b-t01-07.html"
+            },
+            {
+              "instance": "Lowercase",
+              "source": "20260227120434-animals_big-animals_random-llama318b-t01-01.html"
             }
           ],
           "consistentFormat": false,
@@ -2005,12 +2216,13 @@
             "comma-separated": 2
           },
           "cleanupRules": {
+            "Extract-From-Invalid-HTML-Tags": 3,
             "Extract-From-LI-Tags": 7,
             "Extract-From-OL-Tags": 6,
             "Extract-From-P-Tags": 8,
             "Extract-From-Span-Tags": 1,
-            "HTML-Numbered-List-Stripping": 1,
-            "HTML-PlainText-Fallback": 3
+            "HTML-PlainText-Fallback": 1,
+            "Lowercase": 17
           }
         },
         "animals_random_hard": {
@@ -2042,6 +2254,10 @@
               "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-11.html"
             },
             {
+              "instance": "Extract-From-Invalid-HTML-Tags",
+              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-12.html"
+            },
+            {
               "instance": "Extract-From-LI-Tags",
               "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-05.html"
             },
@@ -2056,6 +2272,10 @@
             {
               "instance": "HTML-PlainText-Fallback",
               "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-01.html"
+            },
+            {
+              "instance": "Lowercase",
+              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-01.html"
             }
           ],
           "consistentFormat": true,
@@ -2066,10 +2286,12 @@
           },
           "cleanupRules": {
             "Extract-From-Div-Tags": 1,
+            "Extract-From-Invalid-HTML-Tags": 2,
             "Extract-From-LI-Tags": 3,
             "Extract-From-OL-Tags": 2,
             "Extract-From-P-Tags": 5,
-            "HTML-PlainText-Fallback": 11
+            "HTML-PlainText-Fallback": 9,
+            "Lowercase": 18
           }
         }
       },
@@ -2093,7 +2315,8 @@
           },
           "cleanupRules": {
             "Extract-from-Generic-Codefence-Markdown": 5,
-            "Extract-from-JSON-Codefence-Markdown": 2
+            "Extract-from-JSON-Codefence-Markdown": 2,
+            "Lowercase": 20
           }
         },
         "animals_hard": {
@@ -2122,7 +2345,8 @@
           },
           "cleanupRules": {
             "Extract-from-Generic-Codefence-Markdown": 2,
-            "Extract-from-JSON-Codefence-Markdown": 1
+            "Extract-from-JSON-Codefence-Markdown": 1,
+            "Lowercase": 20
           }
         },
         "animals_random": {
@@ -2144,7 +2368,8 @@
           },
           "cleanupRules": {
             "Extract-from-JSON-Codefence-Markdown": 1,
-            "JSON-Dict-List-Key-Extraction": 3
+            "JSON-Dict-List-Key-Extraction": 3,
+            "Lowercase": 20
           }
         },
         "animals_random_hard": {
@@ -2168,7 +2393,8 @@
             "repeated-json-keys": 1
           },
           "cleanupRules": {
-            "Extract-from-Generic-Codefence-Markdown": 3
+            "Extract-from-Generic-Codefence-Markdown": 3,
+            "Lowercase": 20
           }
         }
       },
@@ -2178,10 +2404,6 @@
             {
               "instance": "Bullet-Removal",
               "source": "20260220232514-animals_big-animals-llama318b-t01-01.md"
-            },
-            {
-              "instance": "Strip-Leading-Numbers",
-              "source": "20260220232514-animals_big-animals-llama318b-t01-06.md"
             }
           ],
           "consistentFormat": true,
@@ -2189,14 +2411,17 @@
             "unknown": 20
           },
           "cleanupRules": {
-            "Bullet-Removal": 12,
-            "Strip-Leading-Numbers": 5
+            "Bullet-Removal": 17,
+            "Lowercase": 20
           }
         },
         "animals_hard": {
           "consistentFormat": true,
           "formatStyles": {
             "unknown": 20
+          },
+          "cleanupRules": {
+            "Lowercase": 20
           }
         },
         "animals_random": {
@@ -2204,10 +2429,6 @@
             {
               "instance": "Bullet-Removal",
               "source": "20260226213236-animals_big-animals_random-llama318b-t01-01.md"
-            },
-            {
-              "instance": "Strip-Leading-Numbers",
-              "source": "20260226213236-animals_big-animals_random-llama318b-t01-02.md"
             }
           ],
           "consistentFormat": true,
@@ -2215,31 +2436,19 @@
             "unknown": 20
           },
           "cleanupRules": {
-            "Bullet-Removal": 16,
-            "Strip-Leading-Numbers": 3
+            "Bullet-Removal": 19,
+            "Lowercase": 20
           }
         },
         "animals_random_hard": {
-          "trailing_punctuation": [
+          "inconsistent_case": [
             {
-              "instance": "Fennec Fox*",
-              "source": "20260220235055-animals_big-animals_random_hard-llama318b-t01-13.md"
+              "instance": "lower",
+              "source": "20260220235055-animals_big-animals_random_hard-llama318b-t01-09.md"
             },
             {
-              "instance": "Puma**",
-              "source": "20260220235055-animals_big-animals_random_hard-llama318b-t01-09.md"
-            }
-          ],
-          "exceeds_max_length": [
-            {
-              "instance": "Northern Rockhopper Penguin*",
-              "source": "20260220235055-animals_big-animals_random_hard-llama318b-t01-13.md"
-            }
-          ],
-          "markup_artifact": [
-            {
-              "instance": "Puma**",
-              "source": "20260220235055-animals_big-animals_random_hard-llama318b-t01-09.md"
+              "instance": "mixed",
+              "source": "20260220235055-animals_big-animals_random_hard-llama318b-t01-01.md"
             }
           ],
           "inconsistent_md_format": [
@@ -2248,11 +2457,11 @@
               "source": "20260220235055-animals_big-animals_random_hard-llama318b-t01-03.md"
             },
             {
-              "instance": "Strip-Leading-Numbers",
-              "source": "20260220235055-animals_big-animals_random_hard-llama318b-t01-11.md"
+              "instance": "Lowercase",
+              "source": "20260220235055-animals_big-animals_random_hard-llama318b-t01-01.md"
             },
             {
-              "instance": "Strip-Trailing-Punctuation",
+              "instance": "MD-Extraneous-Text",
               "source": "20260220235055-animals_big-animals_random_hard-llama318b-t01-09.md"
             }
           ],
@@ -2261,9 +2470,9 @@
             "unknown": 20
           },
           "cleanupRules": {
-            "Bullet-Removal": 10,
-            "Strip-Leading-Numbers": 1,
-            "Strip-Trailing-Punctuation": 2
+            "Bullet-Removal": 9,
+            "Lowercase": 18,
+            "MD-Extraneous-Text": 2
           }
         }
       },
@@ -2274,6 +2483,7 @@
             "numbered text": 20
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 20
           }
         },
@@ -2283,6 +2493,7 @@
             "numbered text": 20
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 20
           }
         },
@@ -2292,6 +2503,7 @@
             "numbered text": 20
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 20
           }
         },
@@ -2301,6 +2513,7 @@
             "numbered text": 20
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 20
           }
         }
@@ -2310,12 +2523,18 @@
           "consistentFormat": true,
           "formatStyles": {
             "plain text": 20
+          },
+          "cleanupRules": {
+            "Lowercase": 20
           }
         },
         "animals_hard": {
           "consistentFormat": true,
           "formatStyles": {
             "plain text": 20
+          },
+          "cleanupRules": {
+            "Lowercase": 20
           }
         },
         "animals_random": {
@@ -2325,6 +2544,7 @@
             "numbered text": 2
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 2
           }
         },
@@ -2332,6 +2552,9 @@
           "consistentFormat": true,
           "formatStyles": {
             "plain text": 20
+          },
+          "cleanupRules": {
+            "Lowercase": 20
           }
         }
       },
@@ -2353,6 +2576,7 @@
             "plain text": 2
           },
           "cleanupRules": {
+            "Lowercase": 19,
             "YAML-Plain-Text-Detection": 2
           }
         },
@@ -2373,6 +2597,7 @@
             "leading hyphen": 1
           },
           "cleanupRules": {
+            "Lowercase": 16,
             "YAML-Directive-Marker-Handling": 1,
             "YAML-Plain-Text-Detection": 19
           }
@@ -2381,6 +2606,9 @@
           "consistentFormat": true,
           "formatStyles": {
             "leading hyphen": 20
+          },
+          "cleanupRules": {
+            "Lowercase": 20
           }
         },
         "animals_random_hard": {
@@ -2390,6 +2618,7 @@
             "plain text": 6
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "YAML-Plain-Text-Detection": 6
           }
         }
@@ -2408,6 +2637,7 @@
             "CSV-Parse-Multi-Row": 4,
             "CSV-Parse-One-Per-Line": 15,
             "CSV-Parse-Single-Row": 1,
+            "Lowercase": 20,
             "Strip-Quotes": 2
           }
         },
@@ -2417,7 +2647,8 @@
             "one per line": 20
           },
           "cleanupRules": {
-            "CSV-Parse-One-Per-Line": 20
+            "CSV-Parse-One-Per-Line": 20,
+            "Lowercase": 20
           }
         },
         "animals_random": {
@@ -2437,6 +2668,7 @@
             "CSV-Parse-Multi-Row": 8,
             "CSV-Parse-One-Per-Line": 9,
             "CSV-Parse-Single-Row": 3,
+            "Lowercase": 20,
             "Strip-Quotes": 3,
             "Strip-Trailing-Punctuation": 1
           }
@@ -2447,7 +2679,8 @@
             "one per line": 20
           },
           "cleanupRules": {
-            "CSV-Parse-One-Per-Line": 20
+            "CSV-Parse-One-Per-Line": 20,
+            "Lowercase": 20
           }
         }
       },
@@ -2477,6 +2710,10 @@
           ],
           "inconsistent_html_format": [
             {
+              "instance": "Extract-From-Invalid-HTML-Tags",
+              "source": "20260221000424-animals_big-animals-llama318b-t08-10.html"
+            },
+            {
               "instance": "Extract-From-LI-Tags",
               "source": "20260221000424-animals_big-animals-llama318b-t08-01.html"
             },
@@ -2493,8 +2730,8 @@
               "source": "20260221000424-animals_big-animals-llama318b-t08-09.html"
             },
             {
-              "instance": "HTML-PlainText-Fallback",
-              "source": "20260221000424-animals_big-animals-llama318b-t08-10.html"
+              "instance": "Lowercase",
+              "source": "20260221000424-animals_big-animals-llama318b-t08-01.html"
             }
           ],
           "consistentFormat": true,
@@ -2504,11 +2741,12 @@
             "html_no_markup": 1
           },
           "cleanupRules": {
+            "Extract-From-Invalid-HTML-Tags": 1,
             "Extract-From-LI-Tags": 11,
             "Extract-From-OL-Tags": 10,
             "Extract-From-P-Tags": 8,
             "Extract-From-UL-Tags": 1,
-            "HTML-PlainText-Fallback": 1
+            "Lowercase": 18
           }
         },
         "animals_hard": {
@@ -2524,13 +2762,31 @@
               "source": "20260221001303-animals_big-animals_hard-llama318b-t08-01.html"
             }
           ],
+          "inconsistent_case": [
+            {
+              "instance": "lower",
+              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-17.html"
+            },
+            {
+              "instance": "mixed",
+              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-01.html"
+            }
+          ],
           "inconsistent_html_format": [
+            {
+              "instance": "Extract-From-Invalid-HTML-Tags",
+              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-17.html"
+            },
             {
               "instance": "Extract-From-P-Tags",
               "source": "20260221001303-animals_big-animals_hard-llama318b-t08-13.html"
             },
             {
               "instance": "HTML-PlainText-Fallback",
+              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-01.html"
+            },
+            {
+              "instance": "Lowercase",
               "source": "20260221001303-animals_big-animals_hard-llama318b-t08-01.html"
             }
           ],
@@ -2541,8 +2797,10 @@
             "single-span-tag": 1
           },
           "cleanupRules": {
+            "Extract-From-Invalid-HTML-Tags": 1,
             "Extract-From-P-Tags": 1,
-            "HTML-PlainText-Fallback": 19
+            "HTML-PlainText-Fallback": 18,
+            "Lowercase": 19
           }
         },
         "animals_random": {
@@ -2558,7 +2816,21 @@
               "source": "20260227125230-animals_big-animals_random-llama318b-t08-01.html"
             }
           ],
+          "inconsistent_case": [
+            {
+              "instance": "lower",
+              "source": "20260227125230-animals_big-animals_random-llama318b-t08-05.html"
+            },
+            {
+              "instance": "mixed",
+              "source": "20260227114938-animals_big-animals_random-llama318b-t08-01.html"
+            }
+          ],
           "inconsistent_html_format": [
+            {
+              "instance": "Extract-From-Invalid-HTML-Tags",
+              "source": "20260227125230-animals_big-animals_random-llama318b-t08-05.html"
+            },
             {
               "instance": "Extract-From-LI-Tags",
               "source": "20260227114938-animals_big-animals_random-llama318b-t08-01.html"
@@ -2578,6 +2850,10 @@
             {
               "instance": "HTML-PlainText-Fallback",
               "source": "20260227125230-animals_big-animals_random-llama318b-t08-01.html"
+            },
+            {
+              "instance": "Lowercase",
+              "source": "20260227114938-animals_big-animals_random-llama318b-t08-01.html"
             }
           ],
           "consistentFormat": true,
@@ -2587,11 +2863,13 @@
             "html_no_markup": 3
           },
           "cleanupRules": {
+            "Extract-From-Invalid-HTML-Tags": 2,
             "Extract-From-LI-Tags": 8,
             "Extract-From-OL-Tags": 7,
             "Extract-From-P-Tags": 11,
             "Extract-From-UL-Tags": 1,
-            "HTML-PlainText-Fallback": 3
+            "HTML-PlainText-Fallback": 1,
+            "Lowercase": 20
           }
         },
         "animals_random_hard": {
@@ -2607,7 +2885,21 @@
               "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-01.html"
             }
           ],
+          "inconsistent_case": [
+            {
+              "instance": "lower",
+              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-01.html"
+            },
+            {
+              "instance": "mixed",
+              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-02.html"
+            }
+          ],
           "inconsistent_html_format": [
+            {
+              "instance": "Extract-From-Invalid-HTML-Tags",
+              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-01.html"
+            },
             {
               "instance": "Extract-From-LI-Tags",
               "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-06.html"
@@ -2626,7 +2918,11 @@
             },
             {
               "instance": "HTML-PlainText-Fallback",
-              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-01.html"
+              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-02.html"
+            },
+            {
+              "instance": "Lowercase",
+              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-02.html"
             }
           ],
           "consistentFormat": true,
@@ -2636,11 +2932,13 @@
             "single-span-tag": 4
           },
           "cleanupRules": {
+            "Extract-From-Invalid-HTML-Tags": 2,
             "Extract-From-LI-Tags": 3,
             "Extract-From-OL-Tags": 3,
             "Extract-From-P-Tags": 3,
             "Extract-From-Span-Tags": 1,
-            "HTML-PlainText-Fallback": 13
+            "HTML-PlainText-Fallback": 11,
+            "Lowercase": 18
           }
         }
       },
@@ -2669,7 +2967,8 @@
           "cleanupRules": {
             "Extract-from-Generic-Codefence-Markdown": 3,
             "Extract-from-JSON-Codefence-Markdown": 3,
-            "JSON-Set-Format-Conversion": 1
+            "JSON-Set-Format-Conversion": 1,
+            "Lowercase": 20
           }
         },
         "animals_hard": {
@@ -2690,7 +2989,8 @@
           },
           "cleanupRules": {
             "Extract-from-Generic-Codefence-Markdown": 1,
-            "JSON-Set-Format-Conversion": 1
+            "JSON-Set-Format-Conversion": 1,
+            "Lowercase": 20
           }
         },
         "animals_random": {
@@ -2717,7 +3017,8 @@
           "cleanupRules": {
             "Extract-from-Generic-Codefence-Markdown": 1,
             "Extract-from-JSON-Codefence-Markdown": 1,
-            "JSON-Dict-List-Key-Extraction": 5
+            "JSON-Dict-List-Key-Extraction": 5,
+            "Lowercase": 20
           }
         },
         "animals_random_hard": {
@@ -2744,35 +3045,16 @@
           "cleanupRules": {
             "Extract-from-Generic-Codefence-Markdown": 2,
             "JSON-Dict-Value-Extraction": 2,
-            "JSON-Nested-List-Flattening": 2
+            "JSON-Nested-List-Flattening": 2,
+            "Lowercase": 20
           }
         }
       },
       "markdown": {
         "animals": {
-          "trailing_punctuation": [
-            {
-              "instance": "Animals**",
-              "source": "20260220235950-animals_big-animals-llama318b-t08-20.md"
-            }
-          ],
-          "markup_artifact": [
-            {
-              "instance": "Animals**",
-              "source": "20260220235950-animals_big-animals-llama318b-t08-20.md"
-            }
-          ],
           "inconsistent_md_format": [
             {
-              "instance": "Bullet-Removal",
-              "source": "20260220235950-animals_big-animals-llama318b-t08-01.md"
-            },
-            {
-              "instance": "Strip-Leading-Numbers",
-              "source": "20260220235950-animals_big-animals-llama318b-t08-02.md"
-            },
-            {
-              "instance": "Strip-Trailing-Punctuation",
+              "instance": "MD-Extraneous-Text",
               "source": "20260220235950-animals_big-animals-llama318b-t08-20.md"
             }
           ],
@@ -2781,9 +3063,9 @@
             "unknown": 20
           },
           "cleanupRules": {
-            "Bullet-Removal": 12,
-            "Strip-Leading-Numbers": 9,
-            "Strip-Trailing-Punctuation": 1
+            "Bullet-Removal": 20,
+            "Lowercase": 20,
+            "MD-Extraneous-Text": 1
           }
         },
         "animals_hard": {
@@ -2798,34 +3080,37 @@
             "unknown": 20
           },
           "cleanupRules": {
-            "Bullet-Removal": 2
+            "Bullet-Removal": 2,
+            "Lowercase": 20
           }
         },
         "animals_random": {
-          "trailing_punctuation": [
+          "inconsistent_case": [
             {
-              "instance": "Koala**",
+              "instance": "lower",
               "source": "20260227124525-animals_big-animals_random-llama318b-t08-01.md"
-            }
-          ],
-          "markup_artifact": [
+            },
             {
-              "instance": "Koala**",
-              "source": "20260227124525-animals_big-animals_random-llama318b-t08-01.md"
+              "instance": "mixed",
+              "source": "20260227124525-animals_big-animals_random-llama318b-t08-02.md"
             }
           ],
           "inconsistent_md_format": [
             {
               "instance": "Bullet-Removal",
-              "source": "20260227124525-animals_big-animals_random-llama318b-t08-01.md"
-            },
-            {
-              "instance": "Strip-Leading-Numbers",
               "source": "20260227124525-animals_big-animals_random-llama318b-t08-02.md"
             },
             {
-              "instance": "Strip-Trailing-Punctuation",
+              "instance": "Lowercase",
+              "source": "20260227124525-animals_big-animals_random-llama318b-t08-02.md"
+            },
+            {
+              "instance": "MD-Extraneous-Text",
               "source": "20260227124525-animals_big-animals_random-llama318b-t08-01.md"
+            },
+            {
+              "instance": "Strip-Leading-Bullets",
+              "source": "20260227124525-animals_big-animals_random-llama318b-t08-17.md"
             }
           ],
           "consistentFormat": true,
@@ -2833,40 +3118,49 @@
             "unknown": 20
           },
           "cleanupRules": {
-            "Bullet-Removal": 12,
-            "Strip-Leading-Numbers": 8,
-            "Strip-Trailing-Punctuation": 1
+            "Bullet-Removal": 18,
+            "Lowercase": 19,
+            "MD-Extraneous-Text": 1,
+            "Strip-Leading-Bullets": 1
           }
         },
         "animals_random_hard": {
           "trailing_punctuation": [
             {
-              "instance": "Cat**",
-              "source": "20260221002534-animals_big-animals_random_hard-llama318b-t08-07.md"
-            },
-            {
               "instance": "Tapir*",
               "source": "20260221002534-animals_big-animals_random_hard-llama318b-t08-15.md"
             }
           ],
-          "markup_artifact": [
+          "inconsistent_case": [
             {
-              "instance": "Cat**",
+              "instance": "lower",
               "source": "20260221002534-animals_big-animals_random_hard-llama318b-t08-07.md"
+            },
+            {
+              "instance": "mixed",
+              "source": "20260221002534-animals_big-animals_random_hard-llama318b-t08-01.md"
             }
           ],
           "inconsistent_md_format": [
             {
               "instance": "Bullet-Removal",
-              "source": "20260221002534-animals_big-animals_random_hard-llama318b-t08-02.md"
-            },
-            {
-              "instance": "Strip-Leading-Numbers",
               "source": "20260221002534-animals_big-animals_random_hard-llama318b-t08-01.md"
             },
             {
-              "instance": "Strip-Trailing-Punctuation",
+              "instance": "Lowercase",
+              "source": "20260221002534-animals_big-animals_random_hard-llama318b-t08-01.md"
+            },
+            {
+              "instance": "MD-Extraneous-Text",
               "source": "20260221002534-animals_big-animals_random_hard-llama318b-t08-07.md"
+            },
+            {
+              "instance": "Strip-Leading-Bullets",
+              "source": "20260221002534-animals_big-animals_random_hard-llama318b-t08-15.md"
+            },
+            {
+              "instance": "Strip-Trailing-Punctuation",
+              "source": "20260221002534-animals_big-animals_random_hard-llama318b-t08-15.md"
             }
           ],
           "consistentFormat": true,
@@ -2875,8 +3169,10 @@
           },
           "cleanupRules": {
             "Bullet-Removal": 10,
-            "Strip-Leading-Numbers": 2,
-            "Strip-Trailing-Punctuation": 2
+            "Lowercase": 19,
+            "MD-Extraneous-Text": 1,
+            "Strip-Leading-Bullets": 1,
+            "Strip-Trailing-Punctuation": 1
           }
         }
       },
@@ -2887,6 +3183,7 @@
             "numbered text": 20
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 20
           }
         },
@@ -2897,6 +3194,7 @@
             "plain text": 2
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 20
           }
         },
@@ -2906,6 +3204,7 @@
             "numbered text": 20
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 20
           }
         },
@@ -2915,6 +3214,7 @@
             "numbered text": 20
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 20
           }
         }
@@ -2927,6 +3227,7 @@
             "numbered text": 4
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 4
           }
         },
@@ -2958,6 +3259,9 @@
           "consistentFormat": true,
           "formatStyles": {
             "plain text": 20
+          },
+          "cleanupRules": {
+            "Lowercase": 20
           }
         },
         "animals_random": {
@@ -2967,6 +3271,7 @@
             "numbered text": 2
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "Strip-Leading-Numbers": 2
           }
         },
@@ -2974,6 +3279,9 @@
           "consistentFormat": true,
           "formatStyles": {
             "plain text": 20
+          },
+          "cleanupRules": {
+            "Lowercase": 20
           }
         }
       },
@@ -2982,6 +3290,9 @@
           "consistentFormat": true,
           "formatStyles": {
             "leading hyphen": 20
+          },
+          "cleanupRules": {
+            "Lowercase": 20
           }
         },
         "animals_hard": {
@@ -3001,6 +3312,7 @@
             "leading hyphen": 2
           },
           "cleanupRules": {
+            "Lowercase": 15,
             "YAML-Plain-Text-Detection": 18
           }
         },
@@ -3011,6 +3323,7 @@
             "plain text": 1
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "YAML-Plain-Text-Detection": 1
           }
         },
@@ -3021,6 +3334,7 @@
             "plain text": 2
           },
           "cleanupRules": {
+            "Lowercase": 20,
             "YAML-Plain-Text-Detection": 2
           }
         }

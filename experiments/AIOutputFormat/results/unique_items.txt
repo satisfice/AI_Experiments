@@ -17,7 +17,6 @@ andean condor
 anemone
 angelfish
 anglerfish
-animals
 animaltype
 anole
 ant
@@ -44,6 +43,7 @@ aye aye
 aye-aye
 ayres' hawk
 azure turtle
+b
 baboon
 badger
 bald eagle
@@ -128,7 +128,6 @@ cassowary
 cat
 caterpillar
 catfish
-cats
 centipede
 chameleon
 cheeta
@@ -173,7 +172,6 @@ coyote
 coypu
 crab
 crane
-creamsicle coral
 crested crane
 cricket
 crimson otter
@@ -256,7 +254,6 @@ frilled lizard
 frog
 frogfish
 frosty hare
-fulvous whistling duck
 fuzzy
 galapagos tortoise
 gazelle
@@ -331,6 +328,7 @@ humpback whale
 husky
 hyena
 hyrax
+i
 ibex
 ibis
 ibiza
@@ -354,7 +352,6 @@ jirafa
 kakapo
 kangaroo
 kangaroo rat
-kelpie
 kestrel
 kidneyfish
 killer whale
@@ -387,7 +384,6 @@ leopards
 leoparrd
 lesser panda
 lion
-lion's mane jellyfish
 lioness
 lionfish
 lizard
@@ -436,7 +432,6 @@ mole rat
 mollusk
 molly
 mongeese
-mongolian wild ass
 mongoose
 mongooses
 mongrel
@@ -465,7 +460,6 @@ newt
 nibbles
 north american beaver
 northern cardinal
-northern rockhopper penguin
 nugget
 numbat
 oak tree
@@ -564,7 +558,6 @@ rhea
 rhesus macaque
 rhino
 rhinoceros
-rhinoceros beetle
 rhinoceroses
 rinoceronte
 roadrunner
@@ -642,7 +635,6 @@ south american tapir
 southern cassowary
 sparky
 sparrow
-sperm whale
 spider
 spider monkey
 spike
@@ -661,6 +653,7 @@ storck
 stork
 strawberry poison frog
 sturgeon
+sugar
 sugar glider
 sumatran orangutan
 sun bear
@@ -671,8 +664,9 @@ swan
 swift falcon
 swift fox
 swordfish
-swordtail catfish
 sylvester squirrel
+t1
+table
 tahr
 takelma
 takin
@@ -687,6 +681,7 @@ tarpon
 tarsier
 tasmanian devil
 tawny frogmouth
+td
 termite
 tern
 tetra
@@ -696,13 +691,12 @@ thomson's gazelle
 tiger
 tiger cat
 tiger catfish
-tiger salamander
 tiger shark
 toad
-toboggan catshark
 toby
 tortoise
 toucan
+tr
 tree frog
 tree pangolin
 trout
@@ -711,6 +705,7 @@ tuna
 turaco
 turkey
 turtle
+u
 uakari
 urchin
 urial
