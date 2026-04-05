@@ -889,26 +889,13 @@ def parse_html(content):
     # ── Build DOM tree ───────────────────────────────────────────────────────
     root = _parse_html_tree(content)
 
-    # ── Quality issue: only <b> tags (invalid HTML) ──────────────────────────
-    if _only_has_tag(root, 'b'):
-        items, extraction_cleanups = _extract_from_single_tag_html(root, 'b', 'HTML_Only_Bold_Tags')
-        cleanups.extend(extraction_cleanups)
-        if items:
-            return items, cleanups
-
-    # ── Quality issue: only <i> tags (invalid HTML) ──────────────────────────
-    if _only_has_tag(root, 'i'):
-        items, extraction_cleanups = _extract_from_single_tag_html(root, 'i', 'HTML_Only_Italic_Tags')
-        cleanups.extend(extraction_cleanups)
-        if items:
-            return items, cleanups
-
-    # ── Quality issue: only <em> tags (invalid HTML) ─────────────────────────
-    if _only_has_tag(root, 'em'):
-        items, extraction_cleanups = _extract_from_single_tag_html(root, 'em', 'HTML_Only_Emphasis_Tags')
-        cleanups.extend(extraction_cleanups)
-        if items:
-            return items, cleanups
+    # ── Quality issues: only specific formatting tags (invalid HTML) ──────────
+    for tag, quality_issue in [('b', 'HTML_Only_Bold_Tags'), ('i', 'HTML_Only_Italic_Tags'), ('em', 'HTML_Only_Emphasis_Tags')]:
+        if _only_has_tag(root, tag):
+            items, extraction_cleanups = _extract_from_single_tag_html(root, tag, quality_issue)
+            cleanups.extend(extraction_cleanups)
+            if items:
+                return items, cleanups
 
     # ── Primary path: <li> tags ──────────────────────────────────────────────
     li_nodes = _find_leaf_tag_nodes(root, 'li')
