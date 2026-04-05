@@ -1,0 +1,173 @@
+{
+  "general": [
+    {
+      "name": "leading_punctuation",
+      "description": "Item begins with a formatting or punctuation character (* - + : ; , . ! ? { } [ ]).",
+      "detection_function": "detect_leading_punctuation"
+    },
+    {
+      "name": "trailing_punctuation",
+      "description": "Item ends with a punctuation or formatting character (* - + : ; , . ! ? { } [ ]).",
+      "detection_function": "detect_trailing_punctuation"
+    },
+    {
+      "name": "internal_punctuation",
+      "description": "Item contains special characters (/, :, -, etc.) between alphabetic characters, indicating potential word corruption or unusual formatting.",
+      "detection_function": "detect_internal_punctuation"
+    },
+    {
+      "name": "exceeds_max_length",
+      "description": "Item length exceeds the maximum allowed length (typically 255 characters).",
+      "detection_function": "process_and_track (inline check)"
+    },
+    {
+      "name": "preamble_leak",
+      "description": "Item contains LLM preamble or boilerplate text (e.g., 'I'll provide...', 'Here are...'). Items with this issue are excluded from output.",
+      "detection_function": "detect_preamble_leak"
+    },
+    {
+      "name": "markup_artifact",
+      "description": "Item contains residual markup artifacts or formatting that should have been cleaned by format-specific parsing.",
+      "detection_function": "detect_markup_artifact"
+    },
+    {
+      "name": "repeated_chars",
+      "description": "Item contains repeated or doubled characters within words (e.g., 'tiiger', 'cooool'), indicating corruption or intentional formatting.",
+      "detection_function": "detect_repeated_chars"
+    },
+    {
+      "name": "non-western-characters",
+      "description": "Item contains Unicode characters with code point > 127 (non-ASCII, non-Western scripts).",
+      "detection_function": "non_western_character_detection"
+    },
+    {
+      "name": "stray-html-markup",
+      "description": "Item contains residual HTML tags after format-specific parsing completes. Indicates incomplete HTML unwrapping.",
+      "detection_function": "clean_format_specific"
+    },
+    {
+      "name": "blockquote-markup",
+      "description": "Item contains markdown blockquote markers (>) that were not removed during parsing. Out of place in structured list output.",
+      "detection_function": "clean_format_specific"
+    },
+    {
+      "name": "parse-failed",
+      "description": "Format-specific parser threw an exception and could not recover any items. File parsing failed completely.",
+      "detection_function": "parse_csv, parse_json"
+    }
+  ],
+  "html": [
+    {
+      "name": "html_no_markup",
+      "description": "Response was plain text or a numbered list instead of proper HTML markup. May include numbered-list fallback or plain-text-only responses.",
+      "detection_function": "parse_html (plain text fallback paths)"
+    },
+    {
+      "name": "single-span-tag",
+      "description": "Items are placed in separate container tags (e.g., <p>, <span>) instead of a proper <li>-based list. Indicates improper HTML structure.",
+      "detection_function": "parse_html (fallback tag extraction without line-split)"
+    },
+    {
+      "name": "numbered-items-in-tags",
+      "description": "Each item is wrapped in its own tag with a manual number prefix (e.g., '<span>1. Lion</span>'). Should use <li> list without numbering.",
+      "detection_function": "parse_html (fallback tag path with number detection)"
+    },
+    {
+      "name": "comma-separated",
+      "description": "Multiple items are comma-separated within a single container tag (e.g., '<p>Item1, Item2, Item3</p>'). Items should be in separate tags.",
+      "detection_function": "parse_html (comma-split detection in fallback path)"
+    },
+    {
+      "name": "invalid-html-tags",
+      "description": "Item text has been rendered as custom XML-like tag names (e.g., <tiger>, <baboon>) instead of text content in standard HTML tags.",
+      "detection_function": "_find_nodes_with_unknown_tags"
+    },
+    {
+      "name": "HTML_Only_Bold_Tags",
+      "description": "HTML content uses only <b> tags to wrap items, with no other content tags. Invalid HTML structure; should use proper list tags.",
+      "detection_function": "_only_has_tag (checks if only <b> tags present)"
+    },
+    {
+      "name": "HTML_Only_Italic_Tags",
+      "description": "HTML content uses only <i> tags to wrap items, with no other content tags. Invalid HTML structure; should use proper list tags.",
+      "detection_function": "_only_has_tag (checks if only <i> tags present)"
+    },
+    {
+      "name": "HTML_Only_Emphasis_Tags",
+      "description": "HTML content uses only <em> tags to wrap items, with no other content tags. Invalid HTML structure; should use proper list tags.",
+      "detection_function": "_only_has_tag (checks if only <em> tags present)"
+    },
+    {
+      "name": "HTML_Only_Underline_Tags",
+      "description": "HTML content uses only <u> tags to wrap items, with no other content tags. Invalid HTML structure; should use proper list tags.",
+      "detection_function": "_only_has_tag (checks if only <u> tags present)"
+    }
+  ],
+  "json": [
+    {
+      "name": "repeated-json-keys",
+      "description": "JSON object has duplicate keys. Python's json.loads silently keeps only the last value, causing data loss. Detected via object_pairs_hook.",
+      "detection_function": "parse_json (object_pairs_hook during parsing)"
+    }
+  ],
+  "md": [
+    {
+      "name": "Markdown-Cleanup-Partially-Bold-Line",
+      "description": "Markdown line contains **...** (bold) mixed with other text instead of being entirely bold. Indicates inconsistent or improperly formatted markdown.",
+      "detection_function": "parse_md (_PARTIAL_BOLD_RE detection)"
+    },
+    {
+      "name": "Markdown-Cleanup-Partially-Italic-Star-Line",
+      "description": "Markdown line contains *...* (italic with asterisks) mixed with other text instead of being entirely italic. Indicates inconsistent markdown formatting.",
+      "detection_function": "parse_md (_PARTIAL_ITALIC_STAR_RE detection)"
+    },
+    {
+      "name": "Markdown-Cleanup-Partially-Italic-Underscore-Line",
+      "description": "Markdown line contains _..._ (italic with underscores) mixed with other text instead of being entirely italic. Indicates inconsistent markdown formatting.",
+      "detection_function": "parse_md (_PARTIAL_ITALIC_UNDER_RE detection)"
+    }
+  ],
+  "csv": [
+  ],
+  "txt1": [
+    {
+      "name": "txt1-no-numbers",
+      "description": "File uses .txt1 format (expected to have numbered items) but contains no items with leading numbers. Indicates unexpected response format.",
+      "detection_function": "parse_txt1"
+    }
+  ],
+  "yml": [
+    {
+      "note": "UNREACHABLE: end-of-directives is in QUALITY_FORMAT_STYLE_MAP but no QUALITY string in the code triggers it. The YAML directive handler appends a plain cleanup string, not a QUALITY string."
+    }
+  ],
+  "cross-trial": [
+    {
+      "name": "inconsistent_case",
+      "description": "Items extracted from trials within the same set have inconsistent casing (some uppercase, some lowercase, or mixed case) across different trials.",
+      "detection_function": "summarize_results (cross-trial case value comparison)"
+    },
+    {
+      "name": "inconsistent_md_format",
+      "description": "Markdown trials within the same set apply different cleanup rules (different structural formats detected), indicating the model produced inconsistent output across trials.",
+      "detection_function": "summarize_results (md_cleanup_agg rule set intersection)"
+    },
+    {
+      "name": "inconsistent_html_format",
+      "description": "HTML trials within the same set apply different cleanup rules (different structural formats detected), indicating the model produced inconsistent output across trials.",
+      "detection_function": "summarize_results (html_cleanup_agg rule set intersection)"
+    },
+    {
+      "name": "inconsistent_json_format",
+      "description": "JSON trials within the same set apply different cleanup rules (different structural formats detected), indicating the model produced inconsistent output across trials.",
+      "detection_function": "summarize_results (json_cleanup_agg rule set intersection)"
+    }
+  ],
+  "_notes": {
+    "gaps": [
+      "UNREACHABLE: 'plain-text' is in ISSUE_TYPES but not in QUALITY_FORMAT_STYLE_MAP. No QUALITY string in the code maps to this label.",
+      "UNREACHABLE: 'end-of-directives' is in QUALITY_FORMAT_STYLE_MAP but no parser appends a QUALITY string containing 'YAML end-of-directives marker'. The YAML handler appends a plain cleanup string instead."
+    ],
+    "quality_issue_types": "Quality issues are tracked via three paths: (1) Per-file item-level in process_and_track(), (2) Format-style via QUALITY strings routed by QUALITY_FORMAT_STYLE_MAP, (3) Cross-trial inconsistency in second pass of summarize_results()."
+  }
+}
