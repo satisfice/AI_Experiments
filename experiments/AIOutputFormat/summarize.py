@@ -429,25 +429,39 @@ def parse_csv(content):
 
 def parse_md(content):
     """Parse Markdown file: each line is an item, with markdown bullets and headers removed.
-    Lines that are entirely bold (**text**), italic (*text* or _text_), or a heading (#)
-    are skipped as extraneous text and recorded as MD-Extraneous-Text (cleanup, not quality).
-    Non-alphabetic characters that remain in regular items are handled downstream as
-    both cleanup and quality issues by the standard pipeline.
+    Lines that are entirely bold (**text**) or italic (*text* or _text_) have formatting stripped
+    and are kept as items, recorded as Markdown-Strip-Bold-Tags or Markdown-Strip-Italic-Tags (cleanup, not quality).
+    Lines that are both bold and italic (***text*** or **_text_** etc.) are recorded as Markdown-Both-Bold-And-Italic.
+    Partially bold/italic lines are recorded as both cleanup and quality issues.
+    Lines that are headings (#) are skipped.
     Returns (items, cleanups) where cleanups is a list of cleanup operations performed."""
     items = []
     cleanups = []
     header_count = 0
     bullet_count = 0
-    extraneous_count = 0
+    entirely_bold_count = 0
+    entirely_italic_count = 0
+    both_bold_italic_count = 0
+    partial_bold_count = 0
+    partial_italic_star_count = 0
+    partial_italic_under_count = 0
 
     # Bullet: -, +, or * only when NOT followed by another * (distinguishes * bullet from ** bold)
     _BULLET_RE = re.compile(r'^([-+]|\*(?!\*)|\d+[.):]) +')
-    # Bold: **text** — content must not start with *
-    _BOLD_RE = re.compile(r'^\*\*[^*].*\*\*$')
-    # Italic with *: *text* — second char must not be * or space (to avoid matching * bullet)
-    _ITALIC_STAR_RE = re.compile(r'^\*[^*\s].*\*$')
-    # Italic with _: _text_
-    _ITALIC_UNDER_RE = re.compile(r'^_[^_]+_$')
+    # Both bold and italic: exactly three asterisks on each end (***text***)
+    _BOTH_BOLD_ITALIC_RE = re.compile(r'^\*{3}[^*].*[^*]\*{3}$')
+    # Entirely bold: exactly two asterisks on each end (**text**), not three
+    _ENTIRELY_BOLD_RE = re.compile(r'^\*{2}[^*].*[^*]\*{2}(?!\*)$')
+    # Entirely italic with *: single asterisk on each end (*text*), not double or triple
+    _ENTIRELY_ITALIC_STAR_RE = re.compile(r'^\*[^*\s].*[^*\s]\*(?!\*)$')
+    # Entirely italic with _: _text_
+    _ENTIRELY_ITALIC_UNDER_RE = re.compile(r'^_[^_]+_$')
+    # Partially bold: contains ** but not entirely wrapped
+    _PARTIAL_BOLD_RE = re.compile(r'(\*{2}[^*].*[^*]\*{2}(?!\*)|\*{2}[^*]+$|^[^*]\*{2})')
+    # Partially italic with *: contains single * but not entirely wrapped (excluding entirely italic and bold)
+    _PARTIAL_ITALIC_STAR_RE = re.compile(r'(\*[^*\s][^*]*\*(?!\*)|[^*]\*[^*\s]|^\*[^*\s]|[^*\s]\*$)')
+    # Partially italic with _: contains _ but not entirely wrapped
+    _PARTIAL_ITALIC_UNDER_RE = re.compile(r'([^_]_[^_]+_|_[^_]+_[^_]|^_[^_]|[^_]_$)')
 
     for line in content.split('\n'):
         if not line.strip():
@@ -464,12 +478,43 @@ def parse_md(content):
         bullet_m = _BULLET_RE.match(stripped)
         content_part = stripped[bullet_m.end():].strip() if bullet_m else stripped
 
-        # Skip lines where the content (after optional bullet) is entirely bold or italic
-        if (_BOLD_RE.match(content_part) or
-                _ITALIC_STAR_RE.match(content_part) or
-                _ITALIC_UNDER_RE.match(content_part)):
-            extraneous_count += 1
-            continue
+        # Check for formatting patterns (order matters: check both before individual)
+        is_both = _BOTH_BOLD_ITALIC_RE.match(content_part)
+        is_entirely_bold = _ENTIRELY_BOLD_RE.match(content_part)
+        is_entirely_italic_star = _ENTIRELY_ITALIC_STAR_RE.match(content_part)
+        is_entirely_italic_under = _ENTIRELY_ITALIC_UNDER_RE.match(content_part)
+
+        # Check for partial formatting (but not if entirely bold/italic or both)
+        has_partial_bold = _PARTIAL_BOLD_RE.search(content_part) and not is_entirely_bold and not is_both
+        has_partial_italic_star = _PARTIAL_ITALIC_STAR_RE.search(content_part) and not is_entirely_italic_star and not is_both
+        has_partial_italic_under = _PARTIAL_ITALIC_UNDER_RE.search(content_part) and not is_entirely_italic_under and not is_both
+
+        # Strip formatting from lines that are entirely bold or italic
+        if is_both:
+            # Strip *** from both ends (both bold and italic)
+            content_part = re.sub(r'^\*{3}|^\*_{2}|^_\*{2}|^_{3}|\*{3}$|_\*{2}$|\*_{2}$|_{3}$', '', content_part)
+            both_bold_italic_count += 1
+        elif is_entirely_bold:
+            # Strip ** from both ends
+            content_part = content_part[2:-2]
+            entirely_bold_count += 1
+        elif is_entirely_italic_star:
+            # Strip * from both ends
+            content_part = content_part[1:-1]
+            entirely_italic_count += 1
+        elif is_entirely_italic_under:
+            # Strip _ from both ends
+            content_part = content_part[1:-1]
+            entirely_italic_count += 1
+        elif has_partial_bold:
+            # Keep content as-is but record cleanup and quality issue
+            partial_bold_count += 1
+        elif has_partial_italic_star:
+            # Keep content as-is but record cleanup and quality issue
+            partial_italic_star_count += 1
+        elif has_partial_italic_under:
+            # Keep content as-is but record cleanup and quality issue
+            partial_italic_under_count += 1
 
         # Regular item: record that a bullet was stripped if applicable
         if bullet_m:
@@ -480,8 +525,21 @@ def parse_md(content):
 
     if header_count > 0:
         cleanups.append("MD-Header-Removal")
-    if extraneous_count > 0:
-        cleanups.append("MD-Extraneous-Text")
+    if entirely_bold_count > 0:
+        cleanups.append("Markdown-Strip-Bold-Tags")
+    if entirely_italic_count > 0:
+        cleanups.append("Markdown-Strip-Italic-Tags")
+    if both_bold_italic_count > 0:
+        cleanups.append("Markdown-Both-Bold-And-Italic")
+    if partial_bold_count > 0:
+        cleanups.append("Markdown-Cleanup-Partially-Bold-Line")
+        cleanups.append("QUALITY: Markdown-Cleanup-Partially-Bold-Line")
+    if partial_italic_star_count > 0:
+        cleanups.append("Markdown-Cleanup-Partially-Italic-Star-Line")
+        cleanups.append("QUALITY: Markdown-Cleanup-Partially-Italic-Star-Line")
+    if partial_italic_under_count > 0:
+        cleanups.append("Markdown-Cleanup-Partially-Italic-Underscore-Line")
+        cleanups.append("QUALITY: Markdown-Cleanup-Partially-Italic-Underscore-Line")
     if bullet_count > 0:
         cleanups.append("Bullet-Removal")
 
@@ -1273,7 +1331,44 @@ def extract_first_alpha_string(item):
 
 def detect_preamble_leak(item):
     """Check if item looks like LLM preamble/instruction text.
-    Matches common LLM response prefixes and items with 6+ words."""
+    Matches common LLM response prefixes, items with 6+ words, and various preamble patterns."""
+    # Non-string items are filtered out
+    if not isinstance(item, str):
+        return True
+
+    item_lower = item.lower().strip()
+
+    # Empty or very short
+    if len(item_lower) < 2:
+        return True
+
+    # Markdown headers (lines starting with #)
+    if item.lstrip().startswith('#'):
+        return True
+
+    # Starts with common preamble phrases
+    if any(item_lower.startswith(prefix) for prefix in [
+        "here's", "here are", "here is", "sure", "certainly",
+        "here's a", "here are the", "here is the",
+        "here are some", "here's some"
+    ]):
+        return True
+
+    # Contains list indicators
+    if any(phrase in item_lower for phrase in [
+        "list of", "the following", "are the", "is a list"
+    ]):
+        return True
+
+    # Ends with colon or ellipsis (likely intro text)
+    if item_lower.endswith(":") or item_lower.endswith("..."):
+        return True
+
+    # Items with 6+ words are suspicious (item names are typically 1-3 words)
+    if len(item_lower.split()) >= 6:
+        return True
+
+    # Additional regex patterns for preamble indicators
     preamble_patterns = [
         r'\bhere\s+(is|are)\b',
         r'\bsure\b',
@@ -1284,13 +1379,10 @@ def detect_preamble_leak(item):
         r'\bi\s+can\b',
         r'\bbelow\b',
     ]
-    lower = item.lower()
-    # Items with 6+ words are suspicious (item names are typically 1-3 words)
-    if len(lower.split()) >= 6:
-        return True
     for pattern in preamble_patterns:
-        if re.search(pattern, lower):
+        if re.search(pattern, item_lower):
             return True
+
     return False
 
 
