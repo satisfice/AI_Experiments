@@ -308,6 +308,38 @@
       "description": "Detects when item text has been rendered as custom XML-like tag names (e.g., <tiger>, <baboon>) rather than as text content in standard HTML tags. Extracts tag names as items and flags as a quality issue (invalid-html-tags).",
       "function": "_find_nodes_with_unknown_tags",
       "quality_issue": "invalid-html-tags"
+    },
+    {
+      "name": "Extract-From-Bold-Tags",
+      "description": "Extracts items from <b> tags.",
+      "function": "parse_html",
+      "subfunctions": [
+        "_extract_from_single_tag_html"
+      ]
+    },
+    {
+      "name": "Extract-From-Italic-Tags",
+      "description": "Extracts items from <i> tags.",
+      "function": "parse_html",
+      "subfunctions": [
+        "_extract_from_single_tag_html"
+      ]
+    },
+    {
+      "name": "Extract-From-Emphasis-Tags",
+      "description": "Extracts items from <em> tags.",
+      "function": "parse_html",
+      "subfunctions": [
+        "_extract_from_single_tag_html"
+      ]
+    },
+    {
+      "name": "Extract-From-Underline-Tags",
+      "description": "Extracts items from <u> tags.",
+      "function": "parse_html",
+      "subfunctions": [
+        "_extract_from_single_tag_html"
+      ]
     }
   ],
   "json": [

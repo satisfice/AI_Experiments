@@ -637,7 +637,7 @@ _HTML_TAG_DISPLAY = {
     'ul': 'UL', 'ol': 'OL', 'li': 'LI',
     'p': 'P', 'div': 'Div', 'span': 'Span',
     'article': 'Article', 'section': 'Section', 'br': 'BR',
-    'b': 'Bold', 'i': 'Italic', 'strong': 'Strong', 'em': 'Emphasis',
+    'b': 'Bold', 'i': 'Italic', 'strong': 'Strong', 'em': 'Emphasis', 'u': 'Underline',
 }
 
 def _tag_cleanup_name(tag):
@@ -890,7 +890,7 @@ def parse_html(content):
     root = _parse_html_tree(content)
 
     # ── Quality issues: only specific formatting tags (invalid HTML) ──────────
-    for tag, quality_issue in [('b', 'HTML_Only_Bold_Tags'), ('i', 'HTML_Only_Italic_Tags'), ('em', 'HTML_Only_Emphasis_Tags')]:
+    for tag, quality_issue in [('b', 'HTML_Only_Bold_Tags'), ('i', 'HTML_Only_Italic_Tags'), ('em', 'HTML_Only_Emphasis_Tags'), ('u', 'HTML_Only_Underline_Tags')]:
         if _only_has_tag(root, tag):
             items, extraction_cleanups = _extract_from_single_tag_html(root, tag, quality_issue)
             cleanups.extend(extraction_cleanups)
