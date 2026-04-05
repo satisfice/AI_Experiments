@@ -259,7 +259,7 @@
       "description": "<br> tags were used as item separators within a container element. During extraction, each <br> was treated as a newline delimiter to split the container's content into separate items.",
       "function": "parse_html",
       "subfunctions": [
-        "_items_from_nodes"
+        "_detect_br_tags"
       ]
     },
     {

@@ -841,17 +841,24 @@ def _only_has_tag(root, target_tag):
     return len(other_tags) == 0
 
 
-def _extract_from_html_formatting_tag(root, tag):
+def _detect_br_tags(tag_nodes):
+    """Check if any BR tags are present in the tag nodes.
+    Returns cleanup list: ["Remove-BR-Tags"] if BR tags found, else []."""
+    for node in tag_nodes:
+        _, had_br = node.text_content(br_as_newline=True)
+        if had_br:
+            return ["Remove-BR-Tags"]
+    return []
+
+
+def _extract_from_html_formatting_tag(tag_nodes, tag):
     """Extract items that are wrapped in the specified formatting tag.
-    Returns (items, cleanups) where cleanups refers to the extraction cleanup task."""
-    tag_nodes = _find_leaf_tag_nodes(root, tag)
+    Returns (items, cleanups) where cleanups refers to the extraction cleanup task only."""
     if not tag_nodes:
         return [], []
 
-    items, had_br, _ = _items_from_nodes(tag_nodes)
+    items, _, _ = _items_from_nodes(tag_nodes)
     cleanups = [_tag_cleanup_name(tag)]
-    if had_br:
-        cleanups.append("Remove-BR-Tags")
     return items, cleanups
 
 
@@ -891,8 +898,10 @@ def parse_html(content):
     # ── Quality issues: only specific formatting tags (invalid HTML) ──────────
     for tag, quality_issue in [('b', 'HTML_Only_Bold_Tags'), ('i', 'HTML_Only_Italic_Tags'), ('em', 'HTML_Only_Emphasis_Tags'), ('u', 'HTML_Only_Underline_Tags')]:
         if _only_has_tag(root, tag):
-            items, extraction_cleanups = _extract_from_html_formatting_tag(root, tag)
+            tag_nodes = _find_leaf_tag_nodes(root, tag)
+            items, extraction_cleanups = _extract_from_html_formatting_tag(tag_nodes, tag)
             cleanups.extend(extraction_cleanups)
+            cleanups.extend(_detect_br_tags(tag_nodes))
             cleanups.append(f"QUALITY: {quality_issue}")
             if items:
                 return items, cleanups
