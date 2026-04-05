@@ -314,7 +314,7 @@
       "description": "Extracts items from <b> tags.",
       "function": "parse_html",
       "subfunctions": [
-        "_extract_from_single_tag_html"
+        "_extract_from_html_formatting_tag"
       ]
     },
     {
@@ -322,7 +322,7 @@
       "description": "Extracts items from <i> tags.",
       "function": "parse_html",
       "subfunctions": [
-        "_extract_from_single_tag_html"
+        "_extract_from_html_formatting_tag"
       ]
     },
     {
@@ -330,7 +330,7 @@
       "description": "Extracts items from <em> tags.",
       "function": "parse_html",
       "subfunctions": [
-        "_extract_from_single_tag_html"
+        "_extract_from_html_formatting_tag"
       ]
     },
     {
@@ -338,7 +338,7 @@
       "description": "Extracts items from <u> tags.",
       "function": "parse_html",
       "subfunctions": [
-        "_extract_from_single_tag_html"
+        "_extract_from_html_formatting_tag"
       ]
     }
   ],

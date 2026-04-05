@@ -841,9 +841,9 @@ def _only_has_tag(root, target_tag):
     return len(other_tags) == 0
 
 
-def _extract_from_single_tag_html(root, tag, quality_issue_name):
-    """Extract items from HTML that contains only the specified tag.
-    Returns (items, cleanups) where cleanups includes the quality issue and extraction cleanup."""
+def _extract_from_html_formatting_tag(root, tag):
+    """Extract items that are wrapped in the specified formatting tag.
+    Returns (items, cleanups) where cleanups refers to the extraction cleanup task."""
     tag_nodes = _find_leaf_tag_nodes(root, tag)
     if not tag_nodes:
         return [], []
@@ -852,7 +852,6 @@ def _extract_from_single_tag_html(root, tag, quality_issue_name):
     cleanups = [_tag_cleanup_name(tag)]
     if had_br:
         cleanups.append("Remove-BR-Tags")
-    cleanups.append(f"QUALITY: {quality_issue_name}")
     return items, cleanups
 
 
@@ -892,8 +891,9 @@ def parse_html(content):
     # ── Quality issues: only specific formatting tags (invalid HTML) ──────────
     for tag, quality_issue in [('b', 'HTML_Only_Bold_Tags'), ('i', 'HTML_Only_Italic_Tags'), ('em', 'HTML_Only_Emphasis_Tags'), ('u', 'HTML_Only_Underline_Tags')]:
         if _only_has_tag(root, tag):
-            items, extraction_cleanups = _extract_from_single_tag_html(root, tag, quality_issue)
+            items, extraction_cleanups = _extract_from_html_formatting_tag(root, tag)
             cleanups.extend(extraction_cleanups)
+            cleanups.append(f"QUALITY: {quality_issue}")
             if items:
                 return items, cleanups
 
