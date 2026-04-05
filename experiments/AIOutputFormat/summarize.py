@@ -896,6 +896,20 @@ def parse_html(content):
         if items:
             return items, cleanups
 
+    # ── Quality issue: only <i> tags (invalid HTML) ──────────────────────────
+    if _only_has_tag(root, 'i'):
+        items, extraction_cleanups = _extract_from_single_tag_html(root, 'i', 'HTML_Only_Italic_Tags')
+        cleanups.extend(extraction_cleanups)
+        if items:
+            return items, cleanups
+
+    # ── Quality issue: only <em> tags (invalid HTML) ─────────────────────────
+    if _only_has_tag(root, 'em'):
+        items, extraction_cleanups = _extract_from_single_tag_html(root, 'em', 'HTML_Only_Emphasis_Tags')
+        cleanups.extend(extraction_cleanups)
+        if items:
+            return items, cleanups
+
     # ── Primary path: <li> tags ──────────────────────────────────────────────
     li_nodes = _find_leaf_tag_nodes(root, 'li')
     if li_nodes:
