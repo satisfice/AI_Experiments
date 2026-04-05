@@ -1854,6 +1854,102 @@ def calculate_statistics(counts):
     }
 
 
+def _make_issue_output_dicts(issue_types):
+    """Create the quality issues output and examples tracking dicts.
+
+    Returns:
+        (quality_issues_output, quality_issues_examples) — nested dicts for tracking
+        quality issues and their example source files.
+        Structure: model -> temperature -> file_type -> prompt -> issue_type -> {items|examples}
+    """
+    quality_issues_output = defaultdict(
+        lambda: defaultdict(
+            lambda: defaultdict(
+                lambda: defaultdict(
+                    lambda: {k: set() for k in issue_types}
+                )
+            )
+        )
+    )
+    quality_issues_examples = defaultdict(
+        lambda: defaultdict(
+            lambda: defaultdict(
+                lambda: defaultdict(
+                    lambda: {k: {} for k in issue_types}
+                )
+            )
+        )
+    )
+    return quality_issues_output, quality_issues_examples
+
+
+def _make_format_style_counts():
+    """Create the format style counts tracking dict.
+
+    Returns:
+        format_style_counts — nested dict for counting how many files use each format style.
+        Structure: model -> temperature -> file_type -> prompt -> formatStyle -> count
+    """
+    return defaultdict(
+        lambda: defaultdict(
+            lambda: defaultdict(
+                lambda: defaultdict(
+                    lambda: defaultdict(int)
+                )
+            )
+        )
+    )
+
+
+def _make_cleanup_rules_agg():
+    """Create the cleanup rules aggregation dict.
+
+    Returns:
+        cleanup_rules_agg — nested Counter dict tracking rule invocation across trials.
+        Structure: model -> temperature -> file_type -> prompt -> Counter(rule_name -> count)
+        Each count is the number of trials in the set that triggered that rule.
+    """
+    return defaultdict(
+        lambda: defaultdict(
+            lambda: defaultdict(
+                lambda: defaultdict(Counter)
+            )
+        )
+    )
+
+
+def _make_format_aggregation_dicts():
+    """Create the format-specific cleanup rule aggregation dicts (case, markdown, HTML, JSON).
+
+    Returns:
+        (case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg)
+        Used for detecting cross-trial inconsistencies in formatting/casing.
+    """
+    case_values_agg = defaultdict(
+        lambda: defaultdict(
+            lambda: defaultdict(
+                lambda: defaultdict(list)
+            )
+        )
+    )
+    md_cleanup_agg = defaultdict(
+        lambda: defaultdict(
+            lambda: defaultdict(list)
+        )
+    )
+    html_cleanup_agg = defaultdict(
+        lambda: defaultdict(
+            lambda: defaultdict(list)
+        )
+    )
+    json_cleanup_agg = defaultdict(
+        lambda: defaultdict(
+            lambda: defaultdict(list)
+        )
+    )
+    return case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg
+
+
 def summarize_results(filename_filter=None, model=None, format_type=None, experiment=None, timestamp=None, temperature=None, max_item_length=25, analysis=False, exclude_model=None, verbose=False):
     """
     Read all result files by type, parse items, and summarize into a single JSON.
@@ -1888,29 +1984,12 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
         "inconsistent_json_format",
         "parse-failed", "stray-html-markup", "blockquote-markup",
     ]
-    # Track quality issues: model -> temperature -> file_type -> prompt -> issue_type -> set of items
-    quality_issues_output = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: {k: set() for k in ISSUE_TYPES}))))
-    # Track example filenames: model -> temperature -> file_type -> prompt -> issue_type -> {item: filename}
-    quality_issues_examples = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: {k: {} for k in ISSUE_TYPES}))))
-    # Track formatStyle counts per prompt: model -> temperature -> file_type -> prompt -> formatStyle -> count
-    format_style_counts = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(int)))))
-    # Track item counts for statistics: model -> temperature -> file_type -> [list of item counts]
+    # Initialize quality issue tracking structures
+    quality_issues_output, quality_issues_examples = _make_issue_output_dicts(ISSUE_TYPES)
+    format_style_counts = _make_format_style_counts()
     item_count_stats = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
-    # Count cleanup rule invocations per trial set: model -> temperature -> file_type -> prompt -> Counter
-    # Each Counter maps rule_name -> number of trials in the set that triggered that rule.
-    cleanup_rules_agg = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(Counter))))
-    # Track case values per trial set for cross-trial inconsistency detection:
-    # model -> temperature -> file_type -> prompt -> [(case_value, filename)]
-    case_values_agg = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(list))))
-    # Track per-file cleanup rule sets for markdown trial sets (detects inconsistent formatting):
-    # model -> temperature -> prompt -> [(frozenset(cleanup_keys), filename)]
-    md_cleanup_agg = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
-    # Track per-file cleanup rule sets for HTML trial sets (detects inconsistent formatting):
-    # model -> temperature -> prompt -> [(frozenset(cleanup_keys), filename)]
-    html_cleanup_agg = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
-    # Track per-file cleanup rule sets for JSON trial sets (detects inconsistent formatting):
-    # model -> temperature -> prompt -> [(frozenset(cleanup_keys), filename)]
-    json_cleanup_agg = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
+    cleanup_rules_agg = _make_cleanup_rules_agg()
+    case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg = _make_format_aggregation_dicts()
     file_count = 0
     skipped_trials = []  # Track trial filenames that were skipped
     zero_item_files = []  # Track files that produced 0 items
