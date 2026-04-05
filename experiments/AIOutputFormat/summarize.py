@@ -637,6 +637,7 @@ _HTML_TAG_DISPLAY = {
     'ul': 'UL', 'ol': 'OL', 'li': 'LI',
     'p': 'P', 'div': 'Div', 'span': 'Span',
     'article': 'Article', 'section': 'Section', 'br': 'BR',
+    'b': 'Bold', 'i': 'Italic', 'strong': 'Strong', 'em': 'Emphasis',
 }
 
 def _tag_cleanup_name(tag):
@@ -807,6 +808,53 @@ def _find_nodes_with_unknown_tags(root, known_tags):
 # Tags tried as fallbacks when no <li> tags are found, in priority order.
 _HTML_FALLBACK_TAGS = ['p', 'span', 'div', 'article', 'section']
 
+# Structural tags that don't indicate formatted content (allowed in any HTML)
+_HTML_STRUCTURAL_TAGS = frozenset(['html', 'body', 'head', 'br', 'hr'])
+
+# Tags that indicate formatted content or containers
+_HTML_NON_STRUCTURAL_TAGS = frozenset([
+    'li', 'p', 'span', 'div', 'article', 'section', 'ol', 'ul',
+    'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+    'b', 'i', 'strong', 'em', 'u', 's', 'code', 'pre',
+])
+
+
+def _all_tags_in_tree(root):
+    """Return set of all tag names in the tree (excluding virtual root and text nodes)."""
+    tags = set()
+    for child in root.children:
+        if isinstance(child, _HtmlNode) and child.tag is not None:
+            tags.add(child.tag)
+            tags.update(_all_tags_in_tree(child))
+    return tags
+
+
+def _only_has_tag(root, target_tag):
+    """Return True if the tree contains target_tag and no other non-structural tags.
+    Only structural tags (html, body, head, br, hr) are allowed besides the target."""
+    all_tags = _all_tags_in_tree(root)
+    target_nodes = list(root.iter_tag(target_tag))
+    if not target_nodes:
+        return False
+    # Check if any non-structural tags exist other than the target
+    other_tags = (all_tags & _HTML_NON_STRUCTURAL_TAGS) - {target_tag}
+    return len(other_tags) == 0
+
+
+def _extract_from_single_tag_html(root, tag, quality_issue_name):
+    """Extract items from HTML that contains only the specified tag.
+    Returns (items, cleanups) where cleanups includes the quality issue and extraction cleanup."""
+    tag_nodes = _find_leaf_tag_nodes(root, tag)
+    if not tag_nodes:
+        return [], []
+
+    items, had_br, _ = _items_from_nodes(tag_nodes)
+    cleanups = [_tag_cleanup_name(tag)]
+    if had_br:
+        cleanups.append("Remove-BR-Tags")
+    cleanups.append(f"QUALITY: {quality_issue_name}")
+    return items, cleanups
+
 
 def parse_html(content):
     """Parse HTML using a DOM tree. Extracts items from <li> tags (primary) or falls back
@@ -840,6 +888,13 @@ def parse_html(content):
 
     # ── Build DOM tree ───────────────────────────────────────────────────────
     root = _parse_html_tree(content)
+
+    # ── Quality issue: only <b> tags (invalid HTML) ──────────────────────────
+    if _only_has_tag(root, 'b'):
+        items, extraction_cleanups = _extract_from_single_tag_html(root, 'b', 'HTML_Only_Bold_Tags')
+        cleanups.extend(extraction_cleanups)
+        if items:
+            return items, cleanups
 
     # ── Primary path: <li> tags ──────────────────────────────────────────────
     li_nodes = _find_leaf_tag_nodes(root, 'li')
