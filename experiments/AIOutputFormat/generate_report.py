@@ -337,7 +337,15 @@ def get_cleanup_data_for_combo(quality_data, model, temperature, format_type, pr
         else:
             label = key.replace('_', ' ').title()
             trial_str = _trial_numbers_str(value)
-            issues.append(f"{label} {trial_str}".strip() if trial_str else label)
+            if trial_str:
+                # Format with Item(s) prefix: "(Item 3)" or "(Items 3, 11)"
+                # Extract numbers from trial_str (which is like "(3, 11)")
+                numbers = trial_str.strip("()").split(", ")
+                item_prefix = "Item" if len(numbers) == 1 else "Items"
+                formatted_str = f"({item_prefix} {', '.join(numbers)})"
+                issues.append(f"{label} {formatted_str}")
+            else:
+                issues.append(label)
 
     # cleanupRules is a dict {rule: trial_count} in the current format, or a list in the old format.
     raw = prompt_data.get("cleanupRules", {})
