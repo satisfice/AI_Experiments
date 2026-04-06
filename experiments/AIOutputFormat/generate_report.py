@@ -302,12 +302,22 @@ def get_cleanup_data_for_combo(quality_data, model, temperature, format_type, pr
 
     issues = []
 
-    # Prepend inconsistent format warning if flagged
+    # Check if there are any inconsistent format issues and what types
+    NON_ISSUE_KEYS = {"consistentFormat", "formatStyles", "cleanupRules"}
+    inconsistent_types = []
+    for key in prompt_data.keys():
+        if key.startswith("inconsistent_") and prompt_data[key]:
+            inconsistent_types.append(key)
+
+    # Prepend inconsistent format warning if flagged, but only if there are multiple types of inconsistencies
+    # or inconsistencies other than JSON format
     if not prompt_data.get("consistentFormat", True):
-        issues.append("Inconsistent output format")
+        has_only_json_inconsistency = (len(inconsistent_types) == 1 and
+                                       inconsistent_types[0] == "inconsistent_json_format")
+        if not has_only_json_inconsistency:
+            issues.append("Inconsistent output format")
 
     # Non-empty issue lists (skip metadata keys)
-    NON_ISSUE_KEYS = {"consistentFormat", "formatStyles", "cleanupRules"}
     for key, value in prompt_data.items():
         if key in NON_ISSUE_KEYS:
             continue
@@ -318,7 +328,11 @@ def get_cleanup_data_for_combo(quality_data, model, temperature, format_type, pr
             for entry in sorted(value, key=lambda e: e.get("instance", "")):
                 issues.append(f"Parsing failed completely for {entry['instance']}")
         elif key.startswith("inconsistent_"):
-            issues.append(key.replace('_', ' ').title())
+            # Format inconsistent_* keys with proper capitalization (e.g., "Inconsistent JSON Format")
+            label = key.replace('_', ' ').title()
+            # Capitalize JSON correctly
+            label = label.replace('Json', 'JSON')
+            issues.append(label)
         else:
             label = key.replace('_', ' ').title()
             trial_str = _trial_numbers_str(value)
