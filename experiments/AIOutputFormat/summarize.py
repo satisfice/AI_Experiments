@@ -115,10 +115,11 @@ def detect_format_style(content, ext):
 
 def parse_txt(content):
     """Parse text file: each line is an item.
-    Returns (items, cleanups)."""
+    Returns (items, cleanups, quality_issues)."""
     items = [line.rstrip('\n\r') for line in content.split('\n') if line.strip()]
     cleanups = []
-    return items, cleanups
+    quality_issues = []
+    return items, cleanups, quality_issues
 
 
 def parse_json(content):
@@ -130,8 +131,9 @@ def parse_json(content):
     - JSON with single quotes (Python dict syntax)
     - JSON wrapped in triple backticks (markdown code fence format)
     Extracts values from list of dicts with common keys.
-    Returns (items, cleanups)."""
+    Returns (items, cleanups, quality_issues)."""
     cleanups = []
+    quality_issues = []
 
     # Strip triple backticks if present (markdown code fence format)
     content_to_parse = content.strip()
@@ -189,8 +191,8 @@ def parse_json(content):
                             flattened.extend(item)
                         else:
                             flattened.append(item)
-                    cleanups.append("QUALITY: Repeated JSON object keys (same key used for multiple values)")
-                    return flattened, cleanups
+                    quality_issues.append("repeated-json-keys")
+                    return flattened, cleanups, quality_issues
 
     try:
         data = json.loads(content_to_parse)
@@ -218,7 +220,7 @@ def parse_json(content):
         if had_nested_lists:
             cleanups.append("JSON-Nested-List-Flattening")
 
-        return flattened, cleanups
+        return flattened, cleanups, quality_issues
 
     except json.JSONDecodeError as e:
         # Try other conversions before giving up
@@ -254,7 +256,7 @@ def parse_json(content):
                             flattened.extend(item)
                         else:
                             flattened.append(item)
-                    return flattened, cleanups
+                    return flattened, cleanups, quality_issues
                 except json.JSONDecodeError:
                     pass  # Try next method
 
@@ -285,14 +287,14 @@ def parse_json(content):
                         flattened.append(item)
 
                 cleanups.append("JSON-Python-Syntax-Repair")
-                return flattened, cleanups
+                return flattened, cleanups, quality_issues
             except json.JSONDecodeError:
                 # If the fix didn't work, return empty list with error note
-                cleanups.append("QUALITY: Parse-Failed")
-                return [], cleanups
+                quality_issues.append("parse-failed")
+                return [], cleanups, quality_issues
         else:
-            cleanups.append("QUALITY: Parse-Failed")
-            return [], cleanups
+            quality_issues.append("parse-failed")
+            return [], cleanups, quality_issues
 
 
 def _extract_from_dict_list(items, cleanups):
@@ -409,8 +411,9 @@ def csv_strip_leading_markers(items):
 
 def parse_csv(content):
     """Parse CSV content. Orchestrates csv_parse_rows -> clean_strip_quotes.
-    Returns (items, cleanups)."""
+    Returns (items, cleanups, quality_issues)."""
     cleanups = []
+    quality_issues = []
     try:
         items, cleanup = csv_parse_rows(content)
         if cleanup:
@@ -420,11 +423,11 @@ def parse_csv(content):
         if cleanup:
             cleanups.append(cleanup)
 
-        return items, cleanups
+        return items, cleanups, quality_issues
 
     except Exception as e:
-        cleanups.append("QUALITY: Parse-Failed")
-        return [], cleanups
+        quality_issues.append("parse-failed")
+        return [], cleanups, quality_issues
 
 
 def parse_md(content):
@@ -549,8 +552,9 @@ def parse_md(content):
 def parse_yaml(content):
     """Parse YAML: extract items from structure. If single item is a list, flatten it.
     Falls back to text parsing if content looks like plain text list.
-    Returns (items, cleanups)."""
+    Returns (items, cleanups, quality_issues)."""
     cleanups = []
+    quality_issues = []
     try:
         # Check for a YAML end-of-directives / document-separator marker (---) on a non-first
         # line; strip everything from that line onward so it doesn't corrupt the parse.
@@ -604,7 +608,7 @@ def parse_yaml(content):
             items = items[0]
             cleanups.append("YAML-Single-List-Flattening")
 
-        return items, cleanups
+        return items, cleanups, quality_issues
 
     except yaml.YAMLError as e:
         # YAML parse error - fall back to plain text parsing with YAML list markers
@@ -622,11 +626,11 @@ def parse_yaml(content):
                     items.append(item)
 
             if items:
-                return items, cleanups
+                return items, cleanups, quality_issues
         except Exception:
             pass
 
-        return [], cleanups
+        return [], cleanups, quality_issues
 
 
 # ── HTML Tree-Building Helpers ────────────────────────────────────────────────
@@ -1010,16 +1014,17 @@ def parse_txt1(content):
     """Parse .txt1 file: each line is an item, removing leading numbers.
     Delegates to clean_strip_leading_numbers for consistent cleanup and logging.
     Emits a QUALITY flag when no leading numbers are present (unexpected for this format).
-    Returns (items, cleanups)."""
+    Returns (items, cleanups, quality_issues)."""
     cleanups = []
+    quality_issues = []
     items = [line.rstrip('\n\r') for line in content.split('\n') if line.strip()]
     cleaned, cleanup = clean_strip_leading_numbers(items)
     if cleanup:
         cleanups.append(cleanup)
     elif cleaned:
         # numberedText format expected leading numbers; their absence is a quality issue
-        cleanups.append("QUALITY: TXT1-No-Numbers (file has no leading numbers; expected numbered format)")
-    return cleaned, cleanups
+        quality_issues.append("txt1-no-numbers")
+    return cleaned, cleanups, quality_issues
 
 
 PARSERS = {
