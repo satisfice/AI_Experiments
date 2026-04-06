@@ -8,10 +8,13 @@ COMPLETED:
 ✓ Phase 4: File loop unpacks 3-tuple from parsers and routes quality_issues to metadata["formatStyles"]
 ✓ Phase 4: Simplify fixups_to_cleanup() → parse_cleanup_keys() to handle only cleanup task names
 ✓ Phase 4: Delete QUALITY_FORMAT_STYLE_MAP constant (no longer needed for routing)
+✓ Phase 5: Update cleanup_rules.json to remove quality_issue cross-reference fields
+✓ Phase 5: Update quality_issues.json notes to reflect new direct parser quality_issues routing
+✓ Phase 5: Remove unreachable "plain-text" and "end-of-directives" from ISSUE_TYPES
+✓ Phase 5: Add markdown and HTML quality issue types to ISSUE_TYPES for proper tracking
 
-TODO (Phase 5):
-- Update cleanup_rules.json to remove quality_issue cross-reference fields
-- Update quality_issues.json detection_function fields to reflect new direct parser paths
-- Verify no "plain-text" quality issues are emitted; if unused, consider removing from ISSUE_TYPES
-- Verify "end-of-directives" is no longer referenced; if unused, remove from quality_issues.json
+REFACTORING COMPLETE: Quality issues are now cleanly separated from cleanup tasks.
+- All parsers return (items, cleanups, quality_issues) 3-tuple
+- QUALITY_FORMAT_STYLE_MAP routing deleted; quality_issues routed directly via parser returns
+- generate_report.py unaffected: quality.json structure remains identical
 
