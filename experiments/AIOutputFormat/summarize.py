@@ -890,7 +890,7 @@ def parse_html(content):
             ]
             if numbered_items:
                 items = numbered_items
-                return items, cleanups
+                return items, cleanups, quality_issues
 
             # Otherwise fall through with extracted content (drop the fence)
             content = extracted_content
@@ -916,7 +916,7 @@ def parse_html(content):
         cleanups.extend(_path_tag_cleanups(li_nodes, 'li'))
         if had_br:
             cleanups.append("Remove-BR-Tags")
-        return items, cleanups
+        return items, cleanups, quality_issues
 
     # ── Fallback path: try each tag in priority order ────────────────────────
     for tag in _HTML_FALLBACK_TAGS:
