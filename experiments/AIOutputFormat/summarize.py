@@ -2391,12 +2391,24 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
                 prompt_data[issue_type] = items_with_source
 
         # Add consistentFormat: True if no treatment field varies across trials
+        # AND no format structure inconsistencies detected (inconsistent_*_format issues)
         fc = format_consistency.get((model_name, temp_value, file_type, prompt_name), {})
+        has_format_inconsistency = False
+        inconsistency_issue_types = {
+            "markdown": "inconsistent_md_format",
+            "HTML": "inconsistent_html_format",
+            "JSON": "inconsistent_json_format",
+            "YAML": "inconsistent_yaml_format",
+        }
+        if file_type in inconsistency_issue_types:
+            inconsistency_type = inconsistency_issue_types[file_type]
+            has_format_inconsistency = inconsistency_type in prompt_data and bool(prompt_data[inconsistency_type])
+
         if fc:
             varying = [f for f in TREATMENT_FIELDS if len(set(fc[f])) > 1]
-            prompt_data["consistentFormat"] = len(varying) == 0
+            prompt_data["consistentFormat"] = len(varying) == 0 and not has_format_inconsistency
         else:
-            prompt_data["consistentFormat"] = True
+            prompt_data["consistentFormat"] = not has_format_inconsistency
 
         # Add formatStyles: count of each style seen for this prompt
         style_counts = format_style_counts.get(model_name, {}).get(temp_value, {}).get(file_type, {}).get(prompt_name, {})
