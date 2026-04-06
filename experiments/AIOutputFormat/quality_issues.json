@@ -161,6 +161,11 @@
       "name": "inconsistent_json_format",
       "description": "JSON trials within the same set apply different cleanup rules (different structural formats detected), indicating the model produced inconsistent output across trials.",
       "detection_function": "summarize_results (json_cleanup_agg rule set intersection)"
+    },
+    {
+      "name": "inconsistent_yaml_format",
+      "description": "YAML trials within the same set apply different cleanup rules (different structural formats detected), indicating the model produced inconsistent output across trials.",
+      "detection_function": "summarize_results (yaml_cleanup_agg rule set intersection)"
     }
   ],
   "_notes": {

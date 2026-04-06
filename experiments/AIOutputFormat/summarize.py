@@ -1891,10 +1891,10 @@ def _make_cleanup_rules_agg():
 
 
 def _make_format_aggregation_dicts():
-    """Create the format-specific cleanup rule aggregation dicts (case, markdown, HTML, JSON).
+    """Create the format-specific cleanup rule aggregation dicts (case, markdown, HTML, JSON, YAML).
 
     Returns:
-        (case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg)
+        (case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg)
         Used for detecting cross-trial inconsistencies in formatting/casing.
     """
     case_values_agg = defaultdict(
@@ -1919,7 +1919,12 @@ def _make_format_aggregation_dicts():
             lambda: defaultdict(list)
         )
     )
-    return case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg
+    yaml_cleanup_agg = defaultdict(
+        lambda: defaultdict(
+            lambda: defaultdict(list)
+        )
+    )
+    return case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg
 
 
 def summarize_results(filename_filter=None, model=None, format_type=None, experiment=None, timestamp=None, temperature=None, max_item_length=25, analysis=False, exclude_model=None, verbose=False):
@@ -1953,7 +1958,7 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
         "numbered-items-in-tags", "repeated-json-keys", "non-western-characters",
         "comma-separated", "txt1-no-numbers", "html_no_markup", "invalid-html-tags",
         "inconsistent_case", "inconsistent_md_format", "inconsistent_html_format",
-        "inconsistent_json_format",
+        "inconsistent_json_format", "inconsistent_yaml_format",
         "parse-failed", "stray-html-markup", "blockquote-markup",
         "Markdown-Cleanup-Partially-Bold-Line", "Markdown-Cleanup-Partially-Italic-Star-Line",
         "Markdown-Cleanup-Partially-Italic-Underscore-Line",
@@ -1964,7 +1969,7 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
     format_style_counts = _make_format_style_counts()
     item_count_stats = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
     cleanup_rules_agg = _make_cleanup_rules_agg()
-    case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg = _make_format_aggregation_dicts()
+    case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg = _make_format_aggregation_dicts()
     file_count = 0
     skipped_trials = []  # Track trial filenames that were skipped
     zero_item_files = []  # Track files that produced 0 items
@@ -2171,6 +2176,12 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
                 json_rules = frozenset(metadata.get("cleanup", {}).keys())
                 json_cleanup_agg[model_name][str(temp_value)][prompt_name].append((json_rules, file_path.name))
 
+            # For YAML files, track the full set of cleanup keys applied to each file.
+            # After the file loop, trial sets where rule sets differ are flagged as inconsistent.
+            if ext in ['.yml', '.yaml']:
+                yaml_rules = frozenset(metadata.get("cleanup", {}).keys())
+                yaml_cleanup_agg[model_name][str(temp_value)][prompt_name].append((yaml_rules, file_path.name))
+
             # Track formatStyle counts per prompt (primary detect_format_style() value)
             format_style_counts[model_name][str(temp_value)][file_type][prompt_name][metadata.get("formatStyle", "unknown")] += 1
             # Also count QUALITY-derived format-style labels (from metadata["formatStyles"])
@@ -2327,6 +2338,25 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
                         if rule not in quality_issues_examples[model_name][temp_value]["JSON"][prompt_name]["inconsistent_json_format"]:
                             example_fname = next((fname for rules, fname in entries if rule in rules), "unknown")
                             quality_issues_examples[model_name][temp_value]["JSON"][prompt_name]["inconsistent_json_format"][rule] = example_fname
+
+    # Compute YAML format inconsistency across trials.
+    # A YAML trial set is flagged when files have differing sets of cleanup rules applied,
+    # indicating the model produced different structural formats across trials.
+    # Instances are the rule names that appeared in some files but not all.
+    for model_name in yaml_cleanup_agg:
+        for temp_value in yaml_cleanup_agg[model_name]:
+            for prompt_name in yaml_cleanup_agg[model_name][temp_value]:
+                entries = yaml_cleanup_agg[model_name][temp_value][prompt_name]
+                rule_sets = [rules for rules, _ in entries]
+                if len(set(rule_sets)) > 1:
+                    all_rules = set().union(*rule_sets)
+                    common_rules = set.intersection(*[set(r) for r in rule_sets])
+                    varying_rules = all_rules - common_rules
+                    for rule in varying_rules:
+                        quality_issues_output[model_name][temp_value]["YAML"][prompt_name]["inconsistent_yaml_format"].add(rule)
+                        if rule not in quality_issues_examples[model_name][temp_value]["YAML"][prompt_name]["inconsistent_yaml_format"]:
+                            example_fname = next((fname for rules, fname in entries if rule in rules), "unknown")
+                            quality_issues_examples[model_name][temp_value]["YAML"][prompt_name]["inconsistent_yaml_format"][rule] = example_fname
 
     # Build quality_issues_dict with hierarchy: model -> temperature -> file_type -> prompt
     # Each prompt entry contains: issue lists, consistentFormat (bool), formatStyles (counts)
