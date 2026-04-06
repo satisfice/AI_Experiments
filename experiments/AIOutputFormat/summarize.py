@@ -2212,15 +2212,11 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
             if "formatStyles" in metadata:
                 filename = file_path.name
                 for fs_label in metadata["formatStyles"]:
-                    if fs_label == "parse-failed":
-                        # For parse failures, use the filename itself as the example so
-                        # the report can show which specific files failed to parse.
-                        quality_issues_output[model_name][str(temp_value)][file_type][prompt_name][fs_label].add(filename)
+                    # For format-style quality issues, track the filename as the instance so
+                    # _trial_numbers_str can extract trial numbers and show abbreviated ranges
+                    quality_issues_output[model_name][str(temp_value)][file_type][prompt_name][fs_label].add(filename)
+                    if filename not in quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][fs_label]:
                         quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][fs_label][filename] = filename
-                    else:
-                        quality_issues_output[model_name][str(temp_value)][file_type][prompt_name][fs_label].add(fs_label)
-                        if fs_label not in quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][fs_label]:
-                            quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][fs_label][fs_label] = filename
 
             # Count duplicate items (items appearing more than once)
             item_counts = Counter(items)

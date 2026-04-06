@@ -268,10 +268,44 @@ def aggregate_items_by_format_and_model(data):
     return result
 
 
+def _format_ranges(nums):
+    """Convert a sorted list of numbers into abbreviated ranges.
+    E.g., [1, 2, 3, 5, 6, 10] -> "1-3, 5-6, 10"
+    """
+    if not nums:
+        return ""
+
+    sorted_nums = sorted(set(nums))
+    ranges = []
+    start = sorted_nums[0]
+    end = sorted_nums[0]
+
+    for num in sorted_nums[1:]:
+        if num == end + 1:
+            # Extend the current range
+            end = num
+        else:
+            # Save the current range and start a new one
+            if start == end:
+                ranges.append(str(start))
+            else:
+                ranges.append(f"{start}-{end}")
+            start = num
+            end = num
+
+    # Don't forget the last range
+    if start == end:
+        ranges.append(str(start))
+    else:
+        ranges.append(f"{start}-{end}")
+
+    return ", ".join(ranges)
+
+
 def _trial_numbers_str(instances):
     """Given a list of {"instance": ..., "source": filename} dicts, return a
-    parenthesised sorted list of trial numbers extracted from the source filenames,
-    e.g. '(3, 11, 17)'.  Returns an empty string if no sources are present."""
+    parenthesised abbreviated list of trial numbers extracted from the source filenames,
+    e.g. '(1-3, 5, 10-12)'.  Returns an empty string if no sources are present."""
     nums = set()
     for entry in instances:
         src = entry.get("source", "")
@@ -282,7 +316,7 @@ def _trial_numbers_str(instances):
                 pass
     if not nums:
         return ""
-    return "(" + ", ".join(str(n) for n in sorted(nums)) + ")"
+    return "(" + _format_ranges(nums) + ")"
 
 
 def get_cleanup_data_for_combo(quality_data, model, temperature, format_type, prompt):
@@ -338,13 +372,19 @@ def get_cleanup_data_for_combo(quality_data, model, temperature, format_type, pr
             issues.append(label)
         else:
             label = key.replace('_', ' ').title()
+            # Fix capitalization for specific formats and keywords
+            label = label.replace('Json', 'JSON')
+            label = label.replace('Yaml', 'YAML')
+            label = label.replace('Html', 'HTML')
+            label = label.replace('Md ', 'Markdown ')
             trial_str = _trial_numbers_str(value)
             if trial_str:
-                # Format with Item(s) prefix: "(Item 3)" or "(Items 3, 11)"
-                # Extract numbers from trial_str (which is like "(3, 11)")
-                numbers = trial_str.strip("()").split(", ")
-                item_prefix = "Item" if len(numbers) == 1 else "Items"
-                formatted_str = f"({item_prefix} {', '.join(numbers)})"
+                # Format with Item(s) prefix: "(Item 3)" or "(Items 3-5, 10)"
+                # Extract the range/number parts from trial_str (which is like "(1-3, 5)")
+                inner_str = trial_str.strip("()")
+                parts = inner_str.split(", ")
+                item_prefix = "Item" if len(parts) == 1 and "-" not in parts[0] else "Items"
+                formatted_str = f"({item_prefix} {inner_str})"
                 issues.append(f"{label} {formatted_str}")
             else:
                 issues.append(label)
