@@ -949,14 +949,21 @@ def parse_html(content):
             quality_issues.append("single-span-tag")
         break
 
-    # ── Invalid tag fallback: tag names rendered as items ───────────────────
+    # ── Invalid tag fallback: extract text content from invalid tags ─────────
     if not items:
         known_tags = set(_HTML_TAG_DISPLAY.keys()) | _HtmlTreeBuilder._VOID_TAGS
         invalid_nodes = _find_nodes_with_unknown_tags(root, known_tags)
         if invalid_nodes:
-            items = [node.tag for node in invalid_nodes]
-            cleanups.append("Extract-From-Invalid-HTML-Tags")
-            quality_issues.append("invalid-html-tags")
+            # Extract text content from inside invalid tags, not the tag names
+            items = []
+            for node in invalid_nodes:
+                text, _ = node.text_content()
+                text = text.strip()
+                if text:
+                    items.append(text)
+            if items:
+                cleanups.append("Extract-From-Invalid-HTML-Tags")
+                quality_issues.append("invalid-html-tags")
 
     # ── Plain text fallback: no HTML structure detected ──────────────────────
     if not items:
