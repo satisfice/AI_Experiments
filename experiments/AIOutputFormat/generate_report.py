@@ -330,9 +330,11 @@ def get_cleanup_data_for_combo(quality_data, model, temperature, format_type, pr
         elif key.startswith("inconsistent_"):
             # Format inconsistent_* keys with proper capitalization (e.g., "Inconsistent JSON Format")
             label = key.replace('_', ' ').title()
-            # Capitalize JSON and YAML correctly
+            # Fix capitalization for specific formats
             label = label.replace('Json', 'JSON')
             label = label.replace('Yaml', 'YAML')
+            label = label.replace('Html', 'HTML')
+            label = label.replace('Md Format', 'Markdown Format')
             issues.append(label)
         else:
             label = key.replace('_', ' ').title()
