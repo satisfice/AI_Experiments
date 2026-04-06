@@ -97,15 +97,13 @@
     },
     {
       "name": "HTML-Stray-Tag-Cleanup",
-      "description": "Strips residual HTML tags from items after format-specific parsing. Applies to all formats. In HTML files, surviving tags indicate malformed structure the HTML parser could not fully unwrap. In any other format, HTML tags indicate the model leaked markup into a non-HTML response. Also emits 'QUALITY: HTML markup found in items' to flag the issue in quality.json.",
-      "function": "clean_format_specific",
-      "quality_issue": "stray-html-markup"
+      "description": "Strips residual HTML tags from items after format-specific parsing. Applies to all formats. In HTML files, surviving tags indicate malformed structure the HTML parser could not fully unwrap. In any other format, HTML tags indicate the model leaked markup into a non-HTML response. Emits 'stray-html-markup' quality issue for tracking in quality.json.",
+      "function": "clean_format_specific"
     },
     {
       "name": "Blockquote-Marker-Cleanup",
-      "description": "Strips leading and trailing blockquote '>' markers from items. Applies to all formats. Blockquote markers are out of place in structured list output and indicate the model used markdown-style quoting. Also emits 'QUALITY: Blockquote markers in items' to flag the issue in quality.json.",
-      "function": "clean_format_specific",
-      "quality_issue": "blockquote-markup"
+      "description": "Strips leading and trailing blockquote '>' markers from items. Applies to all formats. Blockquote markers are out of place in structured list output and indicate the model used markdown-style quoting. Emits 'blockquote-markup' quality issue for tracking in quality.json.",
+      "function": "clean_format_specific"
     },
     {
       "name": "Non-Western-Characters",
@@ -140,9 +138,8 @@
     },
     {
       "name": "CSV-Parse-Failed",
-      "description": "Emitted when the CSV parser throws an unexpected exception and no items can be recovered. Returns an empty item list and emits 'QUALITY: parsing failed completely for <filename>', routed to the parse-failed format-style label for per-file tracking in quality.json.",
-      "function": "parse_csv",
-      "quality_issue": "parse-failed"
+      "description": "Emitted when the CSV parser throws an unexpected exception and no items can be recovered. Returns an empty item list and emits 'parse-failed' quality issue for per-file tracking in quality.json.",
+      "function": "parse_csv"
     },
     {
       "name": "Extract-from-CSV-Codefence-Markdown",
@@ -305,9 +302,8 @@
     },
     {
       "name": "Extract-From-Invalid-HTML-Tags",
-      "description": "Detects when item text has been rendered as custom XML-like tag names (e.g., <tiger>, <baboon>) rather than as text content in standard HTML tags. Extracts tag names as items and flags as a quality issue (invalid-html-tags).",
-      "function": "_find_nodes_with_unknown_tags",
-      "quality_issue": "invalid-html-tags"
+      "description": "Detects when item text has been rendered as custom XML-like tag names (e.g., <tiger>, <baboon>) rather than as text content in standard HTML tags. Extracts tag names as items and emits 'invalid-html-tags' quality issue for tracking.",
+      "function": "_find_nodes_with_unknown_tags"
     },
     {
       "name": "Extract-From-Bold-Tags",
@@ -393,9 +389,8 @@
     },
     {
       "name": "JSON-Parse-Failed",
-      "description": "Emitted when JSON parsing fails completely and no items can be recovered. Covers two cases: (1) the general JSONDecodeError path where no repair is attempted, and (2) the Python-dict-syntax repair attempt (single-quote substitution) that still fails. Both cases return an empty item list and emit 'QUALITY: parsing failed completely for <filename>', which is routed to the parse-failed format-style label for per-file tracking in quality.json.",
-      "function": "parse_json",
-      "quality_issue": "parse-failed"
+      "description": "Emitted when JSON parsing fails completely and no items can be recovered. Covers two cases: (1) the general JSONDecodeError path where no repair is attempted, and (2) the Python-dict-syntax repair attempt (single-quote substitution) that still fails. Both cases return an empty item list and emit 'parse-failed' quality issue for per-file tracking in quality.json.",
+      "function": "parse_json"
     },
     {
       "name": "JSON-Repeated-Keys-Extraction",
@@ -450,9 +445,8 @@
     },
     {
       "name": "TXT1-No-Numbers",
-      "description": "Quality flag emitted when a .txt1 file contains no items with leading numbers. The .txt1 format is expected to have auto-numbered items; their absence indicates an unexpected response format.",
-      "function": "parse_txt1",
-      "quality_issue": "txt1-no-numbers"
+      "description": "Quality flag emitted when a .txt1 file contains no items with leading numbers. The .txt1 format is expected to have auto-numbered items; their absence indicates an unexpected response format and emits 'txt1-no-numbers' quality issue.",
+      "function": "parse_txt1"
     }
   ],
   "yml": [

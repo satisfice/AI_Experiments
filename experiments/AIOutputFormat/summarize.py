@@ -1960,12 +1960,15 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
         "leading_punctuation", "trailing_punctuation", "internal_punctuation",
         "exceeds_max_length", "preamble_leak",
         "markup_artifact", "repeated_chars",
-        "single-span-tag", "plain-text", "end-of-directives",
+        "single-span-tag",
         "numbered-items-in-tags", "repeated-json-keys", "non-western-characters",
         "comma-separated", "txt1-no-numbers", "html_no_markup", "invalid-html-tags",
         "inconsistent_case", "inconsistent_md_format", "inconsistent_html_format",
         "inconsistent_json_format",
         "parse-failed", "stray-html-markup", "blockquote-markup",
+        "Markdown-Cleanup-Partially-Bold-Line", "Markdown-Cleanup-Partially-Italic-Star-Line",
+        "Markdown-Cleanup-Partially-Italic-Underscore-Line",
+        "HTML_Only_Bold_Tags", "HTML_Only_Italic_Tags", "HTML_Only_Emphasis_Tags", "HTML_Only_Underline_Tags",
     ]
     # Initialize quality issue tracking structures
     quality_issues_output, quality_issues_examples = _make_issue_output_dicts(ISSUE_TYPES)
