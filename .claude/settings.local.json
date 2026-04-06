@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(python summarize.py --no-prompt)",
+      "Bash(python:*)",
+      "Bash(grep \"llama318b-t08.*\\\\.md$\")",
+      "Bash(python3 -c \"import json; q=json.load\\(open\\(''results/quality.json''\\)\\); print\\([k for k in q.keys\\(\\)]\\)\")",
+      "Bash(python3:*)",
+      "Bash(source venv/Scripts/activate)",
+      "Bash(pip install:*)",
+      "Bash(xargs head:*)",
+      "Bash(find results:*)"
+    ]
+  }
+}

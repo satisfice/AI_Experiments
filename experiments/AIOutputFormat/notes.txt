@@ -1,0 +1,8 @@
+Useful things for a coding agent:
+
+Get it to create a map of key functions in the code. For instance, in the animals project, an ongoing list of cleanup
+tasks and quality issues helped, helps, me to wrap my head around what the code is doing at a higher level of
+abstration than the code itself.
+
+
+

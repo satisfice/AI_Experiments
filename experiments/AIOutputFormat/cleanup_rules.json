@@ -62,7 +62,7 @@
     },
     {
       "name": "Strip-Leading-Formatting",
-      "description": "Removes leading markdown and format characters (* - + : ; , . ! ? { } [ ]) from items. Applies to all formats after format-specific cleaning. Reports count of items changed.",
+      "description": "Removes leading markdown and format characters (* - + : ; , . ! ? { } [ ]) from items. Applies to all formats after format-specific cleaning. Records the specific characters stripped in parentheses (e.g., 'Strip-Leading-Formatting: 3 items (<*)'). Reports count of items changed.",
       "function": "clean_strip_leading_format"
     },
     {
@@ -77,7 +77,7 @@
     },
     {
       "name": "Strip-Trailing-Punctuation",
-      "description": "Removes trailing punctuation and format characters (* - + : ; , . ! ? { } [ ]) from items. Complements Strip-Leading-Formatting.",
+      "description": "Removes trailing punctuation and format characters (* - + : ; , . ! ? { } [ ]) from items. Records the specific characters stripped in parentheses (e.g., 'Strip-Trailing-Punctuation: 2 items (!.)'). Complements Strip-Leading-Formatting.",
       "function": "clean_strip_trailing_punct"
     },
     {

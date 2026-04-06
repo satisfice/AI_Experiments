@@ -954,16 +954,23 @@ def parse_html(content):
         known_tags = set(_HTML_TAG_DISPLAY.keys()) | _HtmlTreeBuilder._VOID_TAGS
         invalid_nodes = _find_nodes_with_unknown_tags(root, known_tags)
         if invalid_nodes:
-            # Extract text content from inside invalid tags, not the tag names
+            # Extract text content from inside invalid tags, or tag name for hollow tags
             items = []
+            has_hollow_tags = False
             for node in invalid_nodes:
                 text, _ = node.text_content()
                 text = text.strip()
                 if text:
                     items.append(text)
+                elif node.tag:
+                    # Hollow tag: tag name IS the content (e.g. <tiger>)
+                    items.append(node.tag)
+                    has_hollow_tags = True
             if items:
                 cleanups.append("Extract-From-Invalid-HTML-Tags")
                 quality_issues.append("invalid-html-tags")
+                if has_hollow_tags:
+                    quality_issues.append("pointy-bracket-wrapping")
 
     # ── Plain text fallback: no HTML structure detected ──────────────────────
     if not items:
@@ -1076,13 +1083,18 @@ def parse_cleanup_keys(cleanup_keys):
     """Convert a cleanup task name list to a structured cleanup dict.
 
     'Rule: N items' → {Rule: N}
+    'Rule: N items (chars)' → {Rule (chars): N}
     Other strings    → {string: True}
     """
     cleanup = {}
     for cleanup_key in cleanup_keys:
-        m = re.match(r'^(.+?):\s+(\d+)\s+items?$', cleanup_key)
+        m = re.match(r'^(.+?):\s+(\d+)\s+items?(?:\s+(\([^)]+\)))?$', cleanup_key)
         if m:
-            cleanup[m.group(1)] = int(m.group(2))
+            rule_name = m.group(1)
+            count = int(m.group(2))
+            chars_annotation = m.group(3)  # e.g. "(<)" or None
+            key = f"{rule_name} {chars_annotation}" if chars_annotation else rule_name
+            cleanup[key] = count
         else:
             cleanup[cleanup_key] = True
     return cleanup
@@ -1450,15 +1462,26 @@ def detect_repeated_chars(item):
 def clean_strip_leading_format(items):
     """Strip leading markdown/format characters (* - + : ; , . ! ? { } [ ] etc.).
     Rule: Strip-Leading-Formatting.
+    Tracks which characters were stripped and includes them in the cleanup string.
     Returns (items, cleanup_str_or_none)."""
     result = []
     changed = 0
+    chars_stripped = set()
     for item in items:
         cleaned = _LEADING_PUNCT_RE.sub('', item).strip()
         if cleaned != item:
             changed += 1
+            # Collect unique characters that were stripped from the leading position
+            m = _LEADING_PUNCT_RE.match(item)
+            if m:
+                chars_stripped.update(c for c in m.group(0) if not c.isspace())
         result.append(cleaned)
-    cleanup = f"Strip-Leading-Formatting: {changed} items" if changed else None
+    if changed:
+        chars_str = ''.join(sorted(chars_stripped)) if chars_stripped else ''
+        suffix = f" ({chars_str})" if chars_str else ''
+        cleanup = f"Strip-Leading-Formatting: {changed} items{suffix}"
+    else:
+        cleanup = None
     return result, cleanup
 
 
@@ -1495,15 +1518,26 @@ def clean_remove_parenthetical(items):
 def clean_strip_trailing_punct(items):
     """Strip trailing punctuation and format characters from items.
     Rule: Strip-Trailing-Punctuation.
+    Tracks which characters were stripped and includes them in the cleanup string.
     Returns (items, cleanup_str_or_none)."""
     result = []
     changed = 0
+    chars_stripped = set()
     for item in items:
         cleaned = _TRAILING_PUNCT_RE.sub('', item).strip()
         if cleaned != item:
             changed += 1
+            # Collect unique characters that were stripped from the trailing position
+            m = _TRAILING_PUNCT_RE.search(item)
+            if m:
+                chars_stripped.update(c for c in m.group(0) if not c.isspace())
         result.append(cleaned)
-    cleanup = f"Strip-Trailing-Punctuation: {changed} items" if changed else None
+    if changed:
+        chars_str = ''.join(sorted(chars_stripped)) if chars_stripped else ''
+        suffix = f" ({chars_str})" if chars_str else ''
+        cleanup = f"Strip-Trailing-Punctuation: {changed} items{suffix}"
+    else:
+        cleanup = None
     return result, cleanup
 
 
@@ -1963,7 +1997,7 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
         "markup_artifact", "repeated_chars",
         "single-span-tag",
         "numbered-items-in-tags", "repeated-json-keys", "non-western-characters",
-        "comma-separated", "txt1-no-numbers", "html_no_markup", "invalid-html-tags",
+        "comma-separated", "txt1-no-numbers", "html_no_markup", "invalid-html-tags", "pointy-bracket-wrapping",
         "inconsistent_case", "inconsistent_md_format", "inconsistent_html_format",
         "inconsistent_json_format", "inconsistent_yaml_format",
         "parse-failed", "stray-html-markup", "blockquote-markup",

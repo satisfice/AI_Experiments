@@ -101,6 +101,11 @@
       "name": "HTML_Only_Underline_Tags",
       "description": "HTML content uses only <u> tags to wrap items, with no other content tags. Invalid HTML structure; should use proper list tags.",
       "detection_function": "_only_has_tag (checks if only <u> tags present)"
+    },
+    {
+      "name": "pointy-bracket-wrapping",
+      "description": "All items are rendered as hollow tags with no text content (e.g., <tiger>, <baboon>). The tag name is the item itself. Items are extracted from tag names. Distinct from invalid-html-tags which wraps text inside non-standard tags.",
+      "detection_function": "parse_html (invalid-tag fallback, hollow tag path)"
     }
   ],
   "json": [
