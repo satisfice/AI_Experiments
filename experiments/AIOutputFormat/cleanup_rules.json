@@ -411,14 +411,6 @@
       ]
     },
     {
-      "name": "Markdown-Bullet-Removal",
-      "description": "Detects and removes leading bullet characters (*, -, +) from markdown line items during parsing. Numbered items (1. 2. etc.) are handled by the cleanup pipeline instead. Applies only to markdown format.",
-      "function": "parse_md",
-      "subfunctions": [
-        "bullet_character_removal_via_regex"
-      ]
-    },
-    {
       "name": "MD-Extraneous-Text",
       "description": "Skips lines whose content (after any optional bullet prefix) is entirely a markdown bold (**text**), italic (*text* or _text_), or heading (#) element. These lines are not included as items and are not flagged as quality issues — they are purely structural/decorative markdown that carries no list content.",
       "function": "parse_md",
