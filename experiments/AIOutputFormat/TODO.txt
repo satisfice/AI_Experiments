@@ -18,3 +18,4 @@ REFACTORING COMPLETE: Quality issues are now cleanly separated from cleanup task
 - QUALITY_FORMAT_STYLE_MAP routing deleted; quality_issues routed directly via parser returns
 - generate_report.py unaffected: quality.json structure remains identical
 
+✓ Tooltip formatting: Reports like "Trailing Punctuation" now show "Trailing Punctuation (Items 10, 18)" or "Trailing Punctuation (Item 4)" for clarity
