@@ -411,8 +411,8 @@
       ]
     },
     {
-      "name": "Bullet-Removal",
-      "description": "Detects and removes leading bullet characters (*, -, +) from line items. Can apply to any format where bullets appear. This is a general cleanup operation, not specific to markdown.",
+      "name": "Markdown-Bullet-Removal",
+      "description": "Detects and removes leading bullet characters (*, -, +) from markdown line items during parsing. Numbered items (1. 2. etc.) are handled by the cleanup pipeline instead. Applies only to markdown format.",
       "function": "parse_md",
       "subfunctions": [
         "bullet_character_removal_via_regex"

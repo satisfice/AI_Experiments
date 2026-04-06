@@ -451,7 +451,8 @@ def parse_md(content):
     partial_italic_under_count = 0
 
     # Bullet: -, +, or * only when NOT followed by another * (distinguishes * bullet from ** bold)
-    _BULLET_RE = re.compile(r'^([-+]|\*(?!\*)|\d+[.):]) +')
+    # Note: numbered items (1. 2. etc.) are handled by the cleanup pipeline, not here
+    _BULLET_RE = re.compile(r'^([-+]|\*(?!\*)) +')
     # Both bold and italic: exactly three asterisks on each end (***text***)
     _BOTH_BOLD_ITALIC_RE = re.compile(r'^\*{3}[^*].*[^*]\*{3}$')
     # Entirely bold: exactly two asterisks on each end (**text**), not three
@@ -542,7 +543,7 @@ def parse_md(content):
     if partial_italic_under_count > 0:
         quality_issues.append("Markdown-Cleanup-Partially-Italic-Underscore-Line")
     if bullet_count > 0:
-        cleanups.append("Bullet-Removal")
+        cleanups.append("Markdown-Bullet-Removal")
 
     return items, cleanups, quality_issues
 
