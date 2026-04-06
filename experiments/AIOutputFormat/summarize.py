@@ -435,11 +435,12 @@ def parse_md(content):
     Lines that are entirely bold (**text**) or italic (*text* or _text_) have formatting stripped
     and are kept as items, recorded as Markdown-Strip-Bold-Tags or Markdown-Strip-Italic-Tags (cleanup, not quality).
     Lines that are both bold and italic (***text*** or **_text_** etc.) are recorded as Markdown-Both-Bold-And-Italic.
-    Partially bold/italic lines are recorded as both cleanup and quality issues.
+    Partially bold/italic lines are recorded as quality issues (not cleanup tasks).
     Lines that are headings (#) are skipped.
-    Returns (items, cleanups) where cleanups is a list of cleanup operations performed."""
+    Returns (items, cleanups, quality_issues) where cleanups is cleanup operations and quality_issues is quality observations."""
     items = []
     cleanups = []
+    quality_issues = []
     header_count = 0
     bullet_count = 0
     entirely_bold_count = 0
@@ -535,18 +536,15 @@ def parse_md(content):
     if both_bold_italic_count > 0:
         cleanups.append("Markdown-Both-Bold-And-Italic")
     if partial_bold_count > 0:
-        cleanups.append("Markdown-Cleanup-Partially-Bold-Line")
-        cleanups.append("QUALITY: Markdown-Cleanup-Partially-Bold-Line")
+        quality_issues.append("Markdown-Cleanup-Partially-Bold-Line")
     if partial_italic_star_count > 0:
-        cleanups.append("Markdown-Cleanup-Partially-Italic-Star-Line")
-        cleanups.append("QUALITY: Markdown-Cleanup-Partially-Italic-Star-Line")
+        quality_issues.append("Markdown-Cleanup-Partially-Italic-Star-Line")
     if partial_italic_under_count > 0:
-        cleanups.append("Markdown-Cleanup-Partially-Italic-Underscore-Line")
-        cleanups.append("QUALITY: Markdown-Cleanup-Partially-Italic-Underscore-Line")
+        quality_issues.append("Markdown-Cleanup-Partially-Italic-Underscore-Line")
     if bullet_count > 0:
         cleanups.append("Bullet-Removal")
 
-    return items, cleanups
+    return items, cleanups, quality_issues
 
 
 def parse_yaml(content):
@@ -869,8 +867,9 @@ def _extract_from_html_formatting_tag(tag_nodes, tag):
 def parse_html(content):
     """Parse HTML using a DOM tree. Extracts items from <li> tags (primary) or falls back
     to <p>/<span>/<div>/<article>/<section>. Each tag in the ancestor path emits its own
-    cleanup key. Returns (items, cleanups)."""
+    cleanup key. Returns (items, cleanups, quality_issues)."""
     cleanups = []
+    quality_issues = []
     items = []
 
     # ── Codefence fallback (unchanged logic) ────────────────────────────────
@@ -880,7 +879,7 @@ def parse_html(content):
         if match:
             extracted_content = match.group(1)
             cleanups.append("Extract-from-HTML-Codefence-Markdown")
-            cleanups.append("QUALITY: Invalid HTML format (content wrapped in markdown code fence instead of proper HTML markup)")
+            quality_issues.append("html_no_markup")
 
             # If inner content is an all-numbered list, return it immediately
             numbered_pattern = r'^\d+\.\s+(.+)$'
@@ -906,9 +905,9 @@ def parse_html(content):
             items, extraction_cleanups = _extract_from_html_formatting_tag(tag_nodes, tag)
             cleanups.extend(extraction_cleanups)
             cleanups.extend(_detect_br_tags(tag_nodes))
-            cleanups.append(f"QUALITY: {quality_issue}")
+            quality_issues.append(quality_issue)
             if items:
-                return items, cleanups
+                return items, cleanups, quality_issues
 
     # ── Primary path: <li> tags ──────────────────────────────────────────────
     li_nodes = _find_leaf_tag_nodes(root, 'li')
@@ -936,7 +935,7 @@ def parse_html(content):
             if had_br:
                 cleanups.append("Remove-BR-Tags")
             cleanups.append("HTML-Numbered-Items-In-Tags")
-            cleanups.append("QUALITY: Numbered items in separate tags format (each item in its own <span>/<p> tag with number prefix instead of proper <li> list)")
+            quality_issues.append("numbered-items-in-tags")
             break
 
         # Per-item comma-split check for inline comma-separated values
@@ -956,9 +955,9 @@ def parse_html(content):
         if had_br:
             cleanups.append("Remove-BR-Tags")
         if comma_split_used:
-            cleanups.append(f"QUALITY: Comma-separated items in single <{tag}> tag (items should be in separate tags or list markers)")
+            quality_issues.append("comma-separated")
         if not was_line_split:
-            cleanups.append("QUALITY: Single-span tag format (items in separate <p>/<span> tags instead of <li> list)")
+            quality_issues.append("single-span-tag")
         break
 
     # ── Invalid tag fallback: tag names rendered as items ───────────────────
@@ -968,7 +967,7 @@ def parse_html(content):
         if invalid_nodes:
             items = [node.tag for node in invalid_nodes]
             cleanups.append("Extract-From-Invalid-HTML-Tags")
-            cleanups.append("QUALITY: Invalid HTML (item text rendered as tags)")
+            quality_issues.append("invalid-html-tags")
 
     # ── Plain text fallback: no HTML structure detected ──────────────────────
     if not items:
@@ -988,7 +987,7 @@ def parse_html(content):
                 # Every line is a numbered item — clean numbered list in plain text.
                 items = numbered_items
                 cleanups.append("HTML-Numbered-List-Stripping")
-                cleanups.append("QUALITY: Invalid HTML (contains plain numbered list instead of HTML markup)")
+                quality_issues.append("html_no_markup")
             elif numbered_items:
                 # Mix of numbered items and non-numbered lines (e.g. a title).
                 # If the non-numbered lines are all short (≤5 words), treat them as
@@ -997,17 +996,17 @@ def parse_html(content):
                 if all(len(l.split()) <= 5 for l in non_numbered):
                     items = numbered_items
                     cleanups.append("HTML-Numbered-List-Stripping")
-                    cleanups.append("QUALITY: Invalid HTML (contains plain numbered list instead of HTML markup)")
+                    quality_issues.append("html_no_markup")
                 else:
                     items = clean_lines
                     cleanups.append("HTML-PlainText-Fallback")
-                    cleanups.append("QUALITY: Requested HTML; response was plain text")
+                    quality_issues.append("html_no_markup")
             else:
                 items = clean_lines
                 cleanups.append("HTML-PlainText-Fallback")
-                cleanups.append("QUALITY: Requested HTML; response was plain text")
+                quality_issues.append("html_no_markup")
 
-    return items, cleanups
+    return items, cleanups, quality_issues
 
 
 def parse_txt1(content):
