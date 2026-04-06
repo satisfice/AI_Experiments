@@ -3,11 +3,15 @@ COMPLETED:
 ✓ HTML parsing: detect HTML-only-formatting-tags (bold, italic, emphasis, underline) as quality issues
 ✓ Refactor extraction logic: separate BR tag detection from item extraction
 ✓ Create quality_issues.json: parallel documentation structure to cleanup_rules.json
+✓ Phase 3: Separate quality issues from cleanup tasks in parsers (all parsers return 3-tuple: items, cleanups, quality_issues)
+✓ Phase 3: process_and_track() handles format-specific quality issues in processingQualityIssues metadata key
+✓ Phase 4: File loop unpacks 3-tuple from parsers and routes quality_issues to metadata["formatStyles"]
+✓ Phase 4: Simplify fixups_to_cleanup() → parse_cleanup_keys() to handle only cleanup task names
+✓ Phase 4: Delete QUALITY_FORMAT_STYLE_MAP constant (no longer needed for routing)
 
-TODO:
-- Fix unreachable quality issue: "plain-text" is in ISSUE_TYPES but not in QUALITY_FORMAT_STYLE_MAP routing. Need either add routing or remove from ISSUE_TYPES.
-- Fix unreachable quality issue: "end-of-directives" is in QUALITY_FORMAT_STYLE_MAP but no parser appends a QUALITY string containing "YAML end-of-directives marker". Fix YAML directive handler to emit the QUALITY string.
-- Add tracking for partial markdown cleanup issues to quality_issues_output (currently they land in cleanup dict but not quality_issues).
-- Add tracking for HTML_Only_* issues to quality_issues_output (currently they land in cleanup dict but not quality_issues).
-- Consider whether "plain-text" quality issue should be detected (currently no QUALITY string in code maps to it).
+TODO (Phase 5):
+- Update cleanup_rules.json to remove quality_issue cross-reference fields
+- Update quality_issues.json detection_function fields to reflect new direct parser paths
+- Verify no "plain-text" quality issues are emitted; if unused, consider removing from ISSUE_TYPES
+- Verify "end-of-directives" is no longer referenced; if unused, remove from quality_issues.json
 
