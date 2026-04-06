@@ -22,3 +22,4 @@ REFACTORING COMPLETE: Quality issues are now cleanly separated from cleanup task
 ✓ YAML format inconsistency tracking: detect when YAML trials have different cleanup rules
 ✓ Capitalize format inconsistency labels: "Inconsistent HTML Format", "Inconsistent Markdown Format", "Inconsistent JSON Format", "Inconsistent YAML Format"
 ✓ Omit generic "Inconsistent output format" when only JSON/YAML format is inconsistent
+✓ Format-style quality issues track all affected trials: "HTML No Markup (Items 1-20)" or abbreviated ranges "Items 1-5, 10-12, 20"
