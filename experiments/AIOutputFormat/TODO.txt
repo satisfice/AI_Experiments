@@ -19,3 +19,6 @@ REFACTORING COMPLETE: Quality issues are now cleanly separated from cleanup task
 - generate_report.py unaffected: quality.json structure remains identical
 
 ✓ Tooltip formatting: Reports like "Trailing Punctuation" now show "Trailing Punctuation (Items 10, 18)" or "Trailing Punctuation (Item 4)" for clarity
+✓ YAML format inconsistency tracking: detect when YAML trials have different cleanup rules
+✓ Capitalize format inconsistency labels: "Inconsistent HTML Format", "Inconsistent Markdown Format", "Inconsistent JSON Format", "Inconsistent YAML Format"
+✓ Omit generic "Inconsistent output format" when only JSON/YAML format is inconsistent
