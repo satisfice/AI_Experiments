@@ -268,44 +268,10 @@ def aggregate_items_by_format_and_model(data):
     return result
 
 
-def _format_ranges(nums):
-    """Convert a sorted list of numbers into abbreviated ranges.
-    E.g., [1, 2, 3, 5, 6, 10] -> "1-3, 5-6, 10"
-    """
-    if not nums:
-        return ""
-
-    sorted_nums = sorted(set(nums))
-    ranges = []
-    start = sorted_nums[0]
-    end = sorted_nums[0]
-
-    for num in sorted_nums[1:]:
-        if num == end + 1:
-            # Extend the current range
-            end = num
-        else:
-            # Save the current range and start a new one
-            if start == end:
-                ranges.append(str(start))
-            else:
-                ranges.append(f"{start}-{end}")
-            start = num
-            end = num
-
-    # Don't forget the last range
-    if start == end:
-        ranges.append(str(start))
-    else:
-        ranges.append(f"{start}-{end}")
-
-    return ", ".join(ranges)
-
-
 def _trial_numbers_str(instances):
     """Given a list of {"instance": ..., "source": filename} dicts, return a
-    parenthesised abbreviated list of trial numbers extracted from the source filenames,
-    e.g. '(1-3, 5, 10-12)'.  Returns an empty string if no sources are present."""
+    parenthesised sorted list of trial numbers extracted from the source filenames,
+    e.g. '(3, 11, 17)'.  Returns an empty string if no sources are present."""
     nums = set()
     for entry in instances:
         src = entry.get("source", "")
@@ -316,7 +282,7 @@ def _trial_numbers_str(instances):
                 pass
     if not nums:
         return ""
-    return "(" + _format_ranges(nums) + ")"
+    return "(" + ", ".join(str(n) for n in sorted(nums)) + ")"
 
 
 def get_cleanup_data_for_combo(quality_data, model, temperature, format_type, prompt):
@@ -336,22 +302,12 @@ def get_cleanup_data_for_combo(quality_data, model, temperature, format_type, pr
 
     issues = []
 
-    # Check if there are any inconsistent format issues and what types
-    NON_ISSUE_KEYS = {"consistentFormat", "formatStyles", "cleanupRules"}
-    inconsistent_types = []
-    for key in prompt_data.keys():
-        if key.startswith("inconsistent_") and prompt_data[key]:
-            inconsistent_types.append(key)
-
-    # Prepend inconsistent format warning if flagged, but only if there are multiple types of inconsistencies
-    # or inconsistencies other than JSON format
+    # Prepend inconsistent format warning if flagged
     if not prompt_data.get("consistentFormat", True):
-        has_only_json_inconsistency = (len(inconsistent_types) == 1 and
-                                       inconsistent_types[0] == "inconsistent_json_format")
-        if not has_only_json_inconsistency:
-            issues.append("Inconsistent output format")
+        issues.append("Inconsistent output format")
 
     # Non-empty issue lists (skip metadata keys)
+    NON_ISSUE_KEYS = {"consistentFormat", "formatStyles", "cleanupRules"}
     for key, value in prompt_data.items():
         if key in NON_ISSUE_KEYS:
             continue
@@ -362,32 +318,11 @@ def get_cleanup_data_for_combo(quality_data, model, temperature, format_type, pr
             for entry in sorted(value, key=lambda e: e.get("instance", "")):
                 issues.append(f"Parsing failed completely for {entry['instance']}")
         elif key.startswith("inconsistent_"):
-            # Format inconsistent_* keys with proper capitalization (e.g., "Inconsistent JSON Format")
-            label = key.replace('_', ' ').title()
-            # Fix capitalization for specific formats
-            label = label.replace('Json', 'JSON')
-            label = label.replace('Yaml', 'YAML')
-            label = label.replace('Html', 'HTML')
-            label = label.replace('Md Format', 'Markdown Format')
-            issues.append(label)
+            issues.append(key.replace('_', ' ').title())
         else:
             label = key.replace('_', ' ').title()
-            # Fix capitalization for specific formats and keywords
-            label = label.replace('Json', 'JSON')
-            label = label.replace('Yaml', 'YAML')
-            label = label.replace('Html', 'HTML')
-            label = label.replace('Md ', 'Markdown ')
             trial_str = _trial_numbers_str(value)
-            if trial_str:
-                # Format with Item(s) prefix: "(Item 3)" or "(Items 3-5, 10)"
-                # Extract the range/number parts from trial_str (which is like "(1-3, 5)")
-                inner_str = trial_str.strip("()")
-                parts = inner_str.split(", ")
-                item_prefix = "Item" if len(parts) == 1 and "-" not in parts[0] else "Items"
-                formatted_str = f"({item_prefix} {inner_str})"
-                issues.append(f"{label} {formatted_str}")
-            else:
-                issues.append(label)
+            issues.append(f"{label} {trial_str}".strip() if trial_str else label)
 
     # cleanupRules is a dict {rule: trial_count} in the current format, or a list in the old format.
     raw = prompt_data.get("cleanupRules", {})
@@ -668,6 +603,19 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
             flex-direction: column;
             align-items: stretch;
         }
+        .clear-all-btn {
+            padding: 3px 8px;
+            font-size: 12px;
+            cursor: pointer;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .clear-all-btn:hover {
+            background-color: #ddd;
+        }
         .progress-section {
             display: none;
             margin-top: 4px;
@@ -851,7 +799,8 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
     # Add Aggregated as a format option
     html_content += '                <div class="filter-item"><input type="checkbox" id="filter-format-aggregated" class="format-filter agg-toggle" value="aggregated" checked data-format="aggregated"><label for="filter-format-aggregated">Aggregated</label></div>\n'
 
-    html_content += """            </div>
+    html_content += """                <button class="clear-all-btn" data-filter-class="format-filter">Clear All</button>
+            </div>
         </div>
 
         <div class="filter-section">
@@ -1404,6 +1353,26 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
                         resizeColumnPlots(container);
                     });
                 }
+            });
+
+            // Handle Clear All / Select All button for format checkboxes
+            // Guard against duplicate listeners when this function is called more than once
+            // on the same container (e.g. initial document scope + mainContent on column revert)
+            container.querySelectorAll('.clear-all-btn').forEach(function(btn) {
+                if (btn._clearAllBound) return;
+                btn._clearAllBound = true;
+                btn.addEventListener('click', function() {
+                    var filterClass = btn.getAttribute('data-filter-class');
+                    var checkboxes = container.querySelectorAll('.' + filterClass);
+                    var isClearAll = btn.textContent.trim() === 'Clear All';
+                    checkboxes.forEach(function(cb) {
+                        if (cb.checked !== !isClearAll) {
+                            cb.checked = !isClearAll;
+                            cb.dispatchEvent(new Event('change'));
+                        }
+                    });
+                    btn.textContent = isClearAll ? 'Select All' : 'Clear All';
+                });
             });
 
             // Attach change listeners to all filter checkboxes in this column
