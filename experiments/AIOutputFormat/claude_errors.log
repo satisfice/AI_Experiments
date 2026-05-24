@@ -1,0 +1,23 @@
+[CSS Selector Error] (noted by Michael): 2026-05-24 00:00
+Incident type: Incorrect CSS selector
+Context: Hiding scrollbar on left column in dual-column layout (generate_report.py)
+Description: Used :first-child pseudo-class to target the left column, but the columns are appended to body after other existing children (#main-content, #cleanup-tooltip), so :first-child never matched and the scrollbar hide had no effect.
+Resolution: Added a dedicated CSS class (column-left) to column1 in initializeDualColumns() and updated the CSS selector to target .column-left directly.
+
+[CSS Width Compensation Error] (noted by Michael): 2026-05-24 00:00
+Incident type: Incorrect cross-browser assumption
+Context: Equalizing dual column widths after hiding left column scrollbar (generate_report.py)
+Description: Hardcoded padding-right: 16px (10px base + 6px) on the left column to compensate for the right column's 6px WebKit scrollbar. This fails in Firefox where scrollbar-width: thin is UA-defined (~8px), causing a 2px mismatch. The CSS cannot reliably know the actual rendered scrollbar width.
+Resolution: Removed hardcoded compensation from CSS; instead use requestAnimationFrame in initializeDualColumns() to measure column2.offsetWidth - column2.clientWidth (the actual scrollbar width) and apply the exact value as padding-right on column1.
+
+[Plot Sizing / Render Timing Error] (noted by Michael): 2026-05-24 00:00
+Incident type: Race condition between layout measurement and plot rendering
+Context: Dual-column plot sizing in generate_report.py
+Description: Plot initialization (cleanupObservers, setupColumnEventListeners, observePlots) was called immediately after appending columns, before the requestAnimationFrame that sets the left column's padding-right. Plotly measured the wrong container width at render time, causing unequal plot sizes and the aggregated plot to spill outside its container.
+Resolution: Moved all plot initialization inside the requestAnimationFrame callback so Plotly measures container widths after padding-right is set. Also added overflow: hidden to .aggregated-section and a post-render Plotly.Plots.resize() call on the aggregated plot.
+
+[Destructive File Overwrite] (noted by Michael): 2026-05-24 00:00
+Incident type: Used Write tool on an existing file instead of Edit
+Context: Correcting error attribution in claude_errors.log
+Description: Used the Write tool to rewrite claude_errors.log in its entirety in order to fix attribution strings. Write overwrites the complete file, destroying any prior entries that were not included in the new content. All log entries predating this conversation are unrecoverable.
+Resolution: Always use Edit to make targeted changes to existing files. Write should only be used to create new files or perform an intentional full rewrite explicitly requested by the user.

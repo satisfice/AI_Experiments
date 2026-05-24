@@ -561,6 +561,7 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
             margin-bottom: 20px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             transition: background-color 0.3s ease, min-height 0.3s ease;
+            overflow: hidden;
         }
         .aggregated-section.loading {
             background-color: #d3d3d3;
@@ -733,9 +734,29 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
             flex-direction: column;
             overflow-y: scroll;
             overflow-x: hidden;
-            scrollbar-gutter: stable;
             padding: 0 10px;
             box-sizing: border-box;
+        }
+        /* Narrow scrollbar on right column (6px); left column mirrors the space with padding */
+        body.columns-2 .column:not(.column-left)::-webkit-scrollbar {
+            width: 6px;
+        }
+        body.columns-2 .column:not(.column-left)::-webkit-scrollbar-thumb {
+            background: #bbb;
+            border-radius: 3px;
+        }
+        body.columns-2 .column:not(.column-left)::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        body.columns-2 .column:not(.column-left) {
+            scrollbar-width: thin;
+        }
+        /* Left column: no scrollbar; right padding is set by JS to match right column's scrollbar width */
+        body.columns-2 .column-left {
+            scrollbar-width: none;
+        }
+        body.columns-2 .column-left::-webkit-scrollbar {
+            display: none;
         }
         body.columns-2 .column > * {
             flex-shrink: 0;
@@ -1187,6 +1208,11 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
             if (aggSection) {
                 aggSection.classList.remove('loading');
             }
+
+            // Resize aggregated plot to fit its container after render
+            if (aggPlot) {
+                requestAnimationFrame(function() { Plotly.Plots.resize(aggPlot); });
+            }
         }
 
         // Handle dual-column layout if requested
@@ -1201,7 +1227,7 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
             clone2.innerHTML = mainContentTemplate;
 
             const column1 = document.createElement('div');
-            column1.className = 'column';
+            column1.className = 'column column-left';
             column1.appendChild(clone1);
 
             const column2 = document.createElement('div');
@@ -1234,13 +1260,19 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
             column1.addEventListener('scroll', function() { column2.scrollTop = column1.scrollTop; });
             column2.addEventListener('scroll', function() { column1.scrollTop = column2.scrollTop; });
 
-            // Set up event listeners and lazy-render plots via IntersectionObserver
-            cleanupObservers();
-            setupColumnEventListeners(column1);
-            setupColumnEventListeners(column2);
-            observePlots(column1);
-            observePlots(column2);
-            updatePlotYAxisScale();
+            // Set padding-right on left column after layout, then initialize plots with correct widths
+            requestAnimationFrame(function() {
+                var sbWidth = column2.offsetWidth - column2.clientWidth;
+                column1.style.paddingRight = (10 + sbWidth) + 'px';
+
+                // Set up event listeners and lazy-render plots via IntersectionObserver
+                cleanupObservers();
+                setupColumnEventListeners(column1);
+                setupColumnEventListeners(column2);
+                observePlots(column1);
+                observePlots(column2);
+                updatePlotYAxisScale();
+            });
         }
 
         // Don't initialize dual columns on page load - start in single column mode
@@ -1459,6 +1491,24 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
         });
 
         updateColumnModeButton();
+
+        // Resize all visible Plotly plots when window is resized (includes browser zoom)
+        var windowResizeTimeout;
+        window.addEventListener('resize', function() {
+            clearTimeout(windowResizeTimeout);
+            windowResizeTimeout = setTimeout(function() {
+                var containers = [];
+                if (isInTwoColumnMode && savedColumns) {
+                    containers = [savedColumns.column1, savedColumns.column2];
+                } else {
+                    var mc = document.getElementById('main-content');
+                    if (mc) containers = [mc];
+                }
+                containers.forEach(function(container) {
+                    resizeColumnPlots(container);
+                });
+            }, 150);
+        });
     </script>
 
 </body>
