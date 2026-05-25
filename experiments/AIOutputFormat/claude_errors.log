@@ -33,3 +33,9 @@ Incident type: Repeated incorrect layout changes, each introducing new breakage
 Context: Fixing .aggregated-section width and spillover in generate_report.py (2026-05-25)
 Description: Three successive layout changes each broke something new. (1) Added overflow: hidden to .aggregated-section to fix rightward plot spillover — this clipped the section's right border entirely. (2) Removed padding: 20px from #plots-container to align .aggregated-section width with .header — this cut off the right border of every plot section. (3) Both changes had to be individually reverted. The underlying cause of the spillover (autosize measuring wrong container width before layout settles) was not verified to be fixed before introducing the width alignment attempt. Token cost: ~15,000 (estimated; exact count unavailable).
 Resolution: Reverted both bad changes. The padding: 20px on #plots-container was restored. The aggregated section width discrepancy remains unresolved. Do not attempt further layout changes without first fully mapping the box model geometry on paper and verifying the fix in isolation.
+
+[CSS Selector Applied to Wrong Element] (noted by Michael): 2026-05-25 00:00
+Incident type: Incorrect assumption about existing class assignment
+Context: Styling right-column h1 white in dual-column mode (generate_report.py)
+Description: Added CSS rule body.columns-2 .column:not(.column-left) h1 { color: #fff } to target only the right column's h1. However, column1.className was 'column' (not 'column column-left'), so :not(.column-left) matched both columns and both h1s turned white. Should have verified the JS class assignments before writing the selector.
+Resolution: Added column-left class back to column1 in initializeDualColumns() so the selector correctly targets only the right column.

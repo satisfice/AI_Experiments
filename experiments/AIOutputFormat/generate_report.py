@@ -550,29 +550,10 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
             display: flex;
             flex-direction: column;
             gap: 30px;
-            padding: 20px;
+            padding-left: 5px;
+            padding-right: 30px;
             min-width: 0;
             box-sizing: border-box;
-        }
-        .aggregated-section {
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: background-color 0.3s ease, min-height 0.3s ease;
-        }
-        .aggregated-section.loading {
-            background-color: #d3d3d3;
-            min-height: 600px;
-        }
-        .aggregated-section.loading .plot-wrapper {
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .aggregated-section:not(.loading) .plot-wrapper {
-            opacity: 1;
-            transition: opacity 0.3s ease;
         }
         .prompt-column {
             display: contents;
@@ -640,6 +621,10 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
         body.columns-2 #column-toggle-btn {
             display: none;
         }
+        /* Right column title: white text so it doesn't compete with the left column */
+        body.columns-2 .column:not(.column-left) h1 {
+            color: #fff;
+        }
         /* Button in right column header (dual-column mode only) */
         .right-column-toggle-btn {
             padding: 8px 16px;
@@ -689,9 +674,6 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
         .plot-wrapper .plotly-graphdiv {
             width: 100% !important;
             height: 100% !important;
-        }
-        .aggregated-section .plot-wrapper {
-            border: 4px solid #000;
         }
         .plot-wrapper.hidden {
             display: none;
@@ -832,16 +814,13 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
     </div>
 
     <div id="plots-container">
+    <div class="plot-section aggregated-plot-section">
+        <div class="plot-title" id="aggregated-title">Aggregated Results</div>
+        <div class="plot-wrapper">
+            <div id="graph-aggregated" style="height:600px; width:100%;"></div>
+        </div>
+    </div>
 """
-
-    # Add aggregated plot at the top (spans all columns)
-    # Title and plot data are computed by JavaScript after filters are applied.
-    html_content += f'    <div class="aggregated-section loading" id="aggregated-section">\n'
-    html_content += f'        <div class="plot-title" id="aggregated-title">Aggregated Results</div>\n'
-    html_content += f'        <div class="plot-wrapper" id="aggregated-plot">\n'
-    html_content += '            <div id="graph-aggregated" style="height:600px;"></div>\n'
-    html_content += '        </div>\n'
-    html_content += '    </div>\n\n'
 
     # Group plots by prompt
     plots_by_prompt = defaultdict(list)
@@ -1026,6 +1005,32 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
         // Dynamic Y-axis max for individual plots (updated as filters change)
         var currentMaxY = aggregationData.globalMaxY;
 
+        // Return full yaxis config: range rounded up to next tick boundary, ticks excluding 0
+        function yAxisConfig(maxY) {
+            if (maxY <= 0) return {range: [0, 1]};
+            var rough = maxY / 5;
+            var mag = Math.pow(10, Math.floor(Math.log10(rough || 1)));
+            var step = mag;
+            var nice = [1, 2, 5, 10];
+            for (var i = 0; i < nice.length; i++) {
+                if (nice[i] * mag >= rough) { step = nice[i] * mag; break; }
+            }
+            var ceilMax = Math.ceil(maxY / step) * step;
+            var vals = [];
+            for (var v = step; v <= ceilMax * 1.001; v += step) {
+                vals.push(Math.round(v * 1e9) / 1e9);
+            }
+            return {range: [0, ceilMax], tickmode: 'array', tickvals: vals};
+        }
+
+        // Build a relayout update object for yaxis from yAxisConfig
+        function yAxisRelayout(maxY) {
+            var update = {};
+            var cfg = yAxisConfig(maxY);
+            for (var k in cfg) { update['yaxis.' + k] = cfg[k]; }
+            return update;
+        }
+
         // Lazy rendering: IntersectionObserver renders plots as they scroll into view
         var activeObservers = [];
 
@@ -1040,7 +1045,7 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
                         var cfg = plotConfigMap[div.id];
                         if (cfg) {
                             var layout = Object.assign({}, cfg.layout);
-                            layout.yaxis = Object.assign({}, cfg.layout.yaxis, {range: [0, currentMaxY]});
+                            layout.yaxis = Object.assign({}, cfg.layout.yaxis, yAxisConfig(currentMaxY));
                             Plotly.newPlot(div, cfg.data, layout);
                             var section = div.closest('.plot-section');
                             if (section) section.classList.remove('plot-loading');
@@ -1082,7 +1087,7 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
             // Find max Y across all visible plots in all containers
             var maxY = 0;
             containers.forEach(function(container) {
-                container.querySelectorAll('.plot-section:not(.hidden)').forEach(function(section) {
+                container.querySelectorAll('.plot-section:not(.hidden):not(.aggregated-plot-section)').forEach(function(section) {
                     var plotDiv = section.querySelector('.plotly-graph-div');
                     if (plotDiv) {
                         var cfg = plotConfigMap[plotDiv.id];
@@ -1099,7 +1104,7 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
             containers.forEach(function(container) {
                 container.querySelectorAll('.plot-section:not(.hidden) .js-plotly-plot').forEach(function(plotDiv) {
                     if (plotDiv.id === 'graph-aggregated') return;
-                    Plotly.relayout(plotDiv, {'yaxis.range': [0, maxY]});
+                    Plotly.relayout(plotDiv, yAxisRelayout(maxY));
                 });
             });
         }
@@ -1165,11 +1170,12 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
                     hovermode: 'x unified',
                     margin: {l: 50, r: 10, t: 40, b: 200},
                     xaxis: {tickangle: 90},
-                    yaxis: {range: [0, aggMaxY]},
+                    yaxis: yAxisConfig(aggMaxY),
                     autosize: true,
                     bargap: 0.02,
                     hoverlabel: {font: {size: 16}}
                 });
+                requestAnimationFrame(function() { Plotly.Plots.resize(aggPlot); });
             }
 
             // Calculate and update aggregated plot header with statistics
@@ -1180,12 +1186,6 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
             var titleDiv = primaryContainer.querySelector('[id="aggregated-title"]');
             if (titleDiv) {
                 titleDiv.textContent = newTitle;
-            }
-
-            // Remove loading state from aggregated section
-            var aggSection = primaryContainer.querySelector('[id="aggregated-section"]');
-            if (aggSection) {
-                aggSection.classList.remove('loading');
             }
         }
 
@@ -1201,7 +1201,7 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
             clone2.innerHTML = mainContentTemplate;
 
             const column1 = document.createElement('div');
-            column1.className = 'column';
+            column1.className = 'column column-left';
             column1.appendChild(clone1);
 
             const column2 = document.createElement('div');
@@ -1271,7 +1271,7 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
             var selectedTemps = new Set(Array.from(container.querySelectorAll('.temp-filter'))
                 .filter(function(cb) { return cb.checked; }).map(function(cb) { return cb.value; }));
 
-            container.querySelectorAll('.plot-section').forEach(function(section) {
+            container.querySelectorAll('.plot-section:not(.aggregated-plot-section)').forEach(function(section) {
                 var shouldShow = selectedExps.has(section.getAttribute('data-experiment')) &&
                                  selectedPrompts.has(section.getAttribute('data-prompt')) &&
                                  selectedFormats.has(section.getAttribute('data-format')) &&
@@ -1297,13 +1297,6 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
                 var plotSection = plotDiv.closest('.plot-section');
                 if (!plotSection || !plotSection.classList.contains('hidden')) {
                     Plotly.Plots.resize(plotDiv);
-                }
-            });
-            // Also resize aggregated plot within this container
-            container.querySelectorAll('[id="graph-aggregated"]').forEach(function(aggPlot) {
-                var aggSection = aggPlot.closest('.aggregated-section');
-                if (aggSection && !aggSection.classList.contains('hidden')) {
-                    Plotly.Plots.resize(aggPlot);
                 }
             });
         }
@@ -1344,12 +1337,10 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
 
             // Handle aggregated plot toggle
             container.querySelectorAll('.agg-toggle').forEach(function(aggToggle) {
-                var aggregatedTitle = container.querySelector('[id="aggregated-title"]');
-                var aggregatedPlot = container.querySelector('[id="aggregated-plot"]');
-                if (aggregatedTitle && aggregatedPlot) {
+                var aggSection = container.querySelector('.aggregated-plot-section');
+                if (aggSection) {
                     aggToggle.addEventListener('change', function() {
-                        aggregatedTitle.style.display = this.checked ? 'block' : 'none';
-                        aggregatedPlot.style.display = this.checked ? 'block' : 'none';
+                        aggSection.classList.toggle('hidden', !this.checked);
                         resizeColumnPlots(container);
                     });
                 }
@@ -1459,6 +1450,24 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
         });
 
         updateColumnModeButton();
+
+        // Resize all visible Plotly plots when window is resized (includes browser zoom)
+        var windowResizeTimeout;
+        window.addEventListener('resize', function() {
+            clearTimeout(windowResizeTimeout);
+            windowResizeTimeout = setTimeout(function() {
+                var containers = [];
+                if (isInTwoColumnMode && savedColumns) {
+                    containers = [savedColumns.column1, savedColumns.column2];
+                } else {
+                    var mc = document.getElementById('main-content');
+                    if (mc) containers = [mc];
+                }
+                containers.forEach(function(container) {
+                    resizeColumnPlots(container);
+                });
+            }, 150);
+        });
     </script>
 
 </body>
