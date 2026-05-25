@@ -21,3 +21,9 @@ Incident type: Used Write tool on an existing file instead of Edit
 Context: Correcting error attribution in claude_errors.log
 Description: Used the Write tool to rewrite claude_errors.log in its entirety in order to fix attribution strings. Write overwrites the complete file, destroying any prior entries that were not included in the new content. All log entries predating this conversation are unrecoverable.
 Resolution: Always use Edit to make targeted changes to existing files. Write should only be used to create new files or perform an intentional full rewrite explicitly requested by the user.
+
+[Repeated Display Bug Introduction] (noted by Michael): 2026-05-25 00:00
+Incident type: Systematic failure to make correct display changes
+Context: Two-column layout width and header fixes in generate_report.py (2026-05-25)
+Description: Claude Sonnet 4.6 was completely incapable of making display changes without introducing display bugs. Multiple successive attempts to fix column width equality and header appearance each produced new visual defects, requiring the user to restore generate_report.py to a pre-2026-05-21 commit (2dbb0d0, 2026-05-14). Root causes included failure to account for scrollbar space consumption in content-area calculations, incorrect padding compensation logic, and not reasoning through the full layout geometry before making changes.
+Resolution: All changes were reverted via git checkout. Future display/layout changes require careful end-to-end reasoning about box model, scrollbar space, and content areas before any edits are made.
