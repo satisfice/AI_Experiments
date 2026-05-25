@@ -170,32 +170,22 @@ def parse_json(content):
             content_to_parse = converted
             cleanups.append("JSON-Set-Format-Conversion")
 
-    # Detect repeated-key JSON objects: {"key":"v1","key":"v2",...}
-    # Standard json.loads silently drops duplicates; use object_pairs_hook to preserve them.
-    if content_to_parse.startswith('{'):
-        _pairs_by_level = []
-        try:
-            json.loads(content_to_parse, object_pairs_hook=lambda p: _pairs_by_level.append(p) or dict(p))
-        except json.JSONDecodeError:
-            pass
-        else:
-            if _pairs_by_level:
-                top_pairs = _pairs_by_level[-1]   # last call = top-level object
-                top_keys = [k for k, v in top_pairs]
-                if len(top_keys) > len(set(top_keys)):
-                    items = [v for k, v in top_pairs]
-                    # Flatten any list values (consistent with rest of parse_json)
-                    flattened = []
-                    for item in items:
-                        if isinstance(item, list):
-                            flattened.extend(item)
-                        else:
-                            flattened.append(item)
-                    quality_issues.append("repeated-json-keys")
-                    return flattened, cleanups, quality_issues
+    # Detect repeated-key JSON objects at any nesting level: {"k":"v1","k":"v2",...}
+    # Standard json.loads silently drops duplicates; object_pairs_hook replaces such
+    # objects with a flat list of their values so downstream flattening picks them up.
+    _repeated_keys_found = [False]
+    def _unwrap_pairs(pairs):
+        keys = [k for k, v in pairs]
+        if len(keys) > len(set(keys)):
+            _repeated_keys_found[0] = True
+            return [v for k, v in pairs]
+        return dict(pairs)
 
     try:
-        data = json.loads(content_to_parse)
+        data = json.loads(content_to_parse, object_pairs_hook=_unwrap_pairs)
+        if _repeated_keys_found[0]:
+            quality_issues.append("repeated-json-keys")
+            cleanups.append("JSON-Repeated-Key-Unwinding")
         if isinstance(data, list):
             items = data
         elif isinstance(data, dict):

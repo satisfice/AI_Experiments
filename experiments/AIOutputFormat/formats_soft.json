@@ -1,0 +1,30 @@
+{
+  "txt": {
+    "extension": "txt",
+    "prompt": "Return the results in plain text format."
+  },
+  "txt1": {
+    "extension": "txt1",
+    "prompt": "Return the results in plain text format, with leading numbers before each item."
+  },
+  "md": {
+    "extension": "md",
+    "prompt": "Return the results in markdown format."
+  },
+  "json": {
+    "extension": "json",
+    "prompt": "Return the results as JSON format."
+  },
+  "yml": {
+    "extension": "yml",
+    "prompt": "Return the results in YAML format."
+  },
+  "csv": {
+    "extension": "csv",
+    "prompt": "Return the results in CSV format."
+  },
+  "html": {
+    "extension": "html",
+    "prompt": "Return the results in HTML."
+  }
+}
