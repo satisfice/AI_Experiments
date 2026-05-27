@@ -42,6 +42,18 @@ FORMAT_TO_EXTENSION = {
     'HTML': 'html',
 }
 
+# Map from short format names to proper display names for inconsistent format issues
+FORMAT_SHORT_TO_DISPLAY = {
+    'md': 'Markdown',
+    'json': 'JSON',
+    'html': 'HTML',
+    'yml': 'YAML',
+    'yaml': 'YAML',
+    'csv': 'CSV',
+    'txt': 'Text',
+    'txt1': 'Numbered Text',
+}
+
 
 def get_file_extension(format_name):
     """Convert data format name to filename extension."""
@@ -318,7 +330,10 @@ def get_cleanup_data_for_combo(quality_data, model, temperature, format_type, pr
             for entry in sorted(value, key=lambda e: e.get("instance", "")):
                 issues.append(f"Parsing failed completely for {entry['instance']}")
         elif key.startswith("inconsistent_"):
-            issues.append(key.replace('_', ' ').title())
+            # Extract format name from key (e.g., "inconsistent_md" -> "md")
+            format_abbrev = key.replace('inconsistent_', '')
+            format_display = FORMAT_SHORT_TO_DISPLAY.get(format_abbrev, format_abbrev.title())
+            issues.append(f"Inconsistent {format_display}")
         else:
             label = key.replace('_', ' ').title()
             trial_str = _trial_numbers_str(value)
