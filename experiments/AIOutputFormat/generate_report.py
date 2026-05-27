@@ -374,6 +374,8 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
         counter = value_dict["counter"] if isinstance(value_dict, dict) else value_dict
         trial_count = value_dict.get("trial_count", 0) if isinstance(value_dict, dict) else 0
         per_trial_counts = value_dict.get("per_trial_counts", []) if isinstance(value_dict, dict) else []
+        metadata = value_dict.get("metadata", {}) if isinstance(value_dict, dict) else {}
+        format_hardness = metadata.get("formatHardness", "soft")  # Default to soft for backward compatibility
 
         # Calculate max, min, and average items per trial
         max_items = max(per_trial_counts) if per_trial_counts else 0
@@ -390,7 +392,8 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
             "format": format_type,
             "prompt": prompt,
             "model": model,
-            "temperature": str(temperature)
+            "temperature": str(temperature),
+            "formatHardness": format_hardness
         }
 
     # First pass: collect all y values to find the maximum range for individual plots
@@ -458,7 +461,8 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
             "model": model,
             "temperature": temp,
             "experiment": exp,
-            "prompt": prompt
+            "prompt": prompt,
+            "formatHardness": combo_info[combo_key].get("formatHardness", "soft")
         }
 
     # Build HTML with filters
@@ -844,6 +848,7 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
             model = metadata["model"]
             temp = metadata["temperature"]
             exp = metadata["experiment"]
+            format_hardness = metadata.get("formatHardness", "soft")
 
             # Get item counts for this specific combination
             counter = combo_info[combo_key]["counter"]
@@ -928,15 +933,20 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
                 _escaped = html_mod.escape(''.join(_tooltip_parts))
                 _prompt_tooltip_attr = f' class="prompt-indicator" data-tooltip-html="{_escaped}"'
 
-            # Build HTML title with colored text (two lines, second line starts with Model)
+            # Build HTML title with colored text (three lines)
+            # Line 1: Experiment | Prompt | Format (hardness) | Model | Temperature
+            # Line 2: Trials | Min | Max | Average | Total | Unique
+            # Line 3: Cleanup | Load set
             title_html = (
                 f'Experiment: <span style="color: #333;">{exp}</span> | '
-                f'Format: <span style="color: {format_color}; font-weight: bold;">{fmt}</span> | '
-                f'Prompt: <span style="color: #333;"{_prompt_tooltip_attr}>{prompt}</span> | <br>'
+                f'Prompt: <span style="color: #333;"{_prompt_tooltip_attr}>{prompt}</span> | '
+                f'Format: <span style="color: {format_color}; font-weight: bold;">{fmt}</span> '
+                f'<span style="color: {format_color}; font-weight: bold;">({format_hardness})</span> | '
                 f'Model: <span style="color: {model_base_color}; font-weight: bold;">{abbreviate_model_name(model)}</span> | '
-                f'Temperature: <span style="color: {background_color}; font-weight: bold;">{temp}</span> | '
+                f'Temperature: <span style="color: {background_color}; font-weight: bold;">{temp}</span><br>'
                 f'Trials: {trial_count} | Min: {min_items} | Max: {max_items} | Average: {avg_per_trial:.1f} | '
-                f'Total: {total_items} | Unique: {unique_items} ({unique_pct:.1f}%){quality_indicator}{load_set_button}'
+                f'Total: {total_items} | Unique: {unique_items} ({unique_pct:.1f}%)<br>'
+                f'{quality_indicator.lstrip(" | ")}{load_set_button}'
             )
 
             html_content += f'        <div class="plot-section" data-format="{fmt}" data-model="{model}" data-temperature="{temp}" data-prompt="{prompt}" data-experiment="{exp}">\n'
