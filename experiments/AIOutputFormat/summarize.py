@@ -1091,10 +1091,10 @@ def parse_cleanup_keys(cleanup_keys):
 
 
 def reorder_metadata(metadata):
-    """Reorder metadata keys: time, experiment, prompt, model, temperature, format,
+    """Reorder metadata keys: time, experiment, prompt, formatHardness, model, temperature, format,
     formatStyle, formatStyles, iteration, codeblock, cleanup, then others.
-    Note: prompt is optional for old format files. codeblock, formatStyles, and cleanup are optional."""
-    key_order = ["time", "experiment", "prompt", "model", "temperature", "format",
+    Note: codeblock, formatStyles, and cleanup are optional."""
+    key_order = ["time", "experiment", "prompt", "formatHardness", "model", "temperature", "format",
                  "formatStyle", "formatStyles", "iteration", "codeblock", "cleanup"]
     ordered = {}
 
@@ -1134,29 +1134,18 @@ def is_alphabetical_order(items):
 def is_standard_filename(filename):
     """
     Check if filename follows standard naming convention.
-    Supports both old and new formats:
-    - Old: YYYYMMDDHHMM-EXPERIMENT-MODEL-TEMP-ITERATION.EXT (12-digit timestamp, 5+ parts)
-    - New: YYYYMMDDHHMMSS-EXPERIMENT-PROMPT-MODEL-TEMP-ITERATION.EXT (14-digit timestamp, 6+ parts)
+    Format: YYYYMMDDHHMMSS-EXPERIMENT-PROMPT-HARDNESS-MODEL-TEMP-ITERATION.EXT
+    Requires 14-digit timestamp and 7+ parts (hardness code is 'fs' or 'fh').
     """
     name_without_ext = Path(filename).stem
     parts = name_without_ext.split('-')
 
-    # Check timestamp and determine format
-    if not parts[0].isdigit():
+    # Must have 14-digit timestamp
+    if not parts[0].isdigit() or len(parts[0]) != 14:
         return False
 
-    timestamp_len = len(parts[0])
-
-    if timestamp_len == 12:
-        # Old format: need at least 5 parts (timestamp, experiment, model, temp, iteration)
-        if len(parts) < 5:
-            return False
-    elif timestamp_len == 14:
-        # New format: need at least 6 parts (timestamp, experiment, prompt, model, temp, iteration)
-        if len(parts) < 6:
-            return False
-    else:
-        # Invalid timestamp length
+    # Need at least 7 parts (timestamp, experiment, prompt, hardness, model, temp, iteration)
+    if len(parts) < 7:
         return False
 
     # Check iteration is 2 digits
@@ -1165,6 +1154,10 @@ def is_standard_filename(filename):
 
     # Check temperature starts with 't'
     if not parts[-2].startswith('t'):
+        return False
+
+    # Check hardness code is 'fs' or 'fh'
+    if parts[3] not in ('fs', 'fh'):
         return False
 
     return True
@@ -1190,13 +1183,10 @@ def format_timestamp(timestamp_str):
 
 def parse_filename_metadata(filename):
     """
-    Extract timestamp, prompt, experiment, model, and temperature from filename.
-    Supports both old and new formats:
-    - Old: TIMESTAMP-EXPERIMENT-MODEL-TEMP-ITERATION.EXT (12-digit timestamp, no prompt)
-      Example: 202602161623-animals_plain-gpt4-t10-01.md
-    - New: TIMESTAMP-EXPERIMENT-PROMPT-MODEL-TEMP-ITERATION.EXT (14-digit timestamp)
-      Example: 20250216160215-test1-animals-gpt4-t10-01.md
-    Returns dict with time, prompt, experiment, model, temperature, and iteration.
+    Extract metadata from filename.
+    Format: YYYYMMDDHHMMSS-EXPERIMENT-PROMPT-HARDNESS-MODEL-TEMP-ITERATION.EXT
+    Where HARDNESS is 'fs' (soft) or 'fh' (hard).
+    Returns dict with time, experiment, prompt, formatHardness, model, temperature, and iteration.
     """
     # Remove extension
     name_without_ext = Path(filename).stem
@@ -1204,83 +1194,57 @@ def parse_filename_metadata(filename):
     # Split by hyphen
     parts = name_without_ext.split('-')
 
-    if len(parts) < 5:
+    if len(parts) < 7:
         return {}
 
     # First part is timestamp
     timestamp_raw = parts[0]
+
+    # Verify 14-digit timestamp
+    if not timestamp_raw.isdigit() or len(timestamp_raw) != 14:
+        return {}
+
     timestamp = format_timestamp(timestamp_raw)
 
-    # Work backwards: find temperature and iteration
-    iteration = parts[-1]
+    # Extract fields by position
+    experiment = parts[1]
+    prompt = parts[2]
+    hardness_code = parts[3]
+    # Model may contain hyphens, so join parts[4:-2]
+    model = '-'.join(parts[4:-2])
     temp_part = parts[-2]
+    iteration = parts[-1]
 
-    # Verify we have a valid temperature part (starts with 't')
+    # Verify temperature part starts with 't'
     if not temp_part.startswith('t'):
-        # No valid temperature found
-        return {
-            "time": timestamp,
-        }
-
-    # Determine format based on timestamp length
-    is_new_format = len(timestamp_raw) == 14
-    is_old_format = len(timestamp_raw) == 12
-
-    if is_new_format:
-        # New format: TIMESTAMP-EXPERIMENT-PROMPT-MODEL-TEMP-ITERATION
-        if len(parts) < 6:
-            return {"time": timestamp}
-
-        experiment = parts[1]
-        prompt = parts[2]
-        model = '-'.join(parts[3:-2])
-
-    elif is_old_format:
-        # Old format: TIMESTAMP-EXPERIMENT-[PROMPT/VARIANT]-MODEL-TEMP-ITERATION
-        # Note: Some files have PROMPT/VARIANT field, some don't
-        if len(parts) < 5:
-            return {"time": timestamp}
-
-        prompt = None
-        experiment = parts[1]
-
-        # Determine if there's a prompt/variant field
-        # Temperature is parts[-2] and iteration is parts[-1]
-        # If we have 6+ parts, then parts[2] is the prompt/variant and parts[3] is the model
-        # If we have exactly 5 parts, then parts[2] is the model
-        if len(parts) >= 6:
-            # Has prompt/variant: TIMESTAMP-EXPERIMENT-PROMPT-MODEL-TEMP-ITERATION
-            prompt = parts[2]
-            model = '-'.join(parts[3:-2])
-        else:
-            # No prompt: TIMESTAMP-EXPERIMENT-MODEL-TEMP-ITERATION
-            model = '-'.join(parts[2:-2])
-
-    else:
         return {"time": timestamp}
 
     # Parse temperature
     temperature = None
-    if temp_part.startswith('t'):
-        temp_str = temp_part[1:]  # Remove 't' prefix
-        if temp_str != 'xx':
-            try:
-                temp_int = int(temp_str)
-                temperature = temp_int / 10.0
-            except ValueError:
-                pass
+    temp_str = temp_part[1:]  # Remove 't' prefix
+    if temp_str != 'xx':
+        try:
+            temp_int = int(temp_str)
+            temperature = temp_int / 10.0
+        except ValueError:
+            pass
+
+    # Convert hardness code to format hardness value
+    hardness_map = {'fs': 'soft', 'fh': 'hard'}
+    format_hardness = hardness_map.get(hardness_code)
 
     metadata = {
         "time": timestamp,
         "experiment": experiment,
+        "prompt": prompt,
         "model": model,
         "temperature": temperature,
         "iteration": int(iteration) if iteration.isdigit() else None,
     }
 
-    # Only add prompt if it exists (new format only)
-    if prompt is not None:
-        metadata["prompt"] = prompt
+    # Add format hardness if valid
+    if format_hardness is not None:
+        metadata["formatHardness"] = format_hardness
 
     return metadata
 
