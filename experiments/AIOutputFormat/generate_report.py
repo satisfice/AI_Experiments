@@ -947,8 +947,7 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
             title_html = (
                 f'Experiment: <span style="color: #333;">{exp}</span> | '
                 f'Prompt: <span style="color: #333;"{_prompt_tooltip_attr}>{prompt}</span> | '
-                f'Format: <span style="color: {format_color}; font-weight: bold;">{fmt}</span> '
-                f'<span style="color: {format_color}; font-weight: bold;"{_hardness_tooltip_attr}>({format_hardness})</span> | '
+                f'Format: <span style="color: {format_color}; font-weight: bold;"{_hardness_tooltip_attr}>{fmt} ({format_hardness})</span> | '
                 f'Model: <span style="color: {model_base_color}; font-weight: bold;">{abbreviate_model_name(model)}</span> | '
                 f'Temperature: <span style="color: {background_color}; font-weight: bold;">{temp}</span><br>'
                 f'Trials: {trial_count} | Min: {min_items} | Max: {max_items} | Average: {avg_per_trial:.1f} | '
