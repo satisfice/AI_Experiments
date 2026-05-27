@@ -916,10 +916,12 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
                 load_set_str = "np " + " ".join(set_filenames)
             else:
                 # Fallback to wildcard if filenames were not recorded
+                # New format: YYYYMMDDHHMMSS-experiment-prompt-hardness-model-tNN-nn.ext
+                # Use * for hardness to match both soft (fs) and hard (fh)
                 abbr_model = abbreviate_model_name(model)
                 temp_code = "txx" if temp in ("None", None) else f"t{int(float(temp) * 10):02d}"
                 file_ext = get_file_extension(fmt)
-                load_set_str = f"np *{exp}-{prompt}-{abbr_model}-{temp_code}*.{file_ext}"
+                load_set_str = f"np *{exp}-{prompt}-*-{abbr_model}-{temp_code}*.{file_ext}"
 
             # Build button HTML with onclick handler for clipboard copy
             load_set_button = (
