@@ -330,8 +330,8 @@ def get_cleanup_data_for_combo(quality_data, model, temperature, format_type, pr
             for entry in sorted(value, key=lambda e: e.get("instance", "")):
                 issues.append(f"Parsing failed completely for {entry['instance']}")
         elif key.startswith("inconsistent_"):
-            # Extract format name from key (e.g., "inconsistent_md" -> "md")
-            format_abbrev = key.replace('inconsistent_', '')
+            # Extract format name from key (e.g., "inconsistent_md_format" -> "md")
+            format_abbrev = key.replace('inconsistent_', '').replace('_format', '')
             format_display = FORMAT_SHORT_TO_DISPLAY.get(format_abbrev, format_abbrev.title())
             issues.append(f"Inconsistent {format_display}")
         else:
