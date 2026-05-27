@@ -39,3 +39,33 @@ Incident type: Incorrect assumption about existing class assignment
 Context: Styling right-column h1 white in dual-column mode (generate_report.py)
 Description: Added CSS rule body.columns-2 .column:not(.column-left) h1 { color: #fff } to target only the right column's h1. However, column1.className was 'column' (not 'column column-left'), so :not(.column-left) matched both columns and both h1s turned white. Should have verified the JS class assignments before writing the selector.
 Resolution: Added column-left class back to column1 in initializeDualColumns() so the selector correctly targets only the right column.
+
+[Context Compaction Data Loss] (noted by Claude): 2026-05-28 00:00
+Incident type: Misleading plan reference after context summarization
+Context: Resuming work after context compaction
+Description: Plan file "vectorized-kindling-barto.md" documented summarize.py modifications for filename-hardness (is_standard_filename, parse_filename_metadata, reorder_metadata)—completed days ago. Context summary incorrectly surfaced these three completed items as the current state, obscuring the actual recent accomplishment: itemIssues/formatIssues refactoring across summarize.py and generate_report.py. Plan name and status in summarize were highly misleading, suggesting incomplete work that was already done.
+Resolution: When resuming after context compaction, verify completion status of any referenced plan files. Completed plans should be archived or clearly marked as done to prevent false prioritization in subsequent sessions.
+
+[Lost Track of Current Working Directory] (noted by Michael): 2026-05-28 00:00
+Incident type: Disorientation about context after resumption
+Context: Asked to locate and append to claude_errors.log
+Description: Despite having worked exclusively in experiments/AIOutputFormat/ throughout the session and having read/edited multiple files in that directory (config.py, summarize.py, generate_report.py, formats.json, etc.), Claude lost awareness of the actual working context. When user asked about claude_errors.log location, Claude assumed it was in the parent directory C:\Users\Michael\Documents\dev\AI_Experiments rather than the AIOutputFormat subdirectory where all work had been occurring. Required explicit user prompting ("You've been working this whole time in the AIOutputFormats directory, have you not?") to reorient.
+Resolution: After context compaction/resumption, explicitly verify current working directory and recent file edits to re-establish mental context. Do not rely on system initial state—reconstruct working context from recent tool calls.
+
+[Incorrect Attribution in Error Log] (noted by Michael): 2026-05-28 00:00
+Incident type: Wrong error attribution
+Context: Adding entry to claude_errors.log about lost context awareness
+Description: When logging the "Lost Track of Current Working Directory" incident, Claude attributed it to itself ("noted by Claude") when the error was actually identified and reported by the user. This violates the attribution protocol: "When you identify one of your own errors, X is Claude and the current model. Otherwise, X is the user."
+Resolution: User must review and correct attribution statements before accepting error log entries. Claude should not self-assign error identification when the user was the one who detected the issue.
+
+[Incomplete Code Analysis Before Implementation] (noted by Claude): 2026-05-28 00:00
+Incident type: Failed to verify actual data structure before coding
+Context: Fixing format names in quality issues tooltip (generate_report.py)
+Description: User asked to change "Inconsistent Md format" to "Inconsistent Markdown", etc. Claude implemented a fix based on assumption that keys were "inconsistent_md", but actual keys in summarize.py are "inconsistent_md_format". The code stripped only the "inconsistent_" prefix, leaving "_format" which broke the format name lookup. Required user correction and file inspection to find actual key structure.
+Resolution: Before implementing fixes, grep the codebase for actual key/data structures. Do not assume format based on user description alone. Verify data structures by examining the code that generates them.
+
+[Wasteful Multiple Corrections — Load Set Pattern] (noted by Claude): 2026-05-28 00:00
+Incident type: Excessive iterations to reach correct solution, poor understanding of requirements
+Context: Updating load set button wildcard pattern for new filename format (generate_report.py)
+Description: User asked to update load set button for new filename format with hardness codes. Claude made three incorrect attempts: (1) used wildcard for hardness position; (2) tried to read hardness without user guidance; (3) misunderstood what "wildcard the trial part" meant. Each incorrect attempt required user clarification, tool rejection, and re-explanation. Should have read the existing code pattern more carefully and asked clarifying questions before attempting fixes.
+Resolution: For filename pattern changes, carefully examine existing wildcard patterns and understand exactly which parts are variable vs. fixed before writing code. Ask clarifying questions about scope instead of guessing. Estimated token waste: ~2000 tokens across multiple failed commits and corrections.
