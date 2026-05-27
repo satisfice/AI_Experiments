@@ -307,7 +307,7 @@ def get_cleanup_data_for_combo(quality_data, model, temperature, format_type, pr
         issues.append("Inconsistent output format")
 
     # Non-empty issue lists (skip metadata keys)
-    NON_ISSUE_KEYS = {"consistentFormat", "formatQualityProblems", "cleanupRules"}
+    NON_ISSUE_KEYS = {"consistentFormat", "formatIssues", "cleanupRules"}
     for key, value in prompt_data.items():
         if key in NON_ISSUE_KEYS:
             continue

@@ -1092,10 +1092,10 @@ def parse_cleanup_keys(cleanup_keys):
 
 def reorder_metadata(metadata):
     """Reorder metadata keys: time, experiment, prompt, formatHardness, model, temperature, format,
-    formatStyle, formatQualityProblems, iteration, codeblock, cleanup, then others.
-    Note: codeblock, formatQualityProblems, and cleanup are optional."""
+    formatStyle, itemIssues, formatIssues, iteration, codeblock, cleanup, then others.
+    Note: itemIssues, formatIssues, codeblock, and cleanup are optional."""
     key_order = ["time", "experiment", "prompt", "formatHardness", "model", "temperature", "format",
-                 "formatStyle", "formatQualityProblems", "iteration", "codeblock", "cleanup"]
+                 "formatStyle", "itemIssues", "formatIssues", "iteration", "codeblock", "cleanup"]
     ordered = {}
 
     # Add keys in specified order (if they exist)
@@ -1754,9 +1754,9 @@ def process_and_track(items, ext, max_item_length=25):
         "alphabeticalOrder": alphabetical
     }
 
-    # Store quality issues (only non-empty; each value is a single example string)
+    # Store item-level issues (only non-empty; each value is a single example string)
     if quality_issues:
-        metadata["qualityIssues"] = quality_issues
+        metadata["itemIssues"] = quality_issues
 
     # Store processing cleanups
     if processing_cleanups:
@@ -2116,14 +2116,14 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
                 if cleanup_dict:
                     metadata["cleanup"] = cleanup_dict
 
-            # Collect format quality problems from parsers and processing
-            format_quality_problems = []
+            # Collect format-level issues from parsers and processing
+            format_issues = []
             if parser_quality_issues:
-                format_quality_problems.extend(parser_quality_issues)
+                format_issues.extend(parser_quality_issues)
             if metadata.get("processingQualityIssues"):
-                format_quality_problems.extend(metadata.pop("processingQualityIssues"))
-            if format_quality_problems:
-                metadata["formatQualityProblems"] = format_quality_problems
+                format_issues.extend(metadata.pop("processingQualityIssues"))
+            if format_issues:
+                metadata["formatIssues"] = format_issues
 
             # Merge filename metadata with processing metadata
             metadata.update(filename_metadata)
@@ -2179,19 +2179,19 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
 
             # Track formatStyle counts per prompt (primary detect_format_style() value)
             format_style_counts[model_name][str(temp_value)][file_type][prompt_name][metadata.get("formatStyle", "unknown")] += 1
-            # Also count QUALITY-derived format quality problems (from metadata["formatQualityProblems"])
-            for fs_label in metadata.get("formatQualityProblems", []):
+            # Also count format-level issues (from metadata["formatIssues"])
+            for fs_label in metadata.get("formatIssues", []):
                 format_style_counts[model_name][str(temp_value)][file_type][prompt_name][fs_label] += 1
 
             # Track quality issues by model, temperature, file type, and prompt
-            # Track item-level quality issues (qualityIssues now stores one example per type)
-            if "qualityIssues" in metadata:
-                qi = metadata["qualityIssues"]
+            # Track item-level issues (itemIssues stores one example per type)
+            if "itemIssues" in metadata:
+                item_issues = metadata["itemIssues"]
                 filename = file_path.name
                 for issue_type in ["leading_punctuation", "trailing_punctuation", "internal_punctuation",
                                    "exceeds_max_length", "preamble_leak",
                                    "markup_artifact", "repeated_chars"]:
-                    example = qi.get(issue_type)
+                    example = item_issues.get(issue_type)
                     if not example:
                         continue
                     # txt1 exception: leading-number items are expected format, not quality issues
@@ -2202,11 +2202,11 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
                     if example not in quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][issue_type]:
                         quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][issue_type][example] = filename
 
-            # Track format quality problems from metadata["formatQualityProblems"]
+            # Track format-level issues from metadata["formatIssues"]
             # (populated by parser_quality_issues and processingQualityIssues)
-            if "formatQualityProblems" in metadata:
+            if "formatIssues" in metadata:
                 filename = file_path.name
-                for fs_label in metadata["formatQualityProblems"]:
+                for fs_label in metadata["formatIssues"]:
                     # For format-style quality issues, track the filename as the instance so
                     # _trial_numbers_str can extract trial numbers and show abbreviated ranges
                     quality_issues_output[model_name][str(temp_value)][file_type][prompt_name][fs_label].add(filename)
@@ -2350,7 +2350,7 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
                             quality_issues_examples[model_name][temp_value]["YAML"][prompt_name]["inconsistent_yaml_format"][rule] = example_fname
 
     # Build quality_issues_dict with hierarchy: model -> temperature -> file_type -> prompt
-    # Each prompt entry contains: issue lists, consistentFormat (bool), formatQualityProblems (counts)
+    # Each prompt entry contains: issue lists, consistentFormat (bool), formatIssues (counts)
     quality_issues_dict = {}
 
     # Gather all (model, temp, file_type, prompt) combos from all sources
@@ -2401,10 +2401,10 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
         else:
             prompt_data["consistentFormat"] = not has_format_inconsistency
 
-        # Add formatQualityProblems: count of each quality problem seen for this prompt
+        # Add formatIssues: count of each format issue seen for this prompt
         style_counts = format_style_counts.get(model_name, {}).get(temp_value, {}).get(file_type, {}).get(prompt_name, {})
         if style_counts:
-            prompt_data["formatQualityProblems"] = dict(style_counts)
+            prompt_data["formatIssues"] = dict(style_counts)
 
         # Add cleanupRules: dict of {rule_name: trial_count} sorted by rule name
         rules_counter = cleanup_rules_agg.get(model_name, {}).get(temp_value, {}).get(file_type, {}).get(prompt_name, {})
@@ -2504,11 +2504,11 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
                                         parts.append("codeblock")
                                     safe_write(f"        Format: ✗ inconsistent ({', '.join(parts)})")
 
-                                # Format quality problems breakdown
-                                quality_problem_counts = pd.get("formatQualityProblems", {})
-                                if quality_problem_counts:
-                                    problems_str = ", ".join(f"{p}: {c}" for p, c in sorted(quality_problem_counts.items()))
-                                    safe_write(f"        Quality Problems: {problems_str}")
+                                # Format issues breakdown
+                                format_issue_counts = pd.get("formatIssues", {})
+                                if format_issue_counts:
+                                    issues_str = ", ".join(f"{i}: {c}" for i, c in sorted(format_issue_counts.items()))
+                                    safe_write(f"        Format Issues: {issues_str}")
 
                                 # Punctuation issues (leading / trailing / internal)
                                 for punct_type, label in [
