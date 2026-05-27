@@ -9,7 +9,7 @@ import click
 from pathlib import Path
 from collections import Counter, defaultdict
 import plotly.graph_objects as go
-from config import abbreviate_model_name, get_model_color, model_supports_temperature
+from config import abbreviate_model_name, get_model_color, model_supports_temperature, get_format_instruction
 from utils import format_error, print_error
 
 # Color palette for formats (normalized to lowercase for matching)
@@ -933,6 +933,13 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
                 _escaped = html_mod.escape(''.join(_tooltip_parts))
                 _prompt_tooltip_attr = f' class="prompt-indicator" data-tooltip-html="{_escaped}"'
 
+            # Build hardness tooltip: format instruction for the specific hardness
+            _hardness_tooltip_attr = ''
+            _hardness_instruction = get_format_instruction(fmt, format_hardness)
+            if _hardness_instruction:
+                _hardness_escaped = html_mod.escape('<br>'.join(textwrap.wrap(_hardness_instruction, width=80)))
+                _hardness_tooltip_attr = f' class="hardness-indicator" data-tooltip-html="{_hardness_escaped}"'
+
             # Build HTML title with colored text (three lines)
             # Line 1: Experiment | Prompt | Format (hardness) | Model | Temperature
             # Line 2: Trials | Min | Max | Average | Total | Unique
@@ -941,7 +948,7 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
                 f'Experiment: <span style="color: #333;">{exp}</span> | '
                 f'Prompt: <span style="color: #333;"{_prompt_tooltip_attr}>{prompt}</span> | '
                 f'Format: <span style="color: {format_color}; font-weight: bold;">{fmt}</span> '
-                f'<span style="color: {format_color}; font-weight: bold;">({format_hardness})</span> | '
+                f'<span style="color: {format_color}; font-weight: bold;"{_hardness_tooltip_attr}>({format_hardness})</span> | '
                 f'Model: <span style="color: {model_base_color}; font-weight: bold;">{abbreviate_model_name(model)}</span> | '
                 f'Temperature: <span style="color: {background_color}; font-weight: bold;">{temp}</span><br>'
                 f'Trials: {trial_count} | Min: {min_items} | Max: {max_items} | Average: {avg_per_trial:.1f} | '
@@ -964,10 +971,10 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
     <div id="cleanup-tooltip"></div>
 
     <script>
-        // Shared tooltip for .cleanup-indicator and .prompt-indicator
+        // Shared tooltip for .cleanup-indicator, .prompt-indicator, and .hardness-indicator
         (function() {
             var tooltip = document.getElementById('cleanup-tooltip');
-            var SELECTOR = '.cleanup-indicator, .prompt-indicator';
+            var SELECTOR = '.cleanup-indicator, .prompt-indicator, .hardness-indicator';
             document.addEventListener('mouseover', function(e) {
                 var el = e.target.closest(SELECTOR);
                 if (!el) return;
