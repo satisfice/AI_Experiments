@@ -1092,10 +1092,10 @@ def parse_cleanup_keys(cleanup_keys):
 
 def reorder_metadata(metadata):
     """Reorder metadata keys: time, experiment, prompt, formatHardness, model, temperature, format,
-    formatStyle, formatStyles, iteration, codeblock, cleanup, then others.
-    Note: codeblock, formatStyles, and cleanup are optional."""
+    formatStyle, formatQualityProblems, iteration, codeblock, cleanup, then others.
+    Note: codeblock, formatQualityProblems, and cleanup are optional."""
     key_order = ["time", "experiment", "prompt", "formatHardness", "model", "temperature", "format",
-                 "formatStyle", "formatStyles", "iteration", "codeblock", "cleanup"]
+                 "formatStyle", "formatQualityProblems", "iteration", "codeblock", "cleanup"]
     ordered = {}
 
     # Add keys in specified order (if they exist)
@@ -2116,14 +2116,14 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
                 if cleanup_dict:
                     metadata["cleanup"] = cleanup_dict
 
-            # Collect format-style quality issues from parsers and processing
-            format_style_labels = []
+            # Collect format quality problems from parsers and processing
+            format_quality_problems = []
             if parser_quality_issues:
-                format_style_labels.extend(parser_quality_issues)
+                format_quality_problems.extend(parser_quality_issues)
             if metadata.get("processingQualityIssues"):
-                format_style_labels.extend(metadata.pop("processingQualityIssues"))
-            if format_style_labels:
-                metadata["formatStyles"] = format_style_labels
+                format_quality_problems.extend(metadata.pop("processingQualityIssues"))
+            if format_quality_problems:
+                metadata["formatQualityProblems"] = format_quality_problems
 
             # Merge filename metadata with processing metadata
             metadata.update(filename_metadata)
@@ -2179,8 +2179,8 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
 
             # Track formatStyle counts per prompt (primary detect_format_style() value)
             format_style_counts[model_name][str(temp_value)][file_type][prompt_name][metadata.get("formatStyle", "unknown")] += 1
-            # Also count QUALITY-derived format-style labels (from metadata["formatStyles"])
-            for fs_label in metadata.get("formatStyles", []):
+            # Also count QUALITY-derived format quality problems (from metadata["formatQualityProblems"])
+            for fs_label in metadata.get("formatQualityProblems", []):
                 format_style_counts[model_name][str(temp_value)][file_type][prompt_name][fs_label] += 1
 
             # Track quality issues by model, temperature, file type, and prompt
@@ -2202,11 +2202,11 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
                     if example not in quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][issue_type]:
                         quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][issue_type][example] = filename
 
-            # Track format-style quality issues from metadata["formatStyles"]
+            # Track format quality problems from metadata["formatQualityProblems"]
             # (populated by parser_quality_issues and processingQualityIssues)
-            if "formatStyles" in metadata:
+            if "formatQualityProblems" in metadata:
                 filename = file_path.name
-                for fs_label in metadata["formatStyles"]:
+                for fs_label in metadata["formatQualityProblems"]:
                     # For format-style quality issues, track the filename as the instance so
                     # _trial_numbers_str can extract trial numbers and show abbreviated ranges
                     quality_issues_output[model_name][str(temp_value)][file_type][prompt_name][fs_label].add(filename)
@@ -2350,7 +2350,7 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
                             quality_issues_examples[model_name][temp_value]["YAML"][prompt_name]["inconsistent_yaml_format"][rule] = example_fname
 
     # Build quality_issues_dict with hierarchy: model -> temperature -> file_type -> prompt
-    # Each prompt entry contains: issue lists, consistentFormat (bool), formatStyles (counts)
+    # Each prompt entry contains: issue lists, consistentFormat (bool), formatQualityProblems (counts)
     quality_issues_dict = {}
 
     # Gather all (model, temp, file_type, prompt) combos from all sources
@@ -2401,10 +2401,10 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
         else:
             prompt_data["consistentFormat"] = not has_format_inconsistency
 
-        # Add formatStyles: count of each style seen for this prompt
+        # Add formatQualityProblems: count of each quality problem seen for this prompt
         style_counts = format_style_counts.get(model_name, {}).get(temp_value, {}).get(file_type, {}).get(prompt_name, {})
         if style_counts:
-            prompt_data["formatStyles"] = dict(style_counts)
+            prompt_data["formatQualityProblems"] = dict(style_counts)
 
         # Add cleanupRules: dict of {rule_name: trial_count} sorted by rule name
         rules_counter = cleanup_rules_agg.get(model_name, {}).get(temp_value, {}).get(file_type, {}).get(prompt_name, {})
@@ -2504,11 +2504,11 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
                                         parts.append("codeblock")
                                     safe_write(f"        Format: ✗ inconsistent ({', '.join(parts)})")
 
-                                # Format styles breakdown
-                                style_counts = pd.get("formatStyles", {})
-                                if style_counts:
-                                    styles_str = ", ".join(f"{s}: {c}" for s, c in sorted(style_counts.items()))
-                                    safe_write(f"        Styles: {styles_str}")
+                                # Format quality problems breakdown
+                                quality_problem_counts = pd.get("formatQualityProblems", {})
+                                if quality_problem_counts:
+                                    problems_str = ", ".join(f"{p}: {c}" for p, c in sorted(quality_problem_counts.items()))
+                                    safe_write(f"        Quality Problems: {problems_str}")
 
                                 # Punctuation issues (leading / trailing / internal)
                                 for punct_type, label in [
