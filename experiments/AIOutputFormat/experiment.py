@@ -20,9 +20,9 @@ LAST_RUN_FILE = Path(".experiment_last_run.json")
 MAX_GENERATION_RETRIES = 3  # Number of retries after initial attempt on timeout
 
 
-def find_completed_iterations(model_name: str, experiment: str, prompt_name: str, format_type: str) -> dict:
+def find_completed_iterations(model_name: str, experiment: str, prompt_name: str, format_type: str, hardness_code: str = 'fs') -> dict:
     """
-    Scan results folder to find which iterations exist for this (model, experiment, prompt, format).
+    Scan results folder to find which iterations exist for this (model, experiment, prompt, format, hardness).
     Returns dict: {iteration_num: (filepath, timestamp), ...}
     Used to detect incomplete experiments and support resuming.
     """
@@ -34,9 +34,9 @@ def find_completed_iterations(model_name: str, experiment: str, prompt_name: str
 
     ext = FORMAT_EXTENSIONS.get(format_type, format_type)
 
-    # Search for files matching pattern: *-EXPERIMENT-PROMPT-MODEL-*-*.FORMAT
+    # Search for files matching pattern: TIMESTAMP-EXPERIMENT-PROMPT-HARDNESS-MODEL-*-*.FORMAT
     # Iteration number is the second-to-last part when split by '-'
-    for filepath in results_dir.glob(f"*-{experiment}-{prompt_name}-{model_name}-*-*.{ext}"):
+    for filepath in results_dir.glob(f"*-{experiment}-{prompt_name}-{hardness_code}-{model_name}-*-*.{ext}"):
         try:
             stem = filepath.stem
             parts = stem.split('-')
@@ -53,7 +53,7 @@ def find_completed_iterations(model_name: str, experiment: str, prompt_name: str
     return completed
 
 
-def save_run_config(model, format_type, prompts, experiments, iterations, temperatures, batch_file, debug):
+def save_run_config(model, format_type, prompts, experiments, iterations, temperatures, batch_file, debug, format_hardness):
     """Save experiment configuration to file for quick re-run."""
     config = {
         "model": list(model) if model else [],
@@ -64,6 +64,7 @@ def save_run_config(model, format_type, prompts, experiments, iterations, temper
         "temperatures": list(temperatures) if temperatures else [],
         "batch_file": batch_file,
         "debug": debug,
+        "format_hardness": format_hardness,
         "timestamp": datetime.now().isoformat()
     }
     try:
@@ -201,10 +202,10 @@ def present_model_access_report(access_times: Dict[str, Optional[float]]) -> boo
         return False
 
 
-def generate_filename(timestamp: str, prompt_name: str, experiment: str, model: str, index: int, format_type: str, temp_component: str = None, supports_temp: bool = True) -> str:
+def generate_filename(timestamp: str, prompt_name: str, experiment: str, model: str, index: int, format_type: str, temp_component: str = None, supports_temp: bool = True, hardness_code: str = 'fs') -> str:
     """
-    Generate output filename: YYYYMMDDHHMMSS-experimentname-promptname-modelname-tNN-nn.ext
-    where NN is the temperature component (two digits for supported models, or "xx" for unsupported).
+    Generate output filename: YYYYMMDDHHMMSS-experimentname-promptname-hardnessf-modelname-tNN-nn.ext
+    where hardnessf is 'fs' (soft) or 'fh' (hard), and NN is temperature (two digits or "xx").
     """
     ext = FORMAT_EXTENSIONS[format_type]
     sanitized_model = sanitize_model_name(model)
@@ -215,7 +216,7 @@ def generate_filename(timestamp: str, prompt_name: str, experiment: str, model: 
     else:
         temp_str = "-txx"
 
-    return f"{timestamp}-{experiment}-{prompt_name}-{sanitized_model}{temp_str}-{index_str}.{ext}"
+    return f"{timestamp}-{experiment}-{prompt_name}-{hardness_code}-{sanitized_model}{temp_str}-{index_str}.{ext}"
 
 
 def get_first_iteration_timestamp() -> str:
@@ -233,7 +234,7 @@ def get_model_help():
     return f"Model shortcut or full name (configured: {', '.join(sorted(shortcuts))})"
 
 
-def process_format(actual_model, format_type, master_prompt, experiment, prompt_name, iterations, temperature, batch_file, temp_float, temp_component, supports_temp, provider=None, prompt_file_idx=None, total_prompt_files=None, format_instructions_cache=None, resume_mode=False):
+def process_format(actual_model, format_type, master_prompt, experiment, prompt_name, iterations, temperature, batch_file, temp_float, temp_component, supports_temp, format_hardness='soft', provider=None, prompt_file_idx=None, total_prompt_files=None, format_instructions_cache=None, resume_mode=False):
     """
     Process a single format: append format instruction and generate output files.
     Returns tuple: (processed_files, timestamp) for successful processing
@@ -250,8 +251,9 @@ def process_format(actual_model, format_type, master_prompt, experiment, prompt_
     # Check for completed iterations if resuming
     completed_iterations = {}
     skip_iterations_msg = None
+    hardness_code = 'fs' if format_hardness == 'soft' else 'fh'
     if resume_mode:
-        completed_iterations = find_completed_iterations(actual_model, experiment, prompt_name, format_type)
+        completed_iterations = find_completed_iterations(actual_model, experiment, prompt_name, format_type, hardness_code=hardness_code)
         if completed_iterations:
             max_completed = max(completed_iterations.keys())
             # Preserve the original timestamp from the first completed iteration
@@ -271,7 +273,7 @@ def process_format(actual_model, format_type, master_prompt, experiment, prompt_
     if format_instructions_cache and format_type in format_instructions_cache:
         format_instruction = format_instructions_cache[format_type]
     else:
-        format_instruction = get_format_instruction(format_type)
+        format_instruction = get_format_instruction(format_type, format_hardness)
     logger.debug(f"Format instruction: {format_instruction}")
 
     # Append format instruction to prompt
@@ -365,8 +367,9 @@ def process_format(actual_model, format_type, master_prompt, experiment, prompt_
 
             logger.debug(f"Generated output, length: {len(output)} characters")
 
-            # Generate filename
-            filename = generate_filename(timestamp, prompt_name, experiment, actual_model, iteration, format_type, temp_component, supports_temp)
+            # Generate filename with hardness code
+            hardness_code = 'fs' if format_hardness == 'soft' else 'fh'
+            filename = generate_filename(timestamp, prompt_name, experiment, actual_model, iteration, format_type, temp_component, supports_temp, hardness_code=hardness_code)
 
             # Write to file in results folder
             output_path = Path("results") / filename
@@ -544,7 +547,11 @@ def prompt_for_format(previous_value=None):
               help='Enable debug logging to stdout and file')
 @click.option('--restart', is_flag=True, default=False,
               help='Force restart: regenerate all iterations even if some exist')
-def main(model, format_type, prompts, experiments, iterations, temperatures, batch_file, debug, restart):
+@click.option('--format-hardness', 'format_hardness',
+              type=click.Choice(['soft', 'hard']),
+              default=None,
+              help='Format prompt hardness: soft (brief) or hard (detailed)')
+def main(model, format_type, prompts, experiments, iterations, temperatures, batch_file, debug, restart, format_hardness):
     """
     Generate LLM outputs with specified format(s), model(s), prompt(s), experiment(s), and temperature(s).
     Logs experiment details and any encoding translations required.
@@ -576,6 +583,7 @@ def main(model, format_type, prompts, experiments, iterations, temperatures, bat
         click.echo(f"  Experiments:  {', '.join(previous_config.get('experiments', []))}")
         click.echo(f"  Iterations:   {previous_config.get('iterations', 'not set')}")
         click.echo(f"  Temperatures: {', '.join(previous_config.get('temperatures', [])) if previous_config.get('temperatures') else 'default'}")
+        click.echo(f"  Format Hardness: {previous_config.get('format_hardness', 'not set')}")
         if previous_config.get('batch_file'):
             click.echo(f"  Batch file:   {previous_config.get('batch_file')}")
         click.echo()
@@ -620,6 +628,15 @@ def main(model, format_type, prompts, experiments, iterations, temperatures, bat
                 # New style: list
                 previous_formats = tuple(fmt_config) if fmt_config else None
         format_type = prompt_for_format(previous_value=previous_formats)
+
+    if not format_hardness:
+        previous_hardness = previous_config.get('format_hardness') if previous_config else None
+        format_hardness = click.prompt(
+            "Enter format hardness",
+            type=click.Choice(['soft', 'hard']),
+            default=previous_hardness or 'soft',
+            show_default=True
+        )
 
     if not prompts:
         previous_prompts = tuple(previous_config.get('prompts', [])) if previous_config else None
@@ -693,7 +710,8 @@ def main(model, format_type, prompts, experiments, iterations, temperatures, bat
                         else:
                             formats_check = [fmt]
                         for fmt_check in formats_check:
-                            completed = find_completed_iterations(actual_model, exp, prompt_name, fmt_check)
+                            hardness_code = 'fs' if format_hardness == 'soft' else 'fh'
+                            completed = find_completed_iterations(actual_model, exp, prompt_name, fmt_check, hardness_code=hardness_code)
                             if completed and max(completed.keys()) < iterations:
                                 incomplete_combos.append(
                                     (m, exp, prompt_file, fmt_check, max(completed.keys()))
@@ -746,7 +764,7 @@ def main(model, format_type, prompts, experiments, iterations, temperatures, bat
         logger.info("Pre-computing format instructions...")
         format_instructions_cache = {}
         for fmt in formats_to_process:
-            format_instructions_cache[fmt] = get_format_instruction(fmt)
+            format_instructions_cache[fmt] = get_format_instruction(fmt, format_hardness)
         logger.info(f"Cached {len(format_instructions_cache)} format instruction(s)")
 
         # Optimization 3: Cache model temperature support (check once per model)
@@ -821,7 +839,7 @@ def main(model, format_type, prompts, experiments, iterations, temperatures, bat
 
                         # Process each format (pass format_instructions_cache for Optimization 2)
                         for fmt in formats_to_process:
-                            result = process_format(actual_model, fmt, master_prompt, exp, prompt_name, iterations, temperature, batch_file, temp_float, temp_component, supports_temp, provider=provider, prompt_file_idx=prompt_file_idx, total_prompt_files=len(prompts), format_instructions_cache=format_instructions_cache, resume_mode=resume_mode)
+                            result = process_format(actual_model, fmt, master_prompt, exp, prompt_name, iterations, temperature, batch_file, temp_float, temp_component, supports_temp, format_hardness=format_hardness, provider=provider, prompt_file_idx=prompt_file_idx, total_prompt_files=len(prompts), format_instructions_cache=format_instructions_cache, resume_mode=resume_mode)
 
                             # Check if result indicates a timeout
                             if len(result) == 3 and isinstance(result[2], dict) and result[2].get("timed_out"):
@@ -881,7 +899,7 @@ def main(model, format_type, prompts, experiments, iterations, temperatures, bat
                     logger.info(f"Completed: {exp} ({actual_model}). Generated {len(all_processed_files)} files.")
 
         # Save configuration for next run
-        save_run_config(model, format_type, prompts, experiments, iterations, temperatures, batch_file, debug)
+        save_run_config(model, format_type, prompts, experiments, iterations, temperatures, batch_file, debug, format_hardness)
 
         # Display final summary including timeout information
         click.echo("\n" + "=" * 80)

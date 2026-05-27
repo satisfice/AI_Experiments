@@ -169,14 +169,24 @@ def get_available_models() -> dict:
     return models
 
 
-def get_format_instruction(format_type: str) -> str:
+def get_format_instruction(format_type: str, hardness: str = 'soft') -> str:
     """
     Get the prompt instruction for a specific format.
+    Reads the 'soft' or 'hard' key from formats.json.
     Returns the instruction string to append to prompts.
     """
     if format_type in _formats_config:
-        return _formats_config[format_type]['prompt']
-    # Fallback if format not found
+        fmt_info = _formats_config[format_type]
+        if hardness in fmt_info:
+            return fmt_info[hardness]
+        # Fallback to the other hardness level if requested one missing
+        other_hardness = 'hard' if hardness == 'soft' else 'soft'
+        if other_hardness in fmt_info:
+            return fmt_info[other_hardness]
+        # Legacy fallback for old 'prompt' key if it exists
+        if 'prompt' in fmt_info:
+            return fmt_info['prompt']
+    # Generic fallback
     return f"Return the results in {format_type} format"
 
 

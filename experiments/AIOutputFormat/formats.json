@@ -1,30 +1,30 @@
 {
   "txt": {
     "extension": "txt",
-    "prompt": "Return the results in plain text format."
-  },
+    "soft": "Return the results in plain text format.",
+    "hard": "Return the results in plain text format. Put each item, uncapitalized, on a single line, with no punctuation, no bullet markers, no leading numbers."},
   "txt1": {
     "extension": "txt1",
-    "prompt": "Return the results in plain text format, with leading numbers before each item."
-  },
+    "soft": "Return the results in plain text format, with leading numbers before each item.",
+    "hard": "Return the results in plain text format, Put each item, uncapitalized, on a single line, with a leading number, a period, and a space before each one. Do not include any other markers or punctuation."},
   "md": {
     "extension": "md",
-    "prompt": "Return the results in markdown format."
-  },
+    "soft": "Return the results in markdown format.",
+    "hard": "Return the results in markdown format, codefenced. Put each item, uncapitalized, on a single line, with a leading hyphen before each one. Do not include any other markers or punctuation. "},
   "json": {
     "extension": "json",
-    "prompt": "Return the results as JSON format."
-  },
+    "soft": "Return the results as JSON format.",
+    "hard": "Return the results as JSON format, codefenced, and properly delimited by braces. After the opening brace, create an array with a leading bracket, followed by each item, uncapitalized, in quotes, on a single line, followed by a comma (except the last item). Then close the bracket and the brace."},
   "yml": {
     "extension": "yml",
-    "prompt": "Return the results in YAML format."
-  },
+    "soft": "Return the results in YAML format.",
+    "hard": "Return the results in YAML format, codefenced. Make each item a list item, uncapitalized, on its own line, preceded by a  single hyphen. Do not include any other markers, numbers, punctuation."},
   "csv": {
     "extension": "csv",
-    "prompt": "Return the results in CSV format."
-  },
+    "soft": "Return the results in CSV format.",
+    "hard": "Return the results in CSV format. Put all of the items on a single line, with each item followed by a comma. Do not include any other markers or punctuation."},
   "html": {
     "extension": "html",
-    "prompt": "Return the results in HTML."
-  }
+    "soft": "Return the results in HTML.",
+    "hard": "Return the results in HTML. Enclose the items, uncapitalized and unnumbered, in list tags, with each on its own line. Enclose the set of items in opening and closing unordered list tags. Enclose the unordered list in a opening and closing body tags. Enclose the body in opening and closing html tags."}
 }
