@@ -81,3 +81,9 @@ Incident type: Failure to comply with mandatory project documentation requiremen
 Context: AIOutputFormat project session, 2026-06-09
 Description: Claude conducted an entire working session (multiple code changes, a commit, and substantive design discussion) without creating claude_conversation.log, which is required by global CLAUDE.md guidelines for all projects. The file's absence was only discovered when the user explicitly asked about it. This is a serious compliance failure — the guideline states "If one does not already exist for the current project, create it," which requires checking at session start, not waiting to be asked.
 Resolution: Always check for claude_conversation.log at the start of every session. If absent, create it before any other work begins. The log was created retroactively at the end of this session, so earlier exchanges are reconstructed from memory rather than recorded in real time.
+
+[Incorrect Timestamp Format and Wrong Insertion Point] (noted by Michael): 2026-06-09
+Incident type: Two protocol violations in error log maintenance
+Context: claude_errors.log entries added during 2026-06-09 session
+Description: (1) All three entries added this session used "00:00" as the time component rather than the actual time, making timestamps useless for ordering or correlating events within a day. The header format requires a real HH:MM time. (2) The "Missing Dependency" entry was inserted before the "Missing Conversation Log" entry rather than appended to the end of the file. New entries must always go at the end so the log remains in chronological order.
+Resolution: Always append new entries to the end of claude_errors.log. Always use the actual current time (HH:MM) in the timestamp header, not a placeholder.
