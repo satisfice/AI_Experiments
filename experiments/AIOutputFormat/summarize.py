@@ -15,6 +15,7 @@ from config import abbreviate_model_name
 from utils import format_error, print_error
 
 RESULTS_DIR = Path("results")
+META_DIR = RESULTS_DIR / "meta"
 RESULTS_FILE = RESULTS_DIR / "results.json"
 QUALITY_FILE = RESULTS_DIR / "quality.json"
 UNIQUE_ITEMS_FILE = RESULTS_DIR / "unique_items.txt"
@@ -1095,7 +1096,8 @@ def reorder_metadata(metadata):
     formatStyle, itemIssues, formatIssues, iteration, codeblock, cleanup, then others.
     Note: itemIssues, formatIssues, codeblock, and cleanup are optional."""
     key_order = ["time", "experiment", "prompt", "formatHardness", "model", "temperature", "format",
-                 "formatStyle", "itemIssues", "formatIssues", "iteration", "codeblock", "cleanup"]
+                 "formatStyle", "responseComplete", "incompleteReason", "itemIssues", "formatIssues",
+                 "iteration", "codeblock", "cleanup"]
     ordered = {}
 
     # Add keys in specified order (if they exist)
@@ -2134,6 +2136,19 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
 
             # Add duplicates to metadata before reordering
             metadata["duplicates"] = duplicate_count
+
+            # Merge completion metadata from sidecar if present
+            meta_path = META_DIR / (file_path.stem + ".meta.json")
+            if meta_path.exists():
+                try:
+                    with open(meta_path, 'r', encoding='utf-8') as mf:
+                        file_meta = json.load(mf)
+                    if "responseComplete" in file_meta:
+                        metadata["responseComplete"] = file_meta["responseComplete"]
+                    if "incompleteReason" in file_meta:
+                        metadata["incompleteReason"] = file_meta["incompleteReason"]
+                except Exception:
+                    pass
 
             # Reorder metadata keys
             metadata = reorder_metadata(metadata)

@@ -123,7 +123,9 @@ def invoke_ollama(model_name: str, prompt: str, timeout: int = 600, base_url: st
 
             if "response" in result:
                 logger.debug(f"Ollama response length: {len(result['response'])}")
-                return result["response"]
+                done_reason = result.get("done_reason", "stop")
+                complete = done_reason == "stop"
+                return result["response"], complete, done_reason if not complete else None
             else:
                 raise ValueError(f"Unexpected Ollama response: {result}")
 
@@ -186,8 +188,10 @@ def invoke_openai(model_name: str, prompt: str) -> str:
         )
 
         content = response.choices[0].message.content
+        finish_reason = response.choices[0].finish_reason
         logger.debug(f"OpenAI response length: {len(content)}")
-        return content
+        complete = finish_reason == "stop"
+        return content, complete, finish_reason if not complete else None
 
     except Exception as e:
         logger.error(f"Error invoking OpenAI: {type(e).__name__}: {e}")
@@ -233,8 +237,10 @@ def invoke_anthropic(model_name: str, prompt: str) -> str:
         )
 
         content = response.content[0].text
+        stop_reason = response.stop_reason
         logger.debug(f"Anthropic response length: {len(content)}")
-        return content
+        complete = stop_reason == "end_turn"
+        return content, complete, stop_reason if not complete else None
 
     except Exception as e:
         logger.error(f"Error invoking Anthropic: {type(e).__name__}: {e}")
@@ -284,7 +290,7 @@ def generate(model_name: str, prompt: str, provider=None, timeout: int = None) -
         else:
             response = provider(model_name, prompt)
 
-        logger.info(f"Model response received ({len(response)} characters)")
+        logger.info(f"Model response received ({len(response[0])} characters)")
         return response
 
     except KeyboardInterrupt:

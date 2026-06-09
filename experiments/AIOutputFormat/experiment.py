@@ -141,7 +141,7 @@ def check_model_access_times(models_to_check: List[str]) -> Dict[str, Optional[f
             provider = get_provider(actual_model)
 
             # Quick test invoke to ensure it's responsive (with 10 second timeout)
-            response = generate(actual_model, "test", provider=provider, timeout=10)
+            response, _, _ = generate(actual_model, "test", provider=provider, timeout=10)
             elapsed = time.time() - start
 
             access_times[model] = elapsed
@@ -319,11 +319,13 @@ def process_format(actual_model, format_type, master_prompt, experiment, prompt_
             gen_error = None
             timed_out = False
             output = None
+            response_complete = True
+            incomplete_reason = None
 
             for attempt in range(1, MAX_GENERATION_RETRIES + 2):
                 try:
                     logger.debug(f"Calling generate() for {actual_model} (attempt {attempt}/{MAX_GENERATION_RETRIES + 1})")
-                    output = generate(actual_model, prompt, provider=provider)
+                    output, response_complete, incomplete_reason = generate(actual_model, prompt, provider=provider)
                     gen_error = None
                     timed_out = False
                     break  # Success
@@ -385,6 +387,15 @@ def process_format(actual_model, format_type, master_prompt, experiment, prompt_
             logger.debug(f"Writing output to {output_path}")
             with open(output_path, 'w', encoding='utf-8') as f:
                 f.write(output)
+
+            # Write completion metadata sidecar
+            meta_dir = Path("results") / "meta"
+            meta_dir.mkdir(exist_ok=True)
+            meta = {"responseComplete": response_complete}
+            if not response_complete and incomplete_reason:
+                meta["incompleteReason"] = incomplete_reason
+            with open(meta_dir / (Path(filename).stem + ".meta.json"), 'w', encoding='utf-8') as f:
+                json.dump(meta, f)
 
             # Check if output contains non-ASCII characters
             has_non_ascii = any(ord(char) > 127 for char in output)
