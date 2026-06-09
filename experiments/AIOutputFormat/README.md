@@ -93,7 +93,12 @@ python experiment.py -m <model> -f <format> -p <prompt_file> -e <experiment>
 - `-i, --iterations`: Number of iterations (1-99, default 1)
 - `-t, --temperature`: Temperature value in 2-digit format like 08 for 0.8 (can specify multiple times)
 - `-b, --batch-file`: Optional file with multiple prompts (one per line)
+- `--restart`: Force all iterations to regenerate, even if output files already exist
 - `--debug`: Enable debug logging
+
+**Resuming interrupted experiments:**
+
+If a run is interrupted, re-running with the same parameters will detect incomplete iterations and prompt to resume. Resuming reuses the original timestamp, preserving set integrity. Use `--restart` to bypass this and regenerate from scratch.
 
 **Examples:**
 
