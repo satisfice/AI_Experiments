@@ -163,3 +163,15 @@ USER: Yes. Fix that — and since you didn't identify that earlier, make a claud
 CLAUDE: Added temp_filter parameter (Optional[str]) to find_completed_iterations(). Updated process_format() call to compute the exact temperature component ('t01', 'txx', etc.) using the same logic as generate_filename() and pass it as temp_filter. Left the detection call in main() without temp_filter so it stays unfiltered (correct for existence checks). Added error log entry. Committed.
 
 ---
+
+USER: update the README with the --restart flag. README updates should happen by default, as a matter of routine, always.
+
+CLAUDE: Added --restart flag and resume behavior description to README. Saved feedback memory to always update README for material changes without being asked. Committed.
+
+---
+
+USER: update the conversation log and commit
+
+CLAUDE: Updated conversation log with all exchanges since last log update. Committing.
+
+---
