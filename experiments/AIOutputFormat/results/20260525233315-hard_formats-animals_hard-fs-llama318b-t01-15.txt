@@ -1,0 +1,14 @@
+kangaroo
+elephant
+giraffe
+zebra
+lion
+girlish monkey
+koala
+sloth
+armadillo
+otter
+jaguar
+mongoose
+lemur
+tapir

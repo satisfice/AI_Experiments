@@ -1,0 +1,10 @@
+- octopus
+- koala
+- tiger
+- bear
+- wolf
+- fox
+- snake
+- elephant
+- giraffe
+- zebra

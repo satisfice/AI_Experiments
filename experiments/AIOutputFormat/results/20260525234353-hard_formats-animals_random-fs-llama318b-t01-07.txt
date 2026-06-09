@@ -1,0 +1,10 @@
+kangaroo
+lemur
+octopus
+tiger
+walrus
+chinchilla
+rhinoceros
+armadillo
+otter
+penguin

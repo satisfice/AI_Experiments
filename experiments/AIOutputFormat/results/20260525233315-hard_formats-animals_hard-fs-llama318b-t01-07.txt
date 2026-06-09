@@ -1,0 +1,16 @@
+giraffe
+lion
+kangaroo
+tiger
+elephant
+koala
+chimpanzee
+octopus
+penguin
+zebra
+monkey
+kitten
+bear
+wolf
+crocodile
+rhinoceros

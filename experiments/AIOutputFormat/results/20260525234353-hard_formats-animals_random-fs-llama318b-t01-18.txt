@@ -1,0 +1,10 @@
+tortoise
+rhinoceros
+lemur
+platypus
+meerkat
+pangolin
+kangaroo
+axolotl
+koala
+jaguar

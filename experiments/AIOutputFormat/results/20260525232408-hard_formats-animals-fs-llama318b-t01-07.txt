@@ -1,0 +1,15 @@
+lion
+tiger
+monkey
+giraffe
+zebra
+elephant
+girouette
+koala
+otter
+wombat
+pangolin
+platypus
+kangaroo
+wallaby
+echidna

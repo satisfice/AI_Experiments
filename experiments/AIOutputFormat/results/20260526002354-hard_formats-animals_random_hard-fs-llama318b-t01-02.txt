@@ -1,0 +1,10 @@
+penguin
+kangaroo
+salmon
+dolphin
+ostrich
+badger
+lemur
+octopus
+chimpanzee
+gazelle

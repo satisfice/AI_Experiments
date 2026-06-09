@@ -1,0 +1,29 @@
+```markdown
+- cat
+- dog
+- elephant
+- rabbit
+- tiger
+- wolf
+- monkey
+- lion
+- giraffe
+- kangaroo
+- bear
+- fox
+- chicken
+- snake
+- fish
+- dolphin
+- horse
+- zebra
+- penguin
+- seal
+- octopus
+- shrimp
+- crab
+- parrot
+- hawk
+- owl
+- tiger
+```

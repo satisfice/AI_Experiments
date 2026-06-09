@@ -1,0 +1,18 @@
+tiger
+lion
+giraffe
+elephant
+kangaroo
+penguin
+koala
+wombat
+echidna
+dolphin
+seal
+polar bear
+gazelle
+chimpanzee
+gorilla
+zebra
+rhinoceros
+leopard

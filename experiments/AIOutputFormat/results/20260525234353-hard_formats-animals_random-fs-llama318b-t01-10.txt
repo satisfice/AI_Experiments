@@ -1,0 +1,10 @@
+lemur
+tortoise
+pangolin
+ostrich
+chameleon
+lemming
+hedgehog
+rattlesnake
+wallaby
+fennec

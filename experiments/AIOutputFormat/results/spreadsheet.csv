@@ -120,7 +120,7 @@ animals_big,animals_random,llama318b,0.1,numberedText,20,10,15,13.1,5.88,262,69,
 animals_big,animals_random,llama318b,0.1,text,20,10,17,11.4,5.62,228,79,34.6
 animals_big,animals_random,llama318b,0.8,CSV,20,10,30,19.65,37.29,393,114,29.0
 animals_big,animals_random,llama318b,0.8,HTML,20,10,52,24.55,222.05,491,131,26.7
-animals_big,animals_random,llama318b,0.8,JSON,20,1,10,9.0,5.58,180,65,36.1
+animals_big,animals_random,llama318b,0.8,JSON,20,5,10,9.45,2.05,189,67,35.4
 animals_big,animals_random,llama318b,0.8,YAML,20,9,16,10.9,4.2,218,57,26.1
 animals_big,animals_random,llama318b,0.8,markdown,20,10,17,12.1,6.31,242,62,25.6
 animals_big,animals_random,llama318b,0.8,numberedText,20,10,15,11.85,5.82,237,66,27.8

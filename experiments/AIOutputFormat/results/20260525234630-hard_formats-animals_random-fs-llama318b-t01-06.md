@@ -1,0 +1,24 @@
+```markdown
+- octopus
+- flamingo
+- badger
+- kangaroo
+- opossum
+- rhinoceros
+- walrus
+- meerkat
+- jaguar
+- falcon
+- quail
+- raccoon
+- lemur
+- armadillo
+- penguin
+- chinchilla
+- fox
+- owl
+- monkey
+- coyote
+- donkey
+- beaver
+```

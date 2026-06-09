@@ -1,0 +1,10 @@
+lion
+tiger
+elephant
+giraffe
+monkey
+zebra
+kangaroo
+penguin
+koala
+lemur

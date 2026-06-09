@@ -1,0 +1,22 @@
+```
+- ocelot
+- okapi
+- warthog
+- quail
+- marmot
+- ferret
+- tapir
+- lemur
+- jerboa
+- wombat
+- puma
+- capybara
+- mongoose
+- badger
+- chinchilla
+- otter
+- vulture
+- llama
+- wallaby
+- gerbil
+```

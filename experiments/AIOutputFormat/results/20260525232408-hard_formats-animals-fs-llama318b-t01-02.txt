@@ -1,0 +1,10 @@
+goldfish
+tiger
+koala
+hedgehog
+chinchilla
+raccoon
+mongoose
+lemur
+puma
+giraffe

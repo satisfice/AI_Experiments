@@ -6,31 +6,31 @@
           "trailing_punctuation": [
             {
               "instance": "Octopus.",
-              "source": "20260220210933-animals_big-animals-gpt35turbo-t01-10.csv"
+              "source": "20260220210933-animals_big-animals-fs-gpt35turbo-t01-10.csv"
             },
             {
               "instance": "SIGNALERROR.",
-              "source": "20260220210933-animals_big-animals-gpt35turbo-t01-18.csv"
+              "source": "20260220210933-animals_big-animals-fs-gpt35turbo-t01-18.csv"
             }
           ],
           "internal_punctuation": [
             {
               "instance": "Mountain lion/Wildcat",
-              "source": "20260220210933-animals_big-animals-gpt35turbo-t01-18.csv"
+              "source": "20260220210933-animals_big-animals-fs-gpt35turbo-t01-18.csv"
             }
           ],
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260220210933-animals_big-animals-gpt35turbo-t01-03.csv"
+              "source": "20260220210933-animals_big-animals-fs-gpt35turbo-t01-03.csv"
             },
             {
               "instance": "mixed",
-              "source": "20260220210933-animals_big-animals-gpt35turbo-t01-01.csv"
+              "source": "20260220210933-animals_big-animals-fs-gpt35turbo-t01-01.csv"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "single row": 18,
             "multiple rows": 2
           },
@@ -46,15 +46,15 @@
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260220211217-animals_big-animals_hard-gpt35turbo-t01-02.csv"
+              "source": "20260220211217-animals_big-animals_hard-fs-gpt35turbo-t01-02.csv"
             },
             {
               "instance": "mixed",
-              "source": "20260220211217-animals_big-animals_hard-gpt35turbo-t01-01.csv"
+              "source": "20260220211217-animals_big-animals_hard-fs-gpt35turbo-t01-01.csv"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "one per line": 8,
             "multiple rows": 12
           },
@@ -68,25 +68,25 @@
           "trailing_punctuation": [
             {
               "instance": "Kingfisher.",
-              "source": "20260226211118-animals_big-animals_random-gpt35turbo-t01-05.csv"
+              "source": "20260226211118-animals_big-animals_random-fs-gpt35turbo-t01-05.csv"
             },
             {
               "instance": "millipede.",
-              "source": "20260226211118-animals_big-animals_random-gpt35turbo-t01-12.csv"
+              "source": "20260226211118-animals_big-animals_random-fs-gpt35turbo-t01-12.csv"
             }
           ],
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260226211118-animals_big-animals_random-gpt35turbo-t01-04.csv"
+              "source": "20260226211118-animals_big-animals_random-fs-gpt35turbo-t01-04.csv"
             },
             {
               "instance": "mixed",
-              "source": "20260226211118-animals_big-animals_random-gpt35turbo-t01-01.csv"
+              "source": "20260226211118-animals_big-animals_random-fs-gpt35turbo-t01-01.csv"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "single row": 17,
             "one per line": 2,
             "multiple rows": 1
@@ -105,15 +105,15 @@
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260220211817-animals_big-animals_random_hard-gpt35turbo-t01-02.csv"
+              "source": "20260220211817-animals_big-animals_random_hard-fs-gpt35turbo-t01-02.csv"
             },
             {
               "instance": "mixed",
-              "source": "20260220211817-animals_big-animals_random_hard-gpt35turbo-t01-01.csv"
+              "source": "20260220211817-animals_big-animals_random_hard-fs-gpt35turbo-t01-01.csv"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple rows": 5,
             "one per line": 15
           },
@@ -129,61 +129,61 @@
           "internal_punctuation": [
             {
               "instance": "Dog\n    Cat\n    Elephant\n    Lion\n    Giraffe\n    Zebra\n    Monkey\n    Tiger\n    Bear\n    Wolf",
-              "source": "20260220210956-animals_big-animals-gpt35turbo-t01-02.html"
+              "source": "20260220210956-animals_big-animals-fs-gpt35turbo-t01-02.html"
             }
           ],
           "exceeds_max_length": [
             {
               "instance": "Dog\n    Cat\n    Elephant\n    Lion\n    Giraffe\n    Zebra\n    Monkey\n    Tiger\n    Bear\n    Wolf",
-              "source": "20260220210956-animals_big-animals-gpt35turbo-t01-02.html"
+              "source": "20260220210956-animals_big-animals-fs-gpt35turbo-t01-02.html"
             }
           ],
           "preamble_leak": [
             {
               "instance": "Dog\n    Cat\n    Elephant\n    Lion\n    Giraffe\n    Zebra\n    Monkey\n    Tiger\n    Bear\n    Wolf",
-              "source": "20260220210956-animals_big-animals-gpt35turbo-t01-02.html"
+              "source": "20260220210956-animals_big-animals-fs-gpt35turbo-t01-02.html"
             }
           ],
           "repeated_chars": [
             {
               "instance": "Dog\n    Cat\n    Elephant\n    Lion\n    Giraffe\n    Zebra\n    Monkey\n    Tiger\n    Bear\n    Wolf",
-              "source": "20260220210956-animals_big-animals-gpt35turbo-t01-02.html"
+              "source": "20260220210956-animals_big-animals-fs-gpt35turbo-t01-02.html"
             }
           ],
           "invalid-html-tags": [
             {
-              "instance": "20260220210956-animals_big-animals-gpt35turbo-t01-02.html",
-              "source": "20260220210956-animals_big-animals-gpt35turbo-t01-02.html"
+              "instance": "20260220210956-animals_big-animals-fs-gpt35turbo-t01-02.html",
+              "source": "20260220210956-animals_big-animals-fs-gpt35turbo-t01-02.html"
             }
           ],
           "inconsistent_html_format": [
             {
               "instance": "Extract-From-Body-Tags",
-              "source": "20260220210956-animals_big-animals-gpt35turbo-t01-14.html"
+              "source": "20260220210956-animals_big-animals-fs-gpt35turbo-t01-14.html"
             },
             {
               "instance": "Extract-from-HTML-Codefence-Markdown",
-              "source": "20260220210956-animals_big-animals-gpt35turbo-t01-10.html"
+              "source": "20260220210956-animals_big-animals-fs-gpt35turbo-t01-10.html"
             },
             {
               "instance": "Extract-From-HTML-Tags",
-              "source": "20260220210956-animals_big-animals-gpt35turbo-t01-08.html"
+              "source": "20260220210956-animals_big-animals-fs-gpt35turbo-t01-08.html"
             },
             {
               "instance": "Extract-From-Invalid-HTML-Tags",
-              "source": "20260220210956-animals_big-animals-gpt35turbo-t01-02.html"
+              "source": "20260220210956-animals_big-animals-fs-gpt35turbo-t01-02.html"
             },
             {
               "instance": "Extract-From-LI-Tags",
-              "source": "20260220210956-animals_big-animals-gpt35turbo-t01-01.html"
+              "source": "20260220210956-animals_big-animals-fs-gpt35turbo-t01-01.html"
             },
             {
               "instance": "Extract-From-UL-Tags",
-              "source": "20260220210956-animals_big-animals-gpt35turbo-t01-01.html"
+              "source": "20260220210956-animals_big-animals-fs-gpt35turbo-t01-01.html"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 18,
             "invalid-html-tags": 1,
             "markdown backticks": 2
@@ -202,15 +202,15 @@
           "inconsistent_html_format": [
             {
               "instance": "Extract-From-Body-Tags",
-              "source": "20260220211240-animals_big-animals_hard-gpt35turbo-t01-01.html"
+              "source": "20260220211240-animals_big-animals_hard-fs-gpt35turbo-t01-01.html"
             },
             {
               "instance": "Extract-From-HTML-Tags",
-              "source": "20260220211240-animals_big-animals_hard-gpt35turbo-t01-01.html"
+              "source": "20260220211240-animals_big-animals_hard-fs-gpt35turbo-t01-01.html"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 20
           },
           "cleanupRules": {
@@ -225,11 +225,11 @@
           "inconsistent_html_format": [
             {
               "instance": "Extract-From-HTML-Tags",
-              "source": "20260226211141-animals_big-animals_random-gpt35turbo-t01-01.html"
+              "source": "20260226211141-animals_big-animals_random-fs-gpt35turbo-t01-01.html"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 20
           },
           "cleanupRules": {
@@ -242,34 +242,34 @@
         "animals_random_hard": {
           "html_no_markup": [
             {
-              "instance": "20260220211837-animals_big-animals_random_hard-gpt35turbo-t01-16.html",
-              "source": "20260220211837-animals_big-animals_random_hard-gpt35turbo-t01-16.html"
+              "instance": "20260220211837-animals_big-animals_random_hard-fs-gpt35turbo-t01-16.html",
+              "source": "20260220211837-animals_big-animals_random_hard-fs-gpt35turbo-t01-16.html"
             }
           ],
           "inconsistent_html_format": [
             {
               "instance": "Extract-From-Body-Tags",
-              "source": "20260220211837-animals_big-animals_random_hard-gpt35turbo-t01-01.html"
+              "source": "20260220211837-animals_big-animals_random_hard-fs-gpt35turbo-t01-01.html"
             },
             {
               "instance": "Extract-From-HTML-Tags",
-              "source": "20260220211837-animals_big-animals_random_hard-gpt35turbo-t01-01.html"
+              "source": "20260220211837-animals_big-animals_random_hard-fs-gpt35turbo-t01-01.html"
             },
             {
               "instance": "Extract-From-LI-Tags",
-              "source": "20260220211837-animals_big-animals_random_hard-gpt35turbo-t01-01.html"
+              "source": "20260220211837-animals_big-animals_random_hard-fs-gpt35turbo-t01-01.html"
             },
             {
               "instance": "Extract-From-UL-Tags",
-              "source": "20260220211837-animals_big-animals_random_hard-gpt35turbo-t01-01.html"
+              "source": "20260220211837-animals_big-animals_random_hard-fs-gpt35turbo-t01-01.html"
             },
             {
               "instance": "HTML-Numbered-List-Stripping",
-              "source": "20260220211837-animals_big-animals_random_hard-gpt35turbo-t01-16.html"
+              "source": "20260220211837-animals_big-animals_random_hard-fs-gpt35turbo-t01-16.html"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 20,
             "html_no_markup": 1
           },
@@ -288,21 +288,21 @@
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260220210841-animals_big-animals-gpt35turbo-t01-02.json"
+              "source": "20260220210841-animals_big-animals-fs-gpt35turbo-t01-02.json"
             },
             {
               "instance": "mixed",
-              "source": "20260220210841-animals_big-animals-gpt35turbo-t01-01.json"
+              "source": "20260220210841-animals_big-animals-fs-gpt35turbo-t01-01.json"
             }
           ],
           "inconsistent_json_format": [
             {
               "instance": "Lowercase",
-              "source": "20260220210841-animals_big-animals-gpt35turbo-t01-01.json"
+              "source": "20260220210841-animals_big-animals-fs-gpt35turbo-t01-01.json"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 20
           },
           "cleanupRules": {
@@ -315,21 +315,21 @@
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260220211127-animals_big-animals_hard-gpt35turbo-t01-03.json"
+              "source": "20260220211127-animals_big-animals_hard-fs-gpt35turbo-t01-03.json"
             },
             {
               "instance": "mixed",
-              "source": "20260220211127-animals_big-animals_hard-gpt35turbo-t01-01.json"
+              "source": "20260220211127-animals_big-animals_hard-fs-gpt35turbo-t01-01.json"
             }
           ],
           "inconsistent_json_format": [
             {
               "instance": "Lowercase",
-              "source": "20260220211127-animals_big-animals_hard-gpt35turbo-t01-01.json"
+              "source": "20260220211127-animals_big-animals_hard-fs-gpt35turbo-t01-01.json"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 20
           },
           "cleanupRules": {
@@ -342,21 +342,21 @@
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260226211029-animals_big-animals_random-gpt35turbo-t01-15.json"
+              "source": "20260226211029-animals_big-animals_random-fs-gpt35turbo-t01-15.json"
             },
             {
               "instance": "mixed",
-              "source": "20260226211029-animals_big-animals_random-gpt35turbo-t01-01.json"
+              "source": "20260226211029-animals_big-animals_random-fs-gpt35turbo-t01-01.json"
             }
           ],
           "inconsistent_json_format": [
             {
               "instance": "Lowercase",
-              "source": "20260226211029-animals_big-animals_random-gpt35turbo-t01-01.json"
+              "source": "20260226211029-animals_big-animals_random-fs-gpt35turbo-t01-01.json"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 20
           },
           "cleanupRules": {
@@ -367,7 +367,7 @@
         },
         "animals_random_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 20
           },
           "cleanupRules": {
@@ -380,7 +380,7 @@
       "markdown": {
         "animals": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "unknown": 20
           },
           "cleanupRules": {
@@ -390,7 +390,7 @@
         },
         "animals_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "unknown": 20
           },
           "cleanupRules": {
@@ -400,7 +400,7 @@
         },
         "animals_random": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "unknown": 20
           },
           "cleanupRules": {
@@ -410,7 +410,7 @@
         },
         "animals_random_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "unknown": 20
           },
           "cleanupRules": {
@@ -422,7 +422,7 @@
       "numberedText": {
         "animals": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 20
           },
           "cleanupRules": {
@@ -432,7 +432,7 @@
         },
         "animals_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 20
           },
           "cleanupRules": {
@@ -442,7 +442,7 @@
         },
         "animals_random": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 20
           },
           "cleanupRules": {
@@ -452,7 +452,7 @@
         },
         "animals_random_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 20
           },
           "cleanupRules": {
@@ -464,7 +464,7 @@
       "text": {
         "animals": {
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 19,
             "plain text": 1
           },
@@ -478,15 +478,15 @@
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260220211026-animals_big-animals_hard-gpt35turbo-t01-08.txt"
+              "source": "20260220211026-animals_big-animals_hard-fs-gpt35turbo-t01-08.txt"
             },
             {
               "instance": "mixed",
-              "source": "20260220211026-animals_big-animals_hard-gpt35turbo-t01-01.txt"
+              "source": "20260220211026-animals_big-animals_hard-fs-gpt35turbo-t01-01.txt"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 9,
             "plain text": 11
           },
@@ -498,7 +498,7 @@
         },
         "animals_random": {
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 19,
             "plain text": 1
           },
@@ -510,7 +510,7 @@
         },
         "animals_random_hard": {
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "plain text": 15,
             "numbered text": 5
           },
@@ -525,21 +525,21 @@
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260220210909-animals_big-animals-gpt35turbo-t01-09.yml"
+              "source": "20260220210909-animals_big-animals-fs-gpt35turbo-t01-09.yml"
             },
             {
               "instance": "mixed",
-              "source": "20260220210909-animals_big-animals-gpt35turbo-t01-01.yml"
+              "source": "20260220210909-animals_big-animals-fs-gpt35turbo-t01-01.yml"
             }
           ],
           "inconsistent_yaml_format": [
             {
               "instance": "Lowercase",
-              "source": "20260220210909-animals_big-animals-gpt35turbo-t01-01.yml"
+              "source": "20260220210909-animals_big-animals-fs-gpt35turbo-t01-01.yml"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "markdown backticks": 20
           },
           "cleanupRules": {
@@ -551,21 +551,21 @@
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260220211152-animals_big-animals_hard-gpt35turbo-t01-01.yml"
+              "source": "20260220211152-animals_big-animals_hard-fs-gpt35turbo-t01-01.yml"
             },
             {
               "instance": "mixed",
-              "source": "20260220211152-animals_big-animals_hard-gpt35turbo-t01-02.yml"
+              "source": "20260220211152-animals_big-animals_hard-fs-gpt35turbo-t01-02.yml"
             }
           ],
           "inconsistent_yaml_format": [
             {
               "instance": "Lowercase",
-              "source": "20260220211152-animals_big-animals_hard-gpt35turbo-t01-02.yml"
+              "source": "20260220211152-animals_big-animals_hard-fs-gpt35turbo-t01-02.yml"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "markdown backticks": 20
           },
           "cleanupRules": {
@@ -577,21 +577,21 @@
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260226211055-animals_big-animals_random-gpt35turbo-t01-09.yml"
+              "source": "20260226211055-animals_big-animals_random-fs-gpt35turbo-t01-09.yml"
             },
             {
               "instance": "mixed",
-              "source": "20260226211055-animals_big-animals_random-gpt35turbo-t01-01.yml"
+              "source": "20260226211055-animals_big-animals_random-fs-gpt35turbo-t01-01.yml"
             }
           ],
           "inconsistent_yaml_format": [
             {
               "instance": "Lowercase",
-              "source": "20260226211055-animals_big-animals_random-gpt35turbo-t01-01.yml"
+              "source": "20260226211055-animals_big-animals_random-fs-gpt35turbo-t01-01.yml"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "markdown backticks": 20
           },
           "cleanupRules": {
@@ -603,25 +603,25 @@
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260220211756-animals_big-animals_random_hard-gpt35turbo-t01-07.yml"
+              "source": "20260220211756-animals_big-animals_random_hard-fs-gpt35turbo-t01-07.yml"
             },
             {
               "instance": "mixed",
-              "source": "20260220211756-animals_big-animals_random_hard-gpt35turbo-t01-01.yml"
+              "source": "20260220211756-animals_big-animals_random_hard-fs-gpt35turbo-t01-01.yml"
             }
           ],
           "inconsistent_yaml_format": [
             {
               "instance": "Extract-from-YAML-Codefence-Markdown",
-              "source": "20260220211756-animals_big-animals_random_hard-gpt35turbo-t01-01.yml"
+              "source": "20260220211756-animals_big-animals_random_hard-fs-gpt35turbo-t01-01.yml"
             },
             {
               "instance": "Lowercase",
-              "source": "20260220211756-animals_big-animals_random_hard-gpt35turbo-t01-01.yml"
+              "source": "20260220211756-animals_big-animals_random_hard-fs-gpt35turbo-t01-01.yml"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "markdown backticks": 9,
             "leading hyphen": 11
           },
@@ -638,21 +638,21 @@
           "trailing_punctuation": [
             {
               "instance": "Alligator.",
-              "source": "20260220212114-animals_big-animals-gpt35turbo-t08-10.csv"
+              "source": "20260220212114-animals_big-animals-fs-gpt35turbo-t08-10.csv"
             }
           ],
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260220212114-animals_big-animals-gpt35turbo-t08-01.csv"
+              "source": "20260220212114-animals_big-animals-fs-gpt35turbo-t08-01.csv"
             },
             {
               "instance": "mixed",
-              "source": "20260220212114-animals_big-animals-gpt35turbo-t08-02.csv"
+              "source": "20260220212114-animals_big-animals-fs-gpt35turbo-t08-02.csv"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "single row": 18,
             "one per line": 2
           },
@@ -669,15 +669,15 @@
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260220212400-animals_big-animals_hard-gpt35turbo-t08-01.csv"
+              "source": "20260220212400-animals_big-animals_hard-fs-gpt35turbo-t08-01.csv"
             },
             {
               "instance": "mixed",
-              "source": "20260220212400-animals_big-animals_hard-gpt35turbo-t08-04.csv"
+              "source": "20260220212400-animals_big-animals_hard-fs-gpt35turbo-t08-04.csv"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "single row": 2,
             "one per line": 11,
             "multiple rows": 7
@@ -693,33 +693,33 @@
           "trailing_punctuation": [
             {
               "instance": "Here is a list of random names of animals in CSV format:",
-              "source": "20260226211404-animals_big-animals_random-gpt35turbo-t08-06.csv"
+              "source": "20260226211404-animals_big-animals_random-fs-gpt35turbo-t08-06.csv"
             }
           ],
           "exceeds_max_length": [
             {
               "instance": "Here is a list of random names of animals in CSV format:",
-              "source": "20260226211404-animals_big-animals_random-gpt35turbo-t08-06.csv"
+              "source": "20260226211404-animals_big-animals_random-fs-gpt35turbo-t08-06.csv"
             }
           ],
           "preamble_leak": [
             {
               "instance": "Here is a list of random names of animals in CSV format:",
-              "source": "20260226211404-animals_big-animals_random-gpt35turbo-t08-06.csv"
+              "source": "20260226211404-animals_big-animals_random-fs-gpt35turbo-t08-06.csv"
             }
           ],
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260226211404-animals_big-animals_random-gpt35turbo-t08-12.csv"
+              "source": "20260226211404-animals_big-animals_random-fs-gpt35turbo-t08-12.csv"
             },
             {
               "instance": "mixed",
-              "source": "20260226211404-animals_big-animals_random-gpt35turbo-t08-01.csv"
+              "source": "20260226211404-animals_big-animals_random-fs-gpt35turbo-t08-01.csv"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "single row": 16,
             "one per line": 3,
             "multiple rows": 1
@@ -737,15 +737,15 @@
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260220212927-animals_big-animals_random_hard-gpt35turbo-t08-03.csv"
+              "source": "20260220212927-animals_big-animals_random_hard-fs-gpt35turbo-t08-03.csv"
             },
             {
               "instance": "mixed",
-              "source": "20260220212927-animals_big-animals_random_hard-gpt35turbo-t08-01.csv"
+              "source": "20260220212927-animals_big-animals_random_hard-fs-gpt35turbo-t08-01.csv"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "one per line": 19,
             "multiple rows": 1
           },
@@ -761,15 +761,15 @@
           "inconsistent_html_format": [
             {
               "instance": "Extract-From-Body-Tags",
-              "source": "20260220212134-animals_big-animals-gpt35turbo-t08-01.html"
+              "source": "20260220212134-animals_big-animals-fs-gpt35turbo-t08-01.html"
             },
             {
               "instance": "Extract-From-HTML-Tags",
-              "source": "20260220212134-animals_big-animals-gpt35turbo-t08-01.html"
+              "source": "20260220212134-animals_big-animals-fs-gpt35turbo-t08-01.html"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 20
           },
           "cleanupRules": {
@@ -784,15 +784,15 @@
           "inconsistent_html_format": [
             {
               "instance": "Extract-From-Body-Tags",
-              "source": "20260220212420-animals_big-animals_hard-gpt35turbo-t08-01.html"
+              "source": "20260220212420-animals_big-animals_hard-fs-gpt35turbo-t08-01.html"
             },
             {
               "instance": "Extract-From-HTML-Tags",
-              "source": "20260220212420-animals_big-animals_hard-gpt35turbo-t08-01.html"
+              "source": "20260220212420-animals_big-animals_hard-fs-gpt35turbo-t08-01.html"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 20
           },
           "cleanupRules": {
@@ -807,19 +807,19 @@
           "inconsistent_html_format": [
             {
               "instance": "Extract-From-Body-Tags",
-              "source": "20260226211424-animals_big-animals_random-gpt35turbo-t08-09.html"
+              "source": "20260226211424-animals_big-animals_random-fs-gpt35turbo-t08-09.html"
             },
             {
               "instance": "Extract-from-HTML-Codefence-Markdown",
-              "source": "20260226211424-animals_big-animals_random-gpt35turbo-t08-15.html"
+              "source": "20260226211424-animals_big-animals_random-fs-gpt35turbo-t08-15.html"
             },
             {
               "instance": "Extract-From-HTML-Tags",
-              "source": "20260226211424-animals_big-animals_random-gpt35turbo-t08-02.html"
+              "source": "20260226211424-animals_big-animals_random-fs-gpt35turbo-t08-02.html"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 19,
             "markdown backticks": 1
           },
@@ -835,34 +835,34 @@
         "animals_random_hard": {
           "single-span-tag": [
             {
-              "instance": "20260220212947-animals_big-animals_random_hard-gpt35turbo-t08-17.html",
-              "source": "20260220212947-animals_big-animals_random_hard-gpt35turbo-t08-17.html"
+              "instance": "20260220212947-animals_big-animals_random_hard-fs-gpt35turbo-t08-17.html",
+              "source": "20260220212947-animals_big-animals_random_hard-fs-gpt35turbo-t08-17.html"
             }
           ],
           "inconsistent_html_format": [
             {
               "instance": "Extract-From-Body-Tags",
-              "source": "20260220212947-animals_big-animals_random_hard-gpt35turbo-t08-07.html"
+              "source": "20260220212947-animals_big-animals_random_hard-fs-gpt35turbo-t08-07.html"
             },
             {
               "instance": "Extract-From-HTML-Tags",
-              "source": "20260220212947-animals_big-animals_random_hard-gpt35turbo-t08-01.html"
+              "source": "20260220212947-animals_big-animals_random_hard-fs-gpt35turbo-t08-01.html"
             },
             {
               "instance": "Extract-From-LI-Tags",
-              "source": "20260220212947-animals_big-animals_random_hard-gpt35turbo-t08-01.html"
+              "source": "20260220212947-animals_big-animals_random_hard-fs-gpt35turbo-t08-01.html"
             },
             {
               "instance": "Extract-From-P-Tags",
-              "source": "20260220212947-animals_big-animals_random_hard-gpt35turbo-t08-17.html"
+              "source": "20260220212947-animals_big-animals_random_hard-fs-gpt35turbo-t08-17.html"
             },
             {
               "instance": "Extract-From-UL-Tags",
-              "source": "20260220212947-animals_big-animals_random_hard-gpt35turbo-t08-01.html"
+              "source": "20260220212947-animals_big-animals_random_hard-fs-gpt35turbo-t08-01.html"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 20,
             "single-span-tag": 1
           },
@@ -881,21 +881,21 @@
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260220212021-animals_big-animals-gpt35turbo-t08-01.json"
+              "source": "20260220212021-animals_big-animals-fs-gpt35turbo-t08-01.json"
             },
             {
               "instance": "mixed",
-              "source": "20260220212021-animals_big-animals-gpt35turbo-t08-02.json"
+              "source": "20260220212021-animals_big-animals-fs-gpt35turbo-t08-02.json"
             }
           ],
           "inconsistent_json_format": [
             {
               "instance": "Lowercase",
-              "source": "20260220212021-animals_big-animals-gpt35turbo-t08-02.json"
+              "source": "20260220212021-animals_big-animals-fs-gpt35turbo-t08-02.json"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 20
           },
           "cleanupRules": {
@@ -908,21 +908,21 @@
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260220212310-animals_big-animals_hard-gpt35turbo-t08-03.json"
+              "source": "20260220212310-animals_big-animals_hard-fs-gpt35turbo-t08-03.json"
             },
             {
               "instance": "mixed",
-              "source": "20260220212310-animals_big-animals_hard-gpt35turbo-t08-01.json"
+              "source": "20260220212310-animals_big-animals_hard-fs-gpt35turbo-t08-01.json"
             }
           ],
           "inconsistent_json_format": [
             {
               "instance": "Lowercase",
-              "source": "20260220212310-animals_big-animals_hard-gpt35turbo-t08-01.json"
+              "source": "20260220212310-animals_big-animals_hard-fs-gpt35turbo-t08-01.json"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 19,
             "single lines": 1
           },
@@ -934,7 +934,7 @@
         },
         "animals_random": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 20
           },
           "cleanupRules": {
@@ -947,21 +947,21 @@
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260220212841-animals_big-animals_random_hard-gpt35turbo-t08-19.json"
+              "source": "20260220212841-animals_big-animals_random_hard-fs-gpt35turbo-t08-19.json"
             },
             {
               "instance": "mixed",
-              "source": "20260220212841-animals_big-animals_random_hard-gpt35turbo-t08-01.json"
+              "source": "20260220212841-animals_big-animals_random_hard-fs-gpt35turbo-t08-01.json"
             }
           ],
           "inconsistent_json_format": [
             {
               "instance": "Lowercase",
-              "source": "20260220212841-animals_big-animals_random_hard-gpt35turbo-t08-01.json"
+              "source": "20260220212841-animals_big-animals_random_hard-fs-gpt35turbo-t08-01.json"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 20
           },
           "cleanupRules": {
@@ -974,7 +974,7 @@
       "markdown": {
         "animals": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "unknown": 20
           },
           "cleanupRules": {
@@ -984,7 +984,7 @@
         },
         "animals_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "unknown": 20
           },
           "cleanupRules": {
@@ -994,7 +994,7 @@
         },
         "animals_random": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "unknown": 20
           },
           "cleanupRules": {
@@ -1004,7 +1004,7 @@
         },
         "animals_random_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "unknown": 20
           },
           "cleanupRules": {
@@ -1016,7 +1016,7 @@
       "numberedText": {
         "animals": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 20
           },
           "cleanupRules": {
@@ -1026,7 +1026,7 @@
         },
         "animals_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 20
           },
           "cleanupRules": {
@@ -1036,7 +1036,7 @@
         },
         "animals_random": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 20
           },
           "cleanupRules": {
@@ -1046,7 +1046,7 @@
         },
         "animals_random_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 20
           },
           "cleanupRules": {
@@ -1058,7 +1058,7 @@
       "text": {
         "animals": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 20
           },
           "cleanupRules": {
@@ -1070,33 +1070,33 @@
           "trailing_punctuation": [
             {
               "instance": "Here is a list of names of animals:",
-              "source": "20260220212205-animals_big-animals_hard-gpt35turbo-t08-12.txt"
+              "source": "20260220212205-animals_big-animals_hard-fs-gpt35turbo-t08-12.txt"
             }
           ],
           "exceeds_max_length": [
             {
               "instance": "Here is a list of names of animals:",
-              "source": "20260220212205-animals_big-animals_hard-gpt35turbo-t08-12.txt"
+              "source": "20260220212205-animals_big-animals_hard-fs-gpt35turbo-t08-12.txt"
             }
           ],
           "preamble_leak": [
             {
               "instance": "Here is a list of names of animals:",
-              "source": "20260220212205-animals_big-animals_hard-gpt35turbo-t08-12.txt"
+              "source": "20260220212205-animals_big-animals_hard-fs-gpt35turbo-t08-12.txt"
             }
           ],
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260220212205-animals_big-animals_hard-gpt35turbo-t08-08.txt"
+              "source": "20260220212205-animals_big-animals_hard-fs-gpt35turbo-t08-08.txt"
             },
             {
               "instance": "mixed",
-              "source": "20260220212205-animals_big-animals_hard-gpt35turbo-t08-01.txt"
+              "source": "20260220212205-animals_big-animals_hard-fs-gpt35turbo-t08-01.txt"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "plain text": 10,
             "numbered text": 10
           },
@@ -1108,7 +1108,7 @@
         },
         "animals_random": {
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 18,
             "plain text": 2
           },
@@ -1120,7 +1120,7 @@
         },
         "animals_random_hard": {
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "plain text": 13,
             "numbered text": 7
           },
@@ -1136,25 +1136,25 @@
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260220212050-animals_big-animals-gpt35turbo-t08-01.yml"
+              "source": "20260220212050-animals_big-animals-fs-gpt35turbo-t08-01.yml"
             },
             {
               "instance": "mixed",
-              "source": "20260220212050-animals_big-animals-gpt35turbo-t08-02.yml"
+              "source": "20260220212050-animals_big-animals-fs-gpt35turbo-t08-02.yml"
             }
           ],
           "inconsistent_yaml_format": [
             {
               "instance": "Extract-from-YAML-Codefence-Markdown",
-              "source": "20260220212050-animals_big-animals-gpt35turbo-t08-01.yml"
+              "source": "20260220212050-animals_big-animals-fs-gpt35turbo-t08-01.yml"
             },
             {
               "instance": "Lowercase",
-              "source": "20260220212050-animals_big-animals-gpt35turbo-t08-02.yml"
+              "source": "20260220212050-animals_big-animals-fs-gpt35turbo-t08-02.yml"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "markdown backticks": 19,
             "leading hyphen": 1
           },
@@ -1167,25 +1167,25 @@
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260220212338-animals_big-animals_hard-gpt35turbo-t08-03.yml"
+              "source": "20260220212338-animals_big-animals_hard-fs-gpt35turbo-t08-03.yml"
             },
             {
               "instance": "mixed",
-              "source": "20260220212338-animals_big-animals_hard-gpt35turbo-t08-01.yml"
+              "source": "20260220212338-animals_big-animals_hard-fs-gpt35turbo-t08-01.yml"
             }
           ],
           "inconsistent_yaml_format": [
             {
               "instance": "Extract-from-YAML-Codefence-Markdown",
-              "source": "20260220212338-animals_big-animals_hard-gpt35turbo-t08-01.yml"
+              "source": "20260220212338-animals_big-animals_hard-fs-gpt35turbo-t08-01.yml"
             },
             {
               "instance": "Lowercase",
-              "source": "20260220212338-animals_big-animals_hard-gpt35turbo-t08-01.yml"
+              "source": "20260220212338-animals_big-animals_hard-fs-gpt35turbo-t08-01.yml"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "markdown backticks": 19,
             "leading hyphen": 1
           },
@@ -1196,7 +1196,7 @@
         },
         "animals_random": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "markdown backticks": 20
           },
           "cleanupRules": {
@@ -1208,11 +1208,11 @@
           "inconsistent_yaml_format": [
             {
               "instance": "Extract-from-YAML-Codefence-Markdown",
-              "source": "20260220212906-animals_big-animals_random_hard-gpt35turbo-t08-06.yml"
+              "source": "20260220212906-animals_big-animals_random_hard-fs-gpt35turbo-t08-06.yml"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "leading hyphen": 16,
             "markdown backticks": 4
           },
@@ -1231,11 +1231,11 @@
           "trailing_punctuation": [
             {
               "instance": "Walrus.",
-              "source": "20260220213239-animals_big-animals-gpt41nano-t01-02.csv"
+              "source": "20260220213239-animals_big-animals-fs-gpt41nano-t01-02.csv"
             }
           ],
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "single row": 20
           },
           "cleanupRules": {
@@ -1247,7 +1247,7 @@
         },
         "animals_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "one per line": 20
           },
           "cleanupRules": {
@@ -1257,7 +1257,7 @@
         },
         "animals_random": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "single row": 20
           },
           "cleanupRules": {
@@ -1268,7 +1268,7 @@
         },
         "animals_random_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "one per line": 20
           },
           "cleanupRules": {
@@ -1282,11 +1282,11 @@
           "inconsistent_html_format": [
             {
               "instance": "Extract-from-HTML-Codefence-Markdown",
-              "source": "20260220213313-animals_big-animals-gpt41nano-t01-01.html"
+              "source": "20260220213313-animals_big-animals-fs-gpt41nano-t01-01.html"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "markdown backticks": 12,
             "multiple lines": 8
           },
@@ -1301,11 +1301,11 @@
           "inconsistent_html_format": [
             {
               "instance": "Extract-from-HTML-Codefence-Markdown",
-              "source": "20260220213633-animals_big-animals_hard-gpt41nano-t01-02.html"
+              "source": "20260220213633-animals_big-animals_hard-fs-gpt41nano-t01-02.html"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 4,
             "markdown backticks": 16
           },
@@ -1319,22 +1319,22 @@
         "animals_random": {
           "non-western-characters": [
             {
-              "instance": "20260226211811-animals_big-animals_random-gpt41nano-t01-16.html",
-              "source": "20260226211811-animals_big-animals_random-gpt41nano-t01-16.html"
+              "instance": "20260226211811-animals_big-animals_random-fs-gpt41nano-t01-16.html",
+              "source": "20260226211811-animals_big-animals_random-fs-gpt41nano-t01-16.html"
             },
             {
-              "instance": "20260226211811-animals_big-animals_random-gpt41nano-t01-18.html",
-              "source": "20260226211811-animals_big-animals_random-gpt41nano-t01-18.html"
+              "instance": "20260226211811-animals_big-animals_random-fs-gpt41nano-t01-18.html",
+              "source": "20260226211811-animals_big-animals_random-fs-gpt41nano-t01-18.html"
             }
           ],
           "inconsistent_html_format": [
             {
               "instance": "Extract-from-HTML-Codefence-Markdown",
-              "source": "20260226211811-animals_big-animals_random-gpt41nano-t01-01.html"
+              "source": "20260226211811-animals_big-animals_random-fs-gpt41nano-t01-01.html"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "markdown backticks": 5,
             "multiple lines": 15,
             "non-western-characters": 2
@@ -1349,18 +1349,18 @@
         "animals_random_hard": {
           "non-western-characters": [
             {
-              "instance": "20260220214246-animals_big-animals_random_hard-gpt41nano-t01-18.html",
-              "source": "20260220214246-animals_big-animals_random_hard-gpt41nano-t01-18.html"
+              "instance": "20260220214246-animals_big-animals_random_hard-fs-gpt41nano-t01-18.html",
+              "source": "20260220214246-animals_big-animals_random_hard-fs-gpt41nano-t01-18.html"
             }
           ],
           "inconsistent_html_format": [
             {
               "instance": "Extract-from-HTML-Codefence-Markdown",
-              "source": "20260220214246-animals_big-animals_random_hard-gpt41nano-t01-12.html"
+              "source": "20260220214246-animals_big-animals_random_hard-fs-gpt41nano-t01-12.html"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 18,
             "markdown backticks": 2,
             "non-western-characters": 1
@@ -1378,23 +1378,23 @@
           "internal_punctuation": [
             {
               "instance": "Croco­dile",
-              "source": "20260220213142-animals_big-animals-gpt41nano-t01-03.json"
+              "source": "20260220213142-animals_big-animals-fs-gpt41nano-t01-03.json"
             }
           ],
           "non-western-characters": [
             {
-              "instance": "20260220213142-animals_big-animals-gpt41nano-t01-03.json",
-              "source": "20260220213142-animals_big-animals-gpt41nano-t01-03.json"
+              "instance": "20260220213142-animals_big-animals-fs-gpt41nano-t01-03.json",
+              "source": "20260220213142-animals_big-animals-fs-gpt41nano-t01-03.json"
             }
           ],
           "inconsistent_json_format": [
             {
               "instance": "Extract-from-JSON-Codefence-Markdown",
-              "source": "20260220213142-animals_big-animals-gpt41nano-t01-01.json"
+              "source": "20260220213142-animals_big-animals-fs-gpt41nano-t01-01.json"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "format and markdown backticks": 5,
             "multiple lines": 14,
             "single lines": 1,
@@ -1407,7 +1407,7 @@
         },
         "animals_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 20
           },
           "cleanupRules": {
@@ -1418,11 +1418,11 @@
           "inconsistent_json_format": [
             {
               "instance": "Extract-from-JSON-Codefence-Markdown",
-              "source": "20260226211633-animals_big-animals_random-gpt41nano-t01-01.json"
+              "source": "20260226211633-animals_big-animals_random-fs-gpt41nano-t01-01.json"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "format and markdown backticks": 7,
             "multiple lines": 13
           },
@@ -1433,7 +1433,7 @@
         },
         "animals_random_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 20
           },
           "cleanupRules": {
@@ -1444,7 +1444,7 @@
       "markdown": {
         "animals": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "unknown": 20
           },
           "cleanupRules": {
@@ -1456,15 +1456,15 @@
           "inconsistent_md_format": [
             {
               "instance": "Markdown-Strip-Bold-Tags",
-              "source": "20260220213446-animals_big-animals_hard-gpt41nano-t01-09.md"
+              "source": "20260220213446-animals_big-animals_hard-fs-gpt41nano-t01-09.md"
             },
             {
               "instance": "Strip-Leading-Bullets",
-              "source": "20260220213446-animals_big-animals_hard-gpt41nano-t01-01.md"
+              "source": "20260220213446-animals_big-animals_hard-fs-gpt41nano-t01-01.md"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "unknown": 20
           },
           "cleanupRules": {
@@ -1475,7 +1475,7 @@
         },
         "animals_random": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "unknown": 20
           },
           "cleanupRules": {
@@ -1486,22 +1486,22 @@
         "animals_random_hard": {
           "non-western-characters": [
             {
-              "instance": "20260220214113-animals_big-animals_random_hard-gpt41nano-t01-09.md",
-              "source": "20260220214113-animals_big-animals_random_hard-gpt41nano-t01-09.md"
+              "instance": "20260220214113-animals_big-animals_random_hard-fs-gpt41nano-t01-09.md",
+              "source": "20260220214113-animals_big-animals_random_hard-fs-gpt41nano-t01-09.md"
             }
           ],
           "inconsistent_md_format": [
             {
               "instance": "Extract-from-Generic-Codefence-Markdown",
-              "source": "20260220214113-animals_big-animals_random_hard-gpt41nano-t01-01.md"
+              "source": "20260220214113-animals_big-animals_random_hard-fs-gpt41nano-t01-01.md"
             },
             {
               "instance": "Strip-Leading-Bullets",
-              "source": "20260220214113-animals_big-animals_random_hard-gpt41nano-t01-02.md"
+              "source": "20260220214113-animals_big-animals_random_hard-fs-gpt41nano-t01-02.md"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "unknown": 20,
             "non-western-characters": 1
           },
@@ -1515,7 +1515,7 @@
       "numberedText": {
         "animals": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 20
           },
           "cleanupRules": {
@@ -1525,7 +1525,7 @@
         },
         "animals_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 20
           },
           "cleanupRules": {
@@ -1535,7 +1535,7 @@
         },
         "animals_random": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 20
           },
           "cleanupRules": {
@@ -1545,7 +1545,7 @@
         },
         "animals_random_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 20
           },
           "cleanupRules": {
@@ -1557,7 +1557,7 @@
       "text": {
         "animals": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "plain text": 20
           },
           "cleanupRules": {
@@ -1566,7 +1566,7 @@
         },
         "animals_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "plain text": 20
           },
           "cleanupRules": {
@@ -1575,7 +1575,7 @@
         },
         "animals_random": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "plain text": 20
           },
           "cleanupRules": {
@@ -1584,7 +1584,7 @@
         },
         "animals_random_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "plain text": 20
           },
           "cleanupRules": {
@@ -1597,15 +1597,15 @@
           "inconsistent_yaml_format": [
             {
               "instance": "YAML-Dict-Value-Extraction",
-              "source": "20260220213217-animals_big-animals-gpt41nano-t01-02.yml"
+              "source": "20260220213217-animals_big-animals-fs-gpt41nano-t01-02.yml"
             },
             {
               "instance": "YAML-Single-List-Flattening",
-              "source": "20260220213217-animals_big-animals-gpt41nano-t01-02.yml"
+              "source": "20260220213217-animals_big-animals-fs-gpt41nano-t01-02.yml"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "leading hyphen": 20
           },
           "cleanupRules": {
@@ -1617,18 +1617,18 @@
         "animals_hard": {
           "non-western-characters": [
             {
-              "instance": "20260220213540-animals_big-animals_hard-gpt41nano-t01-10.yml",
-              "source": "20260220213540-animals_big-animals_hard-gpt41nano-t01-10.yml"
+              "instance": "20260220213540-animals_big-animals_hard-fs-gpt41nano-t01-10.yml",
+              "source": "20260220213540-animals_big-animals_hard-fs-gpt41nano-t01-10.yml"
             }
           ],
           "inconsistent_yaml_format": [
             {
               "instance": "YAML-Parse-Error-Fallback",
-              "source": "20260220213540-animals_big-animals_hard-gpt41nano-t01-10.yml"
+              "source": "20260220213540-animals_big-animals_hard-fs-gpt41nano-t01-10.yml"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "leading hyphen": 20,
             "non-western-characters": 1
           },
@@ -1639,7 +1639,7 @@
         },
         "animals_random": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "leading hyphen": 20
           },
           "cleanupRules": {
@@ -1648,7 +1648,7 @@
         },
         "animals_random_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "leading hyphen": 20
           },
           "cleanupRules": {
@@ -1663,17 +1663,17 @@
           "internal_punctuation": [
             {
               "instance": "Croco­dile",
-              "source": "20260220214540-animals_big-animals-gpt41nano-t08-07.csv"
+              "source": "20260220214540-animals_big-animals-fs-gpt41nano-t08-07.csv"
             }
           ],
           "non-western-characters": [
             {
-              "instance": "20260220214540-animals_big-animals-gpt41nano-t08-07.csv",
-              "source": "20260220214540-animals_big-animals-gpt41nano-t08-07.csv"
+              "instance": "20260220214540-animals_big-animals-fs-gpt41nano-t08-07.csv",
+              "source": "20260220214540-animals_big-animals-fs-gpt41nano-t08-07.csv"
             }
           ],
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "single row": 20,
             "non-western-characters": 1
           },
@@ -1685,7 +1685,7 @@
         },
         "animals_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "one per line": 20
           },
           "cleanupRules": {
@@ -1697,21 +1697,21 @@
           "trailing_punctuation": [
             {
               "instance": "Raccoon.",
-              "source": "20260226212203-animals_big-animals_random-gpt41nano-t08-20.csv"
+              "source": "20260226212203-animals_big-animals_random-fs-gpt41nano-t08-20.csv"
             }
           ],
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260226212203-animals_big-animals_random-gpt41nano-t08-06.csv"
+              "source": "20260226212203-animals_big-animals_random-fs-gpt41nano-t08-06.csv"
             },
             {
               "instance": "mixed",
-              "source": "20260226212203-animals_big-animals_random-gpt41nano-t08-01.csv"
+              "source": "20260226212203-animals_big-animals_random-fs-gpt41nano-t08-01.csv"
             }
           ],
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "single row": 20
           },
           "cleanupRules": {
@@ -1723,7 +1723,7 @@
         },
         "animals_random_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "one per line": 20
           },
           "cleanupRules": {
@@ -1737,11 +1737,11 @@
           "inconsistent_html_format": [
             {
               "instance": "Extract-from-HTML-Codefence-Markdown",
-              "source": "20260220214618-animals_big-animals-gpt41nano-t08-01.html"
+              "source": "20260220214618-animals_big-animals-fs-gpt41nano-t08-01.html"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "markdown backticks": 13,
             "multiple lines": 7
           },
@@ -1756,19 +1756,19 @@
           "inconsistent_html_format": [
             {
               "instance": "Extract-from-HTML-Codefence-Markdown",
-              "source": "20260220214953-animals_big-animals_hard-gpt41nano-t08-01.html"
+              "source": "20260220214953-animals_big-animals_hard-fs-gpt41nano-t08-01.html"
             },
             {
               "instance": "Extract-From-OL-Tags",
-              "source": "20260220214953-animals_big-animals_hard-gpt41nano-t08-05.html"
+              "source": "20260220214953-animals_big-animals_hard-fs-gpt41nano-t08-05.html"
             },
             {
               "instance": "Extract-From-UL-Tags",
-              "source": "20260220214953-animals_big-animals_hard-gpt41nano-t08-01.html"
+              "source": "20260220214953-animals_big-animals_hard-fs-gpt41nano-t08-01.html"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "markdown backticks": 11,
             "multiple lines": 9
           },
@@ -1784,11 +1784,11 @@
           "inconsistent_html_format": [
             {
               "instance": "Extract-from-HTML-Codefence-Markdown",
-              "source": "20260226212239-animals_big-animals_random-gpt41nano-t08-12.html"
+              "source": "20260226212239-animals_big-animals_random-fs-gpt41nano-t08-12.html"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 15,
             "markdown backticks": 5
           },
@@ -1803,11 +1803,11 @@
           "inconsistent_html_format": [
             {
               "instance": "Extract-from-HTML-Codefence-Markdown",
-              "source": "20260220215616-animals_big-animals_random_hard-gpt41nano-t08-09.html"
+              "source": "20260220215616-animals_big-animals_random_hard-fs-gpt41nano-t08-09.html"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 17,
             "markdown backticks": 3
           },
@@ -1824,11 +1824,11 @@
           "inconsistent_json_format": [
             {
               "instance": "Extract-from-JSON-Codefence-Markdown",
-              "source": "20260220214444-animals_big-animals-gpt41nano-t08-01.json"
+              "source": "20260220214444-animals_big-animals-fs-gpt41nano-t08-01.json"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "format and markdown backticks": 8,
             "multiple lines": 11,
             "single lines": 1
@@ -1840,7 +1840,7 @@
         },
         "animals_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 20
           },
           "cleanupRules": {
@@ -1851,11 +1851,11 @@
           "inconsistent_json_format": [
             {
               "instance": "Extract-from-JSON-Codefence-Markdown",
-              "source": "20260226212100-animals_big-animals_random-gpt41nano-t08-04.json"
+              "source": "20260226212100-animals_big-animals_random-fs-gpt41nano-t08-04.json"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 14,
             "format and markdown backticks": 5,
             "single lines": 1
@@ -1869,11 +1869,11 @@
           "inconsistent_json_format": [
             {
               "instance": "Extract-from-JSON-Codefence-Markdown",
-              "source": "20260220215511-animals_big-animals_random_hard-gpt41nano-t08-14.json"
+              "source": "20260220215511-animals_big-animals_random_hard-fs-gpt41nano-t08-14.json"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 19,
             "format and markdown backticks": 1
           },
@@ -1886,7 +1886,7 @@
       "markdown": {
         "animals": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "unknown": 20
           },
           "cleanupRules": {
@@ -1898,11 +1898,11 @@
           "inconsistent_md_format": [
             {
               "instance": "Strip-Leading-Bullets",
-              "source": "20260220214800-animals_big-animals_hard-gpt41nano-t08-02.md"
+              "source": "20260220214800-animals_big-animals_hard-fs-gpt41nano-t08-02.md"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "unknown": 20
           },
           "cleanupRules": {
@@ -1913,12 +1913,12 @@
         "animals_random": {
           "non-western-characters": [
             {
-              "instance": "20260226212004-animals_big-animals_random-gpt41nano-t08-03.md",
-              "source": "20260226212004-animals_big-animals_random-gpt41nano-t08-03.md"
+              "instance": "20260226212004-animals_big-animals_random-fs-gpt41nano-t08-03.md",
+              "source": "20260226212004-animals_big-animals_random-fs-gpt41nano-t08-03.md"
             }
           ],
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "unknown": 20,
             "non-western-characters": 1
           },
@@ -1931,15 +1931,15 @@
           "inconsistent_md_format": [
             {
               "instance": "Extract-from-Generic-Codefence-Markdown",
-              "source": "20260220215451-animals_big-animals_random_hard-gpt41nano-t08-10.md"
+              "source": "20260220215451-animals_big-animals_random_hard-fs-gpt41nano-t08-10.md"
             },
             {
               "instance": "Strip-Leading-Bullets",
-              "source": "20260220215451-animals_big-animals_random_hard-gpt41nano-t08-01.md"
+              "source": "20260220215451-animals_big-animals_random_hard-fs-gpt41nano-t08-01.md"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "unknown": 20
           },
           "cleanupRules": {
@@ -1952,7 +1952,7 @@
       "numberedText": {
         "animals": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 20
           },
           "cleanupRules": {
@@ -1962,7 +1962,7 @@
         },
         "animals_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 20
           },
           "cleanupRules": {
@@ -1972,7 +1972,7 @@
         },
         "animals_random": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 20
           },
           "cleanupRules": {
@@ -1982,7 +1982,7 @@
         },
         "animals_random_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 20
           },
           "cleanupRules": {
@@ -1994,7 +1994,7 @@
       "text": {
         "animals": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "plain text": 20
           },
           "cleanupRules": {
@@ -2003,7 +2003,7 @@
         },
         "animals_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "plain text": 20
           },
           "cleanupRules": {
@@ -2012,7 +2012,7 @@
         },
         "animals_random": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "plain text": 20
           },
           "cleanupRules": {
@@ -2021,7 +2021,7 @@
         },
         "animals_random_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "plain text": 20
           },
           "cleanupRules": {
@@ -2034,21 +2034,21 @@
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260220214516-animals_big-animals-gpt41nano-t08-03.yml"
+              "source": "20260220214516-animals_big-animals-fs-gpt41nano-t08-03.yml"
             },
             {
               "instance": "mixed",
-              "source": "20260220214516-animals_big-animals-gpt41nano-t08-01.yml"
+              "source": "20260220214516-animals_big-animals-fs-gpt41nano-t08-01.yml"
             }
           ],
           "inconsistent_yaml_format": [
             {
               "instance": "Lowercase",
-              "source": "20260220214516-animals_big-animals-gpt41nano-t08-01.yml"
+              "source": "20260220214516-animals_big-animals-fs-gpt41nano-t08-01.yml"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "leading hyphen": 20
           },
           "cleanupRules": {
@@ -2057,7 +2057,7 @@
         },
         "animals_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "leading hyphen": 20
           },
           "cleanupRules": {
@@ -2068,11 +2068,11 @@
           "inconsistent_yaml_format": [
             {
               "instance": "Extract-from-YAML-Codefence-Markdown",
-              "source": "20260226212139-animals_big-animals_random-gpt41nano-t08-04.yml"
+              "source": "20260226212139-animals_big-animals_random-fs-gpt41nano-t08-04.yml"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "leading hyphen": 17,
             "markdown backticks": 3
           },
@@ -2085,21 +2085,21 @@
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260220215536-animals_big-animals_random_hard-gpt41nano-t08-09.yml"
+              "source": "20260220215536-animals_big-animals_random_hard-fs-gpt41nano-t08-09.yml"
             },
             {
               "instance": "mixed",
-              "source": "20260220215536-animals_big-animals_random_hard-gpt41nano-t08-01.yml"
+              "source": "20260220215536-animals_big-animals_random_hard-fs-gpt41nano-t08-01.yml"
             }
           ],
           "inconsistent_yaml_format": [
             {
               "instance": "Lowercase",
-              "source": "20260220215536-animals_big-animals_random_hard-gpt41nano-t08-01.yml"
+              "source": "20260220215536-animals_big-animals_random_hard-fs-gpt41nano-t08-01.yml"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "leading hyphen": 20
           },
           "cleanupRules": {
@@ -2114,7 +2114,7 @@
       "CSV": {
         "animals": {
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "one per line": 12,
             "single row": 4,
             "multiple rows": 4
@@ -2129,7 +2129,7 @@
         },
         "animals_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "one per line": 20
           },
           "cleanupRules": {
@@ -2139,7 +2139,7 @@
         },
         "animals_random": {
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "one per line": 8,
             "single row": 6,
             "multiple rows": 6
@@ -2154,7 +2154,7 @@
         },
         "animals_random_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "one per line": 20
           },
           "cleanupRules": {
@@ -2168,125 +2168,125 @@
           "internal_punctuation": [
             {
               "instance": "Monkey\n  Lion\n  Dolphin\n  Kangaroo\n  Penguin\n  Cheetah\n  Elephant\n  Giraffe\n  Fox\n  Koala",
-              "source": "20260220232953-animals_big-animals-llama318b-t01-15.html"
+              "source": "20260220232953-animals_big-animals-fs-llama318b-t01-15.html"
             }
           ],
           "exceeds_max_length": [
             {
               "instance": "Monkey\n  Lion\n  Dolphin\n  Kangaroo\n  Penguin\n  Cheetah\n  Elephant\n  Giraffe\n  Fox\n  Koala",
-              "source": "20260220232953-animals_big-animals-llama318b-t01-15.html"
+              "source": "20260220232953-animals_big-animals-fs-llama318b-t01-15.html"
             }
           ],
           "preamble_leak": [
             {
               "instance": "Monkey\n  Lion\n  Dolphin\n  Kangaroo\n  Penguin\n  Cheetah\n  Elephant\n  Giraffe\n  Fox\n  Koala",
-              "source": "20260220232953-animals_big-animals-llama318b-t01-15.html"
+              "source": "20260220232953-animals_big-animals-fs-llama318b-t01-15.html"
             }
           ],
           "single-span-tag": [
             {
-              "instance": "20260220232953-animals_big-animals-llama318b-t01-02.html",
-              "source": "20260220232953-animals_big-animals-llama318b-t01-02.html"
+              "instance": "20260220232953-animals_big-animals-fs-llama318b-t01-02.html",
+              "source": "20260220232953-animals_big-animals-fs-llama318b-t01-02.html"
             },
             {
-              "instance": "20260220232953-animals_big-animals-llama318b-t01-03.html",
-              "source": "20260220232953-animals_big-animals-llama318b-t01-03.html"
+              "instance": "20260220232953-animals_big-animals-fs-llama318b-t01-03.html",
+              "source": "20260220232953-animals_big-animals-fs-llama318b-t01-03.html"
             },
             {
-              "instance": "20260220232953-animals_big-animals-llama318b-t01-04.html",
-              "source": "20260220232953-animals_big-animals-llama318b-t01-04.html"
+              "instance": "20260220232953-animals_big-animals-fs-llama318b-t01-04.html",
+              "source": "20260220232953-animals_big-animals-fs-llama318b-t01-04.html"
             },
             {
-              "instance": "20260220232953-animals_big-animals-llama318b-t01-05.html",
-              "source": "20260220232953-animals_big-animals-llama318b-t01-05.html"
+              "instance": "20260220232953-animals_big-animals-fs-llama318b-t01-05.html",
+              "source": "20260220232953-animals_big-animals-fs-llama318b-t01-05.html"
             },
             {
-              "instance": "20260220232953-animals_big-animals-llama318b-t01-06.html",
-              "source": "20260220232953-animals_big-animals-llama318b-t01-06.html"
+              "instance": "20260220232953-animals_big-animals-fs-llama318b-t01-06.html",
+              "source": "20260220232953-animals_big-animals-fs-llama318b-t01-06.html"
             },
             {
-              "instance": "20260220232953-animals_big-animals-llama318b-t01-08.html",
-              "source": "20260220232953-animals_big-animals-llama318b-t01-08.html"
+              "instance": "20260220232953-animals_big-animals-fs-llama318b-t01-08.html",
+              "source": "20260220232953-animals_big-animals-fs-llama318b-t01-08.html"
             },
             {
-              "instance": "20260220232953-animals_big-animals-llama318b-t01-09.html",
-              "source": "20260220232953-animals_big-animals-llama318b-t01-09.html"
+              "instance": "20260220232953-animals_big-animals-fs-llama318b-t01-09.html",
+              "source": "20260220232953-animals_big-animals-fs-llama318b-t01-09.html"
             },
             {
-              "instance": "20260220232953-animals_big-animals-llama318b-t01-10.html",
-              "source": "20260220232953-animals_big-animals-llama318b-t01-10.html"
+              "instance": "20260220232953-animals_big-animals-fs-llama318b-t01-10.html",
+              "source": "20260220232953-animals_big-animals-fs-llama318b-t01-10.html"
             },
             {
-              "instance": "20260220232953-animals_big-animals-llama318b-t01-13.html",
-              "source": "20260220232953-animals_big-animals-llama318b-t01-13.html"
+              "instance": "20260220232953-animals_big-animals-fs-llama318b-t01-13.html",
+              "source": "20260220232953-animals_big-animals-fs-llama318b-t01-13.html"
             },
             {
-              "instance": "20260220232953-animals_big-animals-llama318b-t01-17.html",
-              "source": "20260220232953-animals_big-animals-llama318b-t01-17.html"
+              "instance": "20260220232953-animals_big-animals-fs-llama318b-t01-17.html",
+              "source": "20260220232953-animals_big-animals-fs-llama318b-t01-17.html"
             },
             {
-              "instance": "20260220232953-animals_big-animals-llama318b-t01-19.html",
-              "source": "20260220232953-animals_big-animals-llama318b-t01-19.html"
+              "instance": "20260220232953-animals_big-animals-fs-llama318b-t01-19.html",
+              "source": "20260220232953-animals_big-animals-fs-llama318b-t01-19.html"
             }
           ],
           "html_no_markup": [
             {
-              "instance": "20260220232953-animals_big-animals-llama318b-t01-07.html",
-              "source": "20260220232953-animals_big-animals-llama318b-t01-07.html"
+              "instance": "20260220232953-animals_big-animals-fs-llama318b-t01-07.html",
+              "source": "20260220232953-animals_big-animals-fs-llama318b-t01-07.html"
             },
             {
-              "instance": "20260220232953-animals_big-animals-llama318b-t01-12.html",
-              "source": "20260220232953-animals_big-animals-llama318b-t01-12.html"
+              "instance": "20260220232953-animals_big-animals-fs-llama318b-t01-12.html",
+              "source": "20260220232953-animals_big-animals-fs-llama318b-t01-12.html"
             }
           ],
           "invalid-html-tags": [
             {
-              "instance": "20260220232953-animals_big-animals-llama318b-t01-15.html",
-              "source": "20260220232953-animals_big-animals-llama318b-t01-15.html"
+              "instance": "20260220232953-animals_big-animals-fs-llama318b-t01-15.html",
+              "source": "20260220232953-animals_big-animals-fs-llama318b-t01-15.html"
             }
           ],
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260220232953-animals_big-animals-llama318b-t01-09.html"
+              "source": "20260220232953-animals_big-animals-fs-llama318b-t01-09.html"
             },
             {
               "instance": "mixed",
-              "source": "20260220232953-animals_big-animals-llama318b-t01-01.html"
+              "source": "20260220232953-animals_big-animals-fs-llama318b-t01-01.html"
             }
           ],
           "inconsistent_html_format": [
             {
               "instance": "Extract-From-Invalid-HTML-Tags",
-              "source": "20260220232953-animals_big-animals-llama318b-t01-15.html"
+              "source": "20260220232953-animals_big-animals-fs-llama318b-t01-15.html"
             },
             {
               "instance": "Extract-From-LI-Tags",
-              "source": "20260220232953-animals_big-animals-llama318b-t01-11.html"
+              "source": "20260220232953-animals_big-animals-fs-llama318b-t01-11.html"
             },
             {
               "instance": "Extract-From-OL-Tags",
-              "source": "20260220232953-animals_big-animals-llama318b-t01-11.html"
+              "source": "20260220232953-animals_big-animals-fs-llama318b-t01-11.html"
             },
             {
               "instance": "Extract-From-P-Tags",
-              "source": "20260220232953-animals_big-animals-llama318b-t01-02.html"
+              "source": "20260220232953-animals_big-animals-fs-llama318b-t01-02.html"
             },
             {
               "instance": "Extract-From-Span-Tags",
-              "source": "20260220232953-animals_big-animals-llama318b-t01-01.html"
+              "source": "20260220232953-animals_big-animals-fs-llama318b-t01-01.html"
             },
             {
               "instance": "HTML-PlainText-Fallback",
-              "source": "20260220232953-animals_big-animals-llama318b-t01-07.html"
+              "source": "20260220232953-animals_big-animals-fs-llama318b-t01-07.html"
             },
             {
               "instance": "Lowercase",
-              "source": "20260220232953-animals_big-animals-llama318b-t01-01.html"
+              "source": "20260220232953-animals_big-animals-fs-llama318b-t01-01.html"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 20,
             "single-span-tag": 11,
             "html_no_markup": 2,
@@ -2305,88 +2305,88 @@
         "animals_hard": {
           "html_no_markup": [
             {
-              "instance": "20260220233812-animals_big-animals_hard-llama318b-t01-01.html",
-              "source": "20260220233812-animals_big-animals_hard-llama318b-t01-01.html"
+              "instance": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-01.html",
+              "source": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-01.html"
             },
             {
-              "instance": "20260220233812-animals_big-animals_hard-llama318b-t01-02.html",
-              "source": "20260220233812-animals_big-animals_hard-llama318b-t01-02.html"
+              "instance": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-02.html",
+              "source": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-02.html"
             },
             {
-              "instance": "20260220233812-animals_big-animals_hard-llama318b-t01-03.html",
-              "source": "20260220233812-animals_big-animals_hard-llama318b-t01-03.html"
+              "instance": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-03.html",
+              "source": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-03.html"
             },
             {
-              "instance": "20260220233812-animals_big-animals_hard-llama318b-t01-04.html",
-              "source": "20260220233812-animals_big-animals_hard-llama318b-t01-04.html"
+              "instance": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-04.html",
+              "source": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-04.html"
             },
             {
-              "instance": "20260220233812-animals_big-animals_hard-llama318b-t01-05.html",
-              "source": "20260220233812-animals_big-animals_hard-llama318b-t01-05.html"
+              "instance": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-05.html",
+              "source": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-05.html"
             },
             {
-              "instance": "20260220233812-animals_big-animals_hard-llama318b-t01-06.html",
-              "source": "20260220233812-animals_big-animals_hard-llama318b-t01-06.html"
+              "instance": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-06.html",
+              "source": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-06.html"
             },
             {
-              "instance": "20260220233812-animals_big-animals_hard-llama318b-t01-07.html",
-              "source": "20260220233812-animals_big-animals_hard-llama318b-t01-07.html"
+              "instance": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-07.html",
+              "source": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-07.html"
             },
             {
-              "instance": "20260220233812-animals_big-animals_hard-llama318b-t01-08.html",
-              "source": "20260220233812-animals_big-animals_hard-llama318b-t01-08.html"
+              "instance": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-08.html",
+              "source": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-08.html"
             },
             {
-              "instance": "20260220233812-animals_big-animals_hard-llama318b-t01-09.html",
-              "source": "20260220233812-animals_big-animals_hard-llama318b-t01-09.html"
+              "instance": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-09.html",
+              "source": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-09.html"
             },
             {
-              "instance": "20260220233812-animals_big-animals_hard-llama318b-t01-10.html",
-              "source": "20260220233812-animals_big-animals_hard-llama318b-t01-10.html"
+              "instance": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-10.html",
+              "source": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-10.html"
             },
             {
-              "instance": "20260220233812-animals_big-animals_hard-llama318b-t01-11.html",
-              "source": "20260220233812-animals_big-animals_hard-llama318b-t01-11.html"
+              "instance": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-11.html",
+              "source": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-11.html"
             },
             {
-              "instance": "20260220233812-animals_big-animals_hard-llama318b-t01-12.html",
-              "source": "20260220233812-animals_big-animals_hard-llama318b-t01-12.html"
+              "instance": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-12.html",
+              "source": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-12.html"
             },
             {
-              "instance": "20260220233812-animals_big-animals_hard-llama318b-t01-13.html",
-              "source": "20260220233812-animals_big-animals_hard-llama318b-t01-13.html"
+              "instance": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-13.html",
+              "source": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-13.html"
             },
             {
-              "instance": "20260220233812-animals_big-animals_hard-llama318b-t01-14.html",
-              "source": "20260220233812-animals_big-animals_hard-llama318b-t01-14.html"
+              "instance": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-14.html",
+              "source": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-14.html"
             },
             {
-              "instance": "20260220233812-animals_big-animals_hard-llama318b-t01-15.html",
-              "source": "20260220233812-animals_big-animals_hard-llama318b-t01-15.html"
+              "instance": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-15.html",
+              "source": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-15.html"
             },
             {
-              "instance": "20260220233812-animals_big-animals_hard-llama318b-t01-16.html",
-              "source": "20260220233812-animals_big-animals_hard-llama318b-t01-16.html"
+              "instance": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-16.html",
+              "source": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-16.html"
             },
             {
-              "instance": "20260220233812-animals_big-animals_hard-llama318b-t01-17.html",
-              "source": "20260220233812-animals_big-animals_hard-llama318b-t01-17.html"
+              "instance": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-17.html",
+              "source": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-17.html"
             },
             {
-              "instance": "20260220233812-animals_big-animals_hard-llama318b-t01-18.html",
-              "source": "20260220233812-animals_big-animals_hard-llama318b-t01-18.html"
+              "instance": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-18.html",
+              "source": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-18.html"
             },
             {
-              "instance": "20260220233812-animals_big-animals_hard-llama318b-t01-19.html",
-              "source": "20260220233812-animals_big-animals_hard-llama318b-t01-19.html"
+              "instance": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-19.html",
+              "source": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-19.html"
             },
             {
-              "instance": "20260220233812-animals_big-animals_hard-llama318b-t01-20.html",
-              "source": "20260220233812-animals_big-animals_hard-llama318b-t01-20.html"
+              "instance": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-20.html",
+              "source": "20260220233812-animals_big-animals_hard-fs-llama318b-t01-20.html"
             }
           ],
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 20,
             "html_no_markup": 20
           },
@@ -2398,112 +2398,112 @@
         "animals_random": {
           "single-span-tag": [
             {
-              "instance": "20260227120434-animals_big-animals_random-llama318b-t01-02.html",
-              "source": "20260227120434-animals_big-animals_random-llama318b-t01-02.html"
+              "instance": "20260227120434-animals_big-animals_random-fs-llama318b-t01-02.html",
+              "source": "20260227120434-animals_big-animals_random-fs-llama318b-t01-02.html"
             },
             {
-              "instance": "20260227120434-animals_big-animals_random-llama318b-t01-03.html",
-              "source": "20260227120434-animals_big-animals_random-llama318b-t01-03.html"
+              "instance": "20260227120434-animals_big-animals_random-fs-llama318b-t01-03.html",
+              "source": "20260227120434-animals_big-animals_random-fs-llama318b-t01-03.html"
             },
             {
-              "instance": "20260227120434-animals_big-animals_random-llama318b-t01-06.html",
-              "source": "20260227120434-animals_big-animals_random-llama318b-t01-06.html"
+              "instance": "20260227120434-animals_big-animals_random-fs-llama318b-t01-06.html",
+              "source": "20260227120434-animals_big-animals_random-fs-llama318b-t01-06.html"
             },
             {
-              "instance": "20260227120434-animals_big-animals_random-llama318b-t01-08.html",
-              "source": "20260227120434-animals_big-animals_random-llama318b-t01-08.html"
+              "instance": "20260227120434-animals_big-animals_random-fs-llama318b-t01-08.html",
+              "source": "20260227120434-animals_big-animals_random-fs-llama318b-t01-08.html"
             },
             {
-              "instance": "20260227120434-animals_big-animals_random-llama318b-t01-09.html",
-              "source": "20260227120434-animals_big-animals_random-llama318b-t01-09.html"
+              "instance": "20260227120434-animals_big-animals_random-fs-llama318b-t01-09.html",
+              "source": "20260227120434-animals_big-animals_random-fs-llama318b-t01-09.html"
             },
             {
-              "instance": "20260227120434-animals_big-animals_random-llama318b-t01-10.html",
-              "source": "20260227120434-animals_big-animals_random-llama318b-t01-10.html"
+              "instance": "20260227120434-animals_big-animals_random-fs-llama318b-t01-10.html",
+              "source": "20260227120434-animals_big-animals_random-fs-llama318b-t01-10.html"
             },
             {
-              "instance": "20260227120434-animals_big-animals_random-llama318b-t01-11.html",
-              "source": "20260227120434-animals_big-animals_random-llama318b-t01-11.html"
+              "instance": "20260227120434-animals_big-animals_random-fs-llama318b-t01-11.html",
+              "source": "20260227120434-animals_big-animals_random-fs-llama318b-t01-11.html"
             },
             {
-              "instance": "20260227120434-animals_big-animals_random-llama318b-t01-12.html",
-              "source": "20260227120434-animals_big-animals_random-llama318b-t01-12.html"
+              "instance": "20260227120434-animals_big-animals_random-fs-llama318b-t01-12.html",
+              "source": "20260227120434-animals_big-animals_random-fs-llama318b-t01-12.html"
             },
             {
-              "instance": "20260227120434-animals_big-animals_random-llama318b-t01-17.html",
-              "source": "20260227120434-animals_big-animals_random-llama318b-t01-17.html"
+              "instance": "20260227120434-animals_big-animals_random-fs-llama318b-t01-17.html",
+              "source": "20260227120434-animals_big-animals_random-fs-llama318b-t01-17.html"
             }
           ],
           "comma-separated": [
             {
-              "instance": "20260227120434-animals_big-animals_random-llama318b-t01-10.html",
-              "source": "20260227120434-animals_big-animals_random-llama318b-t01-10.html"
+              "instance": "20260227120434-animals_big-animals_random-fs-llama318b-t01-10.html",
+              "source": "20260227120434-animals_big-animals_random-fs-llama318b-t01-10.html"
             },
             {
-              "instance": "20260227120434-animals_big-animals_random-llama318b-t01-11.html",
-              "source": "20260227120434-animals_big-animals_random-llama318b-t01-11.html"
+              "instance": "20260227120434-animals_big-animals_random-fs-llama318b-t01-11.html",
+              "source": "20260227120434-animals_big-animals_random-fs-llama318b-t01-11.html"
             }
           ],
           "html_no_markup": [
             {
-              "instance": "20260227120434-animals_big-animals_random-llama318b-t01-07.html",
-              "source": "20260227120434-animals_big-animals_random-llama318b-t01-07.html"
+              "instance": "20260227120434-animals_big-animals_random-fs-llama318b-t01-07.html",
+              "source": "20260227120434-animals_big-animals_random-fs-llama318b-t01-07.html"
             }
           ],
           "invalid-html-tags": [
             {
-              "instance": "20260227120434-animals_big-animals_random-llama318b-t01-20.html",
-              "source": "20260227120434-animals_big-animals_random-llama318b-t01-20.html"
+              "instance": "20260227120434-animals_big-animals_random-fs-llama318b-t01-20.html",
+              "source": "20260227120434-animals_big-animals_random-fs-llama318b-t01-20.html"
             }
           ],
           "inconsistent_html_format": [
             {
               "instance": "Extract-From-Bold-Tags",
-              "source": "20260227120434-animals_big-animals_random-llama318b-t01-15.html"
+              "source": "20260227120434-animals_big-animals_random-fs-llama318b-t01-15.html"
             },
             {
               "instance": "Extract-From-Invalid-HTML-Tags",
-              "source": "20260227120434-animals_big-animals_random-llama318b-t01-20.html"
+              "source": "20260227120434-animals_big-animals_random-fs-llama318b-t01-20.html"
             },
             {
               "instance": "Extract-From-LI-Tags",
-              "source": "20260227120434-animals_big-animals_random-llama318b-t01-01.html"
+              "source": "20260227120434-animals_big-animals_random-fs-llama318b-t01-01.html"
             },
             {
               "instance": "Extract-From-OL-Tags",
-              "source": "20260227120434-animals_big-animals_random-llama318b-t01-04.html"
+              "source": "20260227120434-animals_big-animals_random-fs-llama318b-t01-04.html"
             },
             {
               "instance": "Extract-From-P-Tags",
-              "source": "20260227120434-animals_big-animals_random-llama318b-t01-02.html"
+              "source": "20260227120434-animals_big-animals_random-fs-llama318b-t01-02.html"
             },
             {
               "instance": "Extract-From-Span-Tags",
-              "source": "20260227120434-animals_big-animals_random-llama318b-t01-09.html"
+              "source": "20260227120434-animals_big-animals_random-fs-llama318b-t01-09.html"
             },
             {
               "instance": "Extract-From-Underline-Tags",
-              "source": "20260227120434-animals_big-animals_random-llama318b-t01-16.html"
+              "source": "20260227120434-animals_big-animals_random-fs-llama318b-t01-16.html"
             },
             {
               "instance": "HTML-PlainText-Fallback",
-              "source": "20260227120434-animals_big-animals_random-llama318b-t01-07.html"
+              "source": "20260227120434-animals_big-animals_random-fs-llama318b-t01-07.html"
             }
           ],
           "HTML_Only_Bold_Tags": [
             {
-              "instance": "20260227120434-animals_big-animals_random-llama318b-t01-15.html",
-              "source": "20260227120434-animals_big-animals_random-llama318b-t01-15.html"
+              "instance": "20260227120434-animals_big-animals_random-fs-llama318b-t01-15.html",
+              "source": "20260227120434-animals_big-animals_random-fs-llama318b-t01-15.html"
             }
           ],
           "HTML_Only_Underline_Tags": [
             {
-              "instance": "20260227120434-animals_big-animals_random-llama318b-t01-16.html",
-              "source": "20260227120434-animals_big-animals_random-llama318b-t01-16.html"
+              "instance": "20260227120434-animals_big-animals_random-fs-llama318b-t01-16.html",
+              "source": "20260227120434-animals_big-animals_random-fs-llama318b-t01-16.html"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 18,
             "single-span-tag": 9,
             "html_no_markup": 1,
@@ -2528,140 +2528,140 @@
         "animals_random_hard": {
           "single-span-tag": [
             {
-              "instance": "20260220235551-animals_big-animals_random_hard-llama318b-t01-04.html",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-04.html"
+              "instance": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-04.html",
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-04.html"
             },
             {
-              "instance": "20260220235551-animals_big-animals_random_hard-llama318b-t01-10.html",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-10.html"
+              "instance": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-10.html",
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-10.html"
             },
             {
-              "instance": "20260220235551-animals_big-animals_random_hard-llama318b-t01-11.html",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-11.html"
+              "instance": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-11.html",
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-11.html"
             },
             {
-              "instance": "20260220235551-animals_big-animals_random_hard-llama318b-t01-13.html",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-13.html"
+              "instance": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-13.html",
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-13.html"
             },
             {
-              "instance": "20260220235551-animals_big-animals_random_hard-llama318b-t01-17.html",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-17.html"
+              "instance": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-17.html",
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-17.html"
             },
             {
-              "instance": "20260220235551-animals_big-animals_random_hard-llama318b-t01-18.html",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-18.html"
+              "instance": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-18.html",
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-18.html"
             }
           ],
           "html_no_markup": [
             {
-              "instance": "20260220235551-animals_big-animals_random_hard-llama318b-t01-01.html",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-01.html"
+              "instance": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-01.html",
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-01.html"
             },
             {
-              "instance": "20260220235551-animals_big-animals_random_hard-llama318b-t01-02.html",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-02.html"
+              "instance": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-02.html",
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-02.html"
             },
             {
-              "instance": "20260220235551-animals_big-animals_random_hard-llama318b-t01-03.html",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-03.html"
+              "instance": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-03.html",
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-03.html"
             },
             {
-              "instance": "20260220235551-animals_big-animals_random_hard-llama318b-t01-06.html",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-06.html"
+              "instance": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-06.html",
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-06.html"
             },
             {
-              "instance": "20260220235551-animals_big-animals_random_hard-llama318b-t01-08.html",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-08.html"
+              "instance": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-08.html",
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-08.html"
             },
             {
-              "instance": "20260220235551-animals_big-animals_random_hard-llama318b-t01-09.html",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-09.html"
+              "instance": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-09.html",
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-09.html"
             },
             {
-              "instance": "20260220235551-animals_big-animals_random_hard-llama318b-t01-16.html",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-16.html"
+              "instance": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-16.html",
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-16.html"
             },
             {
-              "instance": "20260220235551-animals_big-animals_random_hard-llama318b-t01-19.html",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-19.html"
+              "instance": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-19.html",
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-19.html"
             },
             {
-              "instance": "20260220235551-animals_big-animals_random_hard-llama318b-t01-20.html",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-20.html"
+              "instance": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-20.html",
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-20.html"
             }
           ],
           "invalid-html-tags": [
             {
-              "instance": "20260220235551-animals_big-animals_random_hard-llama318b-t01-12.html",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-12.html"
+              "instance": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-12.html",
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-12.html"
             },
             {
-              "instance": "20260220235551-animals_big-animals_random_hard-llama318b-t01-15.html",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-15.html"
+              "instance": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-15.html",
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-15.html"
             }
           ],
           "pointy-bracket-wrapping": [
             {
-              "instance": "20260220235551-animals_big-animals_random_hard-llama318b-t01-12.html",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-12.html"
+              "instance": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-12.html",
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-12.html"
             },
             {
-              "instance": "20260220235551-animals_big-animals_random_hard-llama318b-t01-15.html",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-15.html"
+              "instance": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-15.html",
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-15.html"
             }
           ],
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-12.html"
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-12.html"
             },
             {
               "instance": "mixed",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-01.html"
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-01.html"
             }
           ],
           "inconsistent_html_format": [
             {
               "instance": "Extract-From-Div-Tags",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-11.html"
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-11.html"
             },
             {
               "instance": "Extract-From-Invalid-HTML-Tags",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-12.html"
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-12.html"
             },
             {
               "instance": "Extract-From-Italic-Tags",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-15.html"
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-15.html"
             },
             {
               "instance": "Extract-From-LI-Tags",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-05.html"
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-05.html"
             },
             {
               "instance": "Extract-From-OL-Tags",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-07.html"
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-07.html"
             },
             {
               "instance": "Extract-From-P-Tags",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-04.html"
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-04.html"
             },
             {
               "instance": "HTML-PlainText-Fallback",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-01.html"
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-01.html"
             },
             {
               "instance": "Lowercase",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-01.html"
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-01.html"
             }
           ],
           "HTML_Only_Italic_Tags": [
             {
-              "instance": "20260220235551-animals_big-animals_random_hard-llama318b-t01-15.html",
-              "source": "20260220235551-animals_big-animals_random_hard-llama318b-t01-15.html"
+              "instance": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-15.html",
+              "source": "20260220235551-animals_big-animals_random_hard-fs-llama318b-t01-15.html"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 20,
             "html_no_markup": 9,
             "single-span-tag": 6,
@@ -2686,15 +2686,15 @@
           "inconsistent_json_format": [
             {
               "instance": "Extract-from-Generic-Codefence-Markdown",
-              "source": "20260220232623-animals_big-animals-llama318b-t01-04.json"
+              "source": "20260220232623-animals_big-animals-fs-llama318b-t01-04.json"
             },
             {
               "instance": "Extract-from-JSON-Codefence-Markdown",
-              "source": "20260220232623-animals_big-animals-llama318b-t01-10.json"
+              "source": "20260220232623-animals_big-animals-fs-llama318b-t01-10.json"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "single lines": 10,
             "multiple lines": 3,
             "format and markdown backticks": 7
@@ -2708,22 +2708,26 @@
         "animals_hard": {
           "repeated-json-keys": [
             {
-              "instance": "20260220233446-animals_big-animals_hard-llama318b-t01-11.json",
-              "source": "20260220233446-animals_big-animals_hard-llama318b-t01-11.json"
+              "instance": "20260220233446-animals_big-animals_hard-fs-llama318b-t01-11.json",
+              "source": "20260220233446-animals_big-animals_hard-fs-llama318b-t01-11.json"
             }
           ],
           "inconsistent_json_format": [
             {
               "instance": "Extract-from-Generic-Codefence-Markdown",
-              "source": "20260220233446-animals_big-animals_hard-llama318b-t01-12.json"
+              "source": "20260220233446-animals_big-animals_hard-fs-llama318b-t01-12.json"
             },
             {
               "instance": "Extract-from-JSON-Codefence-Markdown",
-              "source": "20260220233446-animals_big-animals_hard-llama318b-t01-19.json"
+              "source": "20260220233446-animals_big-animals_hard-fs-llama318b-t01-19.json"
+            },
+            {
+              "instance": "JSON-Repeated-Key-Unwinding",
+              "source": "20260220233446-animals_big-animals_hard-fs-llama318b-t01-11.json"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "single lines": 16,
             "multiple lines": 1,
             "repeated-json-keys": 1,
@@ -2732,6 +2736,7 @@
           "cleanupRules": {
             "Extract-from-Generic-Codefence-Markdown": 2,
             "Extract-from-JSON-Codefence-Markdown": 1,
+            "JSON-Repeated-Key-Unwinding": 1,
             "Lowercase": 20
           }
         },
@@ -2739,15 +2744,15 @@
           "inconsistent_json_format": [
             {
               "instance": "Extract-from-JSON-Codefence-Markdown",
-              "source": "20260226213450-animals_big-animals_random-llama318b-t01-18.json"
+              "source": "20260226213450-animals_big-animals_random-fs-llama318b-t01-18.json"
             },
             {
               "instance": "JSON-Dict-List-Key-Extraction",
-              "source": "20260226213450-animals_big-animals_random-llama318b-t01-06.json"
+              "source": "20260226213450-animals_big-animals_random-fs-llama318b-t01-06.json"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "single lines": 8,
             "multiple lines": 11,
             "format and markdown backticks": 1
@@ -2761,18 +2766,22 @@
         "animals_random_hard": {
           "repeated-json-keys": [
             {
-              "instance": "20260220235208-animals_big-animals_random_hard-llama318b-t01-15.json",
-              "source": "20260220235208-animals_big-animals_random_hard-llama318b-t01-15.json"
+              "instance": "20260220235208-animals_big-animals_random_hard-fs-llama318b-t01-15.json",
+              "source": "20260220235208-animals_big-animals_random_hard-fs-llama318b-t01-15.json"
             }
           ],
           "inconsistent_json_format": [
             {
               "instance": "Extract-from-Generic-Codefence-Markdown",
-              "source": "20260220235208-animals_big-animals_random_hard-llama318b-t01-10.json"
+              "source": "20260220235208-animals_big-animals_random_hard-fs-llama318b-t01-10.json"
+            },
+            {
+              "instance": "JSON-Repeated-Key-Unwinding",
+              "source": "20260220235208-animals_big-animals_random_hard-fs-llama318b-t01-15.json"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 10,
             "single lines": 7,
             "format and markdown backticks": 3,
@@ -2780,6 +2789,7 @@
           },
           "cleanupRules": {
             "Extract-from-Generic-Codefence-Markdown": 3,
+            "JSON-Repeated-Key-Unwinding": 1,
             "Lowercase": 20
           }
         }
@@ -2789,15 +2799,15 @@
           "inconsistent_md_format": [
             {
               "instance": "Strip-Leading-Bullets",
-              "source": "20260220232514-animals_big-animals-llama318b-t01-01.md"
+              "source": "20260220232514-animals_big-animals-fs-llama318b-t01-01.md"
             },
             {
               "instance": "Strip-Leading-Numbers",
-              "source": "20260220232514-animals_big-animals-llama318b-t01-06.md"
+              "source": "20260220232514-animals_big-animals-fs-llama318b-t01-06.md"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "unknown": 20
           },
           "cleanupRules": {
@@ -2808,7 +2818,7 @@
         },
         "animals_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "unknown": 20
           },
           "cleanupRules": {
@@ -2819,15 +2829,15 @@
           "inconsistent_md_format": [
             {
               "instance": "Strip-Leading-Bullets",
-              "source": "20260226213236-animals_big-animals_random-llama318b-t01-01.md"
+              "source": "20260226213236-animals_big-animals_random-fs-llama318b-t01-01.md"
             },
             {
               "instance": "Strip-Leading-Numbers",
-              "source": "20260226213236-animals_big-animals_random-llama318b-t01-02.md"
+              "source": "20260226213236-animals_big-animals_random-fs-llama318b-t01-02.md"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "unknown": 20
           },
           "cleanupRules": {
@@ -2840,29 +2850,29 @@
           "exceeds_max_length": [
             {
               "instance": "Northern Rockhopper Penguin",
-              "source": "20260220235055-animals_big-animals_random_hard-llama318b-t01-13.md"
+              "source": "20260220235055-animals_big-animals_random_hard-fs-llama318b-t01-13.md"
             }
           ],
           "inconsistent_md_format": [
             {
               "instance": "Markdown-Strip-Bold-Tags",
-              "source": "20260220235055-animals_big-animals_random_hard-llama318b-t01-09.md"
+              "source": "20260220235055-animals_big-animals_random_hard-fs-llama318b-t01-09.md"
             },
             {
               "instance": "Markdown-Strip-Italic-Tags",
-              "source": "20260220235055-animals_big-animals_random_hard-llama318b-t01-13.md"
+              "source": "20260220235055-animals_big-animals_random_hard-fs-llama318b-t01-13.md"
             },
             {
               "instance": "Strip-Leading-Bullets",
-              "source": "20260220235055-animals_big-animals_random_hard-llama318b-t01-03.md"
+              "source": "20260220235055-animals_big-animals_random_hard-fs-llama318b-t01-03.md"
             },
             {
               "instance": "Strip-Leading-Numbers",
-              "source": "20260220235055-animals_big-animals_random_hard-llama318b-t01-11.md"
+              "source": "20260220235055-animals_big-animals_random_hard-fs-llama318b-t01-11.md"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "unknown": 20
           },
           "cleanupRules": {
@@ -2877,7 +2887,7 @@
       "numberedText": {
         "animals": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 20
           },
           "cleanupRules": {
@@ -2887,7 +2897,7 @@
         },
         "animals_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 20
           },
           "cleanupRules": {
@@ -2897,7 +2907,7 @@
         },
         "animals_random": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 20
           },
           "cleanupRules": {
@@ -2907,7 +2917,7 @@
         },
         "animals_random_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 20
           },
           "cleanupRules": {
@@ -2919,7 +2929,7 @@
       "text": {
         "animals": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "plain text": 20
           },
           "cleanupRules": {
@@ -2928,7 +2938,7 @@
         },
         "animals_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "plain text": 20
           },
           "cleanupRules": {
@@ -2937,7 +2947,7 @@
         },
         "animals_random": {
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "plain text": 18,
             "numbered text": 2
           },
@@ -2948,7 +2958,7 @@
         },
         "animals_random_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "plain text": 20
           },
           "cleanupRules": {
@@ -2961,25 +2971,25 @@
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260220232738-animals_big-animals-llama318b-t01-06.yml"
+              "source": "20260220232738-animals_big-animals-fs-llama318b-t01-06.yml"
             },
             {
               "instance": "mixed",
-              "source": "20260220232738-animals_big-animals-llama318b-t01-01.yml"
+              "source": "20260220232738-animals_big-animals-fs-llama318b-t01-01.yml"
             }
           ],
           "inconsistent_yaml_format": [
             {
               "instance": "Lowercase",
-              "source": "20260220232738-animals_big-animals-llama318b-t01-01.yml"
+              "source": "20260220232738-animals_big-animals-fs-llama318b-t01-01.yml"
             },
             {
               "instance": "YAML-Plain-Text-Detection",
-              "source": "20260220232738-animals_big-animals-llama318b-t01-06.yml"
+              "source": "20260220232738-animals_big-animals-fs-llama318b-t01-06.yml"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "leading hyphen": 18,
             "plain text": 2
           },
@@ -2992,29 +3002,29 @@
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260220233553-animals_big-animals_hard-llama318b-t01-06.yml"
+              "source": "20260220233553-animals_big-animals_hard-fs-llama318b-t01-06.yml"
             },
             {
               "instance": "mixed",
-              "source": "20260220233553-animals_big-animals_hard-llama318b-t01-01.yml"
+              "source": "20260220233553-animals_big-animals_hard-fs-llama318b-t01-01.yml"
             }
           ],
           "inconsistent_yaml_format": [
             {
               "instance": "Lowercase",
-              "source": "20260220233553-animals_big-animals_hard-llama318b-t01-01.yml"
+              "source": "20260220233553-animals_big-animals_hard-fs-llama318b-t01-01.yml"
             },
             {
               "instance": "YAML-Directive-Marker-Handling",
-              "source": "20260220233553-animals_big-animals_hard-llama318b-t01-03.yml"
+              "source": "20260220233553-animals_big-animals_hard-fs-llama318b-t01-03.yml"
             },
             {
               "instance": "YAML-Plain-Text-Detection",
-              "source": "20260220233553-animals_big-animals_hard-llama318b-t01-01.yml"
+              "source": "20260220233553-animals_big-animals_hard-fs-llama318b-t01-01.yml"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "plain text": 19,
             "leading hyphen": 1
           },
@@ -3026,7 +3036,7 @@
         },
         "animals_random": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "leading hyphen": 20
           },
           "cleanupRules": {
@@ -3037,11 +3047,11 @@
           "inconsistent_yaml_format": [
             {
               "instance": "YAML-Plain-Text-Detection",
-              "source": "20260220235323-animals_big-animals_random_hard-llama318b-t01-07.yml"
+              "source": "20260220235323-animals_big-animals_random_hard-fs-llama318b-t01-07.yml"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "leading hyphen": 14,
             "plain text": 6
           },
@@ -3056,7 +3066,7 @@
       "CSV": {
         "animals": {
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "one per line": 15,
             "multiple rows": 4,
             "single row": 1
@@ -3071,7 +3081,7 @@
         },
         "animals_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "one per line": 20
           },
           "cleanupRules": {
@@ -3083,11 +3093,11 @@
           "trailing_punctuation": [
             {
               "instance": "Ostrich.",
-              "source": "20260227121759-animals_big-animals_random-llama318b-t08-17.csv"
+              "source": "20260227121759-animals_big-animals_random-fs-llama318b-t08-17.csv"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "single row": 3,
             "one per line": 9,
             "multiple rows": 8
@@ -3103,7 +3113,7 @@
         },
         "animals_random_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "one per line": 20
           },
           "cleanupRules": {
@@ -3116,82 +3126,82 @@
         "animals": {
           "single-span-tag": [
             {
-              "instance": "20260221000424-animals_big-animals-llama318b-t08-02.html",
-              "source": "20260221000424-animals_big-animals-llama318b-t08-02.html"
+              "instance": "20260221000424-animals_big-animals-fs-llama318b-t08-02.html",
+              "source": "20260221000424-animals_big-animals-fs-llama318b-t08-02.html"
             },
             {
-              "instance": "20260221000424-animals_big-animals-llama318b-t08-04.html",
-              "source": "20260221000424-animals_big-animals-llama318b-t08-04.html"
+              "instance": "20260221000424-animals_big-animals-fs-llama318b-t08-04.html",
+              "source": "20260221000424-animals_big-animals-fs-llama318b-t08-04.html"
             },
             {
-              "instance": "20260221000424-animals_big-animals-llama318b-t08-06.html",
-              "source": "20260221000424-animals_big-animals-llama318b-t08-06.html"
+              "instance": "20260221000424-animals_big-animals-fs-llama318b-t08-06.html",
+              "source": "20260221000424-animals_big-animals-fs-llama318b-t08-06.html"
             },
             {
-              "instance": "20260221000424-animals_big-animals-llama318b-t08-12.html",
-              "source": "20260221000424-animals_big-animals-llama318b-t08-12.html"
+              "instance": "20260221000424-animals_big-animals-fs-llama318b-t08-12.html",
+              "source": "20260221000424-animals_big-animals-fs-llama318b-t08-12.html"
             },
             {
-              "instance": "20260221000424-animals_big-animals-llama318b-t08-13.html",
-              "source": "20260221000424-animals_big-animals-llama318b-t08-13.html"
+              "instance": "20260221000424-animals_big-animals-fs-llama318b-t08-13.html",
+              "source": "20260221000424-animals_big-animals-fs-llama318b-t08-13.html"
             },
             {
-              "instance": "20260221000424-animals_big-animals-llama318b-t08-17.html",
-              "source": "20260221000424-animals_big-animals-llama318b-t08-17.html"
+              "instance": "20260221000424-animals_big-animals-fs-llama318b-t08-17.html",
+              "source": "20260221000424-animals_big-animals-fs-llama318b-t08-17.html"
             },
             {
-              "instance": "20260221000424-animals_big-animals-llama318b-t08-19.html",
-              "source": "20260221000424-animals_big-animals-llama318b-t08-19.html"
+              "instance": "20260221000424-animals_big-animals-fs-llama318b-t08-19.html",
+              "source": "20260221000424-animals_big-animals-fs-llama318b-t08-19.html"
             },
             {
-              "instance": "20260221000424-animals_big-animals-llama318b-t08-20.html",
-              "source": "20260221000424-animals_big-animals-llama318b-t08-20.html"
+              "instance": "20260221000424-animals_big-animals-fs-llama318b-t08-20.html",
+              "source": "20260221000424-animals_big-animals-fs-llama318b-t08-20.html"
             }
           ],
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260221000424-animals_big-animals-llama318b-t08-03.html"
+              "source": "20260221000424-animals_big-animals-fs-llama318b-t08-03.html"
             },
             {
               "instance": "mixed",
-              "source": "20260221000424-animals_big-animals-llama318b-t08-01.html"
+              "source": "20260221000424-animals_big-animals-fs-llama318b-t08-01.html"
             }
           ],
           "inconsistent_html_format": [
             {
               "instance": "Extract-From-Bold-Tags",
-              "source": "20260221000424-animals_big-animals-llama318b-t08-10.html"
+              "source": "20260221000424-animals_big-animals-fs-llama318b-t08-10.html"
             },
             {
               "instance": "Extract-From-LI-Tags",
-              "source": "20260221000424-animals_big-animals-llama318b-t08-01.html"
+              "source": "20260221000424-animals_big-animals-fs-llama318b-t08-01.html"
             },
             {
               "instance": "Extract-From-OL-Tags",
-              "source": "20260221000424-animals_big-animals-llama318b-t08-01.html"
+              "source": "20260221000424-animals_big-animals-fs-llama318b-t08-01.html"
             },
             {
               "instance": "Extract-From-P-Tags",
-              "source": "20260221000424-animals_big-animals-llama318b-t08-02.html"
+              "source": "20260221000424-animals_big-animals-fs-llama318b-t08-02.html"
             },
             {
               "instance": "Extract-From-UL-Tags",
-              "source": "20260221000424-animals_big-animals-llama318b-t08-09.html"
+              "source": "20260221000424-animals_big-animals-fs-llama318b-t08-09.html"
             },
             {
               "instance": "Lowercase",
-              "source": "20260221000424-animals_big-animals-llama318b-t08-01.html"
+              "source": "20260221000424-animals_big-animals-fs-llama318b-t08-01.html"
             }
           ],
           "HTML_Only_Bold_Tags": [
             {
-              "instance": "20260221000424-animals_big-animals-llama318b-t08-10.html",
-              "source": "20260221000424-animals_big-animals-llama318b-t08-10.html"
+              "instance": "20260221000424-animals_big-animals-fs-llama318b-t08-10.html",
+              "source": "20260221000424-animals_big-animals-fs-llama318b-t08-10.html"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 20,
             "single-span-tag": 8,
             "HTML_Only_Bold_Tags": 1
@@ -3208,106 +3218,106 @@
         "animals_hard": {
           "single-span-tag": [
             {
-              "instance": "20260221001303-animals_big-animals_hard-llama318b-t08-13.html",
-              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-13.html"
+              "instance": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-13.html",
+              "source": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-13.html"
             }
           ],
           "html_no_markup": [
             {
-              "instance": "20260221001303-animals_big-animals_hard-llama318b-t08-01.html",
-              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-01.html"
+              "instance": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-01.html",
+              "source": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-01.html"
             },
             {
-              "instance": "20260221001303-animals_big-animals_hard-llama318b-t08-02.html",
-              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-02.html"
+              "instance": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-02.html",
+              "source": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-02.html"
             },
             {
-              "instance": "20260221001303-animals_big-animals_hard-llama318b-t08-03.html",
-              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-03.html"
+              "instance": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-03.html",
+              "source": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-03.html"
             },
             {
-              "instance": "20260221001303-animals_big-animals_hard-llama318b-t08-04.html",
-              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-04.html"
+              "instance": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-04.html",
+              "source": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-04.html"
             },
             {
-              "instance": "20260221001303-animals_big-animals_hard-llama318b-t08-05.html",
-              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-05.html"
+              "instance": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-05.html",
+              "source": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-05.html"
             },
             {
-              "instance": "20260221001303-animals_big-animals_hard-llama318b-t08-06.html",
-              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-06.html"
+              "instance": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-06.html",
+              "source": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-06.html"
             },
             {
-              "instance": "20260221001303-animals_big-animals_hard-llama318b-t08-07.html",
-              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-07.html"
+              "instance": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-07.html",
+              "source": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-07.html"
             },
             {
-              "instance": "20260221001303-animals_big-animals_hard-llama318b-t08-08.html",
-              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-08.html"
+              "instance": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-08.html",
+              "source": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-08.html"
             },
             {
-              "instance": "20260221001303-animals_big-animals_hard-llama318b-t08-09.html",
-              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-09.html"
+              "instance": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-09.html",
+              "source": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-09.html"
             },
             {
-              "instance": "20260221001303-animals_big-animals_hard-llama318b-t08-10.html",
-              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-10.html"
+              "instance": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-10.html",
+              "source": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-10.html"
             },
             {
-              "instance": "20260221001303-animals_big-animals_hard-llama318b-t08-11.html",
-              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-11.html"
+              "instance": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-11.html",
+              "source": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-11.html"
             },
             {
-              "instance": "20260221001303-animals_big-animals_hard-llama318b-t08-12.html",
-              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-12.html"
+              "instance": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-12.html",
+              "source": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-12.html"
             },
             {
-              "instance": "20260221001303-animals_big-animals_hard-llama318b-t08-14.html",
-              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-14.html"
+              "instance": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-14.html",
+              "source": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-14.html"
             },
             {
-              "instance": "20260221001303-animals_big-animals_hard-llama318b-t08-15.html",
-              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-15.html"
+              "instance": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-15.html",
+              "source": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-15.html"
             },
             {
-              "instance": "20260221001303-animals_big-animals_hard-llama318b-t08-16.html",
-              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-16.html"
+              "instance": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-16.html",
+              "source": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-16.html"
             },
             {
-              "instance": "20260221001303-animals_big-animals_hard-llama318b-t08-18.html",
-              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-18.html"
+              "instance": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-18.html",
+              "source": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-18.html"
             },
             {
-              "instance": "20260221001303-animals_big-animals_hard-llama318b-t08-19.html",
-              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-19.html"
+              "instance": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-19.html",
+              "source": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-19.html"
             },
             {
-              "instance": "20260221001303-animals_big-animals_hard-llama318b-t08-20.html",
-              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-20.html"
+              "instance": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-20.html",
+              "source": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-20.html"
             }
           ],
           "inconsistent_html_format": [
             {
               "instance": "Extract-From-Bold-Tags",
-              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-17.html"
+              "source": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-17.html"
             },
             {
               "instance": "Extract-From-P-Tags",
-              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-13.html"
+              "source": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-13.html"
             },
             {
               "instance": "HTML-PlainText-Fallback",
-              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-01.html"
+              "source": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-01.html"
             }
           ],
           "HTML_Only_Bold_Tags": [
             {
-              "instance": "20260221001303-animals_big-animals_hard-llama318b-t08-17.html",
-              "source": "20260221001303-animals_big-animals_hard-llama318b-t08-17.html"
+              "instance": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-17.html",
+              "source": "20260221001303-animals_big-animals_hard-fs-llama318b-t08-17.html"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 20,
             "html_no_markup": 18,
             "single-span-tag": 1,
@@ -3324,109 +3334,109 @@
           "internal_punctuation": [
             {
               "instance": "Octopus\n  Cheetah\n  Kangaroo\n  Penguin\n  Fox\n  Donkey\n  Rhino\n  Squirrel\n  Bear\n  Lemur\n  Cobra\n  Wolf\n  Tiger\n  Snake\n  Elephant\n  Crab\n  Mouse\n  Koala\n  Rabbit\n  Hedgehog\n  Monkey\n  Ostrich\n  Dolphin\n  Lion\n  Camel\n  Giraffe",
-              "source": "20260227125230-animals_big-animals_random-llama318b-t08-05.html"
+              "source": "20260227125230-animals_big-animals_random-fs-llama318b-t08-05.html"
             }
           ],
           "exceeds_max_length": [
             {
               "instance": "Octopus\n  Cheetah\n  Kangaroo\n  Penguin\n  Fox\n  Donkey\n  Rhino\n  Squirrel\n  Bear\n  Lemur\n  Cobra\n  Wolf\n  Tiger\n  Snake\n  Elephant\n  Crab\n  Mouse\n  Koala\n  Rabbit\n  Hedgehog\n  Monkey\n  Ostrich\n  Dolphin\n  Lion\n  Camel\n  Giraffe",
-              "source": "20260227125230-animals_big-animals_random-llama318b-t08-05.html"
+              "source": "20260227125230-animals_big-animals_random-fs-llama318b-t08-05.html"
             }
           ],
           "preamble_leak": [
             {
               "instance": "Octopus\n  Cheetah\n  Kangaroo\n  Penguin\n  Fox\n  Donkey\n  Rhino\n  Squirrel\n  Bear\n  Lemur\n  Cobra\n  Wolf\n  Tiger\n  Snake\n  Elephant\n  Crab\n  Mouse\n  Koala\n  Rabbit\n  Hedgehog\n  Monkey\n  Ostrich\n  Dolphin\n  Lion\n  Camel\n  Giraffe",
-              "source": "20260227125230-animals_big-animals_random-llama318b-t08-05.html"
+              "source": "20260227125230-animals_big-animals_random-fs-llama318b-t08-05.html"
             }
           ],
           "single-span-tag": [
             {
-              "instance": "20260227125230-animals_big-animals_random-llama318b-t08-02.html",
-              "source": "20260227125230-animals_big-animals_random-llama318b-t08-02.html"
+              "instance": "20260227125230-animals_big-animals_random-fs-llama318b-t08-02.html",
+              "source": "20260227125230-animals_big-animals_random-fs-llama318b-t08-02.html"
             },
             {
-              "instance": "20260227125230-animals_big-animals_random-llama318b-t08-03.html",
-              "source": "20260227125230-animals_big-animals_random-llama318b-t08-03.html"
+              "instance": "20260227125230-animals_big-animals_random-fs-llama318b-t08-03.html",
+              "source": "20260227125230-animals_big-animals_random-fs-llama318b-t08-03.html"
             },
             {
-              "instance": "20260227125230-animals_big-animals_random-llama318b-t08-06.html",
-              "source": "20260227125230-animals_big-animals_random-llama318b-t08-06.html"
+              "instance": "20260227125230-animals_big-animals_random-fs-llama318b-t08-06.html",
+              "source": "20260227125230-animals_big-animals_random-fs-llama318b-t08-06.html"
             },
             {
-              "instance": "20260227125230-animals_big-animals_random-llama318b-t08-07.html",
-              "source": "20260227125230-animals_big-animals_random-llama318b-t08-07.html"
+              "instance": "20260227125230-animals_big-animals_random-fs-llama318b-t08-07.html",
+              "source": "20260227125230-animals_big-animals_random-fs-llama318b-t08-07.html"
             },
             {
-              "instance": "20260227125230-animals_big-animals_random-llama318b-t08-08.html",
-              "source": "20260227125230-animals_big-animals_random-llama318b-t08-08.html"
+              "instance": "20260227125230-animals_big-animals_random-fs-llama318b-t08-08.html",
+              "source": "20260227125230-animals_big-animals_random-fs-llama318b-t08-08.html"
             },
             {
-              "instance": "20260227125230-animals_big-animals_random-llama318b-t08-09.html",
-              "source": "20260227125230-animals_big-animals_random-llama318b-t08-09.html"
+              "instance": "20260227125230-animals_big-animals_random-fs-llama318b-t08-09.html",
+              "source": "20260227125230-animals_big-animals_random-fs-llama318b-t08-09.html"
             },
             {
-              "instance": "20260227125230-animals_big-animals_random-llama318b-t08-12.html",
-              "source": "20260227125230-animals_big-animals_random-llama318b-t08-12.html"
+              "instance": "20260227125230-animals_big-animals_random-fs-llama318b-t08-12.html",
+              "source": "20260227125230-animals_big-animals_random-fs-llama318b-t08-12.html"
             },
             {
-              "instance": "20260227125230-animals_big-animals_random-llama318b-t08-15.html",
-              "source": "20260227125230-animals_big-animals_random-llama318b-t08-15.html"
+              "instance": "20260227125230-animals_big-animals_random-fs-llama318b-t08-15.html",
+              "source": "20260227125230-animals_big-animals_random-fs-llama318b-t08-15.html"
             },
             {
-              "instance": "20260227125230-animals_big-animals_random-llama318b-t08-19.html",
-              "source": "20260227125230-animals_big-animals_random-llama318b-t08-19.html"
+              "instance": "20260227125230-animals_big-animals_random-fs-llama318b-t08-19.html",
+              "source": "20260227125230-animals_big-animals_random-fs-llama318b-t08-19.html"
             }
           ],
           "html_no_markup": [
             {
-              "instance": "20260227125230-animals_big-animals_random-llama318b-t08-01.html",
-              "source": "20260227125230-animals_big-animals_random-llama318b-t08-01.html"
+              "instance": "20260227125230-animals_big-animals_random-fs-llama318b-t08-01.html",
+              "source": "20260227125230-animals_big-animals_random-fs-llama318b-t08-01.html"
             }
           ],
           "invalid-html-tags": [
             {
-              "instance": "20260227125230-animals_big-animals_random-llama318b-t08-05.html",
-              "source": "20260227125230-animals_big-animals_random-llama318b-t08-05.html"
+              "instance": "20260227125230-animals_big-animals_random-fs-llama318b-t08-05.html",
+              "source": "20260227125230-animals_big-animals_random-fs-llama318b-t08-05.html"
             }
           ],
           "inconsistent_html_format": [
             {
               "instance": "Extract-From-Invalid-HTML-Tags",
-              "source": "20260227125230-animals_big-animals_random-llama318b-t08-05.html"
+              "source": "20260227125230-animals_big-animals_random-fs-llama318b-t08-05.html"
             },
             {
               "instance": "Extract-From-Italic-Tags",
-              "source": "20260227125230-animals_big-animals_random-llama318b-t08-18.html"
+              "source": "20260227125230-animals_big-animals_random-fs-llama318b-t08-18.html"
             },
             {
               "instance": "Extract-From-LI-Tags",
-              "source": "20260227125230-animals_big-animals_random-llama318b-t08-04.html"
+              "source": "20260227125230-animals_big-animals_random-fs-llama318b-t08-04.html"
             },
             {
               "instance": "Extract-From-OL-Tags",
-              "source": "20260227125230-animals_big-animals_random-llama318b-t08-04.html"
+              "source": "20260227125230-animals_big-animals_random-fs-llama318b-t08-04.html"
             },
             {
               "instance": "Extract-From-P-Tags",
-              "source": "20260227125230-animals_big-animals_random-llama318b-t08-02.html"
+              "source": "20260227125230-animals_big-animals_random-fs-llama318b-t08-02.html"
             },
             {
               "instance": "Extract-From-UL-Tags",
-              "source": "20260227125230-animals_big-animals_random-llama318b-t08-17.html"
+              "source": "20260227125230-animals_big-animals_random-fs-llama318b-t08-17.html"
             },
             {
               "instance": "HTML-PlainText-Fallback",
-              "source": "20260227125230-animals_big-animals_random-llama318b-t08-01.html"
+              "source": "20260227125230-animals_big-animals_random-fs-llama318b-t08-01.html"
             }
           ],
           "HTML_Only_Italic_Tags": [
             {
-              "instance": "20260227125230-animals_big-animals_random-llama318b-t08-18.html",
-              "source": "20260227125230-animals_big-animals_random-llama318b-t08-18.html"
+              "instance": "20260227125230-animals_big-animals_random-fs-llama318b-t08-18.html",
+              "source": "20260227125230-animals_big-animals_random-fs-llama318b-t08-18.html"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 20,
             "html_no_markup": 1,
             "single-span-tag": 9,
@@ -3447,106 +3457,106 @@
         "animals_random_hard": {
           "single-span-tag": [
             {
-              "instance": "20260221003033-animals_big-animals_random_hard-llama318b-t08-03.html",
-              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-03.html"
+              "instance": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-03.html",
+              "source": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-03.html"
             },
             {
-              "instance": "20260221003033-animals_big-animals_random_hard-llama318b-t08-05.html",
-              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-05.html"
+              "instance": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-05.html",
+              "source": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-05.html"
             },
             {
-              "instance": "20260221003033-animals_big-animals_random_hard-llama318b-t08-15.html",
-              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-15.html"
+              "instance": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-15.html",
+              "source": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-15.html"
             },
             {
-              "instance": "20260221003033-animals_big-animals_random_hard-llama318b-t08-16.html",
-              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-16.html"
+              "instance": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-16.html",
+              "source": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-16.html"
             }
           ],
           "html_no_markup": [
             {
-              "instance": "20260221003033-animals_big-animals_random_hard-llama318b-t08-02.html",
-              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-02.html"
+              "instance": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-02.html",
+              "source": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-02.html"
             },
             {
-              "instance": "20260221003033-animals_big-animals_random_hard-llama318b-t08-04.html",
-              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-04.html"
+              "instance": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-04.html",
+              "source": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-04.html"
             },
             {
-              "instance": "20260221003033-animals_big-animals_random_hard-llama318b-t08-08.html",
-              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-08.html"
+              "instance": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-08.html",
+              "source": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-08.html"
             },
             {
-              "instance": "20260221003033-animals_big-animals_random_hard-llama318b-t08-09.html",
-              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-09.html"
+              "instance": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-09.html",
+              "source": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-09.html"
             },
             {
-              "instance": "20260221003033-animals_big-animals_random_hard-llama318b-t08-10.html",
-              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-10.html"
+              "instance": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-10.html",
+              "source": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-10.html"
             },
             {
-              "instance": "20260221003033-animals_big-animals_random_hard-llama318b-t08-11.html",
-              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-11.html"
+              "instance": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-11.html",
+              "source": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-11.html"
             },
             {
-              "instance": "20260221003033-animals_big-animals_random_hard-llama318b-t08-12.html",
-              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-12.html"
+              "instance": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-12.html",
+              "source": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-12.html"
             },
             {
-              "instance": "20260221003033-animals_big-animals_random_hard-llama318b-t08-13.html",
-              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-13.html"
+              "instance": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-13.html",
+              "source": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-13.html"
             },
             {
-              "instance": "20260221003033-animals_big-animals_random_hard-llama318b-t08-14.html",
-              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-14.html"
+              "instance": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-14.html",
+              "source": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-14.html"
             },
             {
-              "instance": "20260221003033-animals_big-animals_random_hard-llama318b-t08-18.html",
-              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-18.html"
+              "instance": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-18.html",
+              "source": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-18.html"
             },
             {
-              "instance": "20260221003033-animals_big-animals_random_hard-llama318b-t08-20.html",
-              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-20.html"
+              "instance": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-20.html",
+              "source": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-20.html"
             }
           ],
           "inconsistent_html_format": [
             {
               "instance": "Extract-From-Italic-Tags",
-              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-01.html"
+              "source": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-01.html"
             },
             {
               "instance": "Extract-From-LI-Tags",
-              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-06.html"
+              "source": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-06.html"
             },
             {
               "instance": "Extract-From-OL-Tags",
-              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-06.html"
+              "source": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-06.html"
             },
             {
               "instance": "Extract-From-P-Tags",
-              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-03.html"
+              "source": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-03.html"
             },
             {
               "instance": "Extract-From-Span-Tags",
-              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-05.html"
+              "source": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-05.html"
             },
             {
               "instance": "HTML-PlainText-Fallback",
-              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-02.html"
+              "source": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-02.html"
             }
           ],
           "HTML_Only_Italic_Tags": [
             {
-              "instance": "20260221003033-animals_big-animals_random_hard-llama318b-t08-01.html",
-              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-01.html"
+              "instance": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-01.html",
+              "source": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-01.html"
             },
             {
-              "instance": "20260221003033-animals_big-animals_random_hard-llama318b-t08-17.html",
-              "source": "20260221003033-animals_big-animals_random_hard-llama318b-t08-17.html"
+              "instance": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-17.html",
+              "source": "20260221003033-animals_big-animals_random_hard-fs-llama318b-t08-17.html"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 20,
             "HTML_Only_Italic_Tags": 2,
             "html_no_markup": 11,
@@ -3568,19 +3578,19 @@
           "inconsistent_json_format": [
             {
               "instance": "Extract-from-Generic-Codefence-Markdown",
-              "source": "20260221000056-animals_big-animals-llama318b-t08-04.json"
+              "source": "20260221000056-animals_big-animals-fs-llama318b-t08-04.json"
             },
             {
               "instance": "Extract-from-JSON-Codefence-Markdown",
-              "source": "20260221000056-animals_big-animals-llama318b-t08-01.json"
+              "source": "20260221000056-animals_big-animals-fs-llama318b-t08-01.json"
             },
             {
               "instance": "JSON-Set-Format-Conversion",
-              "source": "20260221000056-animals_big-animals-llama318b-t08-01.json"
+              "source": "20260221000056-animals_big-animals-fs-llama318b-t08-01.json"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "format and markdown backticks": 6,
             "multiple lines": 4,
             "single lines": 10
@@ -3596,15 +3606,15 @@
           "inconsistent_json_format": [
             {
               "instance": "Extract-from-Generic-Codefence-Markdown",
-              "source": "20260221000925-animals_big-animals_hard-llama318b-t08-07.json"
+              "source": "20260221000925-animals_big-animals_hard-fs-llama318b-t08-07.json"
             },
             {
               "instance": "JSON-Set-Format-Conversion",
-              "source": "20260221000925-animals_big-animals_hard-llama318b-t08-15.json"
+              "source": "20260221000925-animals_big-animals_hard-fs-llama318b-t08-15.json"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "single lines": 19,
             "format and markdown backticks": 1
           },
@@ -3615,30 +3625,47 @@
           }
         },
         "animals_random": {
+          "repeated-json-keys": [
+            {
+              "instance": "20260227124757-animals_big-animals_random-fs-llama318b-t08-04.json",
+              "source": "20260227124757-animals_big-animals_random-fs-llama318b-t08-04.json"
+            }
+          ],
           "inconsistent_json_format": [
             {
               "instance": "Extract-from-Generic-Codefence-Markdown",
-              "source": "20260227124757-animals_big-animals_random-llama318b-t08-06.json"
+              "source": "20260227124757-animals_big-animals_random-fs-llama318b-t08-06.json"
             },
             {
               "instance": "Extract-from-JSON-Codefence-Markdown",
-              "source": "20260227124757-animals_big-animals_random-llama318b-t08-18.json"
+              "source": "20260227124757-animals_big-animals_random-fs-llama318b-t08-18.json"
             },
             {
               "instance": "JSON-Dict-List-Key-Extraction",
-              "source": "20260227124757-animals_big-animals_random-llama318b-t08-01.json"
+              "source": "20260227124757-animals_big-animals_random-fs-llama318b-t08-01.json"
+            },
+            {
+              "instance": "JSON-Nested-List-Flattening",
+              "source": "20260227124757-animals_big-animals_random-fs-llama318b-t08-04.json"
+            },
+            {
+              "instance": "JSON-Repeated-Key-Unwinding",
+              "source": "20260227124757-animals_big-animals_random-fs-llama318b-t08-04.json"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 6,
             "single lines": 12,
+            "repeated-json-keys": 1,
             "format and markdown backticks": 2
           },
           "cleanupRules": {
             "Extract-from-Generic-Codefence-Markdown": 1,
             "Extract-from-JSON-Codefence-Markdown": 1,
-            "JSON-Dict-List-Key-Extraction": 5,
+            "JSON-Dict-List-Key-Extraction": 4,
+            "JSON-Nested-List-Flattening": 1,
+            "JSON-Repeated-Key-Unwinding": 1,
             "Lowercase": 20
           }
         },
@@ -3646,19 +3673,19 @@
           "inconsistent_json_format": [
             {
               "instance": "Extract-from-Generic-Codefence-Markdown",
-              "source": "20260221002652-animals_big-animals_random_hard-llama318b-t08-02.json"
+              "source": "20260221002652-animals_big-animals_random_hard-fs-llama318b-t08-02.json"
             },
             {
               "instance": "JSON-Dict-Value-Extraction",
-              "source": "20260221002652-animals_big-animals_random_hard-llama318b-t08-02.json"
+              "source": "20260221002652-animals_big-animals_random_hard-fs-llama318b-t08-02.json"
             },
             {
               "instance": "JSON-Nested-List-Flattening",
-              "source": "20260221002652-animals_big-animals_random_hard-llama318b-t08-02.json"
+              "source": "20260221002652-animals_big-animals_random_hard-fs-llama318b-t08-02.json"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "multiple lines": 7,
             "format and markdown backticks": 2,
             "single lines": 11
@@ -3676,19 +3703,19 @@
           "inconsistent_md_format": [
             {
               "instance": "Markdown-Strip-Bold-Tags",
-              "source": "20260220235950-animals_big-animals-llama318b-t08-20.md"
+              "source": "20260220235950-animals_big-animals-fs-llama318b-t08-20.md"
             },
             {
               "instance": "Strip-Leading-Bullets",
-              "source": "20260220235950-animals_big-animals-llama318b-t08-01.md"
+              "source": "20260220235950-animals_big-animals-fs-llama318b-t08-01.md"
             },
             {
               "instance": "Strip-Leading-Numbers",
-              "source": "20260220235950-animals_big-animals-llama318b-t08-02.md"
+              "source": "20260220235950-animals_big-animals-fs-llama318b-t08-02.md"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "unknown": 20
           },
           "cleanupRules": {
@@ -3702,11 +3729,11 @@
           "inconsistent_md_format": [
             {
               "instance": "Strip-Leading-Bullets",
-              "source": "20260221000819-animals_big-animals_hard-llama318b-t08-08.md"
+              "source": "20260221000819-animals_big-animals_hard-fs-llama318b-t08-08.md"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "unknown": 20
           },
           "cleanupRules": {
@@ -3718,43 +3745,43 @@
           "trailing_punctuation": [
             {
               "instance": "Koala**",
-              "source": "20260227124525-animals_big-animals_random-llama318b-t08-01.md"
+              "source": "20260227124525-animals_big-animals_random-fs-llama318b-t08-01.md"
             }
           ],
           "markup_artifact": [
             {
               "instance": "Koala**",
-              "source": "20260227124525-animals_big-animals_random-llama318b-t08-01.md"
+              "source": "20260227124525-animals_big-animals_random-fs-llama318b-t08-01.md"
             }
           ],
           "inconsistent_md_format": [
             {
               "instance": "Strip-Leading-Bullets",
-              "source": "20260227124525-animals_big-animals_random-llama318b-t08-01.md"
+              "source": "20260227124525-animals_big-animals_random-fs-llama318b-t08-01.md"
             },
             {
               "instance": "Strip-Leading-Numbers",
-              "source": "20260227124525-animals_big-animals_random-llama318b-t08-02.md"
+              "source": "20260227124525-animals_big-animals_random-fs-llama318b-t08-02.md"
             },
             {
               "instance": "Strip-Trailing-Punctuation (*)",
-              "source": "20260227124525-animals_big-animals_random-llama318b-t08-01.md"
+              "source": "20260227124525-animals_big-animals_random-fs-llama318b-t08-01.md"
             }
           ],
           "Markdown-Cleanup-Partially-Bold-Line": [
             {
-              "instance": "20260227124525-animals_big-animals_random-llama318b-t08-01.md",
-              "source": "20260227124525-animals_big-animals_random-llama318b-t08-01.md"
+              "instance": "20260227124525-animals_big-animals_random-fs-llama318b-t08-01.md",
+              "source": "20260227124525-animals_big-animals_random-fs-llama318b-t08-01.md"
             }
           ],
           "Markdown-Cleanup-Partially-Italic-Star-Line": [
             {
-              "instance": "20260227124525-animals_big-animals_random-llama318b-t08-17.md",
-              "source": "20260227124525-animals_big-animals_random-llama318b-t08-17.md"
+              "instance": "20260227124525-animals_big-animals_random-fs-llama318b-t08-17.md",
+              "source": "20260227124525-animals_big-animals_random-fs-llama318b-t08-17.md"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "unknown": 20,
             "Markdown-Cleanup-Partially-Bold-Line": 1,
             "Markdown-Cleanup-Partially-Italic-Star-Line": 1
@@ -3770,35 +3797,35 @@
           "trailing_punctuation": [
             {
               "instance": "Tapir*",
-              "source": "20260221002534-animals_big-animals_random_hard-llama318b-t08-15.md"
+              "source": "20260221002534-animals_big-animals_random_hard-fs-llama318b-t08-15.md"
             }
           ],
           "inconsistent_md_format": [
             {
               "instance": "Markdown-Strip-Bold-Tags",
-              "source": "20260221002534-animals_big-animals_random_hard-llama318b-t08-07.md"
+              "source": "20260221002534-animals_big-animals_random_hard-fs-llama318b-t08-07.md"
             },
             {
               "instance": "Strip-Leading-Bullets",
-              "source": "20260221002534-animals_big-animals_random_hard-llama318b-t08-02.md"
+              "source": "20260221002534-animals_big-animals_random_hard-fs-llama318b-t08-02.md"
             },
             {
               "instance": "Strip-Leading-Numbers",
-              "source": "20260221002534-animals_big-animals_random_hard-llama318b-t08-01.md"
+              "source": "20260221002534-animals_big-animals_random_hard-fs-llama318b-t08-01.md"
             },
             {
               "instance": "Strip-Trailing-Punctuation (*)",
-              "source": "20260221002534-animals_big-animals_random_hard-llama318b-t08-15.md"
+              "source": "20260221002534-animals_big-animals_random_hard-fs-llama318b-t08-15.md"
             }
           ],
           "Markdown-Cleanup-Partially-Italic-Star-Line": [
             {
-              "instance": "20260221002534-animals_big-animals_random_hard-llama318b-t08-15.md",
-              "source": "20260221002534-animals_big-animals_random_hard-llama318b-t08-15.md"
+              "instance": "20260221002534-animals_big-animals_random_hard-fs-llama318b-t08-15.md",
+              "source": "20260221002534-animals_big-animals_random_hard-fs-llama318b-t08-15.md"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "unknown": 20,
             "Markdown-Cleanup-Partially-Italic-Star-Line": 1
           },
@@ -3814,7 +3841,7 @@
       "numberedText": {
         "animals": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 20
           },
           "cleanupRules": {
@@ -3824,7 +3851,7 @@
         },
         "animals_hard": {
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 18,
             "plain text": 2
           },
@@ -3835,7 +3862,7 @@
         },
         "animals_random": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 20
           },
           "cleanupRules": {
@@ -3845,7 +3872,7 @@
         },
         "animals_random_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "numbered text": 20
           },
           "cleanupRules": {
@@ -3857,7 +3884,7 @@
       "text": {
         "animals": {
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "plain text": 16,
             "numbered text": 4
           },
@@ -3870,29 +3897,29 @@
           "trailing_punctuation": [
             {
               "instance": "Note: The list was expanded to 17 items as per the original prompt.",
-              "source": "20260221000559-animals_big-animals_hard-llama318b-t08-03.txt"
+              "source": "20260221000559-animals_big-animals_hard-fs-llama318b-t08-03.txt"
             }
           ],
           "internal_punctuation": [
             {
               "instance": "Note: The list was expanded to 17 items as per the original prompt.",
-              "source": "20260221000559-animals_big-animals_hard-llama318b-t08-03.txt"
+              "source": "20260221000559-animals_big-animals_hard-fs-llama318b-t08-03.txt"
             }
           ],
           "exceeds_max_length": [
             {
               "instance": "Note: The list was expanded to 17 items as per the original prompt.",
-              "source": "20260221000559-animals_big-animals_hard-llama318b-t08-03.txt"
+              "source": "20260221000559-animals_big-animals_hard-fs-llama318b-t08-03.txt"
             }
           ],
           "preamble_leak": [
             {
               "instance": "Note: The list was expanded to 17 items as per the original prompt.",
-              "source": "20260221000559-animals_big-animals_hard-llama318b-t08-03.txt"
+              "source": "20260221000559-animals_big-animals_hard-fs-llama318b-t08-03.txt"
             }
           ],
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "plain text": 20
           },
           "cleanupRules": {
@@ -3901,7 +3928,7 @@
         },
         "animals_random": {
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "plain text": 18,
             "numbered text": 2
           },
@@ -3912,7 +3939,7 @@
         },
         "animals_random_hard": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "plain text": 20
           },
           "cleanupRules": {
@@ -3923,7 +3950,7 @@
       "YAML": {
         "animals": {
           "consistentFormat": true,
-          "formatStyles": {
+          "formatIssues": {
             "leading hyphen": 20
           },
           "cleanupRules": {
@@ -3934,25 +3961,25 @@
           "inconsistent_case": [
             {
               "instance": "lower",
-              "source": "20260221001031-animals_big-animals_hard-llama318b-t08-05.yml"
+              "source": "20260221001031-animals_big-animals_hard-fs-llama318b-t08-05.yml"
             },
             {
               "instance": "mixed",
-              "source": "20260221001031-animals_big-animals_hard-llama318b-t08-01.yml"
+              "source": "20260221001031-animals_big-animals_hard-fs-llama318b-t08-01.yml"
             }
           ],
           "inconsistent_yaml_format": [
             {
               "instance": "Lowercase",
-              "source": "20260221001031-animals_big-animals_hard-llama318b-t08-01.yml"
+              "source": "20260221001031-animals_big-animals_hard-fs-llama318b-t08-01.yml"
             },
             {
               "instance": "YAML-Plain-Text-Detection",
-              "source": "20260221001031-animals_big-animals_hard-llama318b-t08-01.yml"
+              "source": "20260221001031-animals_big-animals_hard-fs-llama318b-t08-01.yml"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "plain text": 18,
             "leading hyphen": 2
           },
@@ -3965,11 +3992,11 @@
           "inconsistent_yaml_format": [
             {
               "instance": "YAML-Plain-Text-Detection",
-              "source": "20260227125022-animals_big-animals_random-llama318b-t08-09.yml"
+              "source": "20260227125022-animals_big-animals_random-fs-llama318b-t08-09.yml"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "leading hyphen": 19,
             "plain text": 1
           },
@@ -3982,11 +4009,11 @@
           "inconsistent_yaml_format": [
             {
               "instance": "YAML-Plain-Text-Detection",
-              "source": "20260221002808-animals_big-animals_random_hard-llama318b-t08-04.yml"
+              "source": "20260221002808-animals_big-animals_random_hard-fs-llama318b-t08-04.yml"
             }
           ],
           "consistentFormat": false,
-          "formatStyles": {
+          "formatIssues": {
             "leading hyphen": 18,
             "plain text": 2
           },
