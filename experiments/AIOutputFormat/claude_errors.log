@@ -70,6 +70,12 @@ Context: Updating load set button wildcard pattern for new filename format (gene
 Description: User asked to update load set button for new filename format with hardness codes. Claude made three incorrect attempts: (1) used wildcard for hardness position; (2) tried to read hardness without user guidance; (3) misunderstood what "wildcard the trial part" meant. Each incorrect attempt required user clarification, tool rejection, and re-explanation. Should have read the existing code pattern more carefully and asked clarifying questions before attempting fixes.
 Resolution: For filename pattern changes, carefully examine existing wildcard patterns and understand exactly which parts are variable vs. fixed before writing code. Ask clarifying questions about scope instead of guessing. Estimated token waste: ~2000 tokens across multiple failed commits and corrections.
 
+[Missing Dependency After Import Addition] (noted by Michael): 2026-06-09 00:00
+Incident type: Added import without installing package or notifying user
+Context: providers.py — dotenv import added in a prior session
+Description: A previous session added `from dotenv import load_dotenv` and `load_dotenv()` to providers.py without installing python-dotenv in the venv and without reminding the user to do so. This caused experiment.py to fail immediately on import with ModuleNotFoundError: No module named 'dotenv'. The error went undetected because providers.py was not run in that session after the import was added.
+Resolution: User must run: pip install python-dotenv in the venv. Per CLAUDE.md, any time a new import is added that requires a package not already in requirements, the user must be reminded to install it immediately.
+
 [Missing Conversation Log — Session Start Failure] (noted by Michael): 2026-06-09 00:00
 Incident type: Failure to comply with mandatory project documentation requirement
 Context: AIOutputFormat project session, 2026-06-09
