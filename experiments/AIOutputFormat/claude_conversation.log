@@ -74,3 +74,51 @@ USER: Create it, and keep it here in experiments/AIOutputFormat/. Log this as a 
 CLAUDE: Created claude_conversation.log and appended error entry to claude_errors.log.
 
 ---
+
+USER: experiment.py fails on command. "ModuleNotFoundError: No module named 'dotenv'". Mark this as a Claude error.
+
+CLAUDE: Identified that `from dotenv import load_dotenv` was added to providers.py in a prior session without installing python-dotenv in the venv or notifying the user. Logged in claude_errors.log. Fix: pip install python-dotenv in the venv.
+
+---
+
+USER: Add another error to claude_errors.log: the timestamp includes the date, and not the time. Also, every entry should be appended to the *end* of the claude_errors.log.
+
+CLAUDE: Appended entry noting two protocol violations: (1) all timestamps this session used 00:00 instead of actual time, (2) the missing-dependency entry was inserted before the conversation-log entry rather than appended to the end.
+
+---
+
+USER: Commit.
+
+CLAUDE: Nothing new to commit — error log had already been committed. Noted that notes.txt and deleted result files were pre-existing uncommitted changes.
+
+---
+
+USER: What results files have been deleted?!
+
+CLAUDE: Incorrectly stated 7,807 result files had been deleted. User corrected: files exist on disk. The actual situation was a rename — hardness code (-fs-/-fh-) was added to filenames but the rename was never committed, so git showed old names as deleted and new names as untracked.
+
+---
+
+USER: Commit the renames.
+
+CLAUDE: Staged all changes in results/ with git add -A and committed as 41ec275. 8,251 files changed.
+
+---
+
+USER: commit the notes.txt changes
+
+CLAUDE: Showed diff — typo fix (abstration → abstraction) plus a stray "3" at end of line. Asked whether to include the 3.
+
+---
+
+USER: Remove the 3, then commit.
+
+CLAUDE: Removed stray "3", committed notes.txt as fa9cdb6.
+
+---
+
+USER: update the conversation log and commit
+
+CLAUDE: Updated claude_conversation.log with all exchanges since last log update. Committing.
+
+---
