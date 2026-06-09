@@ -33,6 +33,7 @@ def find_completed_iterations(model_name: str, experiment: str, prompt_name: str
         return completed
 
     ext = FORMAT_EXTENSIONS.get(format_type, format_type)
+    model_name = sanitize_model_name(model_name)
 
     # Search for files matching pattern: TIMESTAMP-EXPERIMENT-PROMPT-HARDNESS-MODEL-*-*.FORMAT
     # Iteration number is the second-to-last part when split by '-'

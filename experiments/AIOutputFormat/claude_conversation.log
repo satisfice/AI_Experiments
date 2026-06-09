@@ -122,3 +122,26 @@ USER: update the conversation log and commit
 CLAUDE: Updated claude_conversation.log with all exchanges since last log update. Committing.
 
 ---
+
+Session: 2026-06-09 (continued)
+Model: claude-sonnet-4-6
+
+---
+
+USER: Per the project documentation, tell me what constitutes an experiment
+
+CLAUDE: Read root README.md and AIOutputFormat README.md. Summarized experiment at two levels: (1) research level — a systematic controlled test of LLM capabilities, not anecdotes or toy demos; (2) technical level — a named batch run identified by the -e flag, grouping output files under a common experiment name used as the primary filter key for summarize.py and generate_report.py.
+
+---
+
+USER: Based on what you've said above (plus your knowledge of trials and sets), what would you propose to restart an experiment that has been terminated by accident?
+
+CLAUDE: Read trial_and_set memory. Identified that the core problem is set integrity: a restart generates a new timestamp, splitting completed and new iterations into different sets. Presented three options: (1) re-run from scratch; (2) top-up remaining count, accepting two sets; (3) add --resume flag that reuses the original timestamp (recommended).
+
+---
+
+USER: Yes. [Implement it.]
+
+CLAUDE: Read experiment.py and config.py. Discovered the resume feature is already implemented: default behavior detects incomplete experiments and prompts to resume; --restart forces regeneration. However, found a latent bug: find_completed_iterations() passed the unsanitized actual_model name to the glob pattern (e.g. "deepseek-r1:8b"), but generate_filename() writes files with sanitize_model_name() applied (e.g. "deepseekr18b"). The glob never matched existing files for any model with punctuation in its name — which is effectively all models. Fixed by adding model_name = sanitize_model_name(model_name) inside find_completed_iterations() before the glob. Logged bug in claude_errors.log.
+
+---

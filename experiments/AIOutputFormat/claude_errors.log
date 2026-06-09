@@ -87,3 +87,9 @@ Incident type: Two protocol violations in error log maintenance
 Context: claude_errors.log entries added during 2026-06-09 session
 Description: (1) All three entries added this session used "00:00" as the time component rather than the actual time, making timestamps useless for ordering or correlating events within a day. The header format requires a real HH:MM time. (2) The "Missing Dependency" entry was inserted before the "Missing Conversation Log" entry rather than appended to the end of the file. New entries must always go at the end so the log remains in chronological order.
 Resolution: Always append new entries to the end of claude_errors.log. Always use the actual current time (HH:MM) in the timestamp header, not a placeholder.
+
+[Unsanitized Model Name in Resume Glob] (noted by Claude claude-sonnet-4-6): 2026-06-09 17:08
+Incident type: Latent bug in existing code — wrong model name form used in file glob
+Context: find_completed_iterations() in experiment.py — resume/incomplete-detection logic
+Description: find_completed_iterations() received actual_model (e.g. "deepseek-r1:8b") and used it directly in the glob pattern (*-deepseek-r1:8b-*). But generate_filename() writes files using sanitize_model_name() (e.g. "deepseekr18b"), so the glob never matched any existing file. This silently broke resume detection for all models whose names contain punctuation — effectively every configured model (Ollama, OpenAI, and Anthropic names all contain ":", ".", or "-").
+Resolution: Added model_name = sanitize_model_name(model_name) at the top of find_completed_iterations(), before the glob, so the search uses the same form as the filename.
