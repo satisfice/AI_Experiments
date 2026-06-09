@@ -20,11 +20,14 @@ LAST_RUN_FILE = Path(".experiment_last_run.json")
 MAX_GENERATION_RETRIES = 3  # Number of retries after initial attempt on timeout
 
 
-def find_completed_iterations(model_name: str, experiment: str, prompt_name: str, format_type: str, hardness_code: str = 'fs') -> dict:
+def find_completed_iterations(model_name: str, experiment: str, prompt_name: str, format_type: str, hardness_code: str = 'fs', temp_filter: Optional[str] = None) -> dict:
     """
-    Scan results folder to find which iterations exist for this (model, experiment, prompt, format, hardness).
+    Scan results folder to find which iterations exist for this (model, experiment, prompt, format, hardness, temperature).
     Returns dict: {iteration_num: (filepath, timestamp), ...}
     Used to detect incomplete experiments and support resuming.
+
+    temp_filter: temperature glob component to match exactly (e.g. 't01', 'txx').
+                 None matches any temperature — use for existence checks, not resume.
     """
     completed = {}
     results_dir = Path("results")
@@ -34,21 +37,19 @@ def find_completed_iterations(model_name: str, experiment: str, prompt_name: str
 
     ext = FORMAT_EXTENSIONS.get(format_type, format_type)
     model_name = sanitize_model_name(model_name)
+    temp_glob = temp_filter if temp_filter is not None else "*"
 
-    # Search for files matching pattern: TIMESTAMP-EXPERIMENT-PROMPT-HARDNESS-MODEL-*-*.FORMAT
-    # Iteration number is the second-to-last part when split by '-'
-    for filepath in results_dir.glob(f"*-{experiment}-{prompt_name}-{hardness_code}-{model_name}-*-*.{ext}"):
+    # Search for files matching pattern: TIMESTAMP-EXPERIMENT-PROMPT-HARDNESS-MODEL-tNN-NN.FORMAT
+    for filepath in results_dir.glob(f"*-{experiment}-{prompt_name}-{hardness_code}-{model_name}-{temp_glob}-*.{ext}"):
         try:
             stem = filepath.stem
             parts = stem.split('-')
-            # iteration is second-to-last part; extract it
+            # iteration is last part; timestamp is first part (14 digits)
             iteration_str = parts[-1]
             iteration = int(iteration_str)
-            # timestamp is first part (14 digits)
             timestamp = parts[0]
             completed[iteration] = (filepath, timestamp)
         except (ValueError, IndexError):
-            # Skip files that don't match expected pattern
             pass
 
     return completed
@@ -254,7 +255,8 @@ def process_format(actual_model, format_type, master_prompt, experiment, prompt_
     skip_iterations_msg = None
     hardness_code = 'fs' if format_hardness == 'soft' else 'fh'
     if resume_mode:
-        completed_iterations = find_completed_iterations(actual_model, experiment, prompt_name, format_type, hardness_code=hardness_code)
+        temp_filter = f"t{temp_component}" if (supports_temp and temp_component is not None) else "txx"
+        completed_iterations = find_completed_iterations(actual_model, experiment, prompt_name, format_type, hardness_code=hardness_code, temp_filter=temp_filter)
         if completed_iterations:
             max_completed = max(completed_iterations.keys())
             # Preserve the original timestamp from the first completed iteration
