@@ -175,3 +175,32 @@ USER: update the conversation log and commit
 CLAUDE: Updated conversation log with all exchanges since last log update. Committing.
 
 ---
+
+Session: 2026-06-10
+Model: claude-sonnet-4-6
+
+---
+
+USER: summarize.py fails with "ModuleNotFoundError: No module named 'yaml'".
+
+CLAUDE: Confirmed pyyaml import in summarize.py. Advised user to run: pip install pyyaml
+
+---
+
+USER: What is causing summarize.py to skip the file results\20260609190147-animals_big-animals_hard-fh-deepseekr18b-t01-19.yml?
+
+CLAUDE: Read the file and traced the full processing path through summarize.py. The model returned YAML with the list wrapped under a named key (- animals: [list]). yaml.safe_load produced [{animals: [...]}]. parse_yaml's list branch set items = data but the existing YAML-Single-List-Flattening check only fires when items[0] is a list, not a dict. The dict reached process_and_track, was str()-converted by trim_items, flagged by detect_preamble_leak (6+ words), and filtered out entirely — 0 items, silent. File appeared in zero_item_files, not skipped_trials.
+
+---
+
+USER: Describe this in claude_errors log, noting it as a subtle bug. Then add the fix.
+
+CLAUDE: Added error log entry describing the silent data loss and missed [{key:[list]}] shape. Fixed parse_yaml: after items = data, added check for len==1 single-dict wrapping a single list value; extracts the inner list and emits YAML-Wrapped-List-Extraction cleanup key. Committed.
+
+---
+
+USER: update the conversation log and commit
+
+CLAUDE: Updated conversation log with all exchanges since last log update. Committing.
+
+---
