@@ -123,6 +123,38 @@ def parse_txt(content):
     return items, cleanups, quality_issues
 
 
+def _repair_truncated_json(content):
+    """Attempt to close a truncated JSON string by stripping a dangling trailing
+    comma and appending the missing closing brackets/braces.
+    Returns (repaired_content, was_repaired).  was_repaired is False when the
+    content appeared complete (stack empty) or already invalid beyond repair."""
+    # Strip trailing comma that would have been followed by more items
+    stripped = re.sub(r',\s*$', '', content.rstrip())
+    # Count unmatched opening brackets to determine what's missing
+    stack = []
+    in_string = False
+    escape = False
+    for char in stripped:
+        if escape:
+            escape = False
+            continue
+        if char == '\\' and in_string:
+            escape = True
+            continue
+        if char == '"':
+            in_string = not in_string
+            continue
+        if in_string:
+            continue
+        if char in '{[':
+            stack.append(']' if char == '[' else '}')
+        elif char in ']}' and stack and stack[-1] == char:
+            stack.pop()
+    if not stack:
+        return content, False
+    return stripped + '\n' + ''.join(reversed(stack)), True
+
+
 def parse_json(content):
     """Parse JSON file: if array, each element; if object, each value. Flatten any list items.
     Handles multiple JSON formats:
@@ -286,12 +318,36 @@ def parse_json(content):
                 cleanups.append("JSON-Python-Syntax-Repair")
                 return flattened, cleanups, quality_issues
             except json.JSONDecodeError:
-                # If the fix didn't work, return empty list with error note
-                quality_issues.append("parse-failed")
-                return [], cleanups, quality_issues
-        else:
-            quality_issues.append("parse-failed")
-            return [], cleanups, quality_issues
+                pass  # Fall through to truncated-JSON repair
+
+        # Try to repair truncated JSON (model output cut off before closing brackets)
+        _repeated_keys_found[0] = False
+        repaired, was_repaired = _repair_truncated_json(content_to_parse)
+        if was_repaired:
+            try:
+                data = json.loads(repaired, object_pairs_hook=_unwrap_pairs)
+                if isinstance(data, list):
+                    items = data
+                elif isinstance(data, dict):
+                    items = list(data.values())
+                    cleanups.append("JSON-Dict-Value-Extraction")
+                else:
+                    items = [data]
+                items = _extract_from_dict_list(items, cleanups)
+                flattened = []
+                for item in items:
+                    if isinstance(item, list):
+                        flattened.extend(item)
+                    else:
+                        flattened.append(item)
+                quality_issues.append("json-truncated")
+                cleanups.append("JSON-Truncated-Recovery")
+                return flattened, cleanups, quality_issues
+            except json.JSONDecodeError:
+                pass
+
+        quality_issues.append("parse-failed")
+        return [], cleanups, quality_issues
 
 
 def _extract_from_dict_list(items, cleanups):
@@ -1975,7 +2031,7 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
         "comma-separated", "txt1-no-numbers", "html_no_markup", "invalid-html-tags", "pointy-bracket-wrapping",
         "inconsistent_case", "inconsistent_md_format", "inconsistent_html_format",
         "inconsistent_json_format", "inconsistent_yaml_format",
-        "parse-failed", "stray-html-markup", "blockquote-markup",
+        "parse-failed", "json-truncated", "stray-html-markup", "blockquote-markup",
         "Markdown-Cleanup-Partially-Bold-Line", "Markdown-Cleanup-Partially-Italic-Star-Line",
         "Markdown-Cleanup-Partially-Italic-Underscore-Line",
         "HTML_Only_Bold_Tags", "HTML_Only_Italic_Tags", "HTML_Only_Emphasis_Tags", "HTML_Only_Underline_Tags",

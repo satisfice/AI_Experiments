@@ -222,3 +222,9 @@ USER: 1. Fix the comma parse issue. 2. When a trial results in a sequence of mor
 CLAUDE: Item 1 (trailing comma fix) was already implemented in the previous commit. Item 2: added run-of-3+ consecutive identical item detection in process_and_track() in summarize.py. Stored in quality_issues["repeated_sequence"] as the repeated item string. In summarize_results(), tracks filename as instance (not item string) so all affected trial numbers accumulate independently across trials. Added "repeated_sequence" to ISSUE_TYPES. generate_report.py needed no changes — the existing generic else branch in get_cleanup_data_for_combo() uses _trial_numbers_str() to extract trial numbers from source filenames and displays "Repeated Sequence (3, 7)"-style labels automatically.
 
 ---
+
+USER: results\20260609225924-animals_big-animals-fh-deepseekr18b-t08-14.json fails to close the JSON object. Modify the JSON parser to detect this, note it as a quality problem, and attempt to extract the items anyway.
+
+CLAUDE: Read the file — code-fenced JSON cut off mid-array with a trailing comma and no closing ] or }. Added _repair_truncated_json() helper that strips a trailing comma then closes unmatched brackets by counting a stack. In parse_json()'s except JSONDecodeError block, added it as the last fallback before parse-failed: repairs and retries json.loads, emits json-truncated quality issue and JSON-Truncated-Recovery cleanup key on success. Added json-truncated to ISSUE_TYPES so it appears in quality.json and the report tooltip.
+
+---
