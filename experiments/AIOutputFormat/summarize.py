@@ -563,6 +563,13 @@ def parse_yaml(content):
             data = yaml.safe_load(content)
             if isinstance(data, list):
                 items = data
+                # Handle [{key: [item1, item2, ...]}] — model wrapped the list in a named key.
+                # Extract the inner list so downstream flattening can normalise it.
+                if len(items) == 1 and isinstance(items[0], dict):
+                    values = list(items[0].values())
+                    if len(values) == 1 and isinstance(values[0], list):
+                        items = values[0]
+                        cleanups.append("YAML-Wrapped-List-Extraction")
             elif isinstance(data, dict):
                 items = list(data.values())
                 cleanups.append("YAML-Dict-Value-Extraction")
