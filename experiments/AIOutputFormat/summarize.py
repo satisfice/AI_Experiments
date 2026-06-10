@@ -171,6 +171,12 @@ def parse_json(content):
             content_to_parse = converted
             cleanups.append("JSON-Set-Format-Conversion")
 
+    # Remove trailing commas before ] or } (invalid JSON but common model output)
+    stripped, n_subs = re.subn(r',(\s*[}\]])', r'\1', content_to_parse)
+    if n_subs:
+        content_to_parse = stripped
+        cleanups.append("JSON-Trailing-Comma-Removal")
+
     # Detect repeated-key JSON objects at any nesting level: {"k":"v1","k":"v2",...}
     # Standard json.loads silently drops duplicates; object_pairs_hook replaces such
     # objects with a flat list of their values so downstream flattening picks them up.
