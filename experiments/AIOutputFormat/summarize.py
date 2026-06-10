@@ -1763,6 +1763,12 @@ def process_and_track(items, ext, max_item_length=25):
         if cleanup:
             processing_cleanups.append(cleanup)
 
+    # Detect runs of 3+ consecutive identical items (model stuck in a generation loop)
+    for i in range(len(processed) - 2):
+        if processed[i] == processed[i + 1] == processed[i + 2]:
+            quality_issues["repeated_sequence"] = processed[i]
+            break
+
     # Create metadata
     metadata = {
         "itemCount": len(processed),
@@ -1963,7 +1969,7 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
     ISSUE_TYPES = [
         "leading_punctuation", "trailing_punctuation", "internal_punctuation",
         "exceeds_max_length", "preamble_leak",
-        "markup_artifact", "repeated_chars",
+        "markup_artifact", "repeated_chars", "repeated_sequence",
         "single-span-tag",
         "numbered-items-in-tags", "repeated-json-keys", "non-western-characters",
         "comma-separated", "txt1-no-numbers", "html_no_markup", "invalid-html-tags", "pointy-bracket-wrapping",
@@ -2229,6 +2235,15 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
                     quality_issues_output[model_name][str(temp_value)][file_type][prompt_name][issue_type].add(example)
                     if example not in quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][issue_type]:
                         quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][issue_type][example] = filename
+
+                # repeated_sequence: use filename as instance so every affected trial
+                # accumulates independently (items may repeat the same value across trials,
+                # which would deduplicate if stored as instance strings).
+                if item_issues.get("repeated_sequence"):
+                    fn = file_path.name
+                    quality_issues_output[model_name][str(temp_value)][file_type][prompt_name]["repeated_sequence"].add(fn)
+                    if fn not in quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name]["repeated_sequence"]:
+                        quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name]["repeated_sequence"][fn] = fn
 
             # Track format-level issues from metadata["formatIssues"]
             # (populated by parser_quality_issues and processingQualityIssues)
