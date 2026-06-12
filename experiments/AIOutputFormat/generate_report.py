@@ -717,6 +717,51 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
             pointer-events: none;
             white-space: normal;
         }
+        /* Item counts popup */
+        #item-counts-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 10000;
+        }
+        #item-counts-popup {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            border-radius: 6px;
+            border: 4px solid transparent;
+            padding: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+            width: 620px;
+            max-width: 90vw;
+        }
+        #item-counts-popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+        #item-counts-subtitle {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 3px;
+        }
+        #item-counts-close {
+            width: 28px;
+            height: 28px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #f0f0f0;
+            line-height: 1;
+        }
+        #item-counts-close:hover {
+            background: #ddd;
+        }
         /* Dual-column layout */
         .column {
             display: none;  /* Hidden by default, shown only in dual-column mode */
@@ -927,11 +972,46 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
             # Build button HTML with onclick handler for clipboard copy
             load_set_button = (
                 f' | <button '
-                f'style="font-size: 0.85em; padding: 1px 6px; cursor: pointer;" '
+                f'style="font-size: 0.85em; padding: 2px 8px; cursor: pointer; '
+                f'background-color: #4169e1; color: #fff; border: none; border-radius: 4px;" '
                 f'title="{load_set_str}" '
                 f'onclick="var b=this; navigator.clipboard.writeText(\'{load_set_str}\').then(function(){{'
                 f'b.textContent=\'Copied!\'; setTimeout(function(){{b.textContent=\'Load set\';}},1000);}});"'
                 f'>Load set</button>'
+            )
+
+            # Build per-trial data for "Show Item Counts" histogram popup
+            _tc_counts = combo_info[combo_key]["per_trial_counts"]
+            _tc_filenames = combo_info[combo_key].get("filenames", [])
+            _tc_trials = []
+            for _i, _fn in enumerate(_tc_filenames):
+                try:
+                    _tc_trials.append(int(Path(_fn).stem.split('-')[-1]))
+                except (ValueError, IndexError):
+                    _tc_trials.append(_i + 1)
+            if not _tc_trials:
+                _tc_trials = list(range(1, len(_tc_counts) + 1))
+            # Extract run date from first filename timestamp (YYYYMMDDHHMMSS prefix)
+            _tc_date = ''
+            if _tc_filenames:
+                _ts = Path(_tc_filenames[0]).stem.split('-')[0]
+                if len(_ts) == 14 and _ts.isdigit():
+                    _tc_date = f"{_ts[:4]}-{_ts[4:6]}-{_ts[6:8]} {_ts[8:10]}:{_ts[10:12]}"
+            _tc_subtitle = '  '.join(p for p in [_tc_date, exp, prompt, fmt, format_hardness, abbreviate_model_name(model), str(temp)] if p)
+            _tc_json_escaped = html_mod.escape(json.dumps({
+                "trials": _tc_trials,
+                "counts": _tc_counts,
+                "barColor": format_color,
+                "borderColor": model_base_color,
+                "subtitle": _tc_subtitle,
+            }))
+            item_counts_button = (
+                f' | <button '
+                f'style="font-size: 0.85em; padding: 2px 8px; cursor: pointer; '
+                f'background-color: #4169e1; color: #fff; border: none; border-radius: 4px;" '
+                f'data-trial-counts="{_tc_json_escaped}" '
+                f'onclick="showItemCountsPopup(this);"'
+                f'>Show Item Counts</button>'
             )
 
             # Build prompt tooltip: prompt text + double line break + format instruction.
@@ -970,7 +1050,7 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
                 f'Temperature: <span style="color: {background_color}; font-weight: bold;">{temp}</span><br>'
                 f'Trials: {trial_count} | Min: {min_items} | Max: {max_items} | Average: {avg_per_trial:.1f} | '
                 f'Total: {total_items} | Unique: {unique_items} ({unique_pct:.1f}%)<br>'
-                f'{quality_indicator.lstrip(" | ")}{load_set_button}'
+                f'{quality_indicator.lstrip(" | ")}{load_set_button}{item_counts_button}'
             )
 
             html_content += f'        <div class="plot-section" data-format="{fmt}" data-model="{model}" data-temperature="{temp}" data-prompt="{prompt}" data-experiment="{exp}">\n'
@@ -987,7 +1067,52 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
 
     <div id="cleanup-tooltip"></div>
 
+    <div id="item-counts-overlay">
+        <div id="item-counts-popup">
+            <div id="item-counts-popup-header">
+                <div>
+                    <div id="item-counts-subtitle"></div>
+                    <span id="item-counts-title" style="font-weight:600; font-size:14px;">Item Counts per Trial</span>
+                </div>
+                <button id="item-counts-close" onclick="closeItemCountsPopup();">X</button>
+            </div>
+            <div id="item-counts-chart" style="width:100%; height:350px;"></div>
+        </div>
+    </div>
+
     <script>
+        function showItemCountsPopup(btn) {
+            var raw = btn.getAttribute('data-trial-counts');
+            var data = JSON.parse(raw);
+            var overlay = document.getElementById('item-counts-overlay');
+            var popup = document.getElementById('item-counts-popup');
+            popup.style.borderColor = data.borderColor || '#ddd';
+            document.getElementById('item-counts-subtitle').textContent = data.subtitle || '';
+            overlay.style.display = 'block';
+            Plotly.newPlot('item-counts-chart', [{
+                type: 'bar',
+                x: data.trials,
+                y: data.counts,
+                marker: { color: data.barColor || '#636363' },
+                hovertemplate: 'Trial %{x}<br>Items: %{y}<extra></extra>'
+            }], {
+                height: 350,
+                margin: { l: 50, r: 20, t: 20, b: 50 },
+                xaxis: { title: 'Trial', dtick: 1 },
+                yaxis: { title: 'Item Count' },
+                bargap: 0.1,
+                autosize: true
+            });
+        }
+
+        function closeItemCountsPopup() {
+            document.getElementById('item-counts-overlay').style.display = 'none';
+        }
+
+        document.getElementById('item-counts-overlay').addEventListener('click', function(e) {
+            if (e.target === this) closeItemCountsPopup();
+        });
+
         // Shared tooltip for .cleanup-indicator, .prompt-indicator, and .hardness-indicator
         (function() {
             var tooltip = document.getElementById('cleanup-tooltip');
