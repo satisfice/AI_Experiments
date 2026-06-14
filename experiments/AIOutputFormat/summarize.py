@@ -2036,6 +2036,7 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
         "Markdown-Cleanup-Partially-Bold-Line", "Markdown-Cleanup-Partially-Italic-Star-Line",
         "Markdown-Cleanup-Partially-Italic-Underscore-Line",
         "HTML_Only_Bold_Tags", "HTML_Only_Italic_Tags", "HTML_Only_Emphasis_Tags", "HTML_Only_Underline_Tags",
+        "HTML_Only_Pre_Tags",
     ]
     # Initialize quality issue tracking structures
     quality_issues_output, quality_issues_examples = _make_issue_output_dicts(ISSUE_TYPES)
