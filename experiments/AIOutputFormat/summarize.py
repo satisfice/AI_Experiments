@@ -689,6 +689,7 @@ _HTML_TAG_DISPLAY = {
     'p': 'P', 'div': 'Div', 'span': 'Span',
     'article': 'Article', 'section': 'Section', 'br': 'BR',
     'b': 'Bold', 'i': 'Italic', 'strong': 'Strong', 'em': 'Emphasis', 'u': 'Underline',
+    'pre': 'Pre',
 }
 
 def _tag_cleanup_name(tag):
@@ -948,7 +949,7 @@ def parse_html(content):
     root = _parse_html_tree(content)
 
     # ── Quality issues: only specific formatting tags (invalid HTML) ──────────
-    for tag, quality_issue in [('b', 'HTML_Only_Bold_Tags'), ('i', 'HTML_Only_Italic_Tags'), ('em', 'HTML_Only_Emphasis_Tags'), ('u', 'HTML_Only_Underline_Tags')]:
+    for tag, quality_issue in [('b', 'HTML_Only_Bold_Tags'), ('i', 'HTML_Only_Italic_Tags'), ('em', 'HTML_Only_Emphasis_Tags'), ('u', 'HTML_Only_Underline_Tags'), ('pre', 'HTML_Only_Pre_Tags')]:
         if _only_has_tag(root, tag):
             tag_nodes = _find_leaf_tag_nodes(root, tag)
             items, extraction_cleanups = _extract_from_html_formatting_tag(tag_nodes, tag)
