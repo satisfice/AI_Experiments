@@ -968,6 +968,27 @@ def parse_html(content):
             cleanups.append("Remove-BR-Tags")
         return items, cleanups, quality_issues
 
+    # ── UL/OL with unwrapped text: items directly in list tag, no <li> ──────
+    for list_tag in ['ul', 'ol']:
+        list_nodes = list(root.iter_tag(list_tag))
+        if not list_nodes:
+            continue
+        # Only process nodes that have bare text children but no <li> children
+        bare_nodes = [
+            n for n in list_nodes
+            if any(isinstance(c, str) and c.strip() for c in n.children)
+            and not any(isinstance(c, _HtmlNode) and c.tag == 'li' for c in n.children)
+        ]
+        if not bare_nodes:
+            continue
+        raw_items, had_br, _ = _items_from_nodes(bare_nodes)
+        if raw_items:
+            cleanups.extend(_path_tag_cleanups(bare_nodes, list_tag))
+            if had_br:
+                cleanups.append("Remove-BR-Tags")
+            quality_issues.append("items-not-in-li")
+            return raw_items, cleanups, quality_issues
+
     # ── Fallback path: try each tag in priority order ────────────────────────
     for tag in _HTML_FALLBACK_TAGS:
         tag_nodes = _find_leaf_tag_nodes(root, tag)
@@ -2036,7 +2057,7 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
         "Markdown-Cleanup-Partially-Bold-Line", "Markdown-Cleanup-Partially-Italic-Star-Line",
         "Markdown-Cleanup-Partially-Italic-Underscore-Line",
         "HTML_Only_Bold_Tags", "HTML_Only_Italic_Tags", "HTML_Only_Emphasis_Tags", "HTML_Only_Underline_Tags",
-        "HTML_Only_Pre_Tags",
+        "HTML_Only_Pre_Tags", "items-not-in-li",
     ]
     # Initialize quality issue tracking structures
     quality_issues_output, quality_issues_examples = _make_issue_output_dicts(ISSUE_TYPES)

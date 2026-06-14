@@ -103,6 +103,11 @@
       "detection_function": "_only_has_tag (checks if only <u> tags present)"
     },
     {
+      "name": "items-not-in-li",
+      "description": "Items are placed directly inside a <ul> or <ol> tag as bare text, without being wrapped in <li> elements. Items are extracted by splitting the container's text content on newlines.",
+      "detection_function": "parse_html (ul/ol bare-text path)"
+    },
+    {
       "name": "HTML_Only_Pre_Tags",
       "description": "HTML content uses only <pre> tags to wrap items, with no other content tags. Invalid HTML structure for a list; items are extracted line-by-line from the preformatted block.",
       "detection_function": "_only_has_tag (checks if only <pre> tags present)"
