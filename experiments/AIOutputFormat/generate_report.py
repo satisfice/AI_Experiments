@@ -726,7 +726,8 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
             z-index: 10000;
         }
         #item-counts-popup {
-            position: absolute;
+            display: none;
+            position: fixed;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             background: #fff;
@@ -736,6 +737,7 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
             box-shadow: 0 4px 24px rgba(0,0,0,0.3);
             width: 620px;
             max-width: 90vw;
+            z-index: 10001;
         }
         #item-counts-popup-header {
             display: flex;
@@ -1010,7 +1012,7 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
                 f'style="font-size: 0.85em; padding: 2px 8px; cursor: pointer; '
                 f'background-color: #4169e1; color: #fff; border: none; border-radius: 4px;" '
                 f'data-trial-counts="{_tc_json_escaped}" '
-                f'onclick="showItemCountsPopup(this);"'
+                f'onmouseover="showItemCountsPopup(this);" onmouseout="_icScheduleHide();" onclick="pinItemCountsPopup(this);"'
                 f'>Show Item Counts</button>'
             )
 
@@ -1067,46 +1069,81 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
 
     <div id="cleanup-tooltip"></div>
 
-    <div id="item-counts-overlay">
-        <div id="item-counts-popup">
-            <div id="item-counts-popup-header">
-                <div>
-                    <div id="item-counts-subtitle"></div>
-                    <span id="item-counts-title" style="font-weight:600; font-size:14px;">Item Counts per Trial</span>
-                </div>
-                <button id="item-counts-close" onclick="closeItemCountsPopup();">X</button>
+    <div id="item-counts-overlay"></div>
+
+    <div id="item-counts-popup"
+         onmouseover="if(_icHideTimer){clearTimeout(_icHideTimer);_icHideTimer=null;}"
+         onmouseleave="_icScheduleHide();">
+        <div id="item-counts-popup-header">
+            <div>
+                <div id="item-counts-subtitle"></div>
+                <span id="item-counts-title" style="font-weight:600; font-size:14px;">Item Counts per Trial</span>
             </div>
-            <div id="item-counts-chart" style="width:100%; height:350px;"></div>
+            <button id="item-counts-close" onclick="closeItemCountsPopup();">X</button>
         </div>
+        <div id="item-counts-chart" style="width:100%; height:350px;"></div>
     </div>
 
     <script>
-        function showItemCountsPopup(btn) {
+        var _icPinned = false;
+        var _icHideTimer = null;
+        var _icCurrentBtn = null;
+
+        function _icRender(btn) {
             var raw = btn.getAttribute('data-trial-counts');
             var data = JSON.parse(raw);
-            var overlay = document.getElementById('item-counts-overlay');
             var popup = document.getElementById('item-counts-popup');
             popup.style.borderColor = data.borderColor || '#ddd';
             document.getElementById('item-counts-subtitle').textContent = data.subtitle || '';
-            overlay.style.display = 'block';
-            Plotly.newPlot('item-counts-chart', [{
-                type: 'bar',
-                x: data.trials,
-                y: data.counts,
-                marker: { color: data.barColor || '#636363' },
-                hovertemplate: 'Trial %{x}<br>Items: %{y}<extra></extra>'
-            }], {
-                height: 350,
-                margin: { l: 50, r: 20, t: 20, b: 50 },
-                xaxis: { title: 'Trial', dtick: 1 },
-                yaxis: { title: 'Item Count' },
-                bargap: 0.1,
-                autosize: true
-            });
+            popup.style.display = 'block';
+            if (_icCurrentBtn !== btn) {
+                _icCurrentBtn = btn;
+                Plotly.newPlot('item-counts-chart', [{
+                    type: 'bar',
+                    x: data.trials,
+                    y: data.counts,
+                    marker: { color: data.barColor || '#636363' },
+                    hovertemplate: 'Trial %{x}<br>Items: %{y}<extra></extra>'
+                }], {
+                    height: 350,
+                    margin: { l: 50, r: 20, t: 20, b: 50 },
+                    xaxis: { title: 'Trial', dtick: 1 },
+                    yaxis: { title: 'Item Count' },
+                    bargap: 0.1,
+                    autosize: true
+                });
+            }
+        }
+
+        function showItemCountsPopup(btn) {
+            if (_icHideTimer) { clearTimeout(_icHideTimer); _icHideTimer = null; }
+            if (!_icPinned) _icRender(btn);
+        }
+
+        function pinItemCountsPopup(btn) {
+            if (_icHideTimer) { clearTimeout(_icHideTimer); _icHideTimer = null; }
+            _icRender(btn);
+            _icPinned = true;
+            document.getElementById('item-counts-overlay').style.display = 'block';
         }
 
         function closeItemCountsPopup() {
+            _icPinned = false;
+            _icCurrentBtn = null;
+            document.getElementById('item-counts-popup').style.display = 'none';
             document.getElementById('item-counts-overlay').style.display = 'none';
+        }
+
+        function _icScheduleHide() {
+            if (_icPinned) return;
+            if (_icHideTimer) clearTimeout(_icHideTimer);
+            _icHideTimer = setTimeout(function() {
+                _icHideTimer = null;
+                if (!_icPinned) {
+                    document.getElementById('item-counts-popup').style.display = 'none';
+                    _icCurrentBtn = null;
+                }
+            }, 150);
         }
 
         document.getElementById('item-counts-overlay').addEventListener('click', function(e) {
