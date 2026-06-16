@@ -15,25 +15,34 @@ A system for running prompts through LLMs in batch mode and generating outputs i
 
 ### Models
 
-Edit `models.cfg` to add or modify model shortcuts. Format:
+Edit `models.json` to add or modify model shortcuts. Each provider entry has a `supports_temperature` flag and a `models` map of shortcut to model details:
 
-```ini
-[provider]
-shortcut=actual_model_name
-
-[anthropic]
-haiku=claude-3-5-haiku-20241022
-sonnet35=claude-3-5-sonnet-20241022
-opus=claude-3-opus-20250219
-
-[openai]
-gpt4=gpt-4.1-nano-2025-04-14
-gpt35turbo=gpt-3.5-turbo
-
-[ollama]
-llama=llama3.1:8b
-gemma=gemma3:12b
+```json
+{
+  "anthropic": {
+    "supports_temperature": false,
+    "models": {
+      "haiku": { "name": "claude-haiku-4-5-20251001", "color": "#FFB6D9" },
+      "sonnet35": { "name": "claude-3-5-sonnet-20241022", "color": "#FF8A7F" }
+    }
+  },
+  "openai": {
+    "supports_temperature": true,
+    "models": {
+      "gpt4": { "name": "gpt-4.1-nano-2025-04-14", "color": "#74B9FF" }
+    }
+  },
+  "ollama": {
+    "supports_temperature": true,
+    "models": {
+      "llama318b": { "name": "llama3.1:8b", "color": "#C8A2C8", "timeout_seconds": 300 },
+      "gemma": { "name": "gemma3:12b", "color": "#DA70D6" }
+    }
+  }
+}
 ```
+
+Use `color_picker.py` to interactively assign or randomize colors instead of editing `models.json` by hand.
 
 ### Output Formats
 
@@ -153,6 +162,20 @@ Filter to specific model and format:
 python summarize.py --model gpt4 --format json
 ```
 
+### color_picker.py
+
+Interactive terminal tool to assign or randomize colors for each model in `models.json`. Colors are used in the HTML report to distinguish model outputs.
+
+```bash
+python color_picker.py
+```
+
+No command-line parameters. The interactive menu lets you:
+
+- View all current model colors with terminal color swatches
+- Edit the color for a specific model (enter hex or pick from a palette)
+- Generate random colors for all models
+
 ### generate_report.py
 
 Generate an interactive HTML report with visualizations from results.json.
@@ -228,9 +251,12 @@ Example:
 - `experiment.py`: CLI entry point for batch LLM generation using Click
 - `summarize.py`: Parser for output files, consolidates results into JSON with quality analysis
 - `generate_report.py`: Generates interactive HTML reports using Plotly with dual-column comparison mode
+- `color_picker.py`: Interactive terminal tool for assigning and randomizing model colors in `models.json`
 - `providers.py`: Direct API providers for Ollama (HTTP), OpenAI (SDK), and Anthropic (SDK)
-- `config.py`: Configuration loading from models.cfg and formats.json, shared utilities
+- `config.py`: Configuration loading from `models.json` and `formats.json`, shared utilities
+- `utils.py`: Shared utility functions (error formatting, stderr output)
 - `check_for_models.py`: Ollama connection checker and model tester
 - `query_models.py`: Quick model query tool for Ollama and configured shortcuts
-- `models.cfg`: INI configuration file with model shortcuts
+- `analyze_isolation.py`: Developer diagnostic script; analyzes `experiment.py` for state carryover risks
+- `models.json`: JSON configuration file with model shortcuts, colors, and provider settings
 - `formats.json`: JSON configuration for output formats
