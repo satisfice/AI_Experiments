@@ -36,82 +36,107 @@ FORMAT_MAP = {
 }
 
 
+# Matches a numbered list prefix: digits followed by . ) : or -
+_NUMBERED_LINE_RE = re.compile(r'^\d+[.):\-]')
+
+
+def detect_intended_format(ext):
+    """Return the expected format name for the given extension (from FORMAT_MAP)."""
+    return FORMAT_MAP.get(ext, 'unknown')
+
+
+def _detect_json_style(content_stripped):
+    is_codefenced = content_stripped.startswith('```') and content_stripped.endswith('```')
+    if is_codefenced:
+        inner = content_stripped
+        start = content_stripped.find('\n')
+        end = content_stripped.rfind('\n')
+        if start != -1 and end != -1 and start != end:
+            inner = content_stripped[start:end]
+        return "format and markdown backticks" if '\n' in inner else "markdown backticks"
+    return "multiple lines" if '\n' in content_stripped else "single lines"
+
+
+def _detect_html_style(content_stripped):
+    if content_stripped.startswith('```') and content_stripped.endswith('```'):
+        return "markdown backticks"
+    return "multiple lines" if '\n' in content_stripped else "single line"
+
+
+def _detect_csv_style(content_stripped):
+    if content_stripped.startswith('```') and content_stripped.endswith('```'):
+        return "markdown backticks"
+    non_empty_lines = [l for l in content_stripped.split('\n') if l.strip()]
+    if len(non_empty_lines) <= 1:
+        return "single row"
+    return "multiple rows" if any(',' in l for l in non_empty_lines) else "one per line"
+
+
+def _detect_yaml_style(content_stripped):
+    if content_stripped.startswith('```') and content_stripped.endswith('```'):
+        return "markdown backticks"
+    non_empty_lines = [l for l in content_stripped.split('\n') if l.strip()]
+    if any(l.strip().startswith('- ') or l.strip() == '-' for l in non_empty_lines):
+        return "leading hyphen"
+    return "plain text"
+
+
+def _validate_text_plain(content_stripped):
+    """Validate plain-text format (.txt / soft prompt): no numbered lines expected.
+    Returns 'plain text' if no lines are numbered, None if any are (format mismatch)."""
+    non_empty_lines = [l for l in content_stripped.split('\n') if l.strip()]
+    if not non_empty_lines:
+        return "plain text"
+    return None if any(_NUMBERED_LINE_RE.match(l.strip()) for l in non_empty_lines) else "plain text"
+
+
+def _validate_text_numbered(content_stripped):
+    """Validate numbered-text format (.txt1 / hard prompt): all lines must be numbered.
+    Returns 'numbered text' if all lines are numbered, None if any are not (format mismatch)."""
+    non_empty_lines = [l for l in content_stripped.split('\n') if l.strip()]
+    if not non_empty_lines:
+        return None
+    return "numbered text" if all(_NUMBERED_LINE_RE.match(l.strip()) for l in non_empty_lines) else None
+
+
+# Maps each intended format to its style validator.
+# JSON / HTML / CSV / YAML validators always return a style (no mismatch possible at this level).
+# Text validators return None when content doesn't match the expected style.
+_FORMAT_VALIDATORS = {
+    'JSON':         _detect_json_style,
+    'HTML':         _detect_html_style,
+    'CSV':          _detect_csv_style,
+    'YAML':         _detect_yaml_style,
+    'text':         _validate_text_plain,
+    'numberedText': _validate_text_numbered,
+}
+
+
+def validate_format(content_stripped, intended_format):
+    """Dispatch to the per-format style detector for the intended format.
+    Returns the detected style string; None if content mismatches the expected format;
+    'unknown' if no validator is registered (e.g. markdown)."""
+    validator = _FORMAT_VALIDATORS.get(intended_format)
+    if validator is None:
+        return "unknown"
+    return validator(content_stripped)
+
+
+def detect_actual_format(content_stripped):
+    """Detect the actual text style when content mismatches the intended format.
+    Returns 'numbered text' if any line is numbered, 'plain text' otherwise."""
+    non_empty_lines = [l for l in content_stripped.split('\n') if l.strip()]
+    if not non_empty_lines:
+        return "plain text"
+    return "numbered text" if any(_NUMBERED_LINE_RE.match(l.strip()) for l in non_empty_lines) else "plain text"
+
+
 def detect_format_style(content, ext):
     """Detect the formatting style of the content based on extension and content structure."""
     content_stripped = content.strip()
-
-    if ext == '.json':
-        has_backticks = content_stripped.startswith('```') and content_stripped.endswith('```')
-        # Check for newlines inside the backticks (if present) to detect format style
-        inner_content = content_stripped
-        if has_backticks:
-            start = content_stripped.find('\n')
-            end = content_stripped.rfind('\n')
-            if start != -1 and end != -1 and start != end:
-                inner_content = content_stripped[start:end]
-        has_newlines = '\n' in inner_content
-
-        if has_backticks and has_newlines:
-            return "format and markdown backticks"
-        elif has_backticks:
-            return "markdown backticks"
-        elif has_newlines:
-            return "multiple lines"
-        else:
-            return "single lines"
-
-    elif ext == '.html':
-        has_backticks = content_stripped.startswith('```') and content_stripped.endswith('```')
-        has_newlines = '\n' in content_stripped
-
-        if has_backticks:
-            return "markdown backticks"
-        elif has_newlines:
-            return "multiple lines"
-        else:
-            return "single line"
-
-    elif ext == '.csv':
-        has_backticks = content_stripped.startswith('```') and content_stripped.endswith('```')
-        if has_backticks:
-            return "markdown backticks"
-
-        non_empty_lines = [l for l in content_stripped.split('\n') if l.strip()]
-        if len(non_empty_lines) <= 1:
-            return "single row"
-        # Multiple lines: check whether any line contains commas
-        has_commas = any(',' in line for line in non_empty_lines)
-        if has_commas:
-            return "multiple rows"
-        else:
-            return "one per line"
-
-    elif ext == '.yml':
-        has_backticks = content_stripped.startswith('```') and content_stripped.endswith('```')
-        if has_backticks:
-            return "markdown backticks"
-
-        non_empty_lines = [l for l in content_stripped.split('\n') if l.strip()]
-        # "leading hyphen" if any line uses YAML list syntax (- item)
-        if any(l.strip().startswith('- ') or l.strip() == '-' for l in non_empty_lines):
-            return "leading hyphen"
-        return "plain text"
-
-    elif ext in ('.txt', '.txt1'):
-        non_empty_lines = [l for l in content_stripped.split('\n') if l.strip()]
-        if not non_empty_lines:
-            return "plain text"
-        # A line is "numbered" if it starts with digits followed by a period, parenthesis, colon, or dash
-        is_numbered = lambda l: bool(re.match(r'^\d+[.):\-]', l.strip()))
-        if ext == '.txt':
-            # Plain text is the expected style; any numbered line makes it "numbered text"
-            return "numbered text" if any(is_numbered(l) for l in non_empty_lines) else "plain text"
-        else:  # .txt1
-            # Numbered text is the expected style; any un-numbered line makes it "plain text"
-            return "plain text" if any(not is_numbered(l) for l in non_empty_lines) else "numbered text"
-
-    else:
-        return "unknown"
+    intended = detect_intended_format(ext)
+    style = validate_format(content_stripped, intended)
+    return style if style is not None else detect_actual_format(content_stripped)
 
 
 def parse_txt(content):
@@ -1480,7 +1505,6 @@ def detect_preamble_leak(item):
 
     return False
 
-
 def detect_markup_artifact(item):
     """Check if item contains residual HTML/XML/markdown markup."""
     markup_patterns = [
@@ -1493,7 +1517,6 @@ def detect_markup_artifact(item):
         if re.search(pattern, item):
             return True
     return False
-
 
 def detect_repeated_chars(item):
     """Check if item has 3+ consecutive identical characters."""
