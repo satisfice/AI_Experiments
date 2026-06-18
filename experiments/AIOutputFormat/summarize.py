@@ -1506,30 +1506,29 @@ def detect_repeated_chars(item):
 # least one item was actually changed. These apply to all formats; CSV uses them
 # as part of its pipeline established in this pass.
 
+def _punct_cleanup_str(rule, changed, chars_stripped):
+    """Return a cleanup string with optional stripped-char annotation, or None if nothing changed."""
+    if not changed:
+        return None
+    chars_str = ''.join(sorted(chars_stripped))
+    suffix = f" ({chars_str})" if chars_str else ''
+    return f"{rule}: {changed} items{suffix}"
+
+
 def clean_strip_leading_format(items):
-    """Strip leading markdown/format characters (* - + : ; , . ! ? { } [ ] etc.).
+    """Strip leading formatting characters (* - + : ; , . ! ? { } [ ] etc.).
     Rule: Strip-Leading-Formatting.
-    Tracks which characters were stripped and includes them in the cleanup string.
-    Returns (items, cleanup_str_or_none)."""
+    Returns (items, cleanup_str_or_none). Cleanup string includes which chars were stripped."""
     result = []
     changed = 0
     chars_stripped = set()
     for item in items:
-        cleaned = _LEADING_PUNCT_RE.sub('', item).strip()
-        if cleaned != item:
+        m = _LEADING_PUNCT_RE.match(item)
+        if m:
             changed += 1
-            # Collect unique characters that were stripped from the leading position
-            m = _LEADING_PUNCT_RE.match(item)
-            if m:
-                chars_stripped.update(c for c in m.group(0) if not c.isspace())
-        result.append(cleaned)
-    if changed:
-        chars_str = ''.join(sorted(chars_stripped)) if chars_stripped else ''
-        suffix = f" ({chars_str})" if chars_str else ''
-        cleanup = f"Strip-Leading-Formatting: {changed} items{suffix}"
-    else:
-        cleanup = None
-    return result, cleanup
+            chars_stripped.update(c for c in m.group(0) if not c.isspace())
+        result.append(_LEADING_PUNCT_RE.sub('', item).strip())
+    return result, _punct_cleanup_str("Strip-Leading-Formatting", changed, chars_stripped)
 
 
 def clean_strip_number_word_prefix(items):
@@ -1563,29 +1562,19 @@ def clean_remove_parenthetical(items):
 
 
 def clean_strip_trailing_punct(items):
-    """Strip trailing punctuation and format characters from items.
+    """Strip trailing formatting characters (. , ; : ! ? etc.).
     Rule: Strip-Trailing-Punctuation.
-    Tracks which characters were stripped and includes them in the cleanup string.
-    Returns (items, cleanup_str_or_none)."""
+    Returns (items, cleanup_str_or_none). Cleanup string includes which chars were stripped."""
     result = []
     changed = 0
     chars_stripped = set()
     for item in items:
-        cleaned = _TRAILING_PUNCT_RE.sub('', item).strip()
-        if cleaned != item:
+        m = _TRAILING_PUNCT_RE.search(item)
+        if m:
             changed += 1
-            # Collect unique characters that were stripped from the trailing position
-            m = _TRAILING_PUNCT_RE.search(item)
-            if m:
-                chars_stripped.update(c for c in m.group(0) if not c.isspace())
-        result.append(cleaned)
-    if changed:
-        chars_str = ''.join(sorted(chars_stripped)) if chars_stripped else ''
-        suffix = f" ({chars_str})" if chars_str else ''
-        cleanup = f"Strip-Trailing-Punctuation: {changed} items{suffix}"
-    else:
-        cleanup = None
-    return result, cleanup
+            chars_stripped.update(c for c in m.group(0) if not c.isspace())
+        result.append(_TRAILING_PUNCT_RE.sub('', item).strip())
+    return result, _punct_cleanup_str("Strip-Trailing-Punctuation", changed, chars_stripped)
 
 
 def clean_strip_doubled_punct(items):
@@ -1630,18 +1619,16 @@ def clean_strip_quotes(items):
     """Remove outer quote wrapping (single or double) from items.
     Rule: Strip-Quotes.
     Returns (items, cleanup_str_or_none)."""
-    cleaned = []
+    result = []
     changed = 0
     for item in items:
-        original = item
-        c = item.strip()
-        while c and c[0] in ('"', "'") and c[-1] == c[0]:
-            c = c[1:-1].strip()
-        if c != original:
+        stripped = item.strip()
+        while stripped and stripped[0] in ('"', "'") and stripped[-1] == stripped[0]:
+            stripped = stripped[1:-1].strip()
+        if stripped != item:
             changed += 1
-        cleaned.append(c)
-    cleanup = f"Strip-Quotes: {changed} items" if changed else None
-    return cleaned, cleanup
+        result.append(stripped)
+    return result, (f"Strip-Quotes: {changed} items" if changed else None)
 
 
 def clean_strip_leading_bullets(items):
