@@ -1676,35 +1676,28 @@ def clean_strip_leading_numbers(items):
 
 def clean_format_specific(items, ext):
     """
-    Clean up format-specific formatting FIRST (before quality checks).
-    Removes bullets, numbers, HTML tags, and blockquote markers from items.
-    Applies to all formats; HTML markup or blockquote markers in any format are
-    both cleaned and flagged as quality issues.
-    For CSV, delegates leading-marker removal to csv_strip_leading_markers().
+    Apply format-specific cleanup before quality checks.
+    - Strips stray HTML tags and blockquote markers from all formats (both flagged as quality issues).
+    - Strips leading bullet/number markers from CSV, Markdown, and plain text.
     Returns (cleaned_items, cleanups_list, quality_issues_list).
     """
     cleanups = []
     quality_issues = []
-    cleaned = list(items)
 
-    # Strip HTML tags and blockquote markers from all formats.
-    # Residual HTML tags in HTML files indicate malformed structure; in any other
-    # format they indicate the model leaked markup into its response.
-    # Blockquote '>' markers are similarly out of place in structured output.
-    new_cleaned = []
+    # Pass 1: strip stray HTML tags and blockquote markers from every item regardless of format.
+    # Residual HTML tags or blockquote '>' markers in structured output indicate model leakage.
     html_tag_count = 0
     blockquote_count = 0
-    for item in cleaned:
-        stripped_tags = re.sub(r'</?[a-zA-Z][^>]*>?', '', item)
-        if stripped_tags != item:
+    result = []
+    for item in items:
+        no_tags = re.sub(r'</?[a-zA-Z][^>]*>?', '', item)
+        if no_tags != item:
             html_tag_count += 1
-        item = stripped_tags
-        stripped_bq = re.sub(r'^>+|>+$', '', item).strip()
-        if stripped_bq != item:
+        no_bq = re.sub(r'^>+|>+$', '', no_tags).strip()
+        if no_bq != no_tags:
             blockquote_count += 1
-        item = stripped_bq
-        new_cleaned.append(item)
-    cleaned = new_cleaned
+        result.append(no_bq)
+
     if html_tag_count:
         cleanups.append("HTML-Stray-Tag-Cleanup")
         quality_issues.append("stray-html-markup")
@@ -1712,17 +1705,12 @@ def clean_format_specific(items, ext):
         cleanups.append("Blockquote-Marker-Cleanup")
         quality_issues.append("blockquote-markup")
 
-    # CSV: delegate to named function that tracks bullets and numbers separately
-    if ext == '.csv':
-        cleaned, csv_cleanups = csv_strip_leading_markers(cleaned)
-        cleanups.extend(csv_cleanups)
+    # Pass 2: strip leading bullet/number markers from formats where they serve as list structure.
+    if ext in ('.csv', '.md', '.txt'):
+        result, marker_cleanups = csv_strip_leading_markers(result)
+        cleanups.extend(marker_cleanups)
 
-    # Markdown and plain text: delegate to shared cleanup functions
-    elif ext in ['.md', '.txt']:
-        cleaned, csv_cleanups = csv_strip_leading_markers(cleaned)
-        cleanups.extend(csv_cleanups)
-
-    return cleaned, cleanups, quality_issues
+    return result, cleanups, quality_issues
 
 
 def process_and_track(items, ext, max_item_length=25):
