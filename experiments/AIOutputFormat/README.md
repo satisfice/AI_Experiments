@@ -208,6 +208,54 @@ Custom output:
 python generate_report.py -i results/results.json -o reports/analysis.html
 ```
 
+### format_runner.py
+
+Exercise format validators and cleanup functions against example files in
+`format_examples/` without requiring any experiment infrastructure (no `results/`
+directory, no models, no API keys).
+
+```bash
+python format_runner.py [--dir DIR] [-v]
+```
+
+**Parameters:**
+
+- `--dir`: Directory containing example files (default: `format_examples`)
+- `-v, --verbose`: Show cleanup keys, quality issues, and item metadata
+
+**Examples:**
+
+Run against the default `format_examples/` directory:
+```bash
+python format_runner.py
+```
+
+Run with full metadata output:
+```bash
+python format_runner.py -v
+```
+
+Run against a different directory:
+```bash
+python format_runner.py --dir my_examples -v
+```
+
+### format_examples/
+
+Example input files used by `format_runner.py`. Files are named
+`<label>.<ext>` where `<ext>` determines the parser and format validator
+invoked. Currently contains one valid example per supported format:
+
+| File | Format | Expected style |
+|---|---|---|
+| `valid.txt` | plain text | plain text |
+| `valid.txt1` | numbered text | numbered text |
+| `valid.json` | JSON | multiple lines |
+| `valid.yml` | YAML | leading hyphen |
+| `valid.html` | HTML | multiple lines |
+| `valid.csv` | CSV | single row |
+| `valid.md` | markdown | (unknown — no style validator) |
+
 ## Output Files
 
 Output files are named with the pattern:
