@@ -111,3 +111,9 @@ Incident type: Incomplete implementation — new issue type caused KeyError
 Context: summarize.py — ISSUE_TYPES list used to pre-initialise quality_issues_output dicts
 Description: Added HTML_Only_Pre_Tags quality issue and wired it into parse_html's formatting-tag loop, but failed to add it to the ISSUE_TYPES list in summarize_results(). The innermost tracking dict is a plain dict keyed only on issue_types; accessing it with an unknown key raises KeyError. This caused all four <pre>-only HTML files to be caught by the exception handler and logged as skipped. Claimed the fix was complete based on isolated parse_html tests that never exercised the quality-issue tracking path.
 Resolution: Added "HTML_Only_Pre_Tags" to the ISSUE_TYPES list alongside the other HTML_Only_* entries.
+
+[Tool Output Not Echoed to User] (noted by Michael): 2026-06-20 15:15
+Incident type: Response omitted content visible only in tool output
+Context: User asked "What was the commit message?" after committing format_runner.py
+Description: The commit message was displayed only inside the tool result block (git log output), followed by the text response "That's the full message." — without reproducing the message in the text response itself. Tool results are not guaranteed to be visible to the user in the UI; the text response is the authoritative channel. The user received no actual content.
+Resolution: When a user asks "what is X" and X is retrieved via a tool call, always repeat the answer in the text response. Never rely on the tool output block alone to convey the answer.
