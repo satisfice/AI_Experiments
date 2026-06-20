@@ -114,8 +114,8 @@ def _detect_yaml_style(content_stripped):
 def _validate_text_style(content_stripped, expect_numbered):
     """Common implementation for plain-text and numbered-text validation.
 
-    expect_numbered=False (.txt / soft prompt): ANY numbered line is a mismatch.
-    expect_numbered=True  (.txt1 / hard prompt): ANY un-numbered line is a mismatch."""
+    expect_numbered=False: ANY numbered line is a mismatch → returns None.
+    expect_numbered=True:  ANY un-numbered line is a mismatch → returns None."""
     lines = _non_empty_lines(content_stripped)
     if not lines:
         # Empty content: trivially matches plain-text; fails numbered-text
@@ -123,19 +123,19 @@ def _validate_text_style(content_stripped, expect_numbered):
     # Partition into numbered and un-numbered lines
     numbered = [l for l in lines if _NUMBERED_LINE_RE.match(l.strip())]
     if expect_numbered:
-        # Hard-prompt contract: every line must carry a number prefix
+        # Every line must carry a number prefix
         return "numbered text" if len(numbered) == len(lines) else None
-    # Soft-prompt contract: no line should carry a number prefix
+    # No line should carry a number prefix
     return None if numbered else "plain text"
 
 
 def _validate_text_plain(content_stripped):
-    """Plain-text format (.txt / soft prompt): expects no numbered lines."""
+    """Plain-text format (.txt): expects no numbered lines."""
     return _validate_text_style(content_stripped, expect_numbered=False)
 
 
 def _validate_text_numbered(content_stripped):
-    """Numbered-text format (.txt1 / hard prompt): expects all lines numbered."""
+    """Numbered-text format (.txt1): expects all lines numbered."""
     return _validate_text_style(content_stripped, expect_numbered=True)
 
 
