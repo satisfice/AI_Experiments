@@ -252,7 +252,9 @@ invoked. Currently contains one valid example per supported format:
 | `valid.txt1` | numbered text | numbered text |
 | `valid.json` | JSON | multiple lines |
 | `valid.yml` | YAML | leading hyphen |
-| `valid.html` | HTML | multiple lines |
+| `valid_li_ul.html` | HTML | multiple lines |
+| `valid_li_ul_body.html` | HTML | multiple lines |
+| `valid_li_ul_body_html.html` | HTML | multiple lines |
 | `valid.csv` | CSV | single row |
 | `valid.md` | markdown | (unknown — no style validator) |
 
