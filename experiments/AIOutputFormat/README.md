@@ -246,7 +246,7 @@ Example input files used by `format_runner.py`. Files are named
 `<label>.<ext>` where `<ext>` determines the parser and format validator
 invoked. Currently contains one valid example per supported format:
 
-| File | Format | Expected style |
+| File | Format | Expected style / notes |
 |---|---|---|
 | `valid.txt` | plain text | plain text |
 | `valid.txt1` | numbered text | numbered text |
@@ -257,6 +257,11 @@ invoked. Currently contains one valid example per supported format:
 | `valid_li_ul_body_html.html` | HTML | multiple lines |
 | `valid.csv` | CSV | single row |
 | `valid.md` | markdown | (unknown — no style validator) |
+| `txt_numbered.txt` | plain text | mismatch: numbered items in a .txt file |
+| `txt1_plain.txt1` | numbered text | mismatch: plain items in a .txt1 file |
+| `json_codefenced.json` | JSON | mismatch: JSON wrapped in markdown backticks |
+| `html_codefenced.html` | HTML | mismatch: HTML wrapped in markdown backticks |
+| `yaml_codefenced.yml` | YAML | mismatch: YAML wrapped in markdown backticks |
 
 ## Output Files
 

@@ -5,4 +5,10 @@ tasks and quality issues helped, helps, me to wrap my head around what the code 
 abstraction than the code itself.
 
 
+Here's a useful jq script for showing item counts:
+
+jq ".[][].metadata.itemCount" results.json
+
+It would be fun to chart that out.
+
 

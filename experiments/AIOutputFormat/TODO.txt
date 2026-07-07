@@ -1,3 +1,104 @@
+- Create experiment.json file, to be read at startup, that contains all the options for the experiment.
+- experiment.json should also have a key, "completed", that defaults to false and is changed to true as soon as the current experiment is completed.
+- Use experiment.json to determine whether the last run was completed, and if not, display the options that will be completed.
+
+================================================================================
+CODESCENE CODE HEALTH ANALYSIS — 2026-06-10
+================================================================================
+Project: AI_Experiments (ID: 81152)
+Overall project health: 5.35/10  |  Hotspot health: 2.24/10
+
+FILE SCORES:
+  summarize.py        1.4   RED — Severe
+  experiment.py       3.29  RED — Severe
+  generate_report.py  3.36  RED — Severe
+  config.py           6.34  YELLOW — Problematic
+  check_for_models.py 8.43  YELLOW
+  providers.py        9.31  GREEN
+  utils.py           10.0   OPTIMAL
+  query_models.py    10.0   OPTIMAL
+
+--------------------------------------------------------------------------------
+PRIORITY 1 — summarize.py (1.4)
+--------------------------------------------------------------------------------
+ISSUES:
+  - Brain Class: 76 functions, low cohesion, multiple unrelated responsibilities
+  - Brain Method: summarize_results (lines 2002-2331, 220 LoC, 10 args)
+  - Deep nesting: matches_model_pattern (8 levels), safe_write (7 levels),
+    parse_json/parse_yaml/parse_html/summarize_results (4 levels each)
+  - Extreme complexity: parse_json CC=56, parse_html CC=49, detect_format_style CC=40,
+    process_and_track CC=34, parse_yaml CC=29
+  - Code duplication: 8 near-identical clean_* functions (lines 1487-1652)
+  - Large methods: summarize_results 220 LoC, parse_json 148 LoC, parse_html 122 LoC
+  - Excess args: main (11 args), summarize_results (10 args)
+  - Bumpy road: 12 functions flagged; safe_write 13 bumps, parse_json/parse_html/
+    summarize_results 10 bumps each
+
+STEPS (smallest to largest):
+  1. Replace 8 duplicated clean_* functions with a single parametric cleaner
+     driven by a config table.
+  2. Flatten matches_model_pattern and safe_write using early-return guard clauses.
+  3. Extract format parsers (parse_json, parse_yaml, parse_html, parse_md) into
+     a dedicated parsers.py module.
+  4. Extract clean_* and detect_* families into a normalization.py module.
+  5. Introduce a dataclass to bundle summarize_results's 10 args and decompose
+     its 220-line body into named sub-steps.
+
+--------------------------------------------------------------------------------
+PRIORITY 2 — generate_report.py (3.36)
+--------------------------------------------------------------------------------
+ISSUES:
+  - Brain Method: generate_html_report_with_filters (lines 373-1511, 980 LoC,
+    12 args, 5-level nesting, 6 bumpy-road bumps)
+  - 1350 LoC total in file
+  - Complex methods: main CC=21, get_cleanup_data_for_combo CC=14,
+    adjust_color_by_temperature CC=13, is_preamble CC=10
+  - Excess args: generate_html_report_with_filters 12 args
+
+STEPS:
+  1. Introduce a ReportConfig dataclass to collapse the 12-arg signature.
+  2. Decompose generate_html_report_with_filters into a 4-stage pipeline:
+       data aggregation → filter application → template rendering → file output
+     Each stage should be a named function under 70 lines.
+  3. Replace adjust_color_by_temperature's branching with a lookup/interpolation.
+  4. Extract main's argument parsing and validation into a setup function.
+
+--------------------------------------------------------------------------------
+PRIORITY 3 — experiment.py (3.29)
+--------------------------------------------------------------------------------
+ISSUES:
+  - Brain Methods: process_format (lines 239-414, 134 LoC, 17 args),
+    main (lines 568-943, 280 LoC, 10 args)
+  - Bumpy road: main 20 bumps, process_format 7 bumps
+  - Deep nesting: main 7 levels, process_format 5 levels
+  - Complex methods: prompt_for_multiple CC=13, prompt_for_format CC=12
+  - Excess args: process_format 17 args (!), main 10 args, generate_filename 9,
+    save_run_config 9, find_completed_iterations 6
+  - Low cohesion: CLI handling, format processing, results persistence all mixed
+  - 667 LoC total
+
+STEPS:
+  1. Introduce a RunConfig dataclass to replace process_format's 17-arg signature.
+  2. Extract main into three named functions: setup_run(), run_formats(),
+     persist_results().
+  3. Flatten main's 7-level nesting with early-exit guard clauses.
+  4. Split prompt_for_multiple and prompt_for_format into smaller validators.
+
+--------------------------------------------------------------------------------
+PRIORITY 4 — config.py (6.34)
+--------------------------------------------------------------------------------
+  - Yellow zone; detailed review not yet run.
+  - Address after the three red files are stable.
+  - Run codescene code_health_review on config.py as a first step.
+
+--------------------------------------------------------------------------------
+RECOMMENDED WORK ORDER:
+  1. generate_report.py  (single dominant Brain Method — most contained entry point)
+  2. experiment.py       (introduce RunConfig, extract main)
+  3. summarize.py        (requires module split — most complex, save for last)
+  4. config.py           (review and clean up)
+================================================================================
+
 COMPLETED:
 ✓ Markdown parsing: detect and separate entirely bold/italic from partial bold/italic
 ✓ HTML parsing: detect HTML-only-formatting-tags (bold, italic, emphasis, underline) as quality issues

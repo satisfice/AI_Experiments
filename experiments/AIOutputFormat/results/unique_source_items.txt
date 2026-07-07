@@ -1,34 +1,34 @@
 - Aardvark
-* Aardvark
-12. Aardvark
 Aardvark
+12. Aardvark
+* Aardvark
 Addax
-- African Grey Parrot
-African Grey Parrot
 - African Elephant
 African Elephant
+African Grey Parrot
+- African Grey Parrot
 - Agama
 Agouti
 Albatross
 Albatross  
-- Alligator
-Alligator  
-alligator
-Alligator.
 Alligator
-Alpaca  
+- Alligator
+alligator
+Alligator  
+Alligator.
 - Alpaca
 Alpaca
+Alpaca  
 Alpacas
 American alligator
 - Amur Leopard
-Anaconda
 Anaconda  
+Anaconda
 Ancient White Dolphin
 and Mountain Goat
 Andean Condor
-Anemone  
 Anemone
+Anemone  
 Angelfish
 Anglerfish
 Animal Names
@@ -36,79 +36,79 @@ Animals
 animalType
 Anole
 - Anole
-Ant  
-Antílope
-- Ant
 Ant
+Antílope
 ant
+- Ant
+Ant  
 Anteater
 - Anteater
 Anteater  
 anteater
 - Antelope
-Antelope  
-antelope
 Antelope
+antelope
+Antelope  
+Arctic Seal
 Arctic Fox
 - Arctic Fox
 Arctic fox
-Arctic Seal
 Arctic Hare
+* Armadillo
+Armadillo
+10. Armadillo
+14. Armadillo
+1. Armadillo
 Armadillo  
 4. Armadillo
-7. Armadillo
-10. Armadillo
-armadillo
-8. Armadillo
-1. Armadillo
-2. Armadillo
 - Armadillo
+armadillo
+2. Armadillo
+8. Armadillo
 9. Armadillo
 19. Armadillo
-Armadillo
-14. Armadillo
-* Armadillo
+7. Armadillo
 Armadillos
 Arowana
 Asian Elephant
 Asian elephant
-- Atlantic Puffin
 Atlantic Puffin
+- Atlantic Puffin
 Atlantic Salmon
 Auk
 Auklet
 Australian Kangaroo
 - Australian Zebra Finch
-* Axolotl
-5. Axolotl
+6. Axolotl
 Axolotl
 - Axolotl
-6. Axolotl
-3. Axolotl
 4. Axolotl
+3. Axolotl
+5. Axolotl
+* Axolotl
 1. Axolotl
 Axolotls
 Ayantimi
 Aye-aye
-Aye-Aye
 Aye Aye
+Aye-Aye
 Ayres' hawk
 Azure Turtle
 baboon
 Baboon  
 Baboon
-13. Badger
-badger
-10. Badger 
-Badger 
-Badger
-* Badger
-Badger  
 12. Badger
-Bald eagle
+Badger  
+10. Badger 
+badger
+13. Badger
+Badger 
+* Badger
+Badger
+Bald Eagle
 Bald Eagle  
 Bald eagle  
-Bald Eagle
+Bald eagle
 - Bald Eagle
 Ball Python
 Baltimore Oriole  
@@ -122,80 +122,80 @@ Barracuda
 Barracudas
 Basilisk
 Bass
+Bat
+Bat  
 bat
 - Bat
-Bat  
-Bat
 Baxter
 * Bear
+10. Bear
+8. Bear
+4. Bear
+7. Bear
+Bear 
 5. Bear
+6. Bear
+Bear
+bear
+14. Bear
+3. Bear
 9. Bear
 - Bear
-bear
-7. Bear
-8. Bear
 Bear  
-6. Bear
-Bear 
-10. Bear
-14. Bear
-4. Bear
-3. Bear
-Bear
 - Beaver
-Beaver
-Beaver  
 beaver
+Beaver  
+Beaver
 Bee
+Bee  
 bee
 - Bee
-Bee  
-Beetle
 Beetle  
 - Beetle
+Beetle
 beetle
+Bengal Cat
 Bengal Tiger
 - Bengal Tiger
-Bengal Cat
 Bernice Lemur
 Betta
 Bilby
+Binturong
 Binturong 
 - Binturong
-Binturong
 Binx
-- Bird
 Bird
-bird
 3. Bird
+- Bird
+bird
 - Bison
-Bison  
-bison
 Bison
-- Black Rhinoceros
+bison
+Bison  
 Black-footed Ferret
 Black Rhinoceros
+- Black Rhinoceros
 Black Bear
+Blue Poison Dart Frog
+Blue Jay  
+- Blue Dragon
+Blue Tang
+Blue Poison Frog
+Blue Dragon
+Blue Jay
 Blue Agama
 Blue whale  
-Blue Whale
-Blue Dragon
-Blue Jay  
-Blue Jay
-Blue Tang
 - Blue Jay
-Blue Poison Dart Frog
+Blue Whale
 - Blue Poison Dart Frog
 Blue jay
-- Blue Dragon
-Blue Poison Frog
 Bluebird
 - Bluejay
 Bluejay
-Boa
-Boa  
 Boa constrictor
+Boa
 Boa constrictor  
+Boa  
 Boar
 Bobcat
 Bobcat  
@@ -204,38 +204,38 @@ Bonobo
 Boris
 Box Turtle
 Bright Peacock
-Brown Hyena
+Brown bear  
 Brown bear
 Brown Bear  
-Brown bear  
 Brown Bear
+Brown Hyena
 Bruiser
 Bruno
+7. Bubbles
 Bubbles
 6. Bubbles
-7. Bubbles
 Bucky
+- Buffalo
 buffalo
 Buffalo
-- Buffalo
 Buffalo  
 Bull
-Bulldog
 Bulldog  
+Bulldog
 Bullfrog
-Butterfly 
-butterfly
-Butterfly  
 Butterfly
+Butterfly 
+Butterfly  
 - Butterfly
+butterfly
 Butterflyfish
 - Buzzard
 Caiman
 Calf
+camel
+- Camel
 Camel  
 Camel
-- Camel
-camel
 Cameleon
 Camelid
 Camels
@@ -250,58 +250,58 @@ Caracal
 Cardinal
 Caribou
 Caribou  
-Carp  
 - Carp
+Carp  
 Carp
 Caspian
-Cassowary  
-Cassowary 
 Cassowary
+Cassowary 
+Cassowary  
 1. Cat
-cat
+Cat  
+* Cat
+Cat
+15. Cat
 6. Cat
 Cat 
-Cat
-* Cat
-2. Cat
 - Cat
-Cat  
-15. Cat
-Caterpillar
-- Caterpillar
+cat
+2. Cat
 Caterpillar  
+- Caterpillar
+Caterpillar
 Catfish
 Cats
 centipede
 Centipede
-11. Chameleon
-15. Chameleon
 chameleon
-10. Chameleon
-- Chameleon
+15. Chameleon
 Chameleon
-Chameleon  
+- Chameleon
+11. Chameleon
 * Chameleon
+10. Chameleon
+Chameleon  
 Cheeta
-9. Cheetah
-* Cheetah
 3. Cheetah
-- **Cheetah**
-12. Cheetah
-5. Cheetah
-10. Cheetah
-Cheetah 
-Cheetah  
-7. Cheetah
-- Cheetah
-8. Cheetah
-Cheetah
 4. Cheetah
-2. Cheetah
+- **Cheetah**
 11. Cheetah
+12. Cheetah
+2. Cheetah
+Cheetah
+8. Cheetah
+* Cheetah
+- Cheetah
+10. Cheetah
+7. Cheetah
+5. Cheetah
+9. Cheetah
+Cheetah 
+6. Cheetah
+Cheetah  
 1. Cheetah
 cheetah
-6. Cheetah
 Cheeto
 Cherry laurel moth
 Chick
@@ -310,30 +310,30 @@ Chickadee
 chicken
 Chicken
 Chicken  
-Chihuahua  
 Chihuahua
-14. Chimpanzee
-10. Chimpanzee
-- Chimpanzee
-Chimpanzee 
-5. Chimpanzee
-8. Chimpanzee
-Chimpanzee  
+Chihuahua  
 chimpanzee
-* Chimpanzee
-Chimpanzee
+5. Chimpanzee
 9. Chimpanzee
-14. Chinchilla
-Chinchilla
-Chinchilla  
-9. Chinchilla
+Chimpanzee  
+10. Chimpanzee
+8. Chimpanzee
+14. Chimpanzee
+* Chimpanzee
+Chimpanzee 
+Chimpanzee
+- Chimpanzee
 * Chinchilla
+Chinchilla  
+Chinchilla
+14. Chinchilla
+9. Chinchilla
 Chinchillas
 Chinese Water Dragon
+chipmunk
 Chipmunk  
 Chipmunk
 - Chipmunk
-chipmunk
 Cicada
 Cichlid
 Civet
@@ -342,37 +342,37 @@ Clementine Raccoon
 Cleo
 Clownfish
 Coati
-Cobra
 Cobra  
 - Cobra
+Cobra
 Cockatoo
 Cockroach
 10. Cocoa
 Cod
 Comet Fish
-Common Octopus
 Common Toad
+Common Octopus
 Comodo Dragon
+Coral Trout
 Coral  
 Coral
-Coral Trout
 Cormorant  
 Cormorant
 Coscer
 Couchant Falcon  
-Cougar  
 Cougar
+Cougar  
+- Cow
 Cow  
 Cow
-Cow 
 cow
-- Cow
+Cow 
 Cowbird
 Coyote
 Coyote  
 Coypu
-crab
 - Crab
+crab
 Crab
 Crab  
 Crane
@@ -383,43 +383,43 @@ Cricket
 Crimson Otter
 Croco­dile
 Croco
-12. Crocodile
-Crocodile 
-15. Crocodile
-Crocodile
-10. Crocodile
-14. Crocodile
-crocodile
 Crocodile  
-* Crocodile
-11. Crocodile
-9. Crocodile
+Crocodile 
+crocodile
+14. Crocodile
+15. Crocodile
 8. Crocodile
+11. Crocodile
+12. Crocodile
 - Crocodile
-Crow  
+9. Crocodile
+10. Crocodile
+Crocodile
+* Crocodile
 Crow
 - Crow
+Crow  
 Crows
 Cuddles
 curlew
-- Cuttlefish
 Cuttlefish  
+- Cuttlefish
 Cuttlefish
 Dachshund
 Daisy
 Dall Sheep
 Dalmatian
-Deer 
-* Deer
-deer
 9. Deer
- Deer
-- Deer
 8. Deer
+Deer 
 Deer  
+deer
+* Deer
+- Deer
+ Deer
 Deer
-Dhole
 - Dhole
+Dhole
 Digger
 Dik-dik
 Dingo
@@ -429,7 +429,11 @@ Diplodocus
 Discus
 Dodo
 2. Dog
+5. Dog
 3. Dog
+Dog 
+- Dog
+Dog  
 Dog
     Cat
     Elephant
@@ -441,292 +445,288 @@ Dog
     Bear
     Wolf
 * Dog
-dog
-5. Dog
-- Dog
 Dog
+dog
 1. Dog
-Dog 
-Dog  
-* Dolphin
-3. Dolphin
 Dolphin  
-dolphin
-Dolphin
-12. Dolphin
-14. Dolphin
-6. Dolphin
-9. Dolphin
-- Dolphin
-8. Dolphin
-13. Dolphin
-5. Dolphin
-10. Dolphin
-4. Dolphin
-Dolphin 
-7. Dolphin
 2. Dolphin
+- Dolphin
+13. Dolphin
+3. Dolphin
+dolphin
+4. Dolphin
+7. Dolphin
+10. Dolphin
+5. Dolphin
+6. Dolphin
+* Dolphin
+8. Dolphin
+12. Dolphin
+Dolphin 
+14. Dolphin
+Dolphin
+9. Dolphin
 Dolphins
-11. Donkey
-Donkey
 Donkey 
+Donkey
 Donkey  
 * Donkey
+11. Donkey
+Dove
 dove
 Dove  
-Dove
-Dragonfly
 - Dragonfly
+Dragonfly
 Dragonfly  
 dragonfly
 Dromedary Camel
 Dromedary
 Drone
-Duck
 - Duck
-duck
+Duck
 Duck  
-Dugong 
+duck
 Dugong
-Dugong  
 - Dugong
+Dugong 
+Dugong  
 Duiker
 Duke
-10. Eagle
-9. Eagle
 Eagle  
-7. Eagle
-eagle
+9. Eagle
 - Eagle
+7. Eagle
 Eagle
+10. Eagle
+eagle
 Earthworm
-Eastern Grey Kangaroo
 Eastern tiger salamander
+Eastern Grey Kangaroo
 Eastern Gray Squirrel
+- Echidna
 * Echidna
 Echidna  
 Echidna 
 Echidna
-- Echidna
 Eel  
-15. Eel
 Eel
 * Eel
+15. Eel
 Egret  
 Elefante
-3. Elephant
-Elephant Seal
 4. Elephant
-12. Elephant
-Elephant 
-Elephant
+Elephant seal
+Elephant seal  
 elephant
-* Elephant
-2. Elephant
-5. Elephant
+3. Elephant
 1. Elephant
 Elephant Seal  
+- **Elephant**
 6. Elephant
 Elephant  
-- **Elephant**
+2. Elephant
+12. Elephant
+Elephant 
 - Elephant
-Elephant seal  
-Elephant seal
-Elk  
+Elephant
+Elephant Seal
+* Elephant
+5. Elephant
 Elk
 - Elk
+Elk  
 Emperor Penguin
 - Emperor Penguin
-Emu
-emu
 - Emu
+Emu
 Emu  
+emu
 Eskimo Dog
 Esquimau
-- European Robin
 European Hedgehog
 European hedgehog
 European Polecat
-falcon
-Falcon  
-4. Falcon
-- Falcon
-*Falcon
-* Falcon
+- European Robin
 Falcon 
-Falcon
 10. Falcon
-6. Falcon
-- **Falcon**
 9. Falcon
+Falcon
+falcon
+- Falcon
+4. Falcon
+- **Falcon**
+Falcon  
+*Falcon
+6. Falcon
+* Falcon
 Fang
 Fast Fox
-5. Fennec Fox
+5. Fennec
 Fennec
-4. Fennec
-Fennec Fox
-3. Fennec Fox
-* Fennec Fox
+Fennec Foxes
 Fennec fox  
 10. Fennec
-Fennec Foxes
-8. Fennec Fox
 * Fennec
-5. Fennec
-- Ferret
-ferret
+3. Fennec Fox
+Fennec Fox
+8. Fennec Fox
+5. Fennec Fox
+4. Fennec
+* Fennec Fox
 Ferret  
 Ferret
+ferret
+- Ferret
 Fido
-Finch  
 Finch
 - Finch
+Finch  
 Finn
-Finnley Falcon
 Finnley
+Finnley Falcon
 Fish  
-- Fish
-4. Fish
-Fish
 fish
+- Fish
+Fish
+4. Fish
 2. Fjord
-6. Flamingo
-18. Flamingo
-Flamingo  
-9. Flamingo
-Flamingo
-1. Flamingo
-flamingo
-4. Flamingo
 Flamingo 
 * Flamingo
+4. Flamingo
+Flamingo
+18. Flamingo
+1. Flamingo
+flamingo
+9. Flamingo
 3. Flamingo
-2. Flamingo
 - Flamingo
+2. Flamingo
+Flamingo  
+6. Flamingo
 1. Fluffy
 Fluffy
-Fly  
 Fly
+Fly  
 Flying Squirrel
 Foal  
 Foal
-- Fossa
 Fossa
+- Fossa
 Fox
-9. Fox
-fox
-fox  
-* Fox
-7. Fox
-- Fox
-Fox 
 Fox  
 8. Fox
 10. Fox
+* Fox
+Fox 
+7. Fox
+fox
+fox  
+9. Fox
+- Fox
 Foxincerely
 Frilled Lizard
-Frog  
+Frog
 frog
 - Frog
-Frog
-8. Frog
+Frog  
 Frog 
+8. Frog
 Frogfish
 Frosty Hare
 Fulvous Whistling Duck
 Fuzzy
 Galapagos Tortoise
-Gazelle
 Gazelle  
-- Gazelle
 gazelle
-Gecko
+Gazelle
+- Gazelle
 - Gecko
+Gecko
 * Gecko
 Geese
 Gelada Baboon
 Gerald Penguin
-Gerbil  
 Gerbil
+Gerbil  
+Giant panda
 Giant Anteater
 Giant Panda
-Giant panda
-- Gibbon
 Gibbon
 Gibbon  
+- Gibbon
 Gila Monster
-Ginger
 10. Ginger
-8. Giraffe
+Ginger
+2. Giraffe
+3. Giraffe
+* Giraffe
+Giraffe 
+- Giraffe
 4. Giraffe
 giraffe
-5. Giraffe
-10. Giraffe
-Giraffe 
-Giraffe  
-* Giraffe
-7. Giraffe
-3. Giraffe
-6. Giraffe
-- **Giraffe**
-- Giraffe
-*Giraffe
-2. Giraffe
-1. Giraffe
-Giraffe Weevil
 Giraffe
+7. Giraffe
+Giraffe Weevil
+1. Giraffe
+5. Giraffe
+- **Giraffe**
+*Giraffe
+10. Giraffe
+Giraffe  
+6. Giraffe
+8. Giraffe
 Gizmo
 6. Gizmo
 Gnu
-goat
 Goat  
-Goat
 Goat 
+Goat
+goat
 - Goat
 Goblin Shark
-Golden Eagle
-Golden Parrot
-- Golden Eagle
-Golden Retriever
-Golden Retriever  
 Golden Jaguar
 Golden Lion Tamarin
+Golden Eagle
+Golden Retriever
+Golden Retriever  
+Golden Parrot
+- Golden Eagle
 Golden Gecko
 Goldfinch
 Goldfish
-goldfish
 - Goldfish
-Goose  
+goldfish
 goose
-- Goose
+Goose  
 Goose
+- Goose
 Gopher
 Gorila
-5. Gorilla
-10. Gorilla
-8. Gorilla
-4. Gorilla
-Gorilla  
 6. Gorilla
-Gorilla
+2. Gorilla
+3. Gorilla
+- Gorilla
 9. Gorilla
 gorilla
-2. Gorilla
-- Gorilla
-3. Gorilla
-* Gorilla
+Gorilla  
 7. Gorilla
+Gorilla
+* Gorilla
+5. Gorilla
  Gorilla  
+4. Gorilla
+10. Gorilla
+8. Gorilla
 Gracie
 Grasshopper
 grasshopper
 Grasshopper  
 Gray Wolf
-Great White Shark
 Great Horned Owl
-- Green Iguana
+Great White Shark
 Green Iguana
 Green Sea Turtle
+- Green Iguana
 Green Tree Frog
 Grizzly Bear
 Groundhog
@@ -734,152 +734,152 @@ Guan
 Guanaco
 Guepardo
 Guido
-Guinea pig  
-Guinea pig
 Guinea Pig
-Hammerhead Shark
+Guinea pig
+Guinea pig  
 Hammerhead shark
-- Hamster
-Hamster  
-hamster
+Hammerhead Shark
 Hamster
+Hamster  
+- Hamster
+hamster
 Harbor Seal  
-Hare
 - Hare
+Hare
 Hare  
-Harlequin Macaw
-Harlequin Duck
 Harlequin Frog
+Harlequin Duck
+Harlequin Macaw
 Harp seal
 - Harpy Eagle
 Harpy Eagle
-* Hawk
 Hawk  
-Hawk
 hawk
+Hawk
 - Hawk
+* Hawk
 Hedda Fox
-Hedgehog
 Hedgehog  
+- **Hedgehog**
 Hedgehog 
 - Hedgehog
-- **Hedgehog**
+Hedgehog
 Hen
-Here is a list of names of animals:
 Here is a list of random names of animals in CSV format:
-Hermit Crab  
+Here is a list of names of animals:
 Hermit Crab
-heron
+Hermit Crab  
 Heron
 Heron  
+heron
 Himalayan Monal
 Hipopótamo
+10. Hippo
 7. Hippo
+hippo
 Hippo  
 8. Hippo
-10. Hippo
-- Hippo
 Hippo
-hippo
+- Hippo
 9. Hippo
-- Hippopotamus
+hippopotamus
 10. Hippopotamus
 9. Hippopotamus
+- Hippopotamus
+7. Hippopotamus
+11. Hippopotamus
+8. Hippopotamus
 Hippopotamus  
 Hippopotamus
-8. Hippopotamus
-11. Hippopotamus
-hippopotamus
-7. Hippopotamus
 - Honeybee
 Hornbill  
-- Horse
+3. Horse
+* Horse
+horse
 10. Horse
+Horse
 Horse 
 Horse  
-Horse
-horse
-* Horse
-3. Horse
+- Horse
 Howler Monkey
-Hummingbird
-- Hummingbird
 hummingbird
 Hummingbird  
+Hummingbird
+- Hummingbird
 Humpback Whale
 Husky
 Hyena 
-Hyena  
+hyena
 - Hyena
 * Hyena
-hyena
 Hyena
+Hyena  
 Hyrax
 Hyrax  
-- Ibex
-Ibex
 Ibex  
+Ibex
+- Ibex
 ibis
-Ibiza
 Ibiza Butterfly
+Ibiza
 Ibizan Hound
 Iguana
-- Iguana
-Iguana  
-8. Iguana
-iguana
 12. Iguana
+Iguana  
 * Iguana
+8. Iguana
+- Iguana
+iguana
 Impala
-Indian Pangolin
 Indian Cobra
 Indian Peafowl
-Jackal
+Indian Pangolin
 Jackal  
+Jackal
 Jackrabbit  
 Jager
-5. Jaguar
-Jaguar 
 1. Jaguar
 Jaguar
+* Jaguar
 3. Jaguar
-jaguar
-Jaguar  
 - Jaguar
 10. Jaguar
-* Jaguar
+jaguar
+Jaguar 
+5. Jaguar
+Jaguar  
 Jaguars
 Jaguarundi
-Javan Rhino
 - Javan Rhino
+Javan Rhino
 - Jellyfish
-Jellyfish
-jellyfish
 Jellyfish  
+jellyfish
+Jellyfish
 Jerboa
 Jirafa
-Kakapo
 - Kakapo
-- Kangaroo
-* Kangaroo
-10. Kangaroo
+Kakapo
 3. Kangaroo
-- **Kangaroo**
-2. Kangaroo
-- Kangaroo rat
-Kangaroo  
-11. Kangaroo
-Kangaroo Rat
-Kangaroo 
-8. Kangaroo
-14. Kangaroo
 Kangaroo
-kangaroo
-5. Kangaroo
-7. Kangaroo
-6. Kangaroo
+- Kangaroo
 4. Kangaroo
+10. Kangaroo
+8. Kangaroo
+6. Kangaroo
+14. Kangaroo
 9. Kangaroo
+- **Kangaroo**
+- Kangaroo rat
+2. Kangaroo
+5. Kangaroo
+Kangaroo 
+Kangaroo Rat
+11. Kangaroo
+* Kangaroo
+7. Kangaroo
+kangaroo
+Kangaroo  
 Kelpie
 Kestrel
 Kidneyfish
@@ -892,111 +892,111 @@ Kinkajou
 Kitten
 - Kiwi
 Kiwi
-11. Koala
-13. Koala
-2. Koala
-10. Koala
 8. Koala
 Koala  
-6. Koala
+- Koala
+Koala
 1. Koala
-12. Koala
 koala
 Koala Bear
-11. Koala 
+10. Koala
+13. Koala
 5. Koala
-7. Koala
-- **Koala**
-- Koala
-4. Koala
-Koala
-Koala 
-9. Koala
+6. Koala
 3. Koala
+7. Koala
+9. Koala
+Koala 
+11. Koala 
+2. Koala
+12. Koala
 * Koala
+- **Koala**
+11. Koala
+4. Koala
 Koel
 Kolkrabe
- Komodo dragon
-Komodo dragon
 Komodo
-Komodo Dragon
-- Komodo Wryneck
 Komodo Dragon  
 - Komodo Dragon
-Kookaburra
+- Komodo Wryneck
+ Komodo dragon
+Komodo dragon
+Komodo Dragon
 - Kookaburra
+Kookaburra
 Krypto
 Kudu
 Labrador
 Labrador Retriever
-ladybug
-- Ladybug
-Ladybug  
 Ladybug
+- Ladybug
+ladybug
+Ladybug  
 Leatherback Turtle
 lechuza
 Lechwe
-8. Lemur
-11. Lemur
-* Lemur
 lemur
-Lemur  
-1. Lemur
 6. Lemur
-5. Lemur
- lemur
+1. Lemur
+11. Lemur
 Lemur
 10. Lemur
+5. Lemur
+12. Lemur
+Lemur  
+ lemur
+8. Lemur
 - Lemur
 9. Lemur
 Lemur 
-12. Lemur
+* Lemur
+Leopard Seal
 leopard
 Leopard  
-Leopard 
-Leopard
-Leopard Seal
 - Leopard
+Leopard 
 13. Leopard
+Leopard
 Leopardo
-leopards
 Leopards
+leopards
 - Leoparrd
 Lesser Panda
-1. Lion
-lion
-- Lion
-9. Lion
-4. Lion
-* Lion
-5. Lion
-6. Lion
 Lion  
-Lion's Mane Jellyfish
-7. Lion
+- Lion
+lion
+1. Lion
+6. Lion
 3. Lion
 2. Lion
+7. Lion
+9. Lion
+Lion's Mane Jellyfish
 Lion
+4. Lion
+* Lion
 Lion 
+5. Lion
 Lioness
-lionfish
-Lionfish
 - Lionfish
-lizard
-Lizard  
-Lizard
+Lionfish
+lionfish
 * Lizard
 - Lizard
+lizard
+Lizard
+Lizard  
+- Llama
 * Llama
 Llama
-Llama  
-- Llama
 4. Llama
+Llama  
 Llamas
-Lobster
 Lobster  
-- Lobster
 lobster
+Lobster
+- Lobster
 Locust
 Loki
 Lola
@@ -1004,46 +1004,46 @@ Loon
 15. Loris
 Luna
 Luna Snake
-Lynx
-Lynx  
 - Lynx
+Lynx  
+Lynx
 Lyrebird  
 - Macaw
 Macaw
 Malayan Tapir
 Manatí
+Manatee  
+manatee
 - Manatee
 Manatee
-manatee
-Manatee  
 Manatee 
 Manatees
-- Mandrill
-Mandrill
 Mandrill  
+Mandrill
+- Mandrill
 - Maned Wolf
 Maned Wolf
 Manta Ray
-* Mantis Shrimp
-Mantis
-- Mantis
 Mantis Shrimp
+Mantis
+* Mantis Shrimp
+- Mantis
 Marjorie Kangaroo
 Marlin
 Marmoset
 Marmot
 Meadow
-Meerkat  
-5. Meerkat
-- Meerkat
-Meerkat
-6. Meerkat
-* Meerkat
-9. Meerkat
-8. Meerkat
-meerkat
 11. Meerkat
+Meerkat  
+meerkat
+9. Meerkat
+Meerkat
 10. Meerkat
+8. Meerkat
+* Meerkat
+5. Meerkat
+6. Meerkat
+- Meerkat
 Mekong Giant Catfish
 Milky Stork
 millipede.
@@ -1053,44 +1053,40 @@ Minks
 Misty
 5. Misty
 Mite
-4. Mittens
 Mittens
+4. Mittens
 Mockingbird
 moduleID
 Mola Mola
-Mole rat
-* Mole
-Mole
-Mole Cricket
 Mole Rat
-- Mole
+Mole rat
 Mole  
+- Mole
+Mole
 10. Mole
+* Mole
+Mole Cricket
 15. Mollusk
 Molly
 Mongeese
 Mongolian Wild Ass
-5. Mongoose
 Mongoose 
-* Mongoose
-4. Mongoose
-7. Mongoose
-3. Mongoose
-Mongoose  
-10. Mongoose
-8. Mongoose
-Mongoose
 2. Mongoose
+Mongoose
+10. Mongoose
+5. Mongoose
+Mongoose  
+4. Mongoose
+8. Mongoose
 mongoose
+3. Mongoose
+7. Mongoose
+* Mongoose
 Mongooses
 Mongrel
 Mongrel Dog
 Monk Seal
-5. Monkey
-3. Monkey
-6. Monkey
-Monkey 
-Monkey
+7. Monkey
 Monkey
   Lion
   Dolphin
@@ -1101,39 +1097,43 @@ Monkey
   Giraffe
   Fox
   Koala
-* Monkey
-2. Monkey
-10. Monkey
-Monkey  
-11. Monkey
 monkey
 8. Monkey
-9. Monkey
+3. Monkey
+* Monkey
+5. Monkey
+Monkey 
 - Monkey
+Monkey
+6. Monkey
+2. Monkey
+9. Monkey
+10. Monkey
+11. Monkey
+Monkey  
 4. Monkey
-7. Monkey
 Monkeys
- Moose  
 moose
-- Moose
-Moose
 Moose  
+ Moose  
+Moose
+- Moose
 Moray eel
 Mosquito  
 Mosquito
-Moth  
 Moth
+Moth  
 moth
-Mountain Goat
-Mountain Gorilla
-Mountain Lion
 - Mountain Goat
+Mountain Goat
 Mountain lion/Wildcat
-Mouse  
-* Mouse
-Mouse
+Mountain Lion
+Mountain Gorilla
 Mouse 
+* Mouse
 mouse
+Mouse
+Mouse  
 - Mouse
 Mule
 Mule  
@@ -1142,16 +1142,16 @@ Musk Ox
 Mustang
 - Myna
 Mystic Wolf
-8. Narwhal
-2. Narwhal
-Narwhal  
-* Narwhal
-6. Narwhal
 3. Narwhal
-1. Narwhal
 narwhal
+2. Narwhal
 Narwhal
+1. Narwhal
+6. Narwhal
 - Narwhal
+* Narwhal
+8. Narwhal
+Narwhal  
 Nematode
 Newt  
 Newt
@@ -1161,31 +1161,30 @@ Northern Cardinal
 Northern Rockhopper Penguin
 Note: The list was expanded to 17 items as per the original prompt.
 Nugget
+Numbat
+Numbat 
 - Numbat
 Numbat  
-Numbat 
-Numbat
 Oak Tree
-Ocelot
-3. Ocelot
-* Ocelot
-Ocelot  
 12. Ocelot
+Ocelot  
+* Ocelot
+3. Ocelot
+Ocelot
 Ocelote
 7. Octopus
-15. Octopus
-Octopus
-Octopus.
-Octopus  
-9. Octopus
-- Octopus
-10. Octopus
-* Octopus
-octopus
-8. Octopus
-3. Octopus
 Octopus 
+15. Octopus
+3. Octopus
+Octopus  
+* Octopus
+Octopus.
+10. Octopus
+- Octopus
 2. Octopus
+Octopus
+8. Octopus
+octopus
 Octopus
   Cheetah
   Kangaroo
@@ -1212,127 +1211,128 @@ Octopus
   Lion
   Camel
   Giraffe
-7. Okapi
-- Okapi
-6. Okapi
+9. Octopus
 * Okapi
 Okapi
+6. Okapi
+- Okapi
+7. Okapi
 Onyx
 Opossum
 Orangután
- Orangutan
-Orangutan  
 Orangutan
-- Orangutan
+Orangutan  
 orangutan
+- Orangutan
+ Orangutan
+Orca
 Orca  
 orca
-Orca
 Orcas
 Oryx
-Osprey
 - Osprey
+Osprey
 Osprey  
-Ostrich 
 ostrich
-15. Ostrich
-Ostrich.
-8. Ostrich
-Ostrich
 9. Ostrich
-5. Ostrich
-10. Ostrich
-* Ostrich
-4. Ostrich
+Ostrich.
+Ostrich 
 - Ostrich
-6. Ostrich
+8. Ostrich
+10. Ostrich
 Ostrich  
+5. Ostrich
+15. Ostrich
+Ostrich
+4. Ostrich
+6. Ostrich
+* Ostrich
+otter
+6. Otter
+Otter  
+- Otter
+Otter 
+* Otter
 5. Otter
 Otter
-Otter  
-* Otter
-6. Otter
-Otter 
-- Otter
-otter
 - Otterhound
 Otters
-Owl  
 owl
-Owl
 - Owl
+Owl
+Owl  
 Owlet
 Owls
 Ox
 Oyster
 - Paddlefish
 Pagoda
-Panda  
-6. Panda
-10. Panda
-9. Panda
-8. Panda
-7. Panda
-panda
-Panda
 5. Panda
+6. Panda
+panda
+8. Panda
+Panda  
+9. Panda
+7. Panda
+10. Panda
+Panda
 - Panda
-Pangolin
-Pangolin 
-8. Pangolin
+9. Pangolin
+7. Pangolin
 17. Pangolin
 - Pangolin
-7. Pangolin
-* Pangolin
-9. Pangolin
 Pangolin  
+Pangolin
+* Pangolin
+Pangolin 
+8. Pangolin
 Pangolins
 Panther
-6. Panther
+Panther 
+panther
 Panther  
 - Panther
-panther
-Panther 
+6. Panther
 Pantheraurus
 Parakeet
+Parrot 
+Parrot  
+6. Parrot
 Parrot
 parrot
 - Parrot
-Parrot  
-6. Parrot
-Parrot 
 Partridge
 Patches
-Peacock
-* Peacock
-Peacock  
-peacock
 - Peacock
+peacock
+* Peacock
+Peacock
+Peacock  
 Peacok
 Peafowl
-3. Peanut
-5. Peanut
 Peanut
-- Pelican
-pelican
-Pelican
+5. Peanut
+3. Peanut
 Pelican  
-Penguin
-2. Penguin
-penguin
-8. Penguin
-- Penguin
-- **Penguin**
-6. Penguin
-4. Penguin
+- Pelican
+Pelican
+pelican
 9. Penguin
-10. Penguin
-Penguin  
 5. Penguin
-Penguin 
-7. Penguin
+Penguin
+4. Penguin
+penguin
+- Penguin
 13. Penguin
+Penguin  
+7. Penguin
+8. Penguin
 * Penguin
+6. Penguin
+10. Penguin
+- **Penguin**
+2. Penguin
+Penguin 
 Penguins
 Pengwin
 Peregrine Falcon
@@ -1340,178 +1340,178 @@ Persian Cat
 Persian Cat
 Pheasant
 Pickle
-Pig  
-pig
 Pig
+pig
+Pig  
 - Pig
 Pigeon  
 Pigeon
 - Pine Marten
 Pingüino
-Pink flamingo
-Pink Dart Frog
 Pink Fairy Armadillo
-5. Platypus
+Pink Dart Frog
+Pink flamingo
+* Platypus
 Platypus  
 Platypus
-* Platypus
-7. Platypus
-platypus
-- Platypus
+5. Platypus
 11. Platypus
+7. Platypus
+- Platypus
+platypus
+10. Polar Bear
+Polar Bear  
+Polar bear
 - Polar Bear
 Polar bear  
 Polar Bear
 - Polar bear
-Polar Bear  
-Polar bear
-10. Polar Bear
 polar bear
 * Pomeranian
 Pomeranian
 Pony
-Porcupine
 - Porcupine
+Porcupine
 Porcupine  
 Porpoise  
 Porpoise
 Prairie Dog
-Praying Mantis  
 Praying Mantis
+Praying Mantis  
 - Proboscis Monkey
 Proboscis Monkey
 8. Pudding
 Pudu
 Pufferfish
 - Pufferfish
-Puffin  
 - Puffin
 Puffin
+Puffin  
 Pug
-8. Puma
+3. Puma
 * Puma
-- Puma
+8. Puma
+4. Puma
+puma
 Puma  
 Puma
-puma
 15. Puma
-3. Puma
-4. Puma
-Python  
+- Puma
 Python
+Python  
 Quadruped
 Quagga
-7. Quail
-3. Quail
-Quail
-- Quail
-1. Quail
-2. Quail
-9. Quail
-4. Quail
-* Quail
 quail
+Quail
+7. Quail
+* Quail
+1. Quail
+9. Quail
+3. Quail
 6. Quail
+- Quail
+4. Quail
+2. Quail
 Quails
 Quetzal
-Quincy Octopus
 Quincy
-- Quokka
-2. Quokka
-* Quokka
-Quokka
+Quincy Octopus
 Quokka 
+- Quokka
 Quokka  
-Rabbit
-10. Rabbit
-- Rabbit
-rabbit
+2. Quokka
+Quokka
+* Quokka
 7. Rabbit
-8. Rabbit
+Rabbit
+rabbit
+- Rabbit
 * Rabbit
-6. Rabbit
-9. Rabbit
-Rabbit 
+8. Rabbit
 Rabbit  
-1. Raccoon
-* Raccoon
-Raccoon  
+Rabbit 
+9. Rabbit
+6. Rabbit
+10. Rabbit
 11. Raccoon
-- Raccoon
-Raccoon 
 7. Raccoon
-10. Raccoon
-13. Raccoon
-Raccoon.
-12. Raccoon 
-raccoon
+Raccoon  
 9. Raccoon
-Raccoon
+10. Raccoon
+* Raccoon
+raccoon
+13. Raccoon
+- Raccoon
+12. Raccoon 
+Raccoon.
 5. Raccoon
+1. Raccoon
+Raccoon
+Raccoon 
 Racoon
 - Railsback Frog
 Rain Frog
 Ram
 Ranger
 Raptor
-Rat
-- Rat
 Rat  
+- Rat
+Rat
 Rattlesnake
 8. Rattlesnake
 Rattlesnake 
-14. Rattlesnake
 4. Rattlesnake
+14. Rattlesnake
 * Rattlesnake
 - **Rattlesnake**
 Raven
 Raven  
 Ray
-Red Fox  
-- Red Panda
-Red panda
-Red Panda
-- Red Kangaroo
 - Red Fox
-Red fox
-Red Fox
-Red fox  
 - Red panda
+- Red Panda
+Red Fox
+Red Fox  
+Red panda
+Red fox
+Red fox  
 Red Panda  
+- Red Kangaroo
+Red Panda
 Reindeer  
 Reindeer
 Rhea
 Rhesus Macaque
-Rhino
-10. Rhino
 - Rhino
-* Rhino
-7. Rhino
-6. Rhino
-8. Rhino
-2. Rhino
+Rhino
 9. Rhino
+7. Rhino
 Rhino  
+8. Rhino
+6. Rhino
+10. Rhino
+2. Rhino
 Rhino 
+* Rhino
 rhino
 - Rhinoceros
-7. Rhinoceros
-* Rhinoceros
-Rhinoceros Beetle
 Rhinoceros 
-Rhinoceros
-9. Rhinoceros
+Rhinoceros  
+* Rhinoceros
 8. Rhinoceros
 10. Rhinoceros
-Rhinoceros  
-5. Rhinoceros
+7. Rhinoceros
+Rhinoceros Beetle
+Rhinoceros
 rhinoceros
+9. Rhinoceros
+5. Rhinoceros
 Rhinoceroses
 Rinoceronte
 Roadrunner
-Robin  
-Robin
 - Robin
+Robin
+Robin  
 Rocky
 Roderick Ostrich
 Rooster
@@ -1524,93 +1524,93 @@ Saber-toothed Tiger
 - Sable
 - Saiga antelope
 6. Salamander
+- Salamander
+Salamander
 20. Salamander
 Salamander  
-Salamander
-- Salamander
 salamander
-- Salmon
 Salmon
 Salmon  
+- Salmon
 Sandpiper
 Saola
 Sassy
 scallop
 Scarlet Macaw
-scorpion
-Scorpion
 - Scorpion
+Scorpion
+scorpion
 Scorpion  
-Sea Lion  
-Sea star  
 Sea Cucumber
-Sea urchin
-Sea turtle
-Sea lion
-Sea Turtle
-Sea turtle  
-Sea Lion
-Sea lion  
-Sea urchin  
-Sea Otter
-sea urchin
 Sea Urchin
 Sea Anemone
-sea cucumber
+Sea turtle
+Sea Lion  
+Sea urchin  
+Sea lion  
+Sea urchin
+Sea turtle  
+Sea Otter
+Sea lion
 Sea cucumber
+sea cucumber
+sea urchin
 Sea Turtle  
+Sea Turtle
+Sea Lion
+Sea star  
 Seadragon
 Seagull
 seagull
 Seagull  
-- Seahorse
 Seahorse
 Seahorse  
+- Seahorse
 13. Seal
-Seal
-Seal  
-- Seal
-* Seal
-14. Seal
 seal
 Seal 
+14. Seal
+Seal
+Seal  
+* Seal
+- Seal
 Sealion  
 Sealion
 Seastar
 Serval
 Shadow Panther
 13. Shark
- Shark
 shark
-14. Shark
-Shark 
-* Shark
 Shark  
+* Shark
+Shark 
+14. Shark
+ Shark
 - Shark
+Shark
 - **Shark**
 10. Shark
-Shark
-- Sheep
-* Sheep
-Sheep 
-Sheep
-sheep
 Sheep  
-Shellfish  
+Sheep
+- Sheep
+Sheep 
+* Sheep
+sheep
 Shellfish
+Shellfish  
 Shipworm
 Shrew
-Shrimp  
 - Shrimp
-Shrimp
 shrimp
+Shrimp
+Shrimp  
 Siamese Cat  
 Siamese
-Siberian crane
-- Siberian Tiger
 Siberian Husky
-Siberian Husky  
 Siberian Tiger
+Siberian crane
+Siberian Husky  
+- Siberian Tiger
 Sifaka
 SIGNALERROR.
 Silent Lemur
@@ -1622,64 +1622,64 @@ skunk
 - Skunk
 Skunks
 Slime Mold
-Sloth  
+3. Sloth
+Sloth
+- Sloth
+* Sloth
+10. Sloth
 sloth
 8. Sloth
-10. Sloth
-* Sloth
-Sloth
-Sloth Bear
-3. Sloth
-- Sloth
 4. Sloth
+Sloth  
+Sloth Bear
 - Slow Loris
-slug
 Slug  
 Slug
-snail
-Snail
+slug
 Snail  
 - Snail
-Snake  
+Snail
+snail
 Snake 
-7. Snake
-13. Snake
-snake
-15. Snake
-- Snake
-12. Snake
 9. Snake
-Snake
-14. Snake
+13. Snake
+12. Snake
+- Snake
 10. Snake
-* Snake
 4. Snake
+15. Snake
+14. Snake
+Snake  
+snake
+7. Snake
+Snake
+* Snake
 snakes
 Snakes
-Snapping Turtle
 Snapping turtle  
+Snapping Turtle
 Snipe
-Snow Leopard  
-Snow Leopard
-- Snow Leopard
-Snow leopard
 - Snow leopard
+- Snow Leopard
+Snow Leopard
+Snow leopard
+Snow Leopard  
 Snowball
 7. Snowflake
-1. Snowy
 Snowy Owl
+1. Snowy
 Snuffles
 Socks
 9. Socks
 South American Tapir
 - Southern Cassowary
 9. Sparky
-Sparky
 3. Sparky
-- Sparrow
-Sparrow
+Sparky
 Sparrow 
 Sparrow  
+- Sparrow
+Sparrow
 Sperm Whale
 spider
 Spider Monkey
@@ -1692,24 +1692,24 @@ Spotted Salamander
 Springbok
 8. Sprocket
 Squeaky
+squid
+- Squid
 Squid  
 Squid
-- Squid
-squid
 Squidward
 Squirel
 squirrel
-Squirrel
 - Squirrel
 Squirrel 
 * Squirrel
+Squirrel
 Squirrel  
 Star-nosed Mole
-Starfish  
-starfish
+Starfish
 - Starfish
 Starfish 
-Starfish
+Starfish  
+starfish
 Stingray
 Stingray  
 Storck
@@ -1718,51 +1718,51 @@ Stork
 Strawberry Poison Frog
 Sturgeon
 sugar
-16. Sugar Glider
 Sugar Glider
+16. Sugar Glider
 - Sumatran Orangutan
 Sun Bear
 Sunbird
 Sunlit Salamander
-Swallow
-- Swallow
 Swallow  
-Swan
-- Swan
-Swan 
-Swan  
+- Swallow
+Swallow
 swan
-Swift Falcon
+Swan
+Swan  
+Swan 
+- Swan
 Swift Fox
+Swift Falcon
 Swordfish
 Swordtail Catfish
 Sylvester Squirrel
 Tahr
 Takelma
 Takin
-- Tamarin
 Tamarin
+- Tamarin
 Tamarin  
 Tamarins
 Tamarow
-14. Tapir 
-12. Tapir
-- Tapir
 7. Tapir
+12. Tapir
+14. Tapir 
 * Tapir
-Tapir
 13. Tapir
-Tapir 
+- Tapir
 Tapir*
+Tapir
+Tapir 
 Tapirus
-- Tarantula
 Tarantula
+- Tarantula
 Tardigrade
 Tarpon
-* Tarsier
 Tarsier
-- Tarsier
 Tarsier 
+- Tarsier
+* Tarsier
 Tasmanian Devil
 Tasmanian devil
 Tasmanian devil  
@@ -1774,57 +1774,57 @@ Tetra
 4. Thane
 Thistle
 Thomson's Gazelle
-Tiger 
-Tiger   
-Tiger
-12. Tiger
-8. Tiger
 Tiger Salamander
-4. Tiger
-7. Tiger
-- Tiger
-2. Tiger
-Tiger Cat
-Tiger  
-tiger
-* Tiger
-1. Tiger
-Tiger Catfish
 Tiger shark
 10. Tiger
+Tiger   
+2. Tiger
+8. Tiger
+Tiger  
+12. Tiger
+tiger
+* Tiger
+Tiger Catfish
 9. Tiger
-3. Tiger
-6. Tiger
 5. Tiger
+Tiger Cat
+7. Tiger
+3. Tiger
+Tiger
+6. Tiger
+- Tiger
+1. Tiger
+4. Tiger
+Tiger 
+Toad
 Toad  
 - Toad
 toad
-Toad
 Toboggan Catshark
 Toby
 tortoise
-Tortoise  
-Tortoise 
-- Tortoise
 Tortoise
-Toucan
-- **Toucan**
+Tortoise 
+Tortoise  
+- Tortoise
 * Toucan
-Toucan  
-8. Toucan
+- **Toucan**
 - Toucan
-Tree Pangolin
+8. Toucan
+Toucan  
+Toucan
 Tree Frog
+Tree Pangolin
 Trout
 Tufted Capuchin
-Tuna
 Tuna  
+Tuna
 Turaco
-Turkey  
 Turkey
+Turkey  
 Turtle
-- Turtle
 Turtle  
+- Turtle
 turtle
 - Uakari
 Uakari
@@ -1838,79 +1838,79 @@ Vicuña
 Viper  
 Viper
 Vole
-* Vulture
-Vulture
-- Vulture
-9. Vulture
 13. Vulture 
 Vulture  
-Wallaby
-* Wallaby
-9. Wallaby
-Wallaby  
+Vulture
+9. Vulture
+* Vulture
+- Vulture
 Wallaby 
-walrus
-- Walrus
+Wallaby  
+Wallaby
+9. Wallaby
+* Wallaby
+* Walrus
+Walrus
 Walrus  
 Walrus.
-Walrus
-* Walrus
+- Walrus
+walrus
 Walrus 
 Wapiti
-Warthog  
-Warthog
 * Warthog
 10. Warthog
+Warthog
+Warthog  
 Wasp
 Weasel  
 Weasel
 Western Grey Kangaroo
 Western lowland gorilla
-11. Whale
-15. Whale
-whale
-Whale  
-Whale
-* Whale
-14. Whale
 - Whale
+Whale  
+whale
 Whale 
+14. Whale
+11. Whale
 9. Whale
+15. Whale
+* Whale
+Whale
 - Whales
 Whirligig
-Whiskers
 2. Whiskers
+Whiskers
 Wild Boar
 Wildboar
 Wildcat
 Wilddog
 Wildebeest
 Wildebeest  
-13. Wolf
-wolf
-* Wolf
-Wolf  
-8. Wolf
-10. Wolf
-- Wolf
-WOLF
-Wolf Spider
-- **Wolf**
-6. Wolf
-5. Wolf
-7. Wolf
-Wolf
-Wolf 
-9. Wolf
 4. Wolf
-Wolverine
+5. Wolf
+13. Wolf
+10. Wolf
+Wolf  
+wolf
+Wolf Spider
+8. Wolf
+6. Wolf
+* Wolf
+- **Wolf**
+Wolf 
+7. Wolf
+WOLF
+9. Wolf
+- Wolf
+Wolf
 Wolverine  
-- Wombat
+Wolverine
 Wombat
+- Wombat
 Wombat 
 Wombat  
-Woodchuck  
 Woodchuck
+Woodchuck  
 Woodcock
 Woodpecker  
 Woodpecker
@@ -1923,25 +1923,25 @@ Xerus
 Yak  
 Yak
 Yellow
-Yellowfin Tuna
 - Yellowfin Tuna
-Zebra 
-6. Zebra
-Zebra
-9. Zebra
-5. Zebra
-* Zebra
-7. Zebra
-Zebra  
-2. Zebra
-10. Zebra
-8. Zebra
-4. Zebra
-3. Zebra
-zebra
-Zebra Fish
-- Zebra
+Yellowfin Tuna
 Zebra shark  
+2. Zebra
+- Zebra
+5. Zebra
+Zebra 
+* Zebra
+9. Zebra
+7. Zebra
+Zebra Fish
+4. Zebra
+6. Zebra
+zebra
+Zebra  
+8. Zebra
+10. Zebra
+3. Zebra
+Zebra
 Zebras
 Zebu
 zebu

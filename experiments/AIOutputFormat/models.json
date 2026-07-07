@@ -5,7 +5,7 @@
       "llama318b": {
         "name": "llama3.1:8b",
         "color": "#C8A2C8",
-        "timeout_seconds": 900
+        "timeout_seconds": 300
       },
       "gemma": {
         "name": "gemma3:12b",
@@ -18,7 +18,7 @@
       "deepseekr1": {
         "name": "deepseek-r1:8b",
         "color": "#A0522D",
-        "timeout_seconds": 1200
+        "timeout_seconds": 300
       }
     }
   },

@@ -12,7 +12,14 @@
       "Bash(source venv/Scripts/activate)",
       "Bash(pip install:*)",
       "Bash(xargs head:*)",
-      "Bash(find results:*)"
+      "Bash(find results:*)",
+      "mcp__plugin_codescene_codescene__select_project",
+      "mcp__plugin_codescene_codescene__list_technical_debt_hotspots_for_project",
+      "mcp__plugin_codescene_codescene__list_technical_debt_goals_for_project",
+      "mcp__plugin_codescene_codescene__code_health_score",
+      "mcp__plugin_codescene_codescene__code_health_review",
+      "Bash(../../.venv/Scripts/python generate_report.py)",
+      "Bash(venv/Scripts/python format_runner.py -v)"
     ]
   }
 }
