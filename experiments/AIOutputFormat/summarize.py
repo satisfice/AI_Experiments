@@ -1602,96 +1602,80 @@ def _punct_cleanup_str(rule, changed, chars_stripped):
     return f"{rule}: {changed} items{suffix}"
 
 
-def clean_strip_leading_format(items):
-    """Strip leading formatting characters (* - + : ; , . ! ? { } [ ] etc.).
-    Rule: Strip-Leading-Formatting.
-    Returns (items, cleanup_str_or_none). Cleanup string includes which chars were stripped."""
+def _clean_with_transform(items, rule, transform):
+    """Apply `transform` to each item, tracking how many items actually changed.
+    Returns (items, cleanup_str_or_none)."""
+    result = []
+    changed = 0
+    for item in items:
+        cleaned = transform(item)
+        if cleaned != item:
+            changed += 1
+        result.append(cleaned)
+    cleanup = f"{rule}: {changed} items" if changed else None
+    return result, cleanup
+
+
+def _clean_with_char_tracking(items, rule, pattern):
+    """Like _clean_with_transform, but for anchored regexes where the specific
+    characters stripped are worth reporting (via _punct_cleanup_str)."""
     result = []
     changed = 0
     chars_stripped = set()
     for item in items:
-        m = _LEADING_PUNCT_RE.match(item)
+        m = pattern.search(item)
         if m:
             changed += 1
             chars_stripped.update(c for c in m.group(0) if not c.isspace())
-        result.append(_LEADING_PUNCT_RE.sub('', item).strip())
-    return result, _punct_cleanup_str("Strip-Leading-Formatting", changed, chars_stripped)
+        result.append(pattern.sub('', item).strip())
+    return result, _punct_cleanup_str(rule, changed, chars_stripped)
+
+
+def clean_strip_leading_format(items):
+    """Strip leading formatting characters (* - + : ; , . ! ? { } [ ] etc.).
+    Rule: Strip-Leading-Formatting.
+    Returns (items, cleanup_str_or_none). Cleanup string includes which chars were stripped."""
+    return _clean_with_char_tracking(items, "Strip-Leading-Formatting", _LEADING_PUNCT_RE)
 
 
 def clean_strip_number_word_prefix(items):
     """Strip a numeric prefix attached directly to a word (e.g. '48eagle' -> 'eagle').
     Rule: Strip-Number-Word-Prefix.
     Returns (items, cleanup_str_or_none)."""
-    result = []
-    changed = 0
-    for item in items:
-        cleaned = re.sub(r'^[0-9]+([a-zA-Z])', r'\1', item).strip()
-        if cleaned != item:
-            changed += 1
-        result.append(cleaned)
-    cleanup = f"Strip-Number-Word-Prefix: {changed} items" if changed else None
-    return result, cleanup
+    return _clean_with_transform(items, "Strip-Number-Word-Prefix",
+                                  lambda item: re.sub(r'^[0-9]+([a-zA-Z])', r'\1', item).strip())
 
 
 def clean_remove_parenthetical(items):
     """Remove parenthetical content (e.g. 'camelopard (giraffe)' -> 'camelopard').
     Rule: Remove-Parenthetical.
     Returns (items, cleanup_str_or_none)."""
-    result = []
-    changed = 0
-    for item in items:
-        cleaned = re.sub(r'\s*\([^)]*\)', '', item).strip()
-        if cleaned != item:
-            changed += 1
-        result.append(cleaned)
-    cleanup = f"Remove-Parenthetical: {changed} items" if changed else None
-    return result, cleanup
+    return _clean_with_transform(items, "Remove-Parenthetical",
+                                  lambda item: re.sub(r'\s*\([^)]*\)', '', item).strip())
 
 
 def clean_strip_trailing_punct(items):
     """Strip trailing formatting characters (. , ; : ! ? etc.).
     Rule: Strip-Trailing-Punctuation.
     Returns (items, cleanup_str_or_none). Cleanup string includes which chars were stripped."""
-    result = []
-    changed = 0
-    chars_stripped = set()
-    for item in items:
-        m = _TRAILING_PUNCT_RE.search(item)
-        if m:
-            changed += 1
-            chars_stripped.update(c for c in m.group(0) if not c.isspace())
-        result.append(_TRAILING_PUNCT_RE.sub('', item).strip())
-    return result, _punct_cleanup_str("Strip-Trailing-Punctuation", changed, chars_stripped)
+    return _clean_with_char_tracking(items, "Strip-Trailing-Punctuation", _TRAILING_PUNCT_RE)
 
 
 def clean_strip_doubled_punct(items):
     """Remove doubled or tripled internal punctuation (e.g. 'ti::ger' -> 'tiger').
     Rule: Strip-Doubled-Punctuation.
     Returns (items, cleanup_str_or_none)."""
-    result = []
-    changed = 0
-    for item in items:
-        cleaned = re.sub(r'([a-zA-Z])([:.;,\-_/\\|])\2+([a-zA-Z])', r'\1\3', item)
-        if cleaned != item:
-            changed += 1
-        result.append(cleaned)
-    cleanup = f"Strip-Doubled-Punctuation: {changed} items" if changed else None
-    return result, cleanup
+    return _clean_with_transform(
+        items, "Strip-Doubled-Punctuation",
+        lambda item: re.sub(r'([a-zA-Z])([:.;,\-_/\\|])\2+([a-zA-Z])', r'\1\3', item))
 
 
 def clean_strip_leading_hyphens(items):
     """Strip any remaining leading hyphens and spaces (final normalization).
     Rule: Strip-Leading-Hyphens.
     Returns (items, cleanup_str_or_none)."""
-    result = []
-    changed = 0
-    for item in items:
-        cleaned = item.lstrip('- ').strip()
-        if cleaned != item:
-            changed += 1
-        result.append(cleaned)
-    cleanup = f"Strip-Leading-Hyphens: {changed} items" if changed else None
-    return result, cleanup
+    return _clean_with_transform(items, "Strip-Leading-Hyphens",
+                                  lambda item: item.lstrip('- ').strip())
 
 
 def clean_lowercase(items):
@@ -1722,30 +1706,16 @@ def clean_strip_leading_bullets(items):
     """Remove leading bullet list markers (* - +) from items.
     Rule: Strip-Leading-Bullets.
     Returns (items, cleanup_str_or_none)."""
-    result = []
-    changed = 0
-    for item in items:
-        cleaned = re.sub(r'^[\s*\-+]+', '', item).strip()
-        if cleaned != item:
-            changed += 1
-        result.append(cleaned)
-    cleanup = f"Strip-Leading-Bullets: {changed} items" if changed else None
-    return result, cleanup
+    return _clean_with_transform(items, "Strip-Leading-Bullets",
+                                  lambda item: re.sub(r'^[\s*\-+]+', '', item).strip())
 
 
 def clean_strip_leading_numbers(items):
     """Remove leading number prefixes with punctuation (e.g. '1. ', '2) ', '3: ') from items.
     Rule: Strip-Leading-Numbers.
     Returns (items, cleanup_str_or_none)."""
-    result = []
-    changed = 0
-    for item in items:
-        cleaned = re.sub(r'^\d+[\.\):\-\s]+', '', item).strip()
-        if cleaned != item:
-            changed += 1
-        result.append(cleaned)
-    cleanup = f"Strip-Leading-Numbers: {changed} items" if changed else None
-    return result, cleanup
+    return _clean_with_transform(items, "Strip-Leading-Numbers",
+                                  lambda item: re.sub(r'^\d+[\.\):\-\s]+', '', item).strip())
 
 
 def clean_format_specific(items, ext):
