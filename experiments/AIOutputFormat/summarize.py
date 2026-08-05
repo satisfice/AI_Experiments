@@ -586,13 +586,7 @@ def parse_md(content):
     items = []
     cleanups = []
     quality_issues = []
-    header_count = 0
-    entirely_bold_count = 0
-    entirely_italic_count = 0
-    both_bold_italic_count = 0
-    partial_bold_count = 0
-    partial_italic_star_count = 0
-    partial_italic_under_count = 0
+    counts = defaultdict(int)
 
     # Both bold and italic: exactly three asterisks on each end (***text***)
     _BOTH_BOLD_ITALIC_RE = re.compile(r'^\*{3}[^*].*[^*]\*{3}$')
@@ -617,65 +611,55 @@ def parse_md(content):
 
         # Skip markdown headers (lines starting with #)
         if stripped.startswith('#'):
-            header_count += 1
+            counts["header"] += 1
             continue
 
         # Check for formatting patterns on the full line (including bullets/numbers)
-        is_both = _BOTH_BOLD_ITALIC_RE.match(stripped)
-        is_entirely_bold = _ENTIRELY_BOLD_RE.match(stripped)
-        is_entirely_italic_star = _ENTIRELY_ITALIC_STAR_RE.match(stripped)
-        is_entirely_italic_under = _ENTIRELY_ITALIC_UNDER_RE.match(stripped)
+        is_both = bool(_BOTH_BOLD_ITALIC_RE.match(stripped))
+        is_entirely_bold = bool(_ENTIRELY_BOLD_RE.match(stripped))
+        is_entirely_italic_star = bool(_ENTIRELY_ITALIC_STAR_RE.match(stripped))
+        is_entirely_italic_under = bool(_ENTIRELY_ITALIC_UNDER_RE.match(stripped))
 
         # Check for partial formatting (but not if entirely bold/italic or both)
-        has_partial_bold = _PARTIAL_BOLD_RE.search(stripped) and not is_entirely_bold and not is_both
-        has_partial_italic_star = _PARTIAL_ITALIC_STAR_RE.search(stripped) and not is_entirely_italic_star and not is_both
-        has_partial_italic_under = _PARTIAL_ITALIC_UNDER_RE.search(stripped) and not is_entirely_italic_under and not is_both
+        has_partial_bold = bool(_PARTIAL_BOLD_RE.search(stripped)) and not is_entirely_bold and not is_both
+        has_partial_italic_star = bool(_PARTIAL_ITALIC_STAR_RE.search(stripped)) and not is_entirely_italic_star and not is_both
+        has_partial_italic_under = bool(_PARTIAL_ITALIC_UNDER_RE.search(stripped)) and not is_entirely_italic_under and not is_both
 
-        # Strip formatting from lines that are entirely bold or italic
+        # First matching category wins (mirrors the original if/elif priority order).
+        # Entries with a transform strip formatting from content_part; partial matches
+        # only record a quality issue and leave content_part untouched.
+        categories = [
+            (is_both, lambda s: re.sub(r'^\*{3}|^\*_{2}|^_\*{2}|^_{3}|\*{3}$|_\*{2}$|\*_{2}$|_{3}$', '', s), "both"),
+            (is_entirely_bold, lambda s: s[2:-2], "entirely_bold"),
+            (is_entirely_italic_star, lambda s: s[1:-1], "entirely_italic"),
+            (is_entirely_italic_under, lambda s: s[1:-1], "entirely_italic"),
+            (has_partial_bold, None, "partial_bold"),
+            (has_partial_italic_star, None, "partial_italic_star"),
+            (has_partial_italic_under, None, "partial_italic_under"),
+        ]
         content_part = stripped
-        if is_both:
-            # Strip *** from both ends (both bold and italic)
-            content_part = re.sub(r'^\*{3}|^\*_{2}|^_\*{2}|^_{3}|\*{3}$|_\*{2}$|\*_{2}$|_{3}$', '', content_part)
-            both_bold_italic_count += 1
-        elif is_entirely_bold:
-            # Strip ** from both ends
-            content_part = content_part[2:-2]
-            entirely_bold_count += 1
-        elif is_entirely_italic_star:
-            # Strip * from both ends
-            content_part = content_part[1:-1]
-            entirely_italic_count += 1
-        elif is_entirely_italic_under:
-            # Strip _ from both ends
-            content_part = content_part[1:-1]
-            entirely_italic_count += 1
-        elif has_partial_bold:
-            # Keep content as-is but record quality issue
-            partial_bold_count += 1
-        elif has_partial_italic_star:
-            # Keep content as-is but record quality issue
-            partial_italic_star_count += 1
-        elif has_partial_italic_under:
-            # Keep content as-is but record quality issue
-            partial_italic_under_count += 1
+        for matched, transform, counter_key in categories:
+            if matched:
+                if transform:
+                    content_part = transform(content_part)
+                counts[counter_key] += 1
+                break
 
         if content_part:
             items.append(content_part)
 
-    if header_count > 0:
-        cleanups.append("MD-Header-Removal")
-    if entirely_bold_count > 0:
-        cleanups.append("Markdown-Strip-Bold-Tags")
-    if entirely_italic_count > 0:
-        cleanups.append("Markdown-Strip-Italic-Tags")
-    if both_bold_italic_count > 0:
-        cleanups.append("Markdown-Both-Bold-And-Italic")
-    if partial_bold_count > 0:
-        quality_issues.append("Markdown-Cleanup-Partially-Bold-Line")
-    if partial_italic_star_count > 0:
-        quality_issues.append("Markdown-Cleanup-Partially-Italic-Star-Line")
-    if partial_italic_under_count > 0:
-        quality_issues.append("Markdown-Cleanup-Partially-Italic-Underscore-Line")
+    cleanup_rules = [
+        (counts["header"], cleanups, "MD-Header-Removal"),
+        (counts["entirely_bold"], cleanups, "Markdown-Strip-Bold-Tags"),
+        (counts["entirely_italic"], cleanups, "Markdown-Strip-Italic-Tags"),
+        (counts["both"], cleanups, "Markdown-Both-Bold-And-Italic"),
+        (counts["partial_bold"], quality_issues, "Markdown-Cleanup-Partially-Bold-Line"),
+        (counts["partial_italic_star"], quality_issues, "Markdown-Cleanup-Partially-Italic-Star-Line"),
+        (counts["partial_italic_under"], quality_issues, "Markdown-Cleanup-Partially-Italic-Underscore-Line"),
+    ]
+    for count, target_list, label in cleanup_rules:
+        if count > 0:
+            target_list.append(label)
 
     return items, cleanups, quality_issues
 
@@ -1814,32 +1798,25 @@ def process_and_track(items, ext, max_item_length=25):
     # Step 3: Check for quality issues on CLEANED items (after format-specific removal).
     # For markdown, "1. Dog" won't be in cleaned_items anymore, so we won't flag it as inappropriate.
     # Only the first example of each issue type is stored (sufficient for reporting).
+    # Each check below is independent (no shared keys), so check order doesn't affect the result.
+    item_quality_checks = [
+        ("leading_punctuation", detect_leading_punctuation),
+        ("trailing_punctuation", detect_trailing_punctuation),
+        ("internal_punctuation", detect_internal_punctuation),
+        ("exceeds_max_length", lambda it: len(it) > max_item_length),
+        ("markup_artifact", detect_markup_artifact),
+        ("repeated_chars", detect_repeated_chars),
+    ]
     for item in cleaned_items:
-        # Check for specific punctuation issues
-        if detect_leading_punctuation(item) and "leading_punctuation" not in quality_issues:
-            quality_issues["leading_punctuation"] = item
-        if detect_trailing_punctuation(item) and "trailing_punctuation" not in quality_issues:
-            quality_issues["trailing_punctuation"] = item
-        if detect_internal_punctuation(item) and "internal_punctuation" not in quality_issues:
-            quality_issues["internal_punctuation"] = item
-
-        # Check for items exceeding maximum length
-        if len(item) > max_item_length and "exceeds_max_length" not in quality_issues:
-            quality_issues["exceeds_max_length"] = item
+        for key, detector in item_quality_checks:
+            if detector(item) and key not in quality_issues:
+                quality_issues[key] = item
 
         # Check for LLM preamble leaks — collect all for filtering; store only first as example
         if detect_preamble_leak(item):
             preamble_set.add(item)
             if "preamble_leak" not in quality_issues:
                 quality_issues["preamble_leak"] = item
-
-        # Check for residual markup
-        if detect_markup_artifact(item) and "markup_artifact" not in quality_issues:
-            quality_issues["markup_artifact"] = item
-
-        # Check for repeated characters (likely typos)
-        if detect_repeated_chars(item) and "repeated_chars" not in quality_issues:
-            quality_issues["repeated_chars"] = item
 
     # Check for non-Western (non-ASCII) characters across all items; applies to any format.
     if any(ord(c) > 127 for item in cleaned_items for c in item):
