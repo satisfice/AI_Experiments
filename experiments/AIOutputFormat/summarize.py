@@ -2253,6 +2253,190 @@ class SummarizeFilters:
     verbose: bool = False                    # Show detailed summary output; skipped files always shown
 
 
+def _describe_active_filters(options):
+    """Build a list of human-readable descriptions of which filters are active,
+    for the startup echo line."""
+    filters_applied = []
+    if options.filename_filter:
+        filters_applied.append(f"filename: {options.filename_filter}")
+    if options.experiment:
+        filters_applied.append(f"experiment: {options.experiment}")
+    if options.model:
+        filters_applied.append(f"model: {options.model} (include only)")
+    if options.exclude_model:
+        filters_applied.append(f"exclude-model: {', '.join(options.exclude_model)}")
+    if options.format_type:
+        filters_applied.append(f"format: {options.format_type}")
+    if options.timestamp:
+        filters_applied.append(f"timestamp: {options.timestamp}")
+    if options.temperature:
+        filters_applied.append(f"temperature: {options.temperature}")
+    return filters_applied
+
+
+def _compute_format_consistency(consolidated_dict, treatment_fields):
+    """Detect treatment consistency for each trial set: tracks all fields that
+    indicate how output was structured or cleaned up, grouped by
+    (abbreviated_model, str(temperature), file_type, prompt).
+    Returns {(model, temp, file_type, prompt): {field: [values]}}."""
+    format_consistency = {}
+    for ext, entries in consolidated_dict.items():
+        file_type = FORMAT_MAP.get(ext, ext)
+        for entry in entries:
+            metadata = entry["metadata"]
+            prompt = metadata.get("prompt", "unknown")
+            model = abbreviate_model_name(metadata.get("model", "unknown"))
+            temperature = str(metadata.get("temperature", "unknown"))
+
+            key = (model, temperature, file_type, prompt)
+            if key not in format_consistency:
+                format_consistency[key] = {field: [] for field in treatment_fields}
+
+            for field in treatment_fields:
+                # codeblock is absent when False; treat absence as False
+                format_consistency[key][field].append(metadata.get(field, False))
+    return format_consistency
+
+
+def _build_quality_issues_dict(format_consistency, format_style_counts, quality_issues_output,
+                                quality_issues_examples, cleanup_rules_agg, issue_types, treatment_fields):
+    """Build quality_issues_dict with hierarchy: model -> temperature -> file_type -> prompt.
+    Each prompt entry contains: issue lists, consistentFormat (bool), formatIssues (counts),
+    cleanupRules (counts)."""
+    quality_issues_dict = {}
+
+    # Gather all (model, temp, file_type, prompt) combos from all sources
+    all_combos = set(format_consistency.keys())
+    for model_name in format_style_counts:
+        for temp_value in format_style_counts[model_name]:
+            for file_type in format_style_counts[model_name][temp_value]:
+                for prompt_name in format_style_counts[model_name][temp_value][file_type]:
+                    all_combos.add((model_name, temp_value, file_type, prompt_name))
+    for model_name in quality_issues_output:
+        for temp_value in quality_issues_output[model_name]:
+            for file_type in quality_issues_output[model_name][temp_value]:
+                for prompt_name in quality_issues_output[model_name][temp_value][file_type]:
+                    all_combos.add((model_name, str(temp_value), file_type, prompt_name))
+
+    for (model_name, temp_value, file_type, prompt_name) in sorted(all_combos, key=lambda x: (x[0], x[1], x[2].casefold(), x[3])):
+        prompt_data = {}
+
+        # Add quality issues (omit empty lists)
+        issues = quality_issues_output.get(model_name, {}).get(temp_value, {}).get(file_type, {}).get(prompt_name, {})
+        for issue_type in issue_types:
+            raw_items = issues.get(issue_type, set())
+            if raw_items:
+                items_with_source = []
+                for item in raw_items:
+                    source = quality_issues_examples[model_name][temp_value][file_type][prompt_name][issue_type].get(item, "unknown")
+                    items_with_source.append({"instance": item, "source": source})
+                items_with_source.sort(key=lambda x: x["instance"].lower())
+                prompt_data[issue_type] = items_with_source
+
+        # Add consistentFormat: True if no treatment field varies across trials
+        # AND no format structure inconsistencies detected (inconsistent_*_format issues)
+        fc = format_consistency.get((model_name, temp_value, file_type, prompt_name), {})
+        has_format_inconsistency = False
+        inconsistency_issue_types = {
+            "markdown": "inconsistent_md_format",
+            "HTML": "inconsistent_html_format",
+            "JSON": "inconsistent_json_format",
+            "YAML": "inconsistent_yaml_format",
+        }
+        if file_type in inconsistency_issue_types:
+            inconsistency_type = inconsistency_issue_types[file_type]
+            has_format_inconsistency = inconsistency_type in prompt_data and bool(prompt_data[inconsistency_type])
+
+        if fc:
+            varying = [f for f in treatment_fields if len(set(fc[f])) > 1]
+            prompt_data["consistentFormat"] = len(varying) == 0 and not has_format_inconsistency
+        else:
+            prompt_data["consistentFormat"] = not has_format_inconsistency
+
+        # Add formatIssues: count of each format issue seen for this prompt
+        style_counts = format_style_counts.get(model_name, {}).get(temp_value, {}).get(file_type, {}).get(prompt_name, {})
+        if style_counts:
+            prompt_data["formatIssues"] = dict(style_counts)
+
+        # Add cleanupRules: dict of {rule_name: trial_count} sorted by rule name
+        rules_counter = cleanup_rules_agg.get(model_name, {}).get(temp_value, {}).get(file_type, {}).get(prompt_name, {})
+        if rules_counter:
+            prompt_data["cleanupRules"] = dict(sorted(rules_counter.items()))
+
+        quality_issues_dict \
+            .setdefault(model_name, {}) \
+            .setdefault(temp_value, {}) \
+            .setdefault(file_type, {})[prompt_name] = prompt_data
+
+    return quality_issues_dict
+
+
+def _should_attempt_result_file(file_path, filename_filter, format_type):
+    """Pre-filter for the result-file scan: decide whether to even attempt parsing
+    this file. Returns the lowercase extension if the file should be attempted, or
+    None if it should be silently skipped. (Extension-based skip-list handling is
+    left to the caller, since that case needs to be recorded in skipped_trials.)"""
+    if not file_path.is_file():
+        return None
+    if file_path.name in SKIP_PATTERNS:
+        return None
+    if not is_standard_filename(file_path.name):
+        return None
+    if filename_filter and filename_filter not in file_path.name:
+        return None
+    ext = file_path.suffix.lower()
+    if not ext:
+        return None
+    if format_type and ext != f".{format_type}" and ext != format_type:
+        return None
+    return ext
+
+
+def _read_result_file_content(file_path):
+    """Read a result file's content, trying utf-8 then utf-16.
+    Returns None if both encodings fail."""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return f.read()
+    except UnicodeDecodeError:
+        try:
+            with open(file_path, 'r', encoding='utf-16') as f:
+                return f.read()
+        except UnicodeDecodeError:
+            return None
+
+
+def _passes_metadata_filters(filename_metadata, file_name, experiment, model, exclude_model, temperature, timestamp):
+    """Check whether a file's parsed filename metadata passes all the active
+    experiment/model/exclude-model/temperature/timestamp filters."""
+    if experiment and filename_metadata.get("experiment") != experiment:
+        return False
+
+    # Model filtering: include only specific model if specified, or exclude specific models
+    file_model = filename_metadata.get("model")
+    if model and file_model != model:
+        return False
+    # Exclude models by pattern (supports wildcards like gpt*, *llama*, etc.)
+    if exclude_model and any(matches_model_pattern(file_model, pattern) for pattern in exclude_model):
+        return False
+
+    if temperature is not None:
+        file_temp = filename_metadata.get("temperature")
+        try:
+            temp_filter = float(temperature)
+        except (ValueError, TypeError):
+            return False
+        if file_temp != temp_filter:
+            return False
+
+    if timestamp:
+        file_timestamp = Path(file_name).stem.split('-')[0]
+        if file_timestamp != timestamp:
+            return False
+
+    return True
+
+
 def summarize_results(options):
     """
     Read all result files by type, parse items, and summarize into a single JSON.
@@ -2305,49 +2489,14 @@ def summarize_results(options):
     source_items = set()  # Track unique items from raw parsed data
 
     # Display filter parameters
-    filters_applied = []
-    if filename_filter:
-        filters_applied.append(f"filename: {filename_filter}")
-    if experiment:
-        filters_applied.append(f"experiment: {experiment}")
-    if model:
-        filters_applied.append(f"model: {model} (include only)")
-    if exclude_model:
-        filters_applied.append(f"exclude-model: {', '.join(exclude_model)}")
-    if format_type:
-        filters_applied.append(f"format: {format_type}")
-    if timestamp:
-        filters_applied.append(f"timestamp: {timestamp}")
-    if temperature:
-        filters_applied.append(f"temperature: {temperature}")
-
+    filters_applied = _describe_active_filters(options)
     if filters_applied:
         click.echo(f"Filters: {', '.join(filters_applied)}\n")
 
     # Scan results directory
     for file_path in sorted(RESULTS_DIR.iterdir()):
-        if not file_path.is_file():
-            continue
-
-        # Skip results.json and other generated output files
-        if file_path.name in SKIP_PATTERNS:
-            continue
-
-        # Skip files that don't follow standard naming convention
-        if not is_standard_filename(file_path.name):
-            continue
-
-        # Filter by filename if specified (legacy filter)
-        if filename_filter and filename_filter not in file_path.name:
-            continue
-
-        # Get file extension
-        ext = file_path.suffix.lower()
-        if not ext:
-            continue
-
-        # Filter by format if specified
-        if format_type and ext != f".{format_type}" and ext != format_type:
+        ext = _should_attempt_result_file(file_path, filename_filter, format_type)
+        if ext is None:
             continue
 
         # Skip certain extensions
@@ -2356,18 +2505,11 @@ def summarize_results(options):
             continue
 
         # Read file content
-        content = None
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-        except UnicodeDecodeError:
-            try:
-                with open(file_path, 'r', encoding='utf-16') as f:
-                    content = f.read()
-            except UnicodeDecodeError:
-                click.echo(f"Skipping (encoding error): {file_path.name}")
-                skipped_trials.append(file_path.name)
-                continue
+        content = _read_result_file_content(file_path)
+        if content is None:
+            click.echo(f"Skipping (encoding error): {file_path.name}")
+            skipped_trials.append(file_path.name)
+            continue
 
         # Parse content based on file type
         if ext not in PARSERS:
@@ -2389,30 +2531,9 @@ def summarize_results(options):
 
             # Apply metadata filters BEFORE collecting source items
             # This prevents filtered files from being included in unique items
-            if experiment and filename_metadata.get("experiment") != experiment:
+            if not _passes_metadata_filters(filename_metadata, file_path.name, experiment,
+                                             model, exclude_model, temperature, timestamp):
                 continue
-            # Model filtering: include only specific model if specified, or exclude specific models
-            file_model = filename_metadata.get("model")
-            if model and file_model != model:
-                continue
-            # Exclude models by pattern (supports wildcards like gpt*, *llama*, etc.)
-            if exclude_model:
-                if any(matches_model_pattern(file_model, pattern) for pattern in exclude_model):
-                    continue
-            # Temperature filtering
-            if temperature is not None:
-                file_temp = filename_metadata.get("temperature")
-                try:
-                    temp_filter = float(temperature)
-                    if file_temp != temp_filter:
-                        continue
-                except (ValueError, TypeError):
-                    continue
-            # Timestamp filtering
-            if timestamp:
-                file_timestamp = Path(file_path.name).stem.split('-')[0]
-                if file_timestamp != timestamp:
-                    continue
 
             # NOW collect source items (only after filtering passes)
             for item in items:
@@ -2500,29 +2621,17 @@ def summarize_results(options):
             metadata.pop("consistentCase", None)
             case_values_agg[model_name][str(temp_value)][file_type][prompt_name].append((case_value, file_path.name))
 
-            # For markdown files, track the full set of cleanup keys applied to each file.
+            # Track the full set of cleanup keys applied to each file, per format.
             # After the file loop, trial sets where rule sets differ are flagged as inconsistent.
-            if ext == '.md':
-                md_rules = frozenset(metadata.get("cleanup", {}).keys())
-                md_cleanup_agg[model_name][str(temp_value)][prompt_name].append((md_rules, file_path.name))
-
-            # For HTML files, track the full set of cleanup keys applied to each file.
-            # After the file loop, trial sets where rule sets differ are flagged as inconsistent.
-            if ext == '.html':
-                html_rules = frozenset(metadata.get("cleanup", {}).keys())
-                html_cleanup_agg[model_name][str(temp_value)][prompt_name].append((html_rules, file_path.name))
-
-            # For JSON files, track the full set of cleanup keys applied to each file.
-            # After the file loop, trial sets where rule sets differ are flagged as inconsistent.
-            if ext == '.json':
-                json_rules = frozenset(metadata.get("cleanup", {}).keys())
-                json_cleanup_agg[model_name][str(temp_value)][prompt_name].append((json_rules, file_path.name))
-
-            # For YAML files, track the full set of cleanup keys applied to each file.
-            # After the file loop, trial sets where rule sets differ are flagged as inconsistent.
-            if ext in ['.yml', '.yaml']:
-                yaml_rules = frozenset(metadata.get("cleanup", {}).keys())
-                yaml_cleanup_agg[model_name][str(temp_value)][prompt_name].append((yaml_rules, file_path.name))
+            rule_set = frozenset(metadata.get("cleanup", {}).keys())
+            for format_exts, agg in (
+                (('.md',), md_cleanup_agg),
+                (('.html',), html_cleanup_agg),
+                (('.json',), json_cleanup_agg),
+                (('.yml', '.yaml'), yaml_cleanup_agg),
+            ):
+                if ext in format_exts:
+                    agg[model_name][str(temp_value)][prompt_name].append((rule_set, file_path.name))
 
             # Track formatStyle counts per prompt (primary detect_format_style() value)
             format_style_counts[model_name][str(temp_value)][file_type][prompt_name][metadata.get("formatStyle", "unknown")] += 1
@@ -2594,26 +2703,9 @@ def summarize_results(options):
     consolidated_dict = dict(consolidated)
 
     # Detect treatment consistency for each trial set.
-    # Tracks all fields that indicate how output was structured or cleaned up.
     # Group by (abbreviated_model, str(temperature), file_type, prompt) — no experiment level.
-    # Structure: {(model, temp, file_type, prompt): {field: [values]}}
     TREATMENT_FIELDS = ["formatStyle", "codeblock"]
-    format_consistency = {}
-    for ext, entries in consolidated_dict.items():
-        file_type = FORMAT_MAP.get(ext, ext)
-        for entry in entries:
-            metadata = entry["metadata"]
-            prompt = metadata.get("prompt", "unknown")
-            model = abbreviate_model_name(metadata.get("model", "unknown"))
-            temperature = str(metadata.get("temperature", "unknown"))
-
-            key = (model, temperature, file_type, prompt)
-            if key not in format_consistency:
-                format_consistency[key] = {field: [] for field in TREATMENT_FIELDS}
-
-            for field in TREATMENT_FIELDS:
-                # codeblock is absent when False; treat absence as False
-                format_consistency[key][field].append(metadata.get(field, False))
+    format_consistency = _compute_format_consistency(consolidated_dict, TREATMENT_FIELDS)
 
     # Compute cross-trial case inconsistency and populate quality_issues_output.
     # A trial set is flagged when more than one distinct case type is observed across files.
@@ -2643,71 +2735,9 @@ def summarize_results(options):
                                   "YAML", "inconsistent_yaml_format")
 
     # Build quality_issues_dict with hierarchy: model -> temperature -> file_type -> prompt
-    # Each prompt entry contains: issue lists, consistentFormat (bool), formatIssues (counts)
-    quality_issues_dict = {}
-
-    # Gather all (model, temp, file_type, prompt) combos from all sources
-    all_combos = set(format_consistency.keys())
-    for model_name in format_style_counts:
-        for temp_value in format_style_counts[model_name]:
-            for file_type in format_style_counts[model_name][temp_value]:
-                for prompt_name in format_style_counts[model_name][temp_value][file_type]:
-                    all_combos.add((model_name, temp_value, file_type, prompt_name))
-    for model_name in quality_issues_output:
-        for temp_value in quality_issues_output[model_name]:
-            for file_type in quality_issues_output[model_name][temp_value]:
-                for prompt_name in quality_issues_output[model_name][temp_value][file_type]:
-                    all_combos.add((model_name, str(temp_value), file_type, prompt_name))
-
-    for (model_name, temp_value, file_type, prompt_name) in sorted(all_combos, key=lambda x: (x[0], x[1], x[2].casefold(), x[3])):
-        prompt_data = {}
-
-        # Add quality issues (omit empty lists)
-        issues = quality_issues_output.get(model_name, {}).get(temp_value, {}).get(file_type, {}).get(prompt_name, {})
-        for issue_type in ISSUE_TYPES:
-            raw_items = issues.get(issue_type, set())
-            if raw_items:
-                items_with_source = []
-                for item in raw_items:
-                    source = quality_issues_examples[model_name][temp_value][file_type][prompt_name][issue_type].get(item, "unknown")
-                    items_with_source.append({"instance": item, "source": source})
-                items_with_source.sort(key=lambda x: x["instance"].lower())
-                prompt_data[issue_type] = items_with_source
-
-        # Add consistentFormat: True if no treatment field varies across trials
-        # AND no format structure inconsistencies detected (inconsistent_*_format issues)
-        fc = format_consistency.get((model_name, temp_value, file_type, prompt_name), {})
-        has_format_inconsistency = False
-        inconsistency_issue_types = {
-            "markdown": "inconsistent_md_format",
-            "HTML": "inconsistent_html_format",
-            "JSON": "inconsistent_json_format",
-            "YAML": "inconsistent_yaml_format",
-        }
-        if file_type in inconsistency_issue_types:
-            inconsistency_type = inconsistency_issue_types[file_type]
-            has_format_inconsistency = inconsistency_type in prompt_data and bool(prompt_data[inconsistency_type])
-
-        if fc:
-            varying = [f for f in TREATMENT_FIELDS if len(set(fc[f])) > 1]
-            prompt_data["consistentFormat"] = len(varying) == 0 and not has_format_inconsistency
-        else:
-            prompt_data["consistentFormat"] = not has_format_inconsistency
-
-        # Add formatIssues: count of each format issue seen for this prompt
-        style_counts = format_style_counts.get(model_name, {}).get(temp_value, {}).get(file_type, {}).get(prompt_name, {})
-        if style_counts:
-            prompt_data["formatIssues"] = dict(style_counts)
-
-        # Add cleanupRules: dict of {rule_name: trial_count} sorted by rule name
-        rules_counter = cleanup_rules_agg.get(model_name, {}).get(temp_value, {}).get(file_type, {}).get(prompt_name, {})
-        if rules_counter:
-            prompt_data["cleanupRules"] = dict(sorted(rules_counter.items()))
-
-        quality_issues_dict \
-            .setdefault(model_name, {}) \
-            .setdefault(temp_value, {}) \
-            .setdefault(file_type, {})[prompt_name] = prompt_data
+    quality_issues_dict = _build_quality_issues_dict(
+        format_consistency, format_style_counts, quality_issues_output,
+        quality_issues_examples, cleanup_rules_agg, ISSUE_TYPES, TREATMENT_FIELDS)
 
     # Write results JSON (without quality issues)
     try:
