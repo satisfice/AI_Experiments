@@ -989,41 +989,86 @@ def _extract_from_html_formatting_tag(tag_nodes, tag):
     return items, cleanups
 
 
-def parse_html(content):
-    """Parse HTML using a DOM tree. Extracts items from <li> tags (primary) or falls back
-    to <p>/<span>/<div>/<article>/<section>. Each tag in the ancestor path emits its own
-    cleanup key. Returns (items, cleanups, quality_issues)."""
-    cleanups = []
-    quality_issues = []
-    items = []
+def _try_fallback_tags(root, cleanups, quality_issues):
+    """Try each tag in _HTML_FALLBACK_TAGS priority order; return raw items for the
+    first tag that yields any (mutating cleanups/quality_issues along the way), or
+    [] if none do. Extracted from parse_html's fallback-tag loop."""
+    for tag in _HTML_FALLBACK_TAGS:
+        tag_nodes = _find_leaf_tag_nodes(root, tag)
+        if not tag_nodes:
+            continue
+        raw_items, had_br, was_line_split = _items_from_nodes(tag_nodes)
+        if not raw_items:
+            continue
 
-    # ── Codefence fallback (unchanged logic) ────────────────────────────────
-    if content.strip().startswith('```'):
-        code_block_pattern = r'^```[\w]*\n(.*?)\n```\s*$'
-        match = re.search(code_block_pattern, content.strip(), re.DOTALL)
-        if match:
-            extracted_content = match.group(1)
-            cleanups.append("Extract-from-HTML-Codefence-Markdown")
-            quality_issues.append("html_no_markup")
+        # Check if every item is a numbered entry (e.g. "<span>1. Lion</span>")
+        num_matches = [re.match(r'^\d+\.\s+(.+)$', it) for it in raw_items]
+        if raw_items and all(num_matches):
+            items = [m.group(1) for m in num_matches]
+            cleanups.extend(_path_tag_cleanups(tag_nodes, tag))
+            if had_br:
+                cleanups.append("Remove-BR-Tags")
+            cleanups.append("HTML-Numbered-Items-In-Tags")
+            quality_issues.append("numbered-items-in-tags")
+            return items
 
-            # If inner content is an all-numbered list, return it immediately
-            numbered_pattern = r'^\d+\.\s+(.+)$'
-            numbered_items = [
-                re.match(numbered_pattern, line.strip()).group(1)
-                for line in extracted_content.split('\n')
-                if re.match(numbered_pattern, line.strip())
-            ]
-            if numbered_items:
-                items = numbered_items
-                return items, cleanups, quality_issues
+        # Per-item comma-split check for inline comma-separated values
+        final_items = []
+        comma_split_used = False
+        for item in raw_items:
+            if ',' in item and tag in ['p', 'span', 'div']:
+                parts = [p.strip() for p in item.split(',') if p.strip()]
+                if len(parts) > 1 and all(len(p) < 100 for p in parts):
+                    final_items.extend(parts)
+                    comma_split_used = True
+                    continue
+            final_items.append(item)
 
-            # Otherwise fall through with extracted content (drop the fence)
-            content = extracted_content
+        cleanups.extend(_path_tag_cleanups(tag_nodes, tag))
+        if had_br:
+            cleanups.append("Remove-BR-Tags")
+        if comma_split_used:
+            quality_issues.append("comma-separated")
+        if not was_line_split:
+            quality_issues.append("single-span-tag")
+        return final_items
 
-    # ── Build DOM tree ───────────────────────────────────────────────────────
-    root = _parse_html_tree(content)
+    return []
 
-    # ── Quality issues: only specific formatting tags (invalid HTML) ──────────
+
+def _try_html_codefence_fallback(content, cleanups, quality_issues):
+    """If content is a fenced code block, extract numbered items from inside it.
+    If it's fenced but not all-numbered, drop the fence and return the inner content
+    to continue parsing as HTML. Returns (items_or_None, content_to_use_next)."""
+    if not content.strip().startswith('```'):
+        return None, content
+
+    code_block_pattern = r'^```[\w]*\n(.*?)\n```\s*$'
+    match = re.search(code_block_pattern, content.strip(), re.DOTALL)
+    if not match:
+        return None, content
+
+    extracted_content = match.group(1)
+    cleanups.append("Extract-from-HTML-Codefence-Markdown")
+    quality_issues.append("html_no_markup")
+
+    # If inner content is an all-numbered list, return it immediately
+    numbered_pattern = r'^\d+\.\s+(.+)$'
+    numbered_items = [
+        re.match(numbered_pattern, line.strip()).group(1)
+        for line in extracted_content.split('\n')
+        if re.match(numbered_pattern, line.strip())
+    ]
+    if numbered_items:
+        return numbered_items, content
+
+    # Otherwise fall through with extracted content (drop the fence)
+    return None, extracted_content
+
+
+def _try_formatting_tag_only(root, cleanups, quality_issues):
+    """Quality-issue path: if the document contains only one specific formatting
+    tag (b/i/em/u/pre), extract items from it. Returns items if successful, else None."""
     for tag, quality_issue in [('b', 'HTML_Only_Bold_Tags'), ('i', 'HTML_Only_Italic_Tags'), ('em', 'HTML_Only_Emphasis_Tags'), ('u', 'HTML_Only_Underline_Tags'), ('pre', 'HTML_Only_Pre_Tags')]:
         if _only_has_tag(root, tag):
             tag_nodes = _find_leaf_tag_nodes(root, tag)
@@ -1032,18 +1077,26 @@ def parse_html(content):
             cleanups.extend(_detect_br_tags(tag_nodes))
             quality_issues.append(quality_issue)
             if items:
-                return items, cleanups, quality_issues
+                return items
+    return None
 
-    # ── Primary path: <li> tags ──────────────────────────────────────────────
+
+def _try_li_primary_path(root, cleanups):
+    """Primary path: extract items from <li> tags. Returns items (even if empty)
+    once any <li> is found, or None if there are no <li> tags at all."""
     li_nodes = _find_leaf_tag_nodes(root, 'li')
-    if li_nodes:
-        items, had_br, _ = _items_from_nodes(li_nodes)
-        cleanups.extend(_path_tag_cleanups(li_nodes, 'li'))
-        if had_br:
-            cleanups.append("Remove-BR-Tags")
-        return items, cleanups, quality_issues
+    if not li_nodes:
+        return None
+    items, had_br, _ = _items_from_nodes(li_nodes)
+    cleanups.extend(_path_tag_cleanups(li_nodes, 'li'))
+    if had_br:
+        cleanups.append("Remove-BR-Tags")
+    return items
 
-    # ── UL/OL with unwrapped text: items directly in list tag, no <li> ──────
+
+def _try_bare_list_path(root, cleanups, quality_issues):
+    """UL/OL with unwrapped text: items directly in the list tag, with no <li>
+    children. Returns items if found, else None."""
     for list_tag in ['ul', 'ol']:
         list_nodes = list(root.iter_tag(list_tag))
         if not list_nodes:
@@ -1062,109 +1115,111 @@ def parse_html(content):
             if had_br:
                 cleanups.append("Remove-BR-Tags")
             quality_issues.append("items-not-in-li")
-            return raw_items, cleanups, quality_issues
+            return raw_items
+    return None
 
-    # ── Fallback path: try each tag in priority order ────────────────────────
-    for tag in _HTML_FALLBACK_TAGS:
-        tag_nodes = _find_leaf_tag_nodes(root, tag)
-        if not tag_nodes:
-            continue
-        raw_items, had_br, was_line_split = _items_from_nodes(tag_nodes)
-        if not raw_items:
-            continue
 
-        # Check if every item is a numbered entry (e.g. "<span>1. Lion</span>")
-        num_matches = [re.match(r'^\d+\.\s+(.+)$', it) for it in raw_items]
-        if raw_items and all(num_matches):
-            items = [m.group(1) for m in num_matches]
-            cleanups.extend(_path_tag_cleanups(tag_nodes, tag))
-            if had_br:
-                cleanups.append("Remove-BR-Tags")
-            cleanups.append("HTML-Numbered-Items-In-Tags")
-            quality_issues.append("numbered-items-in-tags")
-            break
+def _try_invalid_tag_fallback(root, cleanups, quality_issues):
+    """Extract text content from unrecognized/invalid tags, or the tag name
+    itself for hollow tags (e.g. <tiger>). Returns items (possibly empty)."""
+    known_tags = set(_HTML_TAG_DISPLAY.keys()) | _HtmlTreeBuilder._VOID_TAGS
+    invalid_nodes = _find_nodes_with_unknown_tags(root, known_tags)
+    if not invalid_nodes:
+        return []
 
-        # Per-item comma-split check for inline comma-separated values
-        final_items = []
-        comma_split_used = False
-        for item in raw_items:
-            if ',' in item and tag in ['p', 'span', 'div']:
-                parts = [p.strip() for p in item.split(',') if p.strip()]
-                if len(parts) > 1 and all(len(p) < 100 for p in parts):
-                    final_items.extend(parts)
-                    comma_split_used = True
-                    continue
-            final_items.append(item)
+    items = []
+    has_hollow_tags = False
+    for node in invalid_nodes:
+        text, _ = node.text_content()
+        text = text.strip()
+        if text:
+            items.append(text)
+        elif node.tag:
+            # Hollow tag: tag name IS the content (e.g. <tiger>)
+            items.append(node.tag)
+            has_hollow_tags = True
+    if items:
+        cleanups.append("Extract-From-Invalid-HTML-Tags")
+        quality_issues.append("invalid-html-tags")
+        if has_hollow_tags:
+            quality_issues.append("pointy-bracket-wrapping")
+    return items
 
-        items = final_items
-        cleanups.extend(_path_tag_cleanups(tag_nodes, tag))
-        if had_br:
-            cleanups.append("Remove-BR-Tags")
-        if comma_split_used:
-            quality_issues.append("comma-separated")
-        if not was_line_split:
-            quality_issues.append("single-span-tag")
-        break
 
-    # ── Invalid tag fallback: extract text content from invalid tags ─────────
+def _try_plain_text_fallback(content, cleanups, quality_issues):
+    """No HTML structure detected: treat each non-blank line as an item, stripping
+    any stray tags and detecting numbered lists. Returns items (possibly empty)."""
+    plain_items = [line.rstrip('\n\r') for line in content.split('\n') if line.strip()]
+    if not plain_items:
+        return []
+
+    # Strip HTML tags from each line before classification. Files that mix an
+    # HTML-tagged title line (e.g. <u>Animal Names</u>) with plain numbered items
+    # need the tags removed first so the numbered-list check works correctly.
+    clean_lines = [re.sub(r'<[^>]+>', '', line).strip() for line in plain_items]
+    clean_lines = [l for l in clean_lines if l]
+
+    numbered_pattern = r'^\d+\.\s+(.+)$'
+    num_matches = [re.match(numbered_pattern, l) for l in clean_lines]
+    numbered_items = [m.group(1) for m in num_matches if m]
+
+    if numbered_items and all(num_matches):
+        # Every line is a numbered item — clean numbered list in plain text.
+        cleanups.append("HTML-Numbered-List-Stripping")
+        quality_issues.append("html_no_markup")
+        return numbered_items
+
+    if numbered_items:
+        # Mix of numbered items and non-numbered lines (e.g. a title).
+        # If the non-numbered lines are all short (≤5 words), treat them as
+        # header/title noise and extract only the numbered items.
+        non_numbered = [clean_lines[i] for i, m in enumerate(num_matches) if not m]
+        if all(len(l.split()) <= 5 for l in non_numbered):
+            cleanups.append("HTML-Numbered-List-Stripping")
+            quality_issues.append("html_no_markup")
+            return numbered_items
+        cleanups.append("HTML-PlainText-Fallback")
+        quality_issues.append("html_no_markup")
+        return clean_lines
+
+    cleanups.append("HTML-PlainText-Fallback")
+    quality_issues.append("html_no_markup")
+    return clean_lines
+
+
+def parse_html(content):
+    """Parse HTML using a DOM tree. Tries each strategy in turn: codefence fallback,
+    formatting-tag-only quality path, <li> primary path, bare UL/OL text, fallback
+    tags in priority order (<p>/<span>/<div>/<article>/<section>), invalid-tag
+    extraction, and finally plain-text. Returns (items, cleanups, quality_issues)."""
+    cleanups = []
+    quality_issues = []
+
+    codefence_items, content = _try_html_codefence_fallback(content, cleanups, quality_issues)
+    if codefence_items is not None:
+        return codefence_items, cleanups, quality_issues
+
+    root = _parse_html_tree(content)
+
+    formatting_items = _try_formatting_tag_only(root, cleanups, quality_issues)
+    if formatting_items:
+        return formatting_items, cleanups, quality_issues
+
+    li_items = _try_li_primary_path(root, cleanups)
+    if li_items is not None:
+        return li_items, cleanups, quality_issues
+
+    bare_items = _try_bare_list_path(root, cleanups, quality_issues)
+    if bare_items:
+        return bare_items, cleanups, quality_issues
+
+    items = _try_fallback_tags(root, cleanups, quality_issues)
+
     if not items:
-        known_tags = set(_HTML_TAG_DISPLAY.keys()) | _HtmlTreeBuilder._VOID_TAGS
-        invalid_nodes = _find_nodes_with_unknown_tags(root, known_tags)
-        if invalid_nodes:
-            # Extract text content from inside invalid tags, or tag name for hollow tags
-            items = []
-            has_hollow_tags = False
-            for node in invalid_nodes:
-                text, _ = node.text_content()
-                text = text.strip()
-                if text:
-                    items.append(text)
-                elif node.tag:
-                    # Hollow tag: tag name IS the content (e.g. <tiger>)
-                    items.append(node.tag)
-                    has_hollow_tags = True
-            if items:
-                cleanups.append("Extract-From-Invalid-HTML-Tags")
-                quality_issues.append("invalid-html-tags")
-                if has_hollow_tags:
-                    quality_issues.append("pointy-bracket-wrapping")
+        items = _try_invalid_tag_fallback(root, cleanups, quality_issues)
 
-    # ── Plain text fallback: no HTML structure detected ──────────────────────
     if not items:
-        plain_items = [line.rstrip('\n\r') for line in content.split('\n') if line.strip()]
-        if plain_items:
-            # Strip HTML tags from each line before classification.  Files that mix an
-            # HTML-tagged title line (e.g. <u>Animal Names</u>) with plain numbered items
-            # need the tags removed first so the numbered-list check works correctly.
-            clean_lines = [re.sub(r'<[^>]+>', '', line).strip() for line in plain_items]
-            clean_lines = [l for l in clean_lines if l]
-
-            numbered_pattern = r'^\d+\.\s+(.+)$'
-            num_matches = [re.match(numbered_pattern, l) for l in clean_lines]
-            numbered_items = [m.group(1) for m in num_matches if m]
-
-            if numbered_items and all(num_matches):
-                # Every line is a numbered item — clean numbered list in plain text.
-                items = numbered_items
-                cleanups.append("HTML-Numbered-List-Stripping")
-                quality_issues.append("html_no_markup")
-            elif numbered_items:
-                # Mix of numbered items and non-numbered lines (e.g. a title).
-                # If the non-numbered lines are all short (≤5 words), treat them as
-                # header/title noise and extract only the numbered items.
-                non_numbered = [clean_lines[i] for i, m in enumerate(num_matches) if not m]
-                if all(len(l.split()) <= 5 for l in non_numbered):
-                    items = numbered_items
-                    cleanups.append("HTML-Numbered-List-Stripping")
-                    quality_issues.append("html_no_markup")
-                else:
-                    items = clean_lines
-                    cleanups.append("HTML-PlainText-Fallback")
-                    quality_issues.append("html_no_markup")
-            else:
-                items = clean_lines
-                cleanups.append("HTML-PlainText-Fallback")
-                quality_issues.append("html_no_markup")
+        items = _try_plain_text_fallback(content, cleanups, quality_issues)
 
     return items, cleanups, quality_issues
 
