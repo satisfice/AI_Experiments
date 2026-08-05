@@ -1,0 +1,14 @@
+* Kangaroo
+* Octopus
+* Flamingo
+* Cheetah
+* Koala
+* Penguin
+* Armadillo
+* Narwhal
+* Chameleon
+* Lemur 
+* Rattlesnake
+* Platypus
+* Ostrich
+* Meerkat

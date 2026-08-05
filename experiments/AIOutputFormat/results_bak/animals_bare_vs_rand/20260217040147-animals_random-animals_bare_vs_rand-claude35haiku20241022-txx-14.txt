@@ -1,0 +1,25 @@
+Lion
+Tiger
+Elephant
+Giraffe
+Zebra
+Penguin
+Koala
+Kangaroo
+Cheetah
+Rhinoceros
+Hippopotamus
+Gorilla
+Panda
+Polar Bear
+Wolf
+Jaguar
+Octopus
+Dolphin
+Eagle
+Flamingo
+Sloth
+Platypus
+Komodo Dragon
+Lemur
+Chimpanzee

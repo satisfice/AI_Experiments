@@ -1,0 +1,45 @@
+```markdown
+- fox
+- owl
+- turtle
+- dolphin
+- snake
+- bear
+- penguin
+- frog
+- rabbit
+- hawk
+- lion
+- deer
+- eagle
+- wolf
+- zebra
+- tiger
+- monkey
+- giraffe
+- parrot
+- skunk
+- anteater
+- badger
+- beaver
+- camel
+- cat
+- chickadee
+- crocodile
+- dog
+- duck
+- elephant
+- emu
+- ferret
+- frog
+- gibbon
+- goose
+- grizzly
+- hawk
+- ibis
+- jaguar
+- kangaroo
+- lemur
+- llama
+
+```

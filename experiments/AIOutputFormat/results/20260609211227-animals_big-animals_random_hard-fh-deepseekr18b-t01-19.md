@@ -1,0 +1,29 @@
+```markdown
+- alligator
+- badger
+- buffalo
+- camel
+- chimpanzee
+- dolphin
+- eagle
+- ferret
+- griffin
+- hawk
+- iguana
+- jaguar
+- koala
+- lemur
+- manta
+- newt
+- ocelot
+- panda
+- python
+- quail
+- raccoon
+- snake
+- tiger
+- viper
+- weasel
+- yak
+- zebra
+```

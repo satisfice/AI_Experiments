@@ -1,0 +1,10 @@
+* Monkey
+* Kangaroo
+* Dolphin
+* Penguin
+* Koala
+* Crocodile
+* Tiger
+* Elephant
+* Gorilla
+* Wolf

@@ -1,0 +1,98 @@
+axolotl
+barn swallow
+caecilian
+dhole
+eland
+fennec fox
+giant water bug
+honey badger
+ibex
+jackal
+kinkajou
+lemur
+musk ox
+nashua
+okapi
+pygmy hippopotamus
+quokka
+ratite
+serval
+tarsier
+umbrellabird
+vampire bat
+wombat
+xerus
+yellow-throated sandpiper
+zebu
+abemaya
+banded antelope
+capybara
+dugong
+echidna
+fossa
+gibbon
+hedgehog
+iguana
+javelina
+kangaroo
+lemur
+lorikeet
+mandrill
+newfoundland
+octopus
+puma
+quail
+red deer
+salamander
+tamarin
+viper
+wallaby
+xantus's butterfly
+yak
+zebra
+baboon
+capybara
+dromedary
+eland
+fennec fox
+giant panda
+hedgehog
+iguana
+jaguarundi
+kinkajou
+lemur
+mandrill
+newfoundland
+octopus
+puma
+quokka
+serval
+tarsier
+vole
+wallaby
+xerus
+yak
+zebu
+baboon
+capybara
+dugong
+echidna
+fossa
+gibbon
+hedgehog
+iguana
+jaguarundi
+kink
+lemur
+mandrill
+newfoundland
+octopus
+puma
+quokka
+serval
+tarsier
+vole
+wallaby
+xerus
+yak
+zebu

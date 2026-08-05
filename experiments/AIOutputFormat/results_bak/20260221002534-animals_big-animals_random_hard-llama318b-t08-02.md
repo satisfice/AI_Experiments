@@ -1,0 +1,16 @@
+* Giraffe
+* Platypus
+* Narwhal
+* Mole
+* Penguin
+* Kangaroo
+* Meerkat
+* Chameleon
+* Falcon
+* Raccoon
+* Lemur
+* Cheetah
+* Quail
+* Ostrich
+* Jaguar
+* Seal

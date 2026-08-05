@@ -1,0 +1,30 @@
+- Lion
+- Tiger
+- Elephant
+- Giraffe
+- Zebra
+- Cheetah
+- Gorilla
+- Hippopotamus
+- Rhino
+- Crocodile
+- Kangaroo
+- Koala
+- Panda
+- Polar bear
+- Grizzly bear
+- Wolf
+- Fox
+- Deer
+- Moose
+- Beaver
+- Dolphin
+- Whale
+- Shark
+- Octopus
+- Penguin
+- Bald eagle
+- Owl
+- Parrot
+- Flamingo
+- Hummingbird

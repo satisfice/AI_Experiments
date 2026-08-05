@@ -1,0 +1,61 @@
+```markdown
+-aardwolf
+-aardvark
+-abeel
+-abyssinian
+-abyssinian hedgehog
+-aced
+-acouchy
+-adams
+-adelie
+-adler
+-adonis
+-aequator
+-african
+-african fat-tailed dwarf
+-african groundhog
+-african pygmy
+-african serval
+-african wildcat
+-agnus
+-ahorse
+-aiwan
+-ajarian
+-akalaj
+-akel
+-akfa
+-akha
+-akolela
+-akura
+-alaud
+-alethe
+-alfed
+-alfonse
+-alfred
+-aliab
+-aliabu
+-aliabug
+-aliabughe
+-aliabughehe
+-aliabughehehe
+-aliabughehehehe
+-aliabughehehehehe
+-aliabughehehehehehe
+-aliabughehehehehehehe
+-aliabughehehehehehehehe
+-aliabughehehehehehehehehe
+-aliabughehehehehehehehehehe
+-aliabughehehehehehehehehehehe
+-aliabughehehehehehehehehehehehe
+-aliabughehehehehehehehehehehehehe
+-aliabughehehehehehehehehehehehehehe
+-aliabughehehehehehehehehehehehehehehe
+-aliabughehehehehehehehehehehehehehehehe
+-aliabughehehehehehehehehehehehehehehehehe
+-aliabughehehehehehehehehehehehehehehehehehe
+-aliabughehehehehehehehehehehehehehehehehehehe
+-aliabughehehehehehehehehehehehehehehehehehehehe
+-aliabughehehehehehehehehehehehehehehehehehehehehe
+-aliabughehehehehehehehehehehehehehehehehehehehehehe
+-aliabughehehe
+```

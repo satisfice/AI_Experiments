@@ -1,0 +1,96 @@
+- Dog
+- Cat
+- Elephant
+- Lion
+- Tiger
+- Wolf
+- Bear
+- Giraffe
+- Gorilla
+- Zebra
+- Kangaroo
+- Monkey
+- Hippo
+- Rhino
+- Cheetah
+- Penguin
+- Dolphin
+- Whale
+- Shark
+- Octopus
+- Jellyfish
+- Crocodile
+- Alligator
+- Eagle
+- Hawk
+- Falcon
+- Owl
+- Parrot
+- Toucan
+- Flamingo
+- Pelican
+- Seagull
+- Sparrow
+- Hummingbird
+- Bald Eagle
+- Peacock
+- Ostrich
+- Emu
+- Flamingo
+- Heron
+- Swan
+- Duck
+- Goose
+- Pelican
+- Flamingo
+- Robin
+- Blue Jay
+- Cardinal
+- Pigeon
+- Crow
+- Seagull
+- Cormorant
+- Osprey
+- Vulture
+- Woodpecker
+- Puffin
+- Myna
+- Magpie
+- Roadrunner
+- Mockingbird
+- Starling
+- Kingfisher
+- Wren
+- Bluebird
+- Jay
+- Oriole
+- Thrush
+- Warbler
+- Sparrow
+- Gull
+- Blackbird
+- Nightingale
+- Finch
+- Tern
+- Pheasant
+- Quail
+- Ruffed Grouse
+- Ptarmigan
+- Wild Turkey
+- Partridge
+- Pigeon
+- Band-tailed Pigeon
+- Mourning Dove
+- House Sparrow
+- Canyon Towhee
+- California Quail
+- Phainopepla
+- Black-throated Sparrow
+- Yellow-eyed Junco
+- Albatross
+- Snowy Plover
+- Cassin's Auklet
+- Western Gull
+- Peregrine Falcon
+- Black Skimmer
+- Puffin

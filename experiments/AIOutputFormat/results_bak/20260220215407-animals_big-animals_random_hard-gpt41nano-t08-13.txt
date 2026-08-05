@@ -1,0 +1,20 @@
+Tiger  
+Penguin  
+Kangaroo  
+Elephant  
+Otter  
+Crocodile  
+Gorilla  
+Antelope  
+Hummingbird  
+Lemur  
+Cheetah  
+Seal  
+Rhinoceros  
+Panda  
+Butterfly  
+Blue whale  
+Wolf  
+Koala  
+Snail  
+Jaguar

@@ -1,0 +1,10 @@
+Badger
+Mongoose
+Toucan
+Giraffe
+Falcon
+Rhinoceros
+Hedgehog
+Cheetah
+Ostrich
+Octopus

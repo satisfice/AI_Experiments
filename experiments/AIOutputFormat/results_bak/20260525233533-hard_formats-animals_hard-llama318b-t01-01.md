@@ -1,0 +1,22 @@
+```markdown
+- lion
+- elephant
+- giraffe
+- monkey
+- kangaroo
+- tiger
+- bear
+- wolf
+- dolphin
+- octopus
+- crocodile
+- shark
+- snake
+- lizard
+- falcon
+- eagle
+- rabbit
+- squirrel
+- fox
+- owl
+```

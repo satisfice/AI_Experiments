@@ -1,0 +1,36 @@
+```
+- ant
+- bear
+- cat
+- dog
+- eagle
+- fish
+- fox
+- goat
+- horse
+- iguana
+- jellyfish
+- kangaroo
+- llama
+- moose
+- newt
+- octopus
+- panda
+- quail
+- rabbit
+- snake
+- turtle
+- vulture
+- wolf
+- llama
+- monkey
+- newt
+- octopus
+- panda
+- quail
+- rabbit
+- snake
+- turtle
+- vulture
+- wolf
+```

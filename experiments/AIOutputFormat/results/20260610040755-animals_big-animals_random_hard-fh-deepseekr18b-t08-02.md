@@ -1,0 +1,44 @@
+```markdown
+- bear
+- whale
+- fox
+- dolphin
+- tiger
+- lion
+- snake
+- eagle
+- penguin
+- rabbit
+- monkey
+- zebra
+- giraffe
+- kangaroo
+- wolf
+- leopard
+- cheetah
+- jaguar
+- skunk
+- moose
+- deer
+- antelope
+- elephant
+- rhino
+- crocodile
+- turtle
+- tortoise
+- frog
+- toad
+- newt
+- salamander
+- spider
+- scorpion
+- ant
+- bee
+- wasp
+- butterfly
+- dragonfly
+- grasshopper
+- cricket
+- ladybug
+
+```

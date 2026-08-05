@@ -1,0 +1,12 @@
+1. Koala
+2. Narwhal
+3. Mongoose
+4. Quail
+5. Cheetah
+6. Axolotl
+7. Rhinoceros
+8. Pangolin
+9. Wallaby
+10. Ostrich 
+11. Platypus
+12. Tapir

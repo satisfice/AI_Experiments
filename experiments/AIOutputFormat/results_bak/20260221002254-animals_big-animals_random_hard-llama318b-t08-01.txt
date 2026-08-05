@@ -1,0 +1,10 @@
+Pangolin
+Flamingo
+Kangaroo
+Toucan
+Octopus
+Rhinoceros
+Hedgehog
+Giraffe
+Walrus
+Falcon

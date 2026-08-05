@@ -1,0 +1,400 @@
+1. dog
+2. cat
+3. bird
+4. fish
+5. rabbit
+6. mouse
+7. rat
+8. snake
+9. frog
+10. turtle
+11. dolphin
+12. whale
+13. bear
+14. deer
+15. fox
+16. wolf
+17. lion
+18. tiger
+19. zebra
+20. giraffe
+21. elephant
+22. monkey
+23. ape
+24. ape
+25. chimpanzee
+26. bonobo
+27. gorilla
+28. baboon
+29. lemur
+30. sloth
+31. anteater
+32. armadillo
+33. skunk
+34. opossum
+32. beaver
+36. badger
+37. lynx
+38. weasel
+39. mink
+40. hawk
+41. eagle
+42. falcon
+43. owl
+44. parrot
+45. pigeon
+46. dove
+47. rook
+48. crow
+49. raven
+50. magpie
+51. crow
+52. jay
+53. woodpecker
+54. nuthatch
+55. wren
+56. sparrow
+57. finch
+58. canary
+59. mynah
+60. parakeet
+61. hawk
+62. kite
+63. swan
+64. duck
+65. goose
+66. penguin
+67. flamingo
+68. ibis
+69. toucan
+70. hornbill
+71. woodcock
+72. snipe
+73. thrush
+74. warbler
+75. thrasher
+76. mockingbird
+77. nightingale
+78. cuckoo
+79. roadrunner
+80. trogon
+81. toucan
+82. jacana
+83. kiwi
+84. pheasant
+85. peacock
+86. peacock
+87. peacock
+88. penguin
+89. ostrich
+90. emu
+91. kiwi
+92. bustard
+93. quail
+94. grouse
+95. ptarmigan
+96. sandhill crane
+97. whooping crane
+98. crane
+99. ibis
+100. stork
+101. newt
+102. salamander
+103. toad
+104. caecilian
+105. chameleon
+106. gecko
+107. iguana
+108. monitor lizard
+109. chameleon
+110. skink
+111. tuatara
+112. crocodile
+113. alligator
+114. caiman
+115. gharial
+116. komodo dragon
+117. viper
+118. cobra
+119. rattlesnake
+120. pit viper
+121. adder
+122. garter snake
+123. boa constrictor
+124. king snake
+125. python
+126. sea snake
+127. gila monster
+128. horned lizard
+129. gecko
+130. skink
+131. frog
+132. toad
+133. newt
+134. salamander
+135. caecilian
+136. caecilian
+137. caecilian
+138. caecilian
+139. caecilian
+140. caecilian
+141. caecilian
+142. caecilian
+143. caecilian
+144. caecilian
+145. caecilian
+1个. anglerfish
+147. catfish
+148. carp
+149. salmon
+150. trout
+151. bass
+152. perch
+153. pike
+154. cod
+155. herring
+156. mackerel
+157. tuna
+158. sardine
+159. anchovy
+160. jellyfish
+161. starfish
+162. sea star
+163. sea cucumber
+164. crab
+165. lobster
+166. shrimp
+167. prawn
+168. crayfish
+169. mantis shrimp
+170. squid
+171. octopus
+172. cuttlefish
+173. seahorse
+174. whale shark
+175. tiger shark
+176. great white shark
+177. lemon shark
+178. nurse shark
+179. hammerhead shark
+180. angel fish
+181. butterfly fish
+182. surgeonfish
+183. unicorn fish
+184. parrotfish
+185. triggerfish
+186. filefish
+187. angelfish
+188. clownfish
+189. betta
+190. guppy
+191. neon tetra
+192. zebrafish
+193. goldfish
+194. koi
+195. medaka
+196. killifish
+197. mollusk
+198. snail
+199. clam
+200. oyster
+201. scallop
+202. mussel
+203. abalone
+204. pearl oyster
+205. nautilus
+206. spider
+207. scorpion
+208. centipede
+209. millipede
+210. ant
+211. bee
+212. wasp
+213. butterfly
+214. moth
+215. dragonfly
+216. damselfly
+217. mosquito
+218. tick
+219. mite
+220. flea
+221. louse
+222. bed bug
+223. mosquito
+224. tsetse fly
+225. mayfly
+226. stonefly
+227. caddisfly
+228. fire ant
+229. carpenter ant
+230. honey bee
+231. bumblebee
+232. wasp
+233. hornet
+234. paper wasp
+235. mud dauber
+236. ichneumon wasp
+237. sawfly
+238. bee
+239. wasp
+240. ant
+241. termite
+242. silverfish
+243. mayfly
+244. thrips
+245. springtail
+246. booklice
+247. fungus gnat
+248. midge
+249. gnat
+250. sand fly
+251. alate
+252. termite
+253. mayfly
+254. caddisfly
+255. mayfly
+256. stonefly
+257. dragonfly
+258. damselfly
+259. mosquito
+260. tick
+261. mite
+262. flea
+263. louse
+264. bed bug
+265. tick
+266. mite
+267. spider
+268. scorpion
+269. centipede
+270. millipede
+271. earthworm
+272. leech
+273. nematode
+274. roundworm
+275. hookworm
+276. pinworm
+277. whipworm
+278. threadworm
+279. trichina
+280. filarial worm
+281. botfly
+282. screwworm
+283. blowfly
+284. botfly
+285. tsetse fly
+286. sand fly
+287. sand flea
+288. chigger
+289. harvest mite
+290. dust mite
+291. chiggers
+292. tick
+293. mite
+294. spider
+295. scorpion
+296. centipede
+297. millipede
+298. ant
+299. bee
+300. wasp
+301. butterfly
+302. moth
+303. dragonfly
+304. damselfly
+305. mosquito
+306. tick
+307. mite
+308. flea
+309. louse
+310. bed bug
+311. tick
+312. mite
+313. spider
+314. scorpion
+315. centipede
+316. millipede
+317. earthworm
+318. leech
+319. nematode
+320. roundworm
+321. hookworm
+322. pinworm
+323. whipworm
+324. threadworm
+325. trichina
+326. filarial worm
+327. botfly
+328. screwworm
+329. blowfly
+330. botfly
+331. tsetse fly
+332. sand fly
+333. sand flea
+334. chigger
+335. harvest mite
+336. dust mite
+337. chiggers
+338. tick
+339. mite
+340. spider
+341. scorpion
+342. centipede
+343. millipede
+344. ant
+345. bee
+346. wasp
+347. butterfly
+348. moth
+349. dragonfly
+350. damselfly
+351. mosquito
+352. tick
+353. mite
+354. flea
+355. louse
+356. bed bug
+357. tick
+358. mite
+359. spider
+360. scorpion
+361. centipede
+362. millipede
+363. earthworm
+364. leech
+365. nematode
+366. roundworm
+367. hookworm
+368. pinworm
+369. whipworm
+370. threadworm
+371. trichina
+372. filarial worm
+373. botfly
+374. screwworm
+375. blowfly
+376. botfly
+377. tsetse fly
+378. sand fly
+379. sand flea
+380. chigger
+381. harvest mite
+382. dust mite
+383. chiggers
+384. tick
+385. mite
+386. spider
+387. scorpion
+388. centipede
+389. millipede
+390. ant
+391. bee
+392. wasp
+393. butterfly
+394. moth
+395. dragonfly
+396. damselfly
+397. mosquito
+398. tick
+399. mite
+400. flea

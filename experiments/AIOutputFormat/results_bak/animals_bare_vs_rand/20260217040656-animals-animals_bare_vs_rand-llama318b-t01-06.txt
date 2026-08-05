@@ -1,0 +1,10 @@
+1. Elephant
+2. Gorilla
+3. Lion
+4. Kangaroo
+5. Panda
+6. Tiger
+7. Wolf
+8. Bear
+9. Monkey
+10. Zebra

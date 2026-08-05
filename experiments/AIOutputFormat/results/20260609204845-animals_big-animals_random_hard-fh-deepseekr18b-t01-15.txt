@@ -1,0 +1,112 @@
+cat
+dog
+elephant
+lion
+tiger
+bear
+wolf
+fox
+rabbit
+deer
+dolphin
+whale
+shark
+eagle
+hawk
+owl
+eagle
+frog
+turtle
+snake
+lizard
+iguana
+kangaroo
+kangaroo rat
+koala
+panda
+giraffe
+zebra
+gazelle
+buffalo
+antelope
+camel
+donkey
+horse
+pony
+mule
+asian elephant
+african elephant
+tarsier
+frog
+newt
+salamander
+newfoundland
+labrador
+beagle
+poodle
+bulldog
+chihuahua
+dachshund
+labrador retriever
+golden retriever
+great dane
+spaniel
+terrier
+beagle
+wildcat
+cougar
+lynx
+bobcat
+lynx
+peccary
+jacana
+hyrax
+hyrax
+dewey
+dodo
+sloth
+sloth bear
+hyena
+vulture
+osprey
+crane
+owl
+owl monkey
+howler monkey
+tamarin
+capuchin monkey
+baboon
+mandrill
+orangutan
+gorilla
+chimpanzee
+bonobo
+baboon
+lemur
+aye-aye
+frog
+caecilian
+caecilian
+caecilian
+caecilian
+tapir
+tapir
+tapir
+tapir
+tapir
+tapir
+tapir
+tapir
+tapir
+tapir
+tapir
+tapir
+tapir
+tapir
+tapir
+tapir
+tapir
+tapir
+tapir
+tapir
+tapir

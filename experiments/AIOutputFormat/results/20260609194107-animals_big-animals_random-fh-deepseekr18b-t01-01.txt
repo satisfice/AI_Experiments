@@ -1,0 +1,86 @@
+fox
+owl
+tiger
+bear
+snake
+eagle
+frog
+rabbit
+lion
+deer
+parrot
+turtle
+skunk
+badger
+moose
+ant
+beaver
+cobra
+kangaroo
+iguana
+peacock
+sparrow
+shark
+penguin
+wolf
+goat
+sheep
+pig
+chicken
+elephant
+giraffe
+zebra
+kudu
+hyena
+vulture
+jackal
+mongoose
+viper
+hedgehog
+lemur
+orangutan
+gibbon
+koala
+possum
+wallaby
+wombat
+frog
+newt
+toad
+salamander
+newfoundland
+labrador
+beagle
+poodle
+bulldog
+dachshund
+dalmatian
+labrador retriever
+pembroke welsh corgi
+chow chow
+great dane
+whippet
+dutch shepherd
+ibex
+ibis
+crane
+stork
+owl monkey
+tarsier
+caecilian
+caiman
+crocodile
+alligator
+anaconda
+boa
+gila monster
+capybara
+llama
+alpaca
+vicuña
+vicuña
+vicuña
+vicuña
+vicuña
+vicuña
+vicuña

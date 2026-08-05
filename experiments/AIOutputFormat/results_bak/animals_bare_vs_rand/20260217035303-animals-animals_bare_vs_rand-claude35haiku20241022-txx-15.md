@@ -1,0 +1,26 @@
+## Animal Names
+- Lion
+- Elephant
+- Giraffe
+- Zebra
+- Cheetah
+- Rhinoceros
+- Hippopotamus
+- Gorilla
+- Tiger
+- Panda
+- Wolf
+- Bear
+- Kangaroo
+- Koala
+- Dolphin
+- Shark
+- Eagle
+- Penguin
+- Ostrich
+- Crocodile
+- Snake
+- Monkey
+- Lemur
+- Jaguar
+- Hyena

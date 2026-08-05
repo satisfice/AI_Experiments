@@ -1,0 +1,15 @@
+- Elephant  
+- Kangaroo  
+- Penguin  
+- Cheetah  
+- Giraffe  
+- Owl  
+- Dolphin  
+- Tiger  
+- Koala  
+- Zebra  
+- Sloth  
+- Rhinoceros  
+- Fox  
+- Panda  
+- Crocodile

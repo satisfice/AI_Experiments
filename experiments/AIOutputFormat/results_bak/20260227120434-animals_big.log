@@ -1,0 +1,15 @@
+Experiment Log
+==============
+
+Timestamp: 20260227120434
+Experiment: animals_big
+Model: llama3.1:8b
+Prompt: animals_random.prompt
+Format(s): html
+Temperature: 01
+Iterations: 20
+
+No files required UTF-8 encoding (all outputs contained only ASCII characters).
+
+Total Files Generated: 20
+Files with Non-ASCII Characters: 0

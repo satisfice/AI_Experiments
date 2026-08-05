@@ -1,0 +1,214 @@
+koala
+badger
+llama
+ferret
+salamander
+iguana
+quokka
+axolotl
+orangutan
+narwhal
+curlew
+sloth
+owl
+ibis
+coati
+jackal
+hyena
+vulture
+jaguar
+iguana
+sloth
+quokka
+lemur
+penguin
+newt
+kinkajou
+tapir
+porcupine
+wildcat
+hedgehog
+addax
+okapi
+tahr
+ibex
+tapir
+bison
+bighorn
+antelope
+ibis
+crane
+curlew
+goose
+duck
+robin
+sparrow
+owl
+eagle
+hawk
+falcon
+kite
+eagle
+vulture
+stork
+loon
+loon
+goose
+duck
+turkey
+owl
+owl
+newt
+frog
+toad
+turtle
+snail
+slug
+worm
+centipede
+millipede
+spider
+scorpion
+crab
+lobster
+crayfish
+shrimp
+prawn
+octopus
+squid
+jellyfish
+anglerfish
+stonefish
+flounder
+trout
+bass
+salmon
+pike
+carp
+catfish
+pike
+halibut
+swordfish
+manta
+devilfish
+dugong
+manatee
+dolphin
+whale
+porpoise
+seahorse
+turtle
+crocodile
+alligator
+caiman
+gator
+boa
+cobra
+viper
+pit viper
+rattlesnake
+gila monster
+horned lizard
+gecko
+chameleon
+frog
+toad
+salamander
+newt
+caecilian
+caecilian
+boa
+python
+anaconda
+cobra
+king cobra
+mamba
+boa
+viper
+tarantula
+wolf spider
+crane fly
+dragonfly
+mayfly
+stonefly
+grasshopper
+locust
+mantis
+stink bug
+ assassin bug
+water strider
+water strider
+ bombardier beetle
+rhinoceros beetle
+ stag beetle
+mantis
+scarab beetle
+ click beetle
+ fire ant
+ harvester ant
+ honey bee
+ wasp
+ hornet
+ yellow jacket
+ paper wasp
+ mud dauber
+ digger wasp
+ ichneumon wasp
+ ichneumon
+ ichneumon wasp
+ wasp
+ ant
+ bee
+ butterfly
+ moth
+ silkmoth
+ atlas moth
+ swallowtail
+ caddisfly
+ mayfly
+ stonefly
+ damselfly
+ dragonfly
+ firefly
+ lightning bug
+ glowworm
+ snail
+ slug
+ limpet
+ abalone
+ oyster
+ mussel
+ scallop
+ clam
+ oyster
+ mussel
+ barnacle
+ whale
+ dolphin
+ porpoise
+ seal
+ sea lion
+ walrus
+ narwhal
+ manatee
+ dugong
+ turtle
+ tortoise
+ terrapin
+ tortoise
+ tortoise
+ tortoise
+ tortoise
+ tortoise
+ tortoise
+ tortoise
+ tortoise
+ tortoise
+ tortoise
+ tortoise
+ tortoise
+ tortoise
+ tortoise
+ tortoise
+ tortoise
+ tortoise

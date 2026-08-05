@@ -1,0 +1,65 @@
+Tiger
+Giraffe
+Kangaroo
+Penguin
+Lemur
+Cheetah
+Crocodile
+Snake
+Wolf
+Bear
+Rhinoceros
+Elephant
+Monkey
+Seal
+Dolphin
+Shark
+Octopus
+Frog
+Toad
+Fish
+Cat
+Dog
+Horse
+Donkey
+Goat
+Sheep
+Cow
+Pig
+Chickens
+Turkey
+Parrot
+Giraffe
+Lion
+Turtle
+Salmon
+Squirrel
+Mouse
+Rabbit
+Deer
+Fox
+Ostrich
+Emu
+Alligator
+Geese
+Chicken
+Fish
+Catfish
+Snakehead
+Falcon
+Eagle
+Hawk
+Wolfhound
+Dalmatian
+Bulldog
+Poodle
+Persian Cat
+German Shepherd
+Labrador Retriever
+Rottweiler
+Beagle
+Corgi
+Great Dane
+Chihuahua
+Boxer
+Doberman Pinscher

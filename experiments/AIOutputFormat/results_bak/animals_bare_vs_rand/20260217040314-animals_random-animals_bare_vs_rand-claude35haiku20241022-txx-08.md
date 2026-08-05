@@ -1,0 +1,21 @@
+# Animals List
+- Lion
+- Elephant
+- Giraffe
+- Zebra
+- Rhinoceros
+- Cheetah
+- Hippopotamus
+- Gorilla
+- Kangaroo
+- Platypus
+- Koala
+- Penguin
+- Dolphin
+- Octopus
+- Sloth
+- Jaguar
+- Komodo Dragon
+- Lemur
+- Toucan
+- Pangolin

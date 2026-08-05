@@ -1,0 +1,10 @@
+Cheetah
+Lemur
+Quail
+Kangaroo
+Penguin
+Tiger
+Rhinoceros
+Giraffe
+Chimpanzee
+Wolf

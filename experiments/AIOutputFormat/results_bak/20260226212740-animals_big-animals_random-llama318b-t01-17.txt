@@ -1,0 +1,10 @@
+Tahr
+Mongoose
+Wallaby
+Quokka
+Pangolin
+Koala
+Fennec Fox
+Okapi
+Binturong 
+Capybara

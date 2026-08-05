@@ -1,0 +1,20 @@
+- Leopard
+- Quokka
+- Axolotl
+- Platypus
+- Tapir
+- Quail
+- Wombat
+- Dugong
+- Okapi
+- Pufferfish
+- Numbat
+- Lemur
+- Saiga antelope
+- Tapir
+- Kookaburra
+- Gibbon
+- Hare
+- Manatee
+- Snow leopard
+- Tortoise

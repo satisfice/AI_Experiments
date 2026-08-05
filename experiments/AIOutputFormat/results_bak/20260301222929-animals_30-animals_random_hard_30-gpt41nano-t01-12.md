@@ -1,0 +1,30 @@
+Antelope  
+Kangaroo  
+Porcupine  
+Salamander  
+Elephant  
+Giraffe  
+Otter  
+Penguin  
+Hummingbird  
+Cheetah  
+Lemur  
+Jaguar  
+Zebra  
+Crocodile  
+Koala  
+Sloth  
+Dolphin  
+Raccoon  
+Bison  
+Hyena  
+Owl  
+Frog  
+Tiger  
+Camel  
+Boa constrictor  
+Seahorse  
+Meerkat  
+Armadillo  
+Pangolin  
+Andean condor

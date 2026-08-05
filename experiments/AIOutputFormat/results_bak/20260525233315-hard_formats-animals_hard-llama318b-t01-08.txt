@@ -1,0 +1,10 @@
+lion
+giraffe
+zebra
+kangaroo
+penguin
+koala
+chimpanzee
+polar bear
+hedgehog
+armadillo

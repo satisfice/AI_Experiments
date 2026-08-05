@@ -1,0 +1,16 @@
+## Animal Names
+- Platypus
+- Pangolin
+- Capybara
+- Axolotl
+- Narwhal
+- Quokka
+- Okapi
+- Komodo Dragon
+- Red Panda
+- Fennec Fox
+- Tasmanian Devil
+- Serval
+- Echidna
+- Binturong
+- Babirusa

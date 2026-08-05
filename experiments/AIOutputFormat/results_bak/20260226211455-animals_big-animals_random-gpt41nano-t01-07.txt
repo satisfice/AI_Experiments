@@ -1,0 +1,20 @@
+Elephant  
+Giraffe  
+Kangaroo  
+Penguin  
+Cheetah  
+Ocelot  
+Hawk  
+Salmon  
+Frog  
+Bison  
+Dolphin  
+Raccoon  
+Tiger  
+Koala  
+Hyena  
+Camel  
+Roseate Spoonbill  
+Armadillo  
+Otter  
+Lemur

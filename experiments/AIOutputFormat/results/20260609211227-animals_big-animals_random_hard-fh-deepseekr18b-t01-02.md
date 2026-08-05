@@ -1,0 +1,22 @@
+```markdown
+- alligator
+- badger
+- capybara
+- dhole
+- emu
+- fox
+- jaguarundi
+- kinkajou
+- lemur
+- manatee
+- newfoundland
+- okapi
+- panda
+- quokka
+- rhinoceros
+- sloth
+- tapir
+- viper
+- wallaby
+- yak
+```

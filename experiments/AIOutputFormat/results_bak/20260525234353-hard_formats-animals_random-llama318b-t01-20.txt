@@ -1,0 +1,10 @@
+flamingo
+lemur
+rhinoceros
+kangaroo
+ostrich
+badger
+meerkat
+puma
+chameleon
+gazelle

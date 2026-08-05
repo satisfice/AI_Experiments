@@ -1,0 +1,44 @@
+Lion  
+Tiger  
+Elephant  
+Giraffe  
+Zebra  
+Kangaroo  
+Penguin  
+Koala  
+Panda  
+Bald Eagle  
+Ostrich  
+Cheetah  
+Leopard  
+Hyena  
+Rhino  
+Hippopotamus  
+Crocodile  
+Alligator  
+Snake  
+Lizard  
+Frog  
+Salamander  
+Eel  
+Shark  
+Dolphin  
+Orca  
+Seal  
+Sea Lion  
+Walrus  
+Bat  
+Spider  
+Ant  
+Butterfly  
+Bee  
+Ladybug  
+Dragonfly  
+Caterpillar  
+Moth  
+Crab  
+Lobster  
+Octopus  
+Squid  
+Starfish  
+Sea urchin

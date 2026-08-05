@@ -1,0 +1,47 @@
+```
+- ant
+- ape
+- bat
+- bear
+- bee
+- bird
+- cat
+- chicken
+- cow
+- deer
+- dog
+- duck
+- eagle
+- elephant
+- fish
+- fox
+- frog
+- goat
+- horse
+- insect
+- jaguar
+- kangaroo
+- koala
+- lion
+
+- monkey
+- mouse
+- newt
+- octopus
+- owl
+- pig
+- penguin
+- piglet
+- rabbit
+- rat
+- snake
+- spider
+- squirrel
+- turtle
+- vulture
+- whale
+- wolf
+- worm
+- yak
+- zebra
+```

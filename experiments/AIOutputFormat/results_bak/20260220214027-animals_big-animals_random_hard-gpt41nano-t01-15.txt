@@ -1,0 +1,10 @@
+Elephant  
+Giraffe  
+Quokka  
+Kangaroo  
+Zebra  
+Panda  
+Otter  
+Lemur  
+Wallaby  
+Koala

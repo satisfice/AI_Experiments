@@ -1,0 +1,17 @@
+Badger
+Giraffe
+Hedgehog
+Ostrich
+Ferret
+Lemur
+Toucan
+Raccoon
+Penguin
+Donkey
+Koala
+Mongoose 
+Salamander 
+Meerkat 
+Gecko 
+Chinchilla 
+Skunk

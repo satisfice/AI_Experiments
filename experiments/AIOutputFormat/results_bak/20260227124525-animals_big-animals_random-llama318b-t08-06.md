@@ -1,0 +1,10 @@
+* Giraffe
+* Puma
+* Lemur
+* Cheetah
+* Kangaroo
+* Flamingo
+* Rattlesnake
+* Mongoose
+* Ostrich
+* Quail

@@ -1,0 +1,21 @@
+```
+- lion
+- giraffe
+- elephant
+- tiger
+- bear
+- monkey
+- kangaroo
+- penguin
+- snake
+- crocodile
+- wolf
+- rabbit
+- dolphin
+- whale
+- shark
+- seal
+- otter
+- fox
+- hedgehog
+```

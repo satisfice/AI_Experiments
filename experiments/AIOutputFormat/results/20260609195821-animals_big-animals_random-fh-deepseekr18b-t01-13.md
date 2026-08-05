@@ -1,0 +1,22 @@
+```
+- cat
+- dog
+- elephant
+- fox
+- giraffe
+- hamster
+- iguana
+- jaguar
+- koala
+- lion
+- monkey
+- newt
+- octopus
+- panda
+- platypus
+- rabbit
+- snake
+- turtle
+- viper
+- wombat
+```

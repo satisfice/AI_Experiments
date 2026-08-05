@@ -1,0 +1,113 @@
+Elephant  
+Kangaroo  
+Ocelot  
+Blue Whale  
+Dugong  
+Caribou  
+Chameleon  
+Hippopotamus  
+Tasmanian Devil  
+Aardvark  
+Rhinoceros  
+Snow Leopard  
+Orangutan  
+Black Rhinoceros  
+Eagle  
+Cougar  
+Meerkat  
+Siberian Tiger  
+Gibbon  
+Pelican  
+Pangolin  
+Emu  
+Leopard Seal  
+Fennec Fox  
+Cuttlefish  
+Manta Ray  
+Koala  
+Coyote  
+Jaguar  
+Walrus  
+Camel  
+King Cobra  
+Tamarind Monkey  
+Red Fox  
+Bald Eagle  
+Antelope  
+Dragonfly  
+Hummingbird  
+Gorilla  
+Porcupine  
+Lemur  
+Sea Otter  
+Bison  
+Crocodile  
+Humpback Whale  
+Lion  
+Freshwater Stingray  
+Bald Uakari  
+Chickadee  
+Raccoon  
+Seagull  
+Vulture  
+Otterhound  
+Armadillo  
+Crow  
+Seahorse  
+Ostrich  
+Anaconda  
+Capybara  
+Salamander  
+Echidna  
+Lynx  
+Wild Boar  
+Dolphin  
+Tortoise  
+Chimpanzee  
+Swallowtail Butterfly  
+Fossa  
+Kookaburra  
+Ibex  
+African Wild Dog  
+Penguin  
+Beaver  
+Yellowfin Tuna  
+Siberian Husky  
+Bat  
+Hedgehog  
+Frog  
+Mongoose  
+Dodo (extinct, but valid in the list)  
+Caracal  
+Okapi  
+Wolverine  
+Binturong  
+Osprey  
+Lizard  
+Tiger Shark  
+Giraffe  
+Baiji (Yangtze River Dolphin)  
+Starfish  
+Barn Owl  
+Raccoon Dog  
+Alpaca  
+Sand Cat  
+Spider Monkey  
+Puffin  
+Narwhal  
+Cuttlefish  
+Sloth  
+Chinchilla  
+Komodo Dragon  
+Gila Monster  
+Moose  
+Hare  
+Jackal  
+Mastiff  
+Vervet Monkey  
+Wild Turkey  
+Cuttlefish  
+Manatee  
+Rhinoceros Beetle  
+Tamaraw  
+Dachshund

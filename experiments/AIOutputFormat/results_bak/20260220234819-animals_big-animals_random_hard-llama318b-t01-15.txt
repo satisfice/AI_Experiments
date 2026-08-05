@@ -1,0 +1,10 @@
+Cat
+Kangaroo
+Falcon
+Hedgehog
+Giraffe
+Penguin
+Tiger
+Wolf
+Ostrich
+Rabbit

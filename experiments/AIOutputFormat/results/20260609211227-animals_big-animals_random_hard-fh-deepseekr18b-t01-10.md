@@ -1,0 +1,54 @@
+```md
+- zebra
+- owl
+- snake
+- bear
+- frog
+- dolphin
+- rabbit
+- penguin
+- tiger
+- fox
+- deer
+- kangaroo
+- whale
+- ant
+- bee
+- octopus
+- eagle
+- lion
+- giraffe
+- leopard
+- wolf
+- monkey
+- sloth
+- newt
+- skunk
+- badger
+- llama
+- emu
+- platypus
+- seahorse
+- puffin
+- jaguar
+- orangutan
+- koala
+- turtle
+- newfoundland
+- ibis
+- viper
+- butterfly
+- worm
+- new world monkey
+- capybara
+- addax
+- zorilla
+- orca
+- hyena
+- jerboa
+- jersey cow
+- kiwi
+- lynx
+- meerkat
+- axolotl
+```

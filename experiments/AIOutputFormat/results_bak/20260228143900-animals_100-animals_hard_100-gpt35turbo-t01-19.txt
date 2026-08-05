@@ -1,0 +1,102 @@
+Sure, here is a list of 100 animal names:
+
+1. Lion
+2. Tiger
+3. Bear
+4. Gorilla
+5. Elephant
+6. Zebra
+7. Giraffe
+8. Cheetah
+9. Leopard
+10. Hippo
+11. Rhino
+12. Wolf
+13. Fox
+14. Deer
+15. Moose
+16. Elk
+17. Bison
+18. Coyote
+19. Bobcat
+20. Jaguar
+21. Panther
+22. Puma
+23. Lynx
+24. Cougar
+25. Ocelot
+26. Camel
+27. Kangaroo
+28. Koala
+29. Platypus
+30. Tasmanian Devil
+31. Wombat
+32. Wallaby
+33. Kangaroo
+34. Dingo
+35. Emu
+36. Cassowary
+37. Kookaburra
+38. Cockatoo
+39. Wombat
+40. Tasmanian Tiger
+41. Quokka
+42. Quoll
+43. Pademelon
+44. Bilby
+45. Echidna
+46. Crocodile
+47. Alligator
+48. Komodo Dragon
+49. Monitor Lizard
+50. Iguana
+51. Chameleon
+52. Boa Constrictor
+53. Python
+54. Rattlesnake
+55. Gila Monster
+56. Horned Lizard
+57. Frilled Lizard
+58. Bearded Dragon
+59. Gecko
+60. Tortoise
+61. Turtle
+62. Snapping Turtle
+63. Painted Turtle
+64. Box Turtle
+65. Softshell Turtle
+66. Slider Turtle
+67. Terrapin
+68. Sea Turtle
+69. Green Turtle
+70. Hawksbill Turtle
+71. Loggerhead Turtle
+72. Leatherback Turtle
+73. Kemp's Ridley Turtle
+74. Flatback Turtle
+75. Olive Ridley Turtle
+76. Chicken
+77. Duck
+78. Goose
+79. Turkey
+80. Pheasant
+81. Quail
+82. Partridge
+83. Grouse
+84. Woodcock
+85. Snipe
+86. Sandpiper
+87. Crane
+88. Heron
+89. Egret
+90. Flamingo
+91. Swan
+92. Duck
+93. Cormorant
+94. Pelican
+95. Osprey
+96. Eagle
+97. Hawk
+98. Falcon
+99. Owl
+100. Vulture

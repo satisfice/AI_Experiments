@@ -1,0 +1,20 @@
+Tiger
+Giraffe
+Kangaroo
+Lion
+Monkey
+Cheetah
+Elephant
+Zebra
+Wolf
+Bear
+Rhinoceros
+Koala 
+Hedgehog 
+Fox 
+Penguin 
+Donkey 
+Goat 
+Snake 
+
+Note: The list was expanded to 17 items as per the original prompt.

@@ -1,0 +1,98 @@
+- Bear
+- Fox
+- Zebra
+- Dolphin
+- Armadillo
+- Parrot
+- Elephant
+- Kangaroo
+- Cheetah
+- Gorilla
+- Ostrich
+- Tiger
+- Turtle
+- Giraffe
+- Rhinoceros
+- Lion
+- Panda
+- Penguin
+- Koala
+- Rabbit
+- Owl
+- Octopus
+- Wolf
+- Sloth
+- Hedgehog
+- Otter
+- Seal
+- Flamingo
+- Crocodile
+- Chimpanzee
+- Monkey
+- Hippopotamus
+- Alpaca
+- Jaguar
+- Camel
+- Shark
+- Lemur
+- Raccoon
+- Sloth
+- Peacock
+- Meerkat
+- Platypus
+- Buffalo
+- Walrus
+- Flamingo
+- Ocelot
+- Hyena
+- Gazelle
+- Bobcat
+- Chinchilla
+- Wolverine
+- Ibex
+- Lynx
+- Toucan
+- Manatee
+- Mongoose
+- Antelope
+- Caiman
+- Iguana
+- Tapir
+- Raven
+- Vulture
+- Puffin
+- Ferret
+- Red panda
+- Quokka
+- Axolotl
+- Komodo dragon
+- Marmot
+- Llama
+- Aardvark
+- Mole
+- Squirrel
+- Caracal
+- Tasmanian devil
+- Hermit crab
+- Dugong
+- Orangutan
+- Jackal
+- Oyster
+- Woolly mammoth
+- Bison
+- Markhor
+- Amur leopard
+- Cassowary
+- Fossa
+- Maned wolf
+- Aye-aye
+- Fennec fox
+- Tufted deer
+- Turkey
+- Pudu
+- Glass frog
+- Proboscis monkey
+- Gerenuk
+- Pangolin
+- Thorny devil
+- Saola

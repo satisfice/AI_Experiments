@@ -1,0 +1,10 @@
+Pangolin
+Mongoose
+Armadillo
+Quail
+Meerkat
+Chinchilla
+Gazelle
+Fennec Fox
+Leopard
+Okapi

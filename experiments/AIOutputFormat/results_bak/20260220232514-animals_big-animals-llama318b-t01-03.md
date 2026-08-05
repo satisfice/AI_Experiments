@@ -1,0 +1,16 @@
+* Giraffe
+* Elephant
+* Kangaroo
+* Lion
+* Tiger
+* Wolf
+* Bear
+* Monkey
+* Snake
+* Dolphin
+* Penguin
+* Koala
+* Crocodile
+* Raccoon
+* Otter
+* Hyena

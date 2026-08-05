@@ -1,0 +1,92 @@
+- Dog
+- Cat
+- Elephant
+- Tiger
+- Lion
+- Giraffe
+- Zebra
+- Monkey
+- Dolphin
+- Bear
+- Fox
+- Rabbit
+- Kangaroo
+- Hippo
+- Rhino
+- Wolf
+- Deer
+- Panda
+- Koala
+- Horse
+- Cheetah
+- Gorilla
+- Penguin
+- Seal
+- Beaver
+- Ostrich
+- Camel
+- Llama
+- Sloth
+- Otter
+- Parrot
+- Falcon
+- Alligator
+- Crocodile
+- Octopus
+- Jellyfish
+- Clownfish
+- Seahorse
+- Starfish
+- Shark
+- Whale
+- Dolphin
+- Pufferfish
+- Piranha
+- Swordfish
+- Lobster
+- Crab
+- Squid
+- Tarantula
+- Scorpion
+- Spider
+- Snail
+- Slug
+- Caterpillar
+- Butterfly
+- Ladybug
+- Grasshopper
+- Dragonfly
+- Mosquito
+- Cockroach
+- Ant
+- Bee
+- Wasp
+- Hornet
+- Fly
+- Butterfly
+- Moth
+- Centipede
+- Millipede
+- Earthworm
+- Slug
+- Snail
+- Leech
+- Maggot
+- Beetle
+- Ladybug
+- Grasshopper
+- Cricket
+- Cicada
+- Praying Mantis
+- Scorpion
+- Spider
+- Tarantula
+- Black Widow
+- Daddy Long Legs
+- Jumping Spider
+- Wolf Spider
+- Brown Recluse
+- Camel Spider
+- Goliath Birdeater
+- Japanese Spider Crab
+- Giant Squid

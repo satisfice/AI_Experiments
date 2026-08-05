@@ -1,0 +1,10 @@
+- Lion
+- Giraffe
+- Eagle
+- Hippopotamus
+- Koala
+- Penguin
+- Rhinoceros
+- Tiger
+- Kangaroo
+- Octopus

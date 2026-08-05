@@ -1,0 +1,66 @@
+Dog
+Cat
+Elephant
+Giraffe
+Lion
+Tiger
+Bear
+Wolf
+Monkey
+Kangaroo
+Penguin
+Flamingo
+Parrot
+Rabbit
+Deer
+Horse
+Donkey
+Goat
+Cow
+Sheep
+Chicken
+Turkey
+Duck
+Geese
+Snake
+Crocodile
+Turtle
+Frog
+Toad
+Fish
+Shark
+Ray
+Octopus
+Squid
+Crab
+Lobster
+Shrimp
+Clownfish
+Guppy
+Goldfish
+Hamster
+Rat
+Mouse
+Squirrel
+Raccoon
+Otter
+Beaver
+Badger
+Fox
+Hedgehog
+Mole
+Chipmunk
+Bunny
+Koala
+Puma
+Jaguar
+Leopard
+Cheetah
+Wolverine
+Panther
+ Cougar
+ Lynx
+ Bobcat
+ Ostrich
+ Emu 
+ Falcon

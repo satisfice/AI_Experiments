@@ -1,0 +1,22 @@
+```
+- fox
+- turtle
+- hawk
+- badger
+- penguin
+- llama
+- jaguar
+- otter
+- viper
+- weasel
+- ferret
+- lynx
+- newt
+- viper
+- skunk
+- mink
+- lemur
+- boa
+- wren
+- ibis
+```

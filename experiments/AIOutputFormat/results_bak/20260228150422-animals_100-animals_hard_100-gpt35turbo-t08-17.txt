@@ -1,0 +1,100 @@
+1. Lion
+2. Elephant
+3. Giraffe
+4. Tiger
+5. Zebra
+6. Monkey
+7. Rhino
+8. Hippo
+9. Cheetah
+10. Gorilla
+11. Panda
+12. Jaguar
+13. Koala
+14. Kangaroo
+15. Polar bear
+16. Penguin
+17. Dolphin
+18. Seal
+19. Otter
+20. Wolf
+21. Fox
+22. Bear
+23. Moose
+24. Elk
+25. Bison
+26. Caribou
+27. Mountain goat
+28. Mountain lion
+29. Ocelot
+30. Bobcat
+31. Lynx
+32. Coyote
+33. Armadillo
+34. Raccoon
+35. Squirrel
+36. Chipmunk
+37. Rabbit
+38. Deer
+39. Antelope
+40. Gazelle
+41. Impala
+42. Rhinoceros
+43. Hyena
+44. Cheetah
+45. Leopards
+46. Snow leopard
+47. Cheetah
+48. Panther
+49. Jaguar
+50. Tiger
+51. Snow tiger
+52. Bengal Tiger
+53. White Tiger
+54. Black Panther
+55. Leopard
+56. Clouded leopard
+57. Spotted leopard
+58. African leopard
+59. Snow leopard
+60. Persian leopard
+61. Chimpanzee
+62. Gorilla
+63. Orangutan
+64. Baboon
+65. Macaque
+66. Capuchin
+67. Lemur
+68. Tamarin
+69. Marmoset
+70. Squirrel monkey
+71. Golden lion Tamarin
+72. Colobus
+73. Mandrill
+74. Gibbon
+75. Vervet monkey
+76. Howler monkey
+77. Spider monkey
+78. Rhesus macaque
+79. Proboscis monkey
+80. Japanese macaque
+81. Patas monkey
+82. Langur
+83. Woolly monkey
+84. Ring-tailed lemur
+85. Red-fronted lemur
+86. Black-and-white ruffed lemur
+87. Madagascar lemur
+88. Aye-aye
+89. Sifaka
+90. Tarsier
+91. Galago
+92. Slow loris
+93. Potto
+94. Bushbaby
+95. Night monkey
+96. Silvery gibbon
+97. White-handed gibbon
+98. Lar gibbon
+99. Agile gibbon
+100. Sumatran orangutan

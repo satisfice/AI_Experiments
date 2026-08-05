@@ -1,0 +1,8 @@
+* Cat
+* Dog
+* Elephant
+* Gorilla
+* Lion
+* Monkey
+* Snake
+* Tiger

@@ -1,0 +1,10 @@
+fox
+owl
+tiger
+lion
+bear
+eagle
+snake
+frog
+dolphin
+rabbit

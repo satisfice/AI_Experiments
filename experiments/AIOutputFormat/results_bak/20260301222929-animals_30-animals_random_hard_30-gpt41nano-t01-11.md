@@ -1,0 +1,30 @@
+1. Cheetah  
+2. Swordfish  
+3. Koala  
+4. Iguana  
+5. Kangaroo  
+6. Platypus  
+7. Owl  
+8. Gorilla  
+9. Chameleon  
+10. Dolphin  
+11. Antelope  
+12. Hyena  
+13. Penguin  
+14. Hyacinth Macaw  
+15. Raccoon  
+16. Lobster  
+17. Puffin  
+18. Sloth  
+19. Mongoose  
+20. Wombat  
+21. Tapir  
+22. Gecko  
+23. Mandrill  
+24. Salamander  
+25. Ocelot  
+26. Ox  
+27. Dromedary Camel  
+28. Pheasant  
+29. Bison  
+30. Ermine

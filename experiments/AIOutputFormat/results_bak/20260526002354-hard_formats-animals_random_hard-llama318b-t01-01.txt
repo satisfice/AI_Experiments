@@ -1,0 +1,10 @@
+giraffe
+rhinoceros
+meerkat
+kangaroo
+platypus
+koala
+echidna
+lemur
+tarsier
+okapi

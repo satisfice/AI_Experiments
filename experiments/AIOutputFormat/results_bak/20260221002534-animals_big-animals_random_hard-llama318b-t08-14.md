@@ -1,0 +1,20 @@
+Aardvark
+Kangaroo
+Fennec Fox
+Tortoise
+Ostrich
+Mole
+Quail
+Hedgehog
+Puma
+Cheetah 
+Manatee
+Okapi
+Giraffe
+Lemur
+Flamingo
+Tapir
+Vulture
+Rhinoceros 
+Axolotl
+Meerkat

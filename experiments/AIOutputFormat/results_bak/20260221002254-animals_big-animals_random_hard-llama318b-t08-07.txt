@@ -1,0 +1,17 @@
+Kangaroo
+Tapir
+Cheetah
+Octopus
+Gazelle
+Fennec
+Pangolin
+Narwhal
+Chimpanzee
+Tiger
+Meerkat
+Quail
+Lemur
+Jaguar
+Wombat
+Mongoose
+Okapi

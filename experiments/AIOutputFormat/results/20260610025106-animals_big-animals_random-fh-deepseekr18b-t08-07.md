@@ -1,0 +1,31 @@
+```
+- badger
+- bear
+- boar
+- buffalo
+- camel
+- cat
+- cobra
+- coyote
+- crow
+- deer
+- dog
+- dolphin
+- donkey
+- eel
+- eagle
+- emu
+- fox
+- frog
+- gibbon
+- goat
+- hawk
+- ibis
+- jackal
+- jaguar
+- kangaroo
+- koala
+- lemur
+- lion
+
+```

@@ -1,0 +1,10 @@
+1. Flamingo
+2. Mongoose
+3. Koala
+4. Ostrich
+5. Fennec
+6. Lemur
+7. Cheetah
+8. Narwhal
+9. Quail
+10. Meerkat

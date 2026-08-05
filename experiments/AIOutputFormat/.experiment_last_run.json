@@ -1,0 +1,32 @@
+{
+  "model": [
+    "deepseekr1"
+  ],
+  "format_type": [
+    "txt",
+    "txt1",
+    "md",
+    "json",
+    "yml",
+    "csv",
+    "html"
+  ],
+  "prompts": [
+    "animals.prompt",
+    "animals_hard.prompt",
+    "animals_random.prompt",
+    "animals_random_hard.prompt"
+  ],
+  "experiments": [
+    "animals_big"
+  ],
+  "iterations": 20,
+  "temperatures": [
+    "01",
+    "08"
+  ],
+  "batch_file": null,
+  "debug": false,
+  "format_hardness": "hard",
+  "timestamp": "2026-06-10T05:30:43.380406"
+}

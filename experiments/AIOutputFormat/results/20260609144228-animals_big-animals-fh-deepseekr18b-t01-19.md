@@ -1,0 +1,38 @@
+```markdown
+- cat
+- dog
+- bird
+- fish
+- rabbit
+- mouse
+- rat
+- fox
+- bear
+- deer
+- cow
+- sheep
+- pig
+- horse
+- donkey
+- camel
+- zebra
+- giraffe
+- elephant
+- lion
+- tiger
+- leopard
+- cheetah
+- wolf
+- dog
+- wolf
+- bear
+- snake
+- snake
+- frog
+- turtle
+- newt
+- salamander
+- hawk
+- eagle
+
+```

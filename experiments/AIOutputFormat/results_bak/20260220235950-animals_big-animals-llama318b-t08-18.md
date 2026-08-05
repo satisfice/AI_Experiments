@@ -1,0 +1,10 @@
+* Cheetah
+* Flamingo
+* Kangaroo
+* Penguin
+* Koala
+* Tiger
+* Snake
+* Elephant
+* Wolf
+* Dolphin

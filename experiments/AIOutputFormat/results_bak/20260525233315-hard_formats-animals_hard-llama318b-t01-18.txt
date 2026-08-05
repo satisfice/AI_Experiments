@@ -1,0 +1,10 @@
+zebra
+kangaroo
+penguin
+koala
+lemur
+meerkat
+ostrich
+echidna
+platypus
+quokka

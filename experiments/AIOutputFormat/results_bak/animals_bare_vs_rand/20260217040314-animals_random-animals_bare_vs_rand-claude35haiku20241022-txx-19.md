@@ -1,0 +1,20 @@
+- Lion
+- Elephant
+- Penguin
+- Giraffe
+- Cheetah
+- Kangaroo
+- Octopus
+- Rhinoceros
+- Koala
+- Dolphin
+- Tiger
+- Platypus
+- Sloth
+- Polar Bear
+- Flamingo
+- Red Panda
+- Lemur
+- Hippopotamus
+- Orangutan
+- Zebra

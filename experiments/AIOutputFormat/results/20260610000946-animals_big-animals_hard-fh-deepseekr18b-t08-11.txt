@@ -1,0 +1,55 @@
+ape
+baboon
+badger
+barn owl
+boa constrictor
+blue jay
+buffalo
+butterfly
+caribou
+cat
+cobra
+cow
+crow
+deer
+eagle
+elephant
+falcon
+fox
+frog
+giraffe
+goat
+goose
+hawk
+hedgehog
+lion
+lionfish
+lobster
+mandarin duck
+monkey
+moose
+newt
+owl
+pig
+puma
+quail
+rabbit
+rat
+reindeer
+rooster
+salamander
+seahorse
+shark
+skunk
+snake
+sparrow
+squirrel
+tiger
+turtle
+viper
+wallaby
+wasp
+wolf
+wombat
+yak
+zebra

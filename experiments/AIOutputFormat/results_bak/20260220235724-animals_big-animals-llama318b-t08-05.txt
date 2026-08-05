@@ -1,0 +1,17 @@
+Lion
+Giraffe
+Monkey
+Tiger
+Kangaroo
+Elephant
+Penguin
+Wolf
+Rabbit
+Snake
+Cat
+Dog
+Bear
+Butterfly
+Horse
+Zebra 
+Frog

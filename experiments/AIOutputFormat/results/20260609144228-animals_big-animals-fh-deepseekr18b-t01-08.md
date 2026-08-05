@@ -1,0 +1,83 @@
+```markdown
+- dog
+- cat
+- bird
+- fish
+- rabbit
+- mouse
+- elephant
+- giraffe
+- lion
+- tiger
+- bear
+- wolf
+- fox
+- deer
+- antelope
+- zebra
+- horse
+- cow
+- pig
+- sheep
+- goat
+- chicken
+- duck
+- turkey
+- snake
+- frog
+- turtle
+- lizard
+- monkey
+- ape
+- dolphin
+- whale
+- shark
+- eagle
+- hawk
+- owl
+- penguin
+- bear
+- seal
+- dolphin
+- octopus
+- spider
+- bee
+- ant
+- butterfly
+- snail
+- worm
+- crocodile
+- alligator
+- rhino
+- hippopotamus
+- kangaroo
+- koala
+- panda
+- sloth
+- opossum
+- skunk
+- raccoon
+- badger
+- weasel
+- newt
+- salamander
+- newfoundland
+- husky
+- labrador
+- golden retriever
+- beagle
+- poodle
+- terrier
+- bulldog
+- boxer
+- lab
+- german shepherd
+- labrador retriever
+- pug
+- bulldog
+- shih tzu
+- chihuahua
+- french bulldog
+- dachshund
+
+```

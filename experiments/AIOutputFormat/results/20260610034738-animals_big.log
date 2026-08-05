@@ -1,0 +1,19 @@
+Experiment Log
+==============
+
+Timestamp: 20260610034738
+Experiment: animals_big
+Model: deepseek-r1:8b
+Prompt: animals_random_hard.prompt
+Format(s): txt, txt1, md, json, yml, csv, html
+Temperature: 08
+Iterations: 20
+
+Files Requiring UTF-8 Encoding (Non-ASCII Characters):
+-----------------------------------------------------
+  - 20260610034738-animals_big-animals_random_hard-fh-deepseekr18b-t08-03.txt
+  - 20260610034738-animals_big-animals_random_hard-fh-deepseekr18b-t08-20.txt
+  - 20260610045852-animals_big-animals_random_hard-fh-deepseekr18b-t08-13.csv
+
+Total Files Generated: 140
+Files with Non-ASCII Characters: 3

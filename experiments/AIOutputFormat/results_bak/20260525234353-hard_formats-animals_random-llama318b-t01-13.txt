@@ -1,0 +1,10 @@
+lion
+koala
+penguin
+tortoise
+chimpanzee
+octopus
+rhinoceros
+giraffe
+lemur
+otter

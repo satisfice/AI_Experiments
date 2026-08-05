@@ -1,0 +1,14 @@
+Lemur
+Giraffe
+Kangaroo
+Penguin
+Tiger
+Wolf
+Elephant
+Monkey
+Snake
+Crocodile
+Rhinoceros
+Hedgehog
+Flamingo 
+Seal

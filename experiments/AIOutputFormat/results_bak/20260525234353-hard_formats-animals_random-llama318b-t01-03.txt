@@ -1,0 +1,16 @@
+kangaroo
+lemur
+wombat
+pangolin
+quail
+tortoise
+armadillo
+ferret
+octopus
+skunk
+rattlesnake
+lemming
+badger
+otter
+ostrich
+platypus

@@ -1,0 +1,100 @@
+1. Dog
+2. Cat
+3. Elephant
+4. Lion
+5. Tiger
+6. Zebra
+7. Giraffe
+8. Bear
+9. Monkey
+10. Kangaroo
+11. Hippopotamus
+12. Rhino
+13. Wolf
+14. Fox
+15. Deer
+16. Rabbit
+17. Squirrel
+18. Panda
+19. Koala
+20. Gorilla
+21. Cheetah
+22. Horse
+23. Dolphin
+24. Whale
+25. Seal
+26. Penguin
+27. Polar Bear
+28. Orangutan
+29. Chimpanzee
+30. Flamingo
+31. Giraffe
+32. Rhinoceros
+33. Camel
+34. Ostrich
+35. Alligator
+36. Crocodile
+37. Beaver
+38. Otter
+39. Raccoon
+40. Porcupine
+41. Hedgehog
+42. Trout
+43. Salmon
+44. Bass
+45. Tuna
+46. Shark
+47. Octopus
+48. Jellyfish
+49. Crab
+50. Lobster
+51. Shrimp
+52. Squid
+53. Snail
+54. Slug
+55. Butterfly
+56. Dragonfly
+57. Ladybug
+58. Ant
+59. Bee
+60. Wasp
+61. Fly
+62. Mosquito
+63. Grasshopper
+64. Cockroach
+65. Spider
+66. Scorpion
+67. Centipede
+68. Millipede
+69. Beetle
+70. Moth
+71. Caterpillar
+72. Worm
+73. Snake
+74. Lizard
+75. Frog
+76. Toad
+77. Turtle
+78. Tortoise
+79. Gecko
+80. Chameleon
+81. Iguana
+82. Anole
+83. Salamander
+84. Newt
+85. Axolotl
+86. Tarantula
+87. Black Widow
+88. Goliath Birdeater
+89. Red Knee Tarantula
+90. Wolf Spider
+91. Jumping Spider
+92. Brown Recluse
+93. Carolina Wolf Spider
+94. Huntsman Spider
+95. Funnel Web Spider
+96. Orchard Orb Weaver
+97. Sydney Funnel Web Spider
+98. Marbled Orb Weaver
+99. Golden Silk Orb Weaver
+100. Brazilian Wandering Spider

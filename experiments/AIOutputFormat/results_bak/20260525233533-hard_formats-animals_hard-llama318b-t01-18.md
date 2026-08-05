@@ -1,0 +1,23 @@
+```markdown
+- lion
+- giraffe
+- elephant
+- tiger
+- bear
+- kangaroo
+- penguin
+- koala
+- monkey
+- wolf
+- zebra
+- crocodile
+- hippopotamus
+- rhinoceros
+- fox
+- deer
+- rabbit
+- snake
+- lizard
+- alligator
+- shark
+```

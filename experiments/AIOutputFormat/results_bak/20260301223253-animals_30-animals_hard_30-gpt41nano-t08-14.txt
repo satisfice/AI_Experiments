@@ -1,0 +1,30 @@
+Lion  
+Elephant  
+Giraffe  
+Tiger  
+Kangaroo  
+Penguin  
+Zebra  
+Hippopotamus  
+Cheetah  
+Koala  
+Rhinoceros  
+Sloth  
+Otter  
+Hedgehog  
+Armadillo  
+Crocodile  
+Alligator  
+Walrus  
+Seahorse  
+Octopus  
+Dolphin  
+Whale  
+Shark  
+Lemur  
+Chimpanzee  
+Gorilla  
+Panda  
+Red Fox  
+Brown Bear  
+Eagle

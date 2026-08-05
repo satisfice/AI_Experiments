@@ -1,0 +1,102 @@
+Lion
+Tiger
+Elephant
+Giraffe
+Zebra
+Kangaroo
+Panda
+Koala
+Hippopotamus
+Rhinoceros
+Cheetah
+Leopard
+Jaguar
+Hyena
+Fox
+Wolf
+Bear
+Otter
+Beaver
+Squirrel
+Rabbit
+Hare
+Deer
+Moose
+Elk
+Bison
+Buffalo
+Camel
+Llama
+Alpaca
+Porcupine
+Armadillo
+Sloth
+Anteater
+Ocelot
+Serval
+Caracal
+Lynx
+Wildcat
+Jaguarundi
+Ocelot
+Mongoose
+Meerkat
+Quokka
+Wombat
+Tasmanian Devil
+Koala
+Dingo
+Cynodont
+Platypus
+Echidna
+Salmon
+Tuna
+Goldfish
+Clownfish
+Angelfish
+ Seahorse
+ Octopus
+Squid
+Cuttlefish
+Crab
+Lobster
+Shrimp
+Sea turtle
+Leatherback Turtle
+Green Iguana
+Chameleon
+Komodo Dragon
+Anaconda
+Boa Constrictor
+Viper
+Python
+Monitor Lizard
+Gecko
+Skunk
+Mole
+Vole
+Chipmunk
+Gerbil
+Hamster
+Guinea Pig
+Mongoose
+Opossum
+Tasmanian Devil
+Red Panda
+Fennec Fox
+Arctic Fox
+Coral Snake
+Ball Python
+Mountain Gorilla
+Orangutan
+Gibbon
+ chimpanzee
+Baboon
+Mandrill
+Squirrel Monkey
+Capuchin Monkey
+Howler Monkey
+Colobus Monkey
+Lemur
+Tamarin
+Why not?

@@ -1,0 +1,15 @@
+- Elephant  
+- Zebra  
+- Kangaroo  
+- Lemur  
+- Giraffe  
+- Otter  
+- Panda  
+- Crocodile  
+- Meerkat  
+- Hummingbird  
+- Rhinoceros  
+- Walrus  
+- Sloth  
+- Toucan  
+- Chameleon

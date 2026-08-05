@@ -1,0 +1,30 @@
+1. Mongoose
+2. Narwhal
+3. Puma
+4. Jaguarundi
+5. Ostrich
+6. Rhinoceros
+7. Cheetah
+8. Chimpanzee
+9. Donkey
+10. Falcon
+11. Vulture
+12. Iguana
+13. Lemur
+14. Mink
+15. Panther
+16. Quail
+17. Rattlesnake
+18. Squirrel
+19. Tasmanian Devil
+20. Uakari
+21. Walrus
+22. Koala
+23. Kangaroo
+24. Echidna
+25. Ocelot
+26. Armadillo
+27. Hyena
+28. Gila Monster
+29. Weasel
+30. Okapi

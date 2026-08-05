@@ -1,0 +1,10 @@
+- Giraffe
+- Octopus
+- Platypus
+- Narwhal
+- Fennec Fox
+- Cassowary
+- Axolotl
+- Quokka
+- Pangolin
+- Anglerfish

@@ -1,0 +1,49 @@
+```
+-aardvark
+-aardwolf
+-abeel
+-abyssinian
+-abyssinian goat
+-abyssinian tortoise
+-acouchy
+-adelie penguin
+-adelie penguin chick
+-adelie penguin egg
+-adelie penguin nest
+-adelie penguin parent
+-adelie penguin sibling
+-adelie penguin territory
+-adelie penguin wing
+-ado
+-afar
+-afghan hound
+-afghanistan hound
+-afghani
+-affenpinscher
+-afghan shepherd
+-afghan hound
+-afghanistan
+-afrocorn
+-afrocorn snail
+-afrocorn snake
+-afrocorn frog
+-afrocorn lizard
+-afrocorn bird
+-afrocorn fish
+-afrocorn cat
+-afrocorn dog
+-afrocorn cow
+-afrocorn goat
+-afrocorn sheep
+-afrocorn pig
+-afrocorn chicken
+-afrocorn turkey
+-afrocorn duck
+-afrocorn goose
+-afrocorn ostrich
+-afrocorn emu
+-afrocorn kiwi
+-afrocorn hawk
+-afrocorn eagle
+-af...
+```

@@ -1,0 +1,30 @@
+1. Lion
+2. Elephant
+3. Tiger
+4. Giraffe
+5. Zebra
+6. Hippopotamus
+7. Rhinoceros
+8. Cheetah
+9. Gorilla
+10. Panda
+11. Koala
+12. Kangaroo
+13. Orangutan
+14. Dolphin
+15. Penguin
+16. Polar Bear
+17. Grizzly Bear
+18. Wolf
+19. Fox
+20. Owl
+21. Eagle
+22. Parrot
+23. Flamingo
+24. Crocodile
+25. Alligator
+26. Octopus
+27. Jellyfish
+28. Shark
+29. Whale
+30. Chimpanzee

@@ -1,0 +1,100 @@
+1. Lion
+2. Elephant
+3. Tiger
+4. Giraffe
+5. Zebra
+6. Gorilla
+7. Cheetah
+8. Rhino
+9. Kangaroo
+10. Penguin
+11. Koala
+12. Parrot
+13. Ostrich
+14. Hippo
+15. Dolphin
+16. Bear
+17. Wolf
+18. Fox
+19. Deer
+20. Moose
+21. Squirrel
+22. Raccoon
+23. Skunk
+24. Chipmunk
+25. Rabbit
+26. Otter
+27. Beaver
+28. Hedgehog
+29. Bat
+30. Panda
+31. Chimpanzee
+32. Baboon
+33. Lemur
+34. Orangutan
+35. Sloth
+36. Jackal
+37. Hyena
+38. Meerkat
+39. Komodo Dragon
+40. Crocodile
+41. Alligator
+42. Snake
+43. Lizard
+44. Turtle
+45. Tortoise
+46. Frog
+47. Toad
+48. Salamander
+49. Newt
+50. Axolotl
+51. Goldfish
+52. Clownfish
+53. Angelfish
+54. Betta Fish
+55. Guppy
+56. Swordtail
+57. Tetra
+58. Discus
+59. Barb
+60. Molly
+61. Platypus
+62. Kangaroo Rat
+63. Tasmanian Devil
+64. Wombat
+65. Emu
+66. Cassowary
+67. Wallaby
+68. Dingo
+69. Echidna
+70. Kiwi
+71. Cockatoo
+72. Kookaburra
+73. Platypus
+74. Woylie
+75. Numbat
+76. Bilby
+77. Quokka
+78. Bandicoot
+79. Blue Tongue Skink
+80. Thorny Devil
+81. Green Tree Frog
+82. Frilled Neck Lizard
+83. Sugar Glider
+84. Sulphur Crested Cockatoo
+85. Wallaroo
+86. Possum
+87. Tasmanian Tiger
+88. Frill Neck Lizard 
+89. Tasmanian Pademelon
+90. Tasmanian Bettong
+91. Quoll
+92. Tasmanian Masked Owl
+93. Mountain Pygmy Possum
+94. Little Penguin
+95. Rock Wallaby
+96. Numbat
+97. Dugong
+98. Australian Fur Seal
+99. Cape Barren Goose
+100. Magpie Goose

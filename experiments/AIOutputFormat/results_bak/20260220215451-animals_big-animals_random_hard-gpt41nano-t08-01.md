@@ -1,0 +1,15 @@
+- Zebra  
+- Otter  
+- Kangaroo  
+- Hawk  
+- Penguin  
+- Leopard  
+- Frog  
+- Giraffe  
+- Tiger  
+- Salamander  
+- Elephant  
+- Macaw  
+- Cheetah  
+- Crocodile  
+- Owl

@@ -1,0 +1,10 @@
+Giraffe
+Tiger
+Kangaroo
+Elephant
+Hedgehog
+Penguin
+Lemur
+Flamingo
+Meerkat
+Rhinoceros

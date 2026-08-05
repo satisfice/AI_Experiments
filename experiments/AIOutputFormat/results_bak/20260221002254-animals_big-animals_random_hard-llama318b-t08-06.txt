@@ -1,0 +1,10 @@
+Cheetah
+Ostrich
+Penguin
+Kangaroo
+Toucan
+Hedgehog
+Rhinoceros
+Octopus
+Giraffe
+Sparrow

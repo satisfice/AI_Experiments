@@ -1,0 +1,10 @@
+1. Jaguar
+2. Armadillo
+3. Flamingo
+4. Rattlesnake
+5. Ostrich
+6. Meerkat
+7. Mongoose
+8. Puma
+9. Falcon
+10. Chameleon

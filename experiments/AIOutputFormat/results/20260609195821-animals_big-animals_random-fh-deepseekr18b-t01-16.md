@@ -1,0 +1,34 @@
+```markdown
+- zebra
+- owl
+- python
+- dolphin
+- eagle
+- snake
+- bear
+- frog
+- rabbit
+- tiger
+- lion
+- penguin
+- monkey
+- whale
+- fox
+- wolf
+- leopard
+- skunk
+- badger
+- jaguar
+- viper
+- anteater
+- camel
+- llama
+- lynx
+- ocelot
+- boa
+- jaguarundi
+- tapir
+- armadillo
+- porcupine
+
+```

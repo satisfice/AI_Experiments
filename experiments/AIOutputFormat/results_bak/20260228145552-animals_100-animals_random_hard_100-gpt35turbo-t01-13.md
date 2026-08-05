@@ -1,0 +1,55 @@
+- Lion
+- Elephant
+- Zebra
+- Giraffe
+- Panda
+- Rhinoceros
+- Penguin
+- Kangaroo
+- Tiger
+- Hippopotamus
+- Cheetah
+- Gorilla
+- Koala
+- Dolphin
+- Octopus
+- Flamingo
+- Ostrich
+- Armadillo
+- Chimpanzee
+- Jaguar
+- Komodo Dragon
+- Lemur
+- Orangutan
+- Platypus
+- Quokka
+- Sloth
+- Tasmanian Devil
+- Vulture
+- Walrus
+- Xerus
+- Yak
+- Capybara
+- Dingo
+- Emu
+- Fennec Fox
+- Gazelle
+- Hyena
+- Ibex
+- Jackal
+- Kingfisher
+- Llama
+- Manatee
+- Narwhal
+- Otter
+- Peregrine Falcon
+- Quetzal
+- Red Panda
+- Snow Leopard
+- Tapir
+- Uakari
+- Vaquita
+- Wolverine
+- X-Ray Tetra
+- Yak
+- Zonkey

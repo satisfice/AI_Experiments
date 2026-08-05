@@ -1,0 +1,10 @@
+giraffe
+kangaroo
+penguin
+tiger
+lion
+zebra
+monkey
+walrus
+rhinoceros
+elephant

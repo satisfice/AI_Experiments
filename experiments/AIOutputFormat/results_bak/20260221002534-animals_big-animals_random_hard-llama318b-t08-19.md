@@ -1,0 +1,15 @@
+* Cat
+* Elephant
+* Dolphin
+* Koala
+* Flamingo
+* Penguin
+* Rabbit
+* Giraffe
+* Chimpanzee
+* Kangaroo
+* Snake
+* Tiger 
+* Hawk 
+* Donkey
+* Whale

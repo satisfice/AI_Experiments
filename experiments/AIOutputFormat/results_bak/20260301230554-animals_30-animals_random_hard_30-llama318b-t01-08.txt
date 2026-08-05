@@ -1,0 +1,28 @@
+Aardvark
+Flamingo
+Kangaroo
+Toucan
+Penguin
+Cheetah
+Chimpanzee
+Puma
+Falcon
+Ostrich
+Rhinoceros
+Giraffe
+Lemur
+Hedgehog
+Octopus
+Komodo Dragon
+Manatee
+Wallaby
+Fox
+Sloth
+Wolf
+Badger
+Jaguar
+Mongoose
+Sea Otter
+Tapir
+Donkey
+Quail

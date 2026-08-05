@@ -1,0 +1,64 @@
+bat
+owl
+fox
+deer
+bear
+lion
+tiger
+eagle
+sparrow
+robin
+duck
+goose
+penguin
+kangaroo
+koala
+dolphin
+whale
+shark
+jellyfish
+octopus
+crab
+lobster
+ant
+bee
+butterfly
+mosquito
+firefly
+spider
+scorpion
+frog
+toad
+newt
+snake
+lizard
+turtle
+crocodile
+alligator
+monkey
+ape
+baboon
+chimpanzee
+gorilla
+orangutan
+elephant
+rhinoceros
+hippopotamus
+giraffe
+zebra
+gazelle
+cheetah
+hyena
+wolf
+wolfhound
+jackal
+wolf spider
+wolf spider
+wolf spider
+wolf spider
+wolf spider
+wolf spider
+wolf spider
+wolf spider
+wolf spider
+wolf spider

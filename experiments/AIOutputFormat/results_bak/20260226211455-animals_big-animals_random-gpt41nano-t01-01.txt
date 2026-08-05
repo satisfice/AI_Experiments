@@ -1,0 +1,21 @@
+Lion  
+Elephant  
+Giraffe  
+Kangaroo  
+Penguin  
+Tiger  
+Zebra  
+Hippopotamus  
+Cheetah  
+Koala  
+Rhinoceros  
+Sloth  
+Otter  
+Camel  
+Leopard  
+Armadillo  
+Hedgehog  
+Chimpanzee  
+Penguin  
+Fennec fox  
+Meerkat

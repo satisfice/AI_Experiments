@@ -1,0 +1,22 @@
+```markdown
+- fox
+- whale
+- badger
+- parrot
+- salamander
+- jaguar
+- penguin
+- turtle
+- bear
+- dolphin
+- frog
+- skunk
+- rabbit
+- newt
+- viper
+- hawk
+- ocelot
+- ibis
+- addax
+- gibbon
+```

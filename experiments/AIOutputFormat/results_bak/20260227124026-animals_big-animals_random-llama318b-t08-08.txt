@@ -1,0 +1,16 @@
+Pangolin
+Mongoose
+Narwhal
+Quail
+Toucan
+Fennec
+Meerkat
+Gazelle
+Rattlesnake
+Cheetah
+Hedgehog 
+Wallaby
+Lemur
+Koala
+Barracuda
+Okapi

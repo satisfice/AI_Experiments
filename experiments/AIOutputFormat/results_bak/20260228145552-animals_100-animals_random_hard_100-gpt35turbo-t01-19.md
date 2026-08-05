@@ -1,0 +1,96 @@
+- Dog
+- Cat
+- Elephant
+- Giraffe
+- Lion
+- Tiger
+- Bear
+- Penguin
+- Zebra
+- Kangaroo
+- Monkey
+- Dolphin
+- Gorilla
+- Panda
+- Cheetah
+- Rhino
+- Hippo
+- Wolf
+- Fox
+- Deer
+- Squirrel
+- Owl
+- Parrot
+- Koala
+- Camel
+- Horse
+- Rabbit
+- Octopus
+- Sloth
+- Eagle
+- Falcon
+- Seal
+- Otter
+- Raccoon
+- Hedgehog
+- Sheep
+- Goat
+- Chicken
+- Rooster
+- Duck
+- Goose
+- Turkey
+- Pig
+- Cow
+- Humpback whale
+- Blue whale
+- Orca
+- Shark
+- Jellyfish
+- Clownfish
+- Lobster
+- Crab
+- Starfish
+- Seahorse
+- Dolphin
+- Octopus
+- Squid
+- Butterfly
+- Ant
+- Bee
+- Ladybug
+- Grasshopper
+- Dragonfly
+- Spider
+- Scorpion
+- Centipede
+- Millipede
+- Beetle
+- Mosquito
+- Caterpillar
+- Snail
+- Slug
+- Earthworm
+- Tarantula
+- Falcon
+- Bat
+- Owl
+- Peregrine falcon
+- American kestrel
+- Barn owl
+- Red tailed hawk
+- Crow
+- Raven
+- Blue jay
+- Cardinal
+- Red winged blackbird
+- Egret
+- Heron
+- Osprey
+- Bald eagle
+- American kestrel
+- Pigeon
+- Roadrunner
+- Turkey vulture
+- Kingfishers
+- Magpie

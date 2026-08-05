@@ -1,0 +1,17 @@
+Giraffe
+Toucan
+Falcon
+Lemur
+Capybara
+Kangaroo
+Meerkat
+Penguin
+Rhinoceros
+Ostrich
+Hedgehog
+Walrus
+Chimpanzee
+Wolf
+Armadillo
+Iguana
+Cheetah

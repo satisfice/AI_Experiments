@@ -1,0 +1,17 @@
+*Falcon
+Rattlesnake
+Tortoise
+Octopus
+Kangaroo
+Donkey
+Cheetah
+Lemur
+Seal
+Penguin
+Ostrich
+Hedgehog
+Flamingo
+Giraffe
+Crocodile
+Koala
+Butterfly

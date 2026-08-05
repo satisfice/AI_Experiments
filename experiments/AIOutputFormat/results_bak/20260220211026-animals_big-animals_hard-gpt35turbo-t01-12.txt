@@ -1,0 +1,10 @@
+dog
+cat
+elephant
+lion
+tiger
+bear
+wolf
+deer
+fox
+rabbit

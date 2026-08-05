@@ -1,0 +1,17 @@
+Experiment Log
+==============
+
+Timestamp: 20260226211902
+Experiment: animals_big
+Model: gpt-4.1-nano-2025-04-14
+Prompt: animals_random.prompt
+Format(s): txt, txt1, md, json, yml, csv, html
+Temperature: 08
+Iterations: 20
+
+Files Requiring UTF-8 Encoding (Non-ASCII Characters):
+-----------------------------------------------------
+  - 20260226212004-animals_random-animals_big-gpt41nano20250414-t08-03.md
+
+Total Files Generated: 140
+Files with Non-ASCII Characters: 1

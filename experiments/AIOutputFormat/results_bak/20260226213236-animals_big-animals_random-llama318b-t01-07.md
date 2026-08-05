@@ -1,0 +1,10 @@
+* Kangaroo
+* Armadillo
+* Octopus
+* Flamingo
+* Quail
+* Raccoon
+* Ostrich
+* Fox
+* Lemur
+* Cheetah

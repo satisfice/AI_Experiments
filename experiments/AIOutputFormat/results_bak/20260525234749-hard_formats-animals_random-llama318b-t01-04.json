@@ -1,0 +1,31 @@
+```
+{
+  ["alligator"]="alligator",
+  ["armadillo"]="armadillo",
+  ["bison"]="bison",
+  ["chameleon"]="chameleon",
+  ["dolphin"]="dolphin",
+  ["echidna"]="echidna",
+  ["flamingo"]="flamingo",
+  ["giraffe"]="giraffe",
+  ["hyena"]="hyena",
+  ["iguana"]="iguana",
+  ["jackal"]="jackal",
+  ["kangaroo"]="kangaroo",
+  ["lemur"]="lemur",
+  ["mole"]="mole",
+  ["narwhal"]="narwhal",
+  ["ostrich"]="ostrich",
+  ["penguin"]="penguin",
+  ["quail"]="quail",
+  ["rabbit"]="rabbit",
+  ["salamander"]="salamander",
+  ["toucan"]="toucan",
+  ["umbrella bird"]="umbrella bird",
+  ["vulture"]="vulture",
+  ["wallaby"]="wallaby",
+  ["xenopus"]="xenopus",
+  ["yak"]="yak",
+  ["zebra"]="zebra"
+}
+```

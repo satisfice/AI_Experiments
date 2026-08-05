@@ -1,0 +1,17 @@
+Lion
+Tiger
+Bear
+Monkey
+Wolf
+Deer
+Fox
+Rabbit
+Snake
+Elephant
+Giraffe
+Zebra
+Kangaroo
+Penguin
+Crocodile
+Hippopotamus
+Hyena

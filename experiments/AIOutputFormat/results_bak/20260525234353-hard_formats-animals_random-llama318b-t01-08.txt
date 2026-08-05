@@ -1,0 +1,22 @@
+cavy
+lemur
+pangolin
+armadillo
+okapi
+badger
+salamander
+meerkat
+wombat
+tapir
+toucan
+rhebok
+naked mole rat
+ferret
+hedgehog
+marmot
+dugong
+chinchilla
+quokka
+wallaby
+fennec
+muskox

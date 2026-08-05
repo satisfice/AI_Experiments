@@ -1,0 +1,20 @@
+- African Elephant  
+- Bengal Tiger  
+- Golden Eagle  
+- Snow Leopard  
+- Green Iguana  
+- Komodo Dragon  
+- Blue Poison Dart Frog  
+- Red Kangaroo  
+- Arctic Fox  
+- Emperor Penguin  
+- Mandrill  
+- Cheetah  
+- Indian Cobra  
+- Bengal Fox  
+- Australian Kangaroo  
+- Black Panther  
+- European Hedgehog  
+- Sumatran Orangutan  
+- Snowy Owl  
+- Western Gorilla

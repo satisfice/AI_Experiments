@@ -1,0 +1,11 @@
+Kangaroo
+Lemur
+Giraffe
+Tiger
+Monkey 
+Elephant 
+Penguin 
+Chimpanzee 
+Octopus 
+Rabbit
+Wolf

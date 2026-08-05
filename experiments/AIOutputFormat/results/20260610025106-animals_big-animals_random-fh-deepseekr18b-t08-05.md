@@ -1,0 +1,22 @@
+```markdown
+- cat
+- dog
+- bird
+- fish
+- rabbit
+- mouse
+- bear
+- deer
+- fox
+- wolf
+- ant
+- bee
+- butterfly
+- snake
+- turtle
+- frog
+- lion
+- tiger
+- zebra
+- sheep
+```

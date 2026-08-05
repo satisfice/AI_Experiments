@@ -1,0 +1,20 @@
+Lion  
+Elephant  
+Giraffe  
+Kangaroo  
+Penguin  
+Hippopotamus  
+Cheetah  
+Owl  
+Dolphin  
+Tiger  
+Camel  
+Rhinoceros  
+Koala  
+Falcon  
+Siberian tiger  
+Sloth  
+Chimpanzee  
+Armadillo  
+Leopard  
+Walrus

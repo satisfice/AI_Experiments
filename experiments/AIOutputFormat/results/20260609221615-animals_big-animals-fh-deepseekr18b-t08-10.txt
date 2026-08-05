@@ -1,0 +1,10 @@
+cat
+dog
+bird
+fish
+cow
+pig
+sheep
+goat
+chicken
+horse

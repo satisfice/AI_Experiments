@@ -1,0 +1,10 @@
+* Cat
+* Dog
+* Elephant
+* Gorilla
+* Koala
+* Lion
+* Monkey
+* Penguin
+* Snake
+* Tiger

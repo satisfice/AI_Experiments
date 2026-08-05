@@ -1,0 +1,47 @@
+```
+- armadillo
+- badger
+- beaver
+- boar
+- butterfly
+- capybara
+- chimpanzee
+- dolphin
+- duck
+- eagle
+- ferret
+- flamingo
+- frog
+- gibbon
+- goose
+- hawk
+- ibis
+- jaguar
+- kangaroo
+- koala
+- lemur
+- lion
+- llama
+- mandrill
+- meerkat
+- mongoose
+- newt
+- octopus
+- otter
+- parrot
+- penguin
+- pig
+- rabbit
+- raccoon
+- salamander
+- scorpion
+
+- spider
+- squirrel
+- turtle
+- vulture
+- weasel
+- wolf
+- yak
+- zebra
+```

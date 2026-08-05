@@ -1,0 +1,85 @@
+animals:
+  - Dog
+  - Cat
+  - Elephant
+  - Lion
+  - Tiger
+  - Gorilla
+  - Giraffe
+  - Zebra
+  - Hippo
+  - Rhino
+  - Bear
+  - Wolf
+  - Fox
+  - Deer
+  - Moose
+  - Rabbit
+  - Squirrel
+  - Chipmunk
+  - Raccoon
+  - Skunk
+  - Porcupine
+  - Beaver
+  - Otter
+  - Mink
+  - Badger
+  - Hedgehog
+  - Armadillo
+  - Opossum
+  - Koala
+  - Kangaroo
+  - Wallaby
+  - Tasmanian Devil
+  - Platypus
+  - Wombat
+  - Emu
+  - Cassowary
+  - Kookaburra
+  - Cockatoo
+  - Galah
+  - Lorikeet
+  - Budgerigar
+  - Python
+  - Boa Constrictor
+  - Anaconda
+  - Rattlesnake
+  - Cobra
+  - Mamba
+  - Viper
+  - Garter Snake
+  - King Snake
+  - Corn Snake
+  - Milk Snake
+  - Bull Snake
+  - Water Snake
+  - Gopher Snake
+  - Black Rat Snake
+  - Green Tree Python
+  - Ball Python
+  - Burmese Python
+  - Red-tailed Boa
+  - Rainbow Boa
+  - Caiman
+  - Alligator
+  - Crocodile
+  - Lizard
+  - Gecko
+  - Chameleon
+  - Iguana
+  - Komodo Dragon
+  - Monitor Lizard
+  - Skink
+  - Tuatara
+  - Tortoise
+  - Terrapin
+  - Turtle
+  - Box Turtle
+  - Snapping Turtle
+  - Softshell Turtle
+  - Slider Turtle
+  - Red-eared Slider Turtle
+  - Painted Turtle
+  - Map Turtle
+  - Musk Turtle
+  - Gala...

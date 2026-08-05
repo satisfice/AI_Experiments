@@ -1,0 +1,91 @@
+cat
+dog
+elephant
+lion
+tiger
+bear
+wolf
+fox
+rabbit
+duck
+chicken
+goose
+penguin
+eagle
+owl
+sparrow
+parrot
+snake
+crocodile
+turtle
+dolphin
+whale
+shark
+fish
+frog
+newt
+newfoundland
+labrador
+beagle
+poodle
+german shepherd
+golden retriever
+labrador retriever
+siamese cat
+persian cat
+maine coon
+bengal cat
+sphynx cat
+gerbil
+hamster
+guinea pig
+rabbit
+mouse
+rat
+squirrel
+chipmunk
+monkey
+gorilla
+baboon
+leopard
+cougar
+lynx
+bobcat
+lynx
+moose
+deer
+elk
+antelope
+zebra
+kangaroo
+koala
+wombat
+kangaroo rat
+gila monster
+bearded dragon
+gecko
+iguana
+turtle dove
+mourning dove
+blue jay
+cardinal
+robin
+thrush
+warbler
+oriole
+jay
+magpie
+crow
+raven
+owl
+owl
+owl
+owl
+owl
+owl
+owl
+owl
+owl
+owl
+owl
+owl

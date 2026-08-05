@@ -1,0 +1,30 @@
+- Quokka
+- Narwhal
+- Capybara
+- Flamingo
+- Okapi
+- Emu
+- Meerkat
+- Platypus
+- Axolotl
+- Lemur
+- Pangolin
+- Tapir
+- Caracal
+- Numbat
+- Kiwi
+- Fennec Fox
+- Alpaca
+- Gharial
+- Cassowary
+- Saola
+- Proboscis Monkey
+- Kakapo
+- Hyena
+- Stoat
+- Dugong
+- Takin
+- Dhole
+- Gerenuk
+- Ratel
+- Colugo

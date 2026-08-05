@@ -1,0 +1,42 @@
+```markdown
+- cat
+- dog
+- bird
+- fish
+- rabbit
+- turtle
+- mouse
+- rat
+- fox
+- bear
+- deer
+- cow
+- sheep
+- pig
+- horse
+- donkey
+- goat
+- chicken
+- duck
+- turkey
+- goose
+- snake
+- lizard
+- frog
+- toad
+- newt
+- worm
+- ant
+- bee
+- wasp
+- butterfly
+- moth
+- dragonfly
+- grasshopper
+- spider
+- scorpion
+- centipede
+- eagle
+- hawk
+
+```

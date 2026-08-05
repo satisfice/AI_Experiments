@@ -1,0 +1,22 @@
+```markdown
+- fox
+- dolphin
+- badger
+- otter
+- parrot
+- ferret
+- llama
+- jaguar
+- penguin
+- koala
+- turtle
+- snake
+- crocodile
+- eagle
+- bear
+- wolf
+- zebra
+- giraffe
+- monkey
+- frog
+```

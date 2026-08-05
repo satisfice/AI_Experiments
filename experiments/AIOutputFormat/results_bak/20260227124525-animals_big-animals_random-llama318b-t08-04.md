@@ -1,0 +1,10 @@
+1. Raccoon
+2. Quokka
+3. Narwhal
+4. Flamingo
+5. Meerkat
+6. Otter
+7. Kangaroo
+8. Iguana
+9. Lemur
+10. Chimpanzee

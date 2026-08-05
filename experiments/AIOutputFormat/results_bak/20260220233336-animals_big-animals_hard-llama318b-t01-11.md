@@ -1,0 +1,10 @@
+Giraffe
+Tiger
+Koala
+Elephant
+Lion
+Hedgehog
+Rhinoceros
+Fox
+Wolf
+Penguin

@@ -1,0 +1,37 @@
+Experiment Log
+==============
+
+Timestamp: 20260311150924
+Experiment: chch1
+Model: claude-haiku-4-5-20251001
+Prompt: animals_random_hard_30.prompt
+Format(s): txt, txt1, md, json, yml, csv, html
+Temperature: default
+Iterations: 30
+
+Files Requiring UTF-8 Encoding (Non-ASCII Characters):
+-----------------------------------------------------
+  - 20260311150924-chch1-animals_random_hard_30-claudehaiku4520251001-txx-25.txt
+  - 20260311150924-chch1-animals_random_hard_30-claudehaiku4520251001-txx-26.txt
+  - 20260311151044-chch1-animals_random_hard_30-claudehaiku4520251001-txx-07.txt1
+  - 20260311151044-chch1-animals_random_hard_30-claudehaiku4520251001-txx-10.txt1
+  - 20260311151044-chch1-animals_random_hard_30-claudehaiku4520251001-txx-11.txt1
+  - 20260311151044-chch1-animals_random_hard_30-claudehaiku4520251001-txx-14.txt1
+  - 20260311151044-chch1-animals_random_hard_30-claudehaiku4520251001-txx-27.txt1
+  - 20260311151205-chch1-animals_random_hard_30-claudehaiku4520251001-txx-07.md
+  - 20260311151205-chch1-animals_random_hard_30-claudehaiku4520251001-txx-17.md
+  - 20260311151205-chch1-animals_random_hard_30-claudehaiku4520251001-txx-28.md
+  - 20260311151329-chch1-animals_random_hard_30-claudehaiku4520251001-txx-01.json
+  - 20260311151329-chch1-animals_random_hard_30-claudehaiku4520251001-txx-02.json
+  - 20260311151329-chch1-animals_random_hard_30-claudehaiku4520251001-txx-08.json
+  - 20260311151329-chch1-animals_random_hard_30-claudehaiku4520251001-txx-12.json
+  - 20260311151329-chch1-animals_random_hard_30-claudehaiku4520251001-txx-15.json
+  - 20260311151329-chch1-animals_random_hard_30-claudehaiku4520251001-txx-16.json
+  - 20260311151329-chch1-animals_random_hard_30-claudehaiku4520251001-txx-20.json
+  - 20260311151329-chch1-animals_random_hard_30-claudehaiku4520251001-txx-22.json
+  - 20260311151447-chch1-animals_random_hard_30-claudehaiku4520251001-txx-15.yml
+  - 20260311151725-chch1-animals_random_hard_30-claudehaiku4520251001-txx-10.html
+  - 20260311151725-chch1-animals_random_hard_30-claudehaiku4520251001-txx-16.html
+
+Total Files Generated: 210
+Files with Non-ASCII Characters: 21

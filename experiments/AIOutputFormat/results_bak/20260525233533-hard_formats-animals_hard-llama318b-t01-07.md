@@ -1,0 +1,36 @@
+```markdown
+- cat
+- dog
+- elephant
+- giraffe
+- monkey
+- lion
+- tiger
+- bear
+- wolf
+- kangaroo
+- koala
+- penguin
+- seal
+- walrus
+- dolphin
+- whale
+- shark
+- octopus
+- squid
+- crab
+- lobster
+- snake
+- spider
+- frog
+- toad
+- turtle
+- rabbit
+- squirrel
+- fox
+- deer
+- sheep
+- goat
+- cow
+- horse
+```

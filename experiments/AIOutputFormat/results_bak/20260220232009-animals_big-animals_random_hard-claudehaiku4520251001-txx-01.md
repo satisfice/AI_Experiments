@@ -1,0 +1,15 @@
+- Capybara
+- Flamingo
+- Badger
+- Seahorse
+- Porcupine
+- Lemur
+- Narwhal
+- Quail
+- Otter
+- Hyena
+- Cassowary
+- Pangolin
+- Meerkat
+- Alpaca
+- Kestrel

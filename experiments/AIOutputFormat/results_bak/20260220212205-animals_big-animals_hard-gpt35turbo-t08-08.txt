@@ -1,0 +1,10 @@
+dog
+cat
+elephant
+lion
+zebra
+giraffe
+hippopotamus
+bear
+tiger
+cheetah

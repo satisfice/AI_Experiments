@@ -1,0 +1,33 @@
+```markdown
+- badger
+- beaver
+- bear
+- boar
+- buffalo
+- butterfly
+- cat
+- chameleon
+- chicken
+- chimpanzee
+- cow
+- crocodile
+- deer
+- dog
+- dolphin
+- donkey
+- duck
+- eagle
+- emu
+- fox
+- frog
+- giraffe
+- goat
+- goose
+- hawk
+- horse
+- kangaroo
+- koala
+- leopard
+- lion
+
+```

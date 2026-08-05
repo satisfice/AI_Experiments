@@ -1,0 +1,34 @@
+```markdown
+- fox
+- owl
+- dolphin
+- bear
+- penguin
+- snake
+- tiger
+- leopard
+- eagle
+- lion
+- rabbit
+- frog
+- turtle
+- crocodile
+- kangaroo
+- dolphin
+- giraffe
+- zebra
+- wolf
+- hyena
+- badger
+- lynx
+- weasel
+- vulture
+- ibis
+- emu
+- newt
+- salamander
+- newt
+- puma
+- jaguar
+
+```

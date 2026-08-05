@@ -1,0 +1,15 @@
+- Jaguar  
+- Otter  
+- Pangolin  
+- Quokka  
+- Rhinoceros  
+- Seal  
+- Tiger  
+- Uakari  
+- Viper  
+- Walrus  
+- Xenops  
+- Yellowfin Tuna  
+- Zebra  
+- Anole  
+- Binturong

@@ -1,0 +1,29 @@
+```md
+- bear
+- dolphin
+- fox
+- kangaroo
+- leopard
+- monkey
+- penguin
+- rabbit
+- snake
+- turtle
+- whale
+- wolf
+- zebra
+- eagle
+- hawk
+- owl
+- frog
+- newt
+- lion
+- tiger
+- giraffe
+- elephant
+- crocodile
+- snake
+- skunk
+- badger
+- coyote
+```

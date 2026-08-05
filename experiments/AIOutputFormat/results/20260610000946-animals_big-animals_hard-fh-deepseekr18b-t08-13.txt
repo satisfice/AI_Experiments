@@ -1,0 +1,90 @@
+cat
+dog
+elephant
+lion
+tiger
+bear
+wolf
+fox
+rabbit
+mouse
+bird
+eagle
+sparrow
+dove
+owl
+fish
+goldfish
+shark
+whale
+dolphin
+frog
+snake
+lizard
+turtle
+crocodile
+kangaroo
+koala
+panda
+zebra
+giraffe
+monkey
+ape
+monkey
+kangaroo
+penguin
+hedgehog
+badger
+fox
+deer
+antelope
+buffalo
+cattle
+goat
+sheep
+pig
+chicken
+turkey
+duck
+goose
+beaver
+rabbit
+hamster
+gerbil
+squirrel
+parrot
+mythical creature
+unicorn
+dragon
+griffin
+ phoenix
+siren
+kraken
+centaur
+mermaid
+satyr
+golem
+elemental beast
+infernal construct
+celestial dragon
+shadow serpent
+storm giant
+earth titan
+fire elemental
+water spirit
+air elemental
+death knight
+wraith
+specter
+ghost
+phantom
+elemental fury
+primordial beast
+celestial herald
+infernal abomination
+chaos herald
+order champion
+dark sentinel
+light avatar
+abyssal monstrosity
+radiant savior

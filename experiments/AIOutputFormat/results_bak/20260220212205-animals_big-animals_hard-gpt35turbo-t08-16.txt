@@ -1,0 +1,10 @@
+Dog
+Cat
+Horse
+Cow
+Pig
+Sheep
+Goat
+Chicken
+Duck
+Turkey

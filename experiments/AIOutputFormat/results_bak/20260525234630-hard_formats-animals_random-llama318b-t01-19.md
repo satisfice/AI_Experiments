@@ -1,0 +1,24 @@
+```markdown
+- octopus
+- rhinoceros
+- falcon
+- sloth
+- wolf
+- penguin
+- elephant
+- ocelot
+- badger
+- koala
+- tiger
+- lemur
+- gecko
+- kangaroo
+- fox
+- dolphin
+- bear
+- rabbit
+- snake
+- owl
+- giraffe
+- monkey
+```

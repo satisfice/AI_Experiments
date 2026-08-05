@@ -1,0 +1,103 @@
+Aardvark  
+Baboon  
+Caiman  
+Dhole  
+Eagle  
+Frog  
+Giraffe  
+Hedgehog  
+Iguana  
+Jaguar  
+Kangaroo  
+Lemur  
+Meerkat  
+Narwhal  
+Octopus  
+Panda  
+Quokka  
+Rabbit  
+Salamander  
+Tiger  
+Urial  
+Vulture  
+Wallaby  
+Xerus  
+Yak  
+Zebra  
+Anteater  
+Bonobo  
+Cheetah  
+Dromedary  
+Echidna  
+Flycatcher  
+Gazelle  
+Hammerhead Shark  
+Ibex  
+Jackal  
+Koala  
+Lion  
+Manatee  
+Nutria  
+Ocelot  
+Penguin  
+Quetzal  
+Raccoon  
+Skunk  
+Tiger Shark  
+Uakari  
+Vicuña  
+Wolverine  
+Xenops  
+Yellowtail  
+Zorilla  
+African Elephant  
+Blue Jay  
+Cobra  
+Deer  
+Emu  
+Fennec Fox  
+Gibbon  
+Hammerkop  
+Indian Rhinoceros  
+Jackrabbit  
+Kingfisher  
+Lizard  
+Mongoose  
+Oryx  
+Polar Bear  
+Quail  
+Reindeer  
+Salmon  
+Thresher Shark  
+Urraca  
+Viper  
+Waxwing  
+Xantus Hummingbird  
+Yellow Snake  
+Zambezian Elephant  
+Anaconda  
+Boar  
+Cheetah  
+Dugong  
+Eland  
+Ferret  
+Guinea Pig  
+Hummingbird  
+Ibis  
+Jackfish  
+Kudu  
+Leopard  
+Maned Wolf  
+Numbat  
+Oxpecker  
+Pine Martin  
+Queen Snake  
+Rhinoceros Beetle  
+Sea Otter  
+Tiger Moth  
+Uakari Monkey  
+Vervet Monkey  
+Wolf  
+X-ray Fish  
+Yellowfin Tuna  
+Zebra Finch

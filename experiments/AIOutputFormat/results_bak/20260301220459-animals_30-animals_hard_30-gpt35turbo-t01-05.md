@@ -1,0 +1,30 @@
+- Lion
+- Elephant
+- Giraffe
+- Zebra
+- Tiger
+- Bear
+- Wolf
+- Gorilla
+- Rhino
+- Hippo
+- Cheetah
+- Kangaroo
+- Penguin
+- Dolphin
+- Polar bear
+- Bald eagle
+- Anaconda
+- Komodo dragon
+- Panther
+- Gorilla
+- Octopus
+- Jellyfish
+- Orangutan
+- Chimpanzee
+- Platypus
+- Flamingo
+- Koala
+- Red panda
+- Snow leopard
+- Bald eagle

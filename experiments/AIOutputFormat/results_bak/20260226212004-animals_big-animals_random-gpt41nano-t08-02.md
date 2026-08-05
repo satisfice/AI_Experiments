@@ -1,0 +1,15 @@
+- Zebra  
+- Otter  
+- Kangaroo  
+- Puffin  
+- Armadillo  
+- Quokka  
+- Platypus  
+- Lemur  
+- Sloth  
+- Narwhal  
+- Chameleon  
+- Vulture  
+- Wombat  
+- Jaguar  
+- Echidna

@@ -1,0 +1,23 @@
+```
+- frog
+- dog
+- cat
+- bird
+- fish
+- rabbit
+- turtle
+- snake
+- eagle
+- bear
+- dolphin
+- whale
+- shark
+- octopus
+- spider
+- ant
+- bee
+- butterfly
+- dragonfly
+- snail
+- worm
+```

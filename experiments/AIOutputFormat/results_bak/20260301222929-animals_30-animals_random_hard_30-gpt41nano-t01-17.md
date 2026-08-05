@@ -1,0 +1,30 @@
+- Elephant  
+- Kangaroo  
+- Puffin  
+- Gorilla  
+- Dolphin  
+- Armadillo  
+- Cobra  
+- Snow Leopard  
+- Ostrich  
+- Red Fox  
+- Chameleon  
+- Komodo Dragon  
+- Jaguar  
+- Penguin  
+- Raccoon  
+- Manatee  
+- Toucan  
+- Hyena  
+- Crocodile  
+- Lemur  
+- Otter  
+- Bison  
+- Seahorse  
+- Cheetah  
+- Koala  
+- Wombat  
+- Falcon  
+- Iguana  
+- Sloth  
+- Wallaby

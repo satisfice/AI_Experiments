@@ -1,0 +1,26 @@
+```markdown
+- ant
+- bee
+- cat
+- dog
+- eel
+- fish
+- fox
+- goat
+- hen
+- iguana
+- jaguar
+- kangaroo
+- llama
+- mouse
+- newt
+- octopus
+- panda
+- rabbit
+- snake
+- turtle
+- viper
+- wolf
+- yak
+- zebra
+```

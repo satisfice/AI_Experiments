@@ -1,0 +1,10 @@
+koala
+cat
+lion
+tiger
+elephant
+monkey
+giraffe
+bear
+wolf
+zebra

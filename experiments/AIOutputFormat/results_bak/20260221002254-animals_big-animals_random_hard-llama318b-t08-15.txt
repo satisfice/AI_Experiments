@@ -1,0 +1,10 @@
+Tiger
+Kangaroo
+Octopus
+Ostrich
+Penguin
+Snake
+Elephant
+Giraffe
+Manatee
+Falcon

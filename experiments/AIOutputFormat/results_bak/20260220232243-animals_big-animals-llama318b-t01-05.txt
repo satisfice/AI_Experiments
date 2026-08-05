@@ -1,0 +1,13 @@
+Koala
+Giraffe
+Tiger
+Monkey
+Elephant
+Cheetah
+Zebra
+Lion
+Penguin
+Wolf
+Bear
+Horse 
+Snake

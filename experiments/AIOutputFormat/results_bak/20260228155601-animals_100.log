@@ -1,0 +1,36 @@
+Experiment Log
+==============
+
+Timestamp: 20260228155601
+Experiment: animals_100
+Model: gpt-4.1-nano-2025-04-14
+Prompt: animals_random_hard_100.prompt
+Format(s): txt, txt1, md, json, yml, csv, html
+Temperature: 08
+Iterations: 20
+
+Files Requiring UTF-8 Encoding (Non-ASCII Characters):
+-----------------------------------------------------
+  - 20260228155601-animals_random_hard_100-animals_100-gpt41nano20250414-t08-12.txt
+  - 20260228155702-animals_random_hard_100-animals_100-gpt41nano20250414-t08-03.txt1
+  - 20260228155702-animals_random_hard_100-animals_100-gpt41nano20250414-t08-16.txt1
+  - 20260228155822-animals_random_hard_100-animals_100-gpt41nano20250414-t08-06.md
+  - 20260228155822-animals_random_hard_100-animals_100-gpt41nano20250414-t08-07.md
+  - 20260228155822-animals_random_hard_100-animals_100-gpt41nano20250414-t08-13.md
+  - 20260228155822-animals_random_hard_100-animals_100-gpt41nano20250414-t08-14.md
+  - 20260228155822-animals_random_hard_100-animals_100-gpt41nano20250414-t08-15.md
+  - 20260228155822-animals_random_hard_100-animals_100-gpt41nano20250414-t08-17.md
+  - 20260228155822-animals_random_hard_100-animals_100-gpt41nano20250414-t08-18.md
+  - 20260228155822-animals_random_hard_100-animals_100-gpt41nano20250414-t08-20.md
+  - 20260228155928-animals_random_hard_100-animals_100-gpt41nano20250414-t08-02.json
+  - 20260228155928-animals_random_hard_100-animals_100-gpt41nano20250414-t08-15.json
+  - 20260228155928-animals_random_hard_100-animals_100-gpt41nano20250414-t08-20.json
+  - 20260228160215-animals_random_hard_100-animals_100-gpt41nano20250414-t08-09.csv
+  - 20260228160215-animals_random_hard_100-animals_100-gpt41nano20250414-t08-10.csv
+  - 20260228160322-animals_random_hard_100-animals_100-gpt41nano20250414-t08-15.html
+  - 20260228160322-animals_random_hard_100-animals_100-gpt41nano20250414-t08-16.html
+  - 20260228160322-animals_random_hard_100-animals_100-gpt41nano20250414-t08-19.html
+  - 20260228160322-animals_random_hard_100-animals_100-gpt41nano20250414-t08-20.html
+
+Total Files Generated: 140
+Files with Non-ASCII Characters: 20

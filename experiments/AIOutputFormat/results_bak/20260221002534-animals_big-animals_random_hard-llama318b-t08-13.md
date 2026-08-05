@@ -1,0 +1,17 @@
+Lemur
+Mole
+Addax
+Koala
+Pangolin
+Falcon
+Capybara
+Tarsier
+Quail
+Ostrich 
+Ibex 
+Rhinoceros 
+Wolf 
+Tapir 
+Gazelle 
+Toucan 
+Chimpanzee

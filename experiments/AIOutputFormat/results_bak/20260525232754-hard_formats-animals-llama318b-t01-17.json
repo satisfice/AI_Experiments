@@ -1,0 +1,26 @@
+```json
+{
+  "animals": [
+    "lion",
+    "tiger",
+    "bear",
+    "monkey",
+    "giraffe",
+    "zebra",
+    "elephant",
+    "kangaroo",
+    "penguin",
+    "koala",
+    "wolf",
+    "fox",
+    "chicken",
+    "duck",
+    "cat",
+    "dog",
+    "horse",
+    "cow",
+    "pig",
+    "sheep"
+  ]
+}
+```

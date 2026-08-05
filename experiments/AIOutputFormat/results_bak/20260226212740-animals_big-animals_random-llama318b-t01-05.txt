@@ -1,0 +1,10 @@
+Tarsier
+Koala
+Mongoose
+Rhinoceros
+Quail
+Ostrich
+Hedgehog
+Pangolin
+Tapir
+Numbat

@@ -1,0 +1,15 @@
+- Zebra
+- Flamingo
+- Otter
+- Lynx
+- Capybara
+- Jellyfish
+- Peacock
+- Badger
+- Narwhal
+- Fennec Fox
+- Koala
+- Mantis
+- Giraffe
+- Platypus
+- Lemur

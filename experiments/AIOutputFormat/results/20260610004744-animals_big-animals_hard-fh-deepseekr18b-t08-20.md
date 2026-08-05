@@ -1,0 +1,48 @@
+```markdown
+- cat
+- dog
+- bird
+- fish
+- rabbit
+- mouse
+- rat
+- bear
+- deer
+- fox
+- wolf
+- lion
+- tiger
+- leopard
+- cheetah
+- elephant
+- giraffe
+- zebra
+- antelope
+- buffalo
+- cow
+- ox
+- pig
+- sheep
+- goat
+- camel
+- donkey
+- horse
+- monkey
+- ape
+- chimpanzee
+- gorilla
+- baboon
+- orangutan
+- dolphin
+- whale
+- shark
+- ray
+- seal
+- sea lion
+- otter
+- turtle
+- tortoise
+- snake
+- lizard
+
+```

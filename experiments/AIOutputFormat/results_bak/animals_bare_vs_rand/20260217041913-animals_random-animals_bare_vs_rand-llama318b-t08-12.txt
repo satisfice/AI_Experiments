@@ -1,0 +1,17 @@
+Numbat
+Moose
+Hedgehog
+Toucan
+Kangaroo
+Penguin
+Quail
+Ostrich
+Rhinoceros
+Salamander
+Falcon 
+Cheetah
+Gecko
+Tapir
+Walrus
+Iguana
+Jaguar

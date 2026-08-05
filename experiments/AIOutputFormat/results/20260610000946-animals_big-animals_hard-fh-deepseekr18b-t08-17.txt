@@ -1,0 +1,688 @@
+dog
+cat
+bird
+fish
+rabbit
+mouse
+snake
+lizard
+turtle
+eagle
+dove
+bear
+deer
+fox
+wolf
+honey badger
+zebra
+giraffe
+lion
+tiger
+cheetah
+elephant
+kangaroo
+koala
+panda
+monkey
+ape
+gibbon
+orangutan
+frog
+toad
+newt
+salamander
+newfoundland
+labrador
+beagle
+poodle
+bulldog
+pug
+labrador retriever
+german shepherd
+husky
+whippet
+dachshund
+corgi
+cavalier king charles spaniel
+golden retriever
+labrador
+pembroke welsh corgi
+great dane
+boxer
+shih tzu
+pomeranian
+chihuahua
+saint bernard
+bulldog french
+pug
+labrador retriever
+golden retriever
+german shepherd
+husky
+corgi
+dachshund
+beagle
+boxer
+shih tzu
+pomeranian
+chihuahua
+great dane
+labrador
+poodle
+basset hound
+cocker spaniel
+labrador retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador retriever
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dach
+corgi
+dachshund
+boxer
+shih tzu
+pomeranian
+chihuahua
+great dane
+labrador retriever
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+boxer
+bulldog
+labrador
+golden retriever
+poodle
+beagle
+dachshund
+cavalier king charles spaniel
+shih tzu
+pomeranian
+corgi
+box)

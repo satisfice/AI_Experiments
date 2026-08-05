@@ -1,0 +1,23 @@
+```
+- lion
+- octopus
+- sloth
+- penguin
+- kangaroo
+- snake
+- elephant
+- dolphin
+- giraffe
+- rabbit
+- tiger
+- seal
+- wolf
+- bear
+- monkey
+- koala
+- crocodile
+- fox
+- parrot
+- chimpanzee
+- camel
+```

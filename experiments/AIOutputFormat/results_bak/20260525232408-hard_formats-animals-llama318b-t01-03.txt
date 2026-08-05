@@ -1,0 +1,25 @@
+giraffe
+zebra
+koala
+tiger
+lion
+elephant
+monkey
+kangaroo
+penguin
+chimpanzee
+gazelle
+rhinoceros
+crocodile
+walrus
+hippopotamus
+jaguar
+leopard
+otter
+wombat
+sea turtle
+octopus
+snake
+wolf
+bear
+dolphin

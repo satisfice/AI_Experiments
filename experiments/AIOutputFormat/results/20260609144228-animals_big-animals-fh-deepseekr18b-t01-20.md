@@ -1,0 +1,22 @@
+```markdown
+- ant
+- bear
+- cat
+- dog
+- eagle
+- fox
+- giraffe
+- horse
+- kangaroo
+- lion
+- monkey
+- newt
+- octopus
+- panda
+- rabbit
+- snake
+- turtle
+- wolf
+- yak
+- zebra
+```

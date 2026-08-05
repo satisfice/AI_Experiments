@@ -1,0 +1,22 @@
+```
+- badger
+- capybara
+- emu
+- fox
+- jaguar
+- koala
+- llama
+- moose
+- newt
+- otter
+- panda
+- quail
+- rabbit
+- sloth
+- turkey
+- viper
+- wombat
+- yak
+- zebra
+- ape
+```

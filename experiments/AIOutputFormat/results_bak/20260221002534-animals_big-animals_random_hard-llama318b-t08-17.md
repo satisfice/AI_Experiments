@@ -1,0 +1,15 @@
+* Elephant
+* Quail
+* Mole
+* Kangaroo
+* Ostrich
+* Lemur
+* Dolphin
+* Raccoon
+* Fox
+* Octopus
+* Flamingo
+* Tiger
+* Donkey
+* Squirrel
+* Falcon

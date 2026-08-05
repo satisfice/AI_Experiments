@@ -1,0 +1,22 @@
+```
+- cat
+- dog
+- zebra
+- kangaroo
+- owl
+- eagle
+- snake
+- turtle
+- fish
+- bee
+- ant
+- lion
+- tiger
+- dolphin
+- frog
+- newt
+- penguin
+- bear
+- fox
+- wolf
+```

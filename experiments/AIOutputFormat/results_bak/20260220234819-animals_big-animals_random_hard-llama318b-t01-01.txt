@@ -1,0 +1,11 @@
+Giraffe
+Koala
+Penguin
+Falcon
+Hamster
+Toucan
+Octopus
+Rattlesnake
+Manatee
+Donkey
+Meerkat

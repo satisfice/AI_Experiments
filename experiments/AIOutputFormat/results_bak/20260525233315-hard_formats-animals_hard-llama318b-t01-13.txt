@@ -1,0 +1,10 @@
+wolf
+tiger
+penguin
+kangaroo
+armadillo
+chimpanzee
+giraffe
+zebra
+puma
+otter

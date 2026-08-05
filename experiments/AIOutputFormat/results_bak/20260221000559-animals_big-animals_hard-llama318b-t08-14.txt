@@ -1,0 +1,13 @@
+Cheetah
+Kangaroo
+Octopus
+Flamingo
+Penguin
+Lemur
+Rattlesnake
+Hedgehog
+Chimpanzee
+Ostrich 
+Giraffe
+Tiger 
+Wolf

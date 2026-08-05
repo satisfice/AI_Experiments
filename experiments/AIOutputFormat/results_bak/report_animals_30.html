@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Item Frequency Distribution Report</title>
+    <script src="https://cdn.plot.ly/plotly-3.3.1.min.js" integrity="sha256-4rD3fugVb/nVJYUv5Ky3v+fYXoouHaBSP20WIJuEiWg=" crossorigin="anonymous"></script>
+    <style>
+        :root {
+            --plot-min-width: 600px;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        h1 {
+            margin: 0;
+            color: #333;
+        }
+        .filter-section {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .filter-section h3 {
+            margin: 0;
+            color: #555;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        .filter-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .filter-item input {
+            cursor: pointer;
+        }
+        .filter-item label {
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+        }
+        /* Format and model filter checkboxes with color coding */
+        .format-filter,
+        .model-filter {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid;
+            border-radius: 3px;
+            cursor: pointer;
+            background-color: white;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        .format-filter:checked,
+        .model-filter:checked {
+            background-color: currentColor;
+        }
+        #plots-container {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            padding: 20px;
+            min-width: 0;
+            box-sizing: border-box;
+        }
+        .aggregated-section {
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: background-color 0.3s ease, min-height 0.3s ease;
+        }
+        .aggregated-section.loading {
+            background-color: #d3d3d3;
+            min-height: 600px;
+        }
+        .aggregated-section.loading .plot-wrapper {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .aggregated-section:not(.loading) .plot-wrapper {
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+        .prompt-column {
+            display: contents;
+        }
+        .prompt-column-header {
+            display: none;
+        }
+        .column-toggle-btn {
+            padding: 8px 16px;
+            font-size: 14px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .column-toggle-btn:hover {
+            background-color: #0056b3;
+        }
+        .column-toggle-btn:active {
+            background-color: #004085;
+        }
+        .column-btn-group {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .progress-section {
+            display: none;
+            margin-top: 4px;
+        }
+        .progress-section.visible {
+            display: block;
+        }
+        .progress-bar-container {
+            width: 100%;
+            height: 4px;
+            background-color: #e0e0e0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+        /* Hide button in header when in dual-column mode */
+        body.columns-2 #column-toggle-btn {
+            display: none;
+        }
+        /* Button in right column header (dual-column mode only) */
+        .right-column-toggle-btn {
+            padding: 8px 16px;
+            font-size: 14px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .right-column-toggle-btn:hover {
+            background-color: #0056b3;
+        }
+        .right-column-toggle-btn:active {
+            background-color: #004085;
+        }
+        .plot-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .plot-section {
+            display: flex;
+            flex-direction: column;
+        }
+        .plot-section.hidden {
+            display: none;
+        }
+        .plot-wrapper {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 4px solid #ddd;
+            padding: 10px;
+            display: block;
+            flex: 1;
+            width: 100%;
+            overflow: hidden;
+        }
+        .plot-wrapper > div {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        .plot-wrapper .plotly-graphdiv {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        .aggregated-section .plot-wrapper {
+            border: 4px solid #000;
+        }
+        .plot-wrapper.hidden {
+            display: none;
+        }
+        .plot-section.plot-loading .plot-wrapper {
+            background-color: #e0e0e0;
+            min-height: 400px;
+        }
+        /* Dual-column layout */
+        .column {
+            display: none;  /* Hidden by default, shown only in dual-column mode */
+        }
+        body.columns-2 {
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        body.columns-2 .column {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            scrollbar-gutter: stable;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+        body.columns-2 .column > * {
+            flex-shrink: 0;
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div id="main-content">
+    <div class="header">
+        <div class="header-top">
+            <h1>Item Frequency Distribution Report</h1>
+            <div class="column-btn-group">
+                <button id="column-toggle-btn" class="column-toggle-btn">Two Columns</button>
+                <div class="progress-section" id="progress-section">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="progress-bar-fill"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <h3>Experiment</h3>
+            <div class="filter-row" id="experiment-filters">
+                <div class="filter-item"><input type="checkbox" id="filter-exp-animals-big" class="exp-filter" value="animals_big" checked><label for="filter-exp-animals-big">animals_big</label></div>
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <h3>Prompt</h3>
+            <div class="filter-row" id="prompt-filters">
+                <div class="filter-item"><input type="checkbox" id="filter-prompt-animals" class="prompt-filter" value="animals" checked><label for="filter-prompt-animals">animals</label></div>
+                <div class="filter-item"><input type="checkbox" id="filter-prompt-animals-hard" class="prompt-filter" value="animals_hard" checked><label for="filter-prompt-animals-hard">animals_hard</label></div>
+                <div class="filter-item"><input type="checkbox" id="filter-prompt-animals-random" class="prompt-filter" value="animals_random" checked><label for="filter-prompt-animals-random">animals_random</label></div>
+                <div class="filter-item"><input type="checkbox" id="filter-prompt-animals-random-hard" class="prompt-filter" value="animals_random_hard" checked><label for="filter-prompt-animals-random-hard">animals_random_hard</label></div>
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <h3>Format</h3>
+            <div class="filter-row" id="format-filters">
+                <div class="filter-item"><input type="checkbox" id="filter-format-CSV" class="format-filter" value="CSV" checked style="border-color: #e377c2;" data-format="CSV" data-color="#e377c2"><label for="filter-format-CSV">CSV</label></div>
+                <div class="filter-item"><input type="checkbox" id="filter-format-HTML" class="format-filter" value="HTML" checked style="border-color: #8c564b;" data-format="HTML" data-color="#8c564b"><label for="filter-format-HTML">HTML</label></div>
+                <div class="filter-item"><input type="checkbox" id="filter-format-JSON" class="format-filter" value="JSON" checked style="border-color: #ff7f0e;" data-format="JSON" data-color="#ff7f0e"><label for="filter-format-JSON">JSON</label></div>
+                <div class="filter-item"><input type="checkbox" id="filter-format-YAML" class="format-filter" value="YAML" checked style="border-color: #9467bd;" data-format="YAML" data-color="#9467bd"><label for="filter-format-YAML">YAML</label></div>
+                <div class="filter-item"><input type="checkbox" id="filter-format-markdown" class="format-filter" value="markdown" checked style="border-color: #d62728;" data-format="markdown" data-color="#d62728"><label for="filter-format-markdown">markdown</label></div>
+                <div class="filter-item"><input type="checkbox" id="filter-format-numberedText" class="format-filter" value="numberedText" checked style="border-color: #2ca02c;" data-format="numberedText" data-color="#2ca02c"><label for="filter-format-numberedText">numberedText</label></div>
+                <div class="filter-item"><input type="checkbox" id="filter-format-text" class="format-filter" value="text" checked style="border-color: #1f77b4;" data-format="text" data-color="#1f77b4"><label for="filter-format-text">text</label></div>
+                <div class="filter-item"><input type="checkbox" id="filter-format-aggregated" class="format-filter agg-toggle" value="aggregated" checked data-format="aggregated"><label for="filter-format-aggregated">Aggregated</label></div>
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <h3>Model</h3>
+            <div class="filter-row" id="model-filters">
+                <div class="filter-item"><input type="checkbox" id="filter-model-gpt35turbo" class="model-filter" value="gpt35turbo" checked style="border-color: #739922;" data-model="gpt35turbo" data-color="#739922"><label for="filter-model-gpt35turbo">gpt35turbo</label></div>
+                <div class="filter-item"><input type="checkbox" id="filter-model-gpt41nano20250414" class="model-filter" value="gpt41nano20250414" checked style="border-color: #92D050;" data-model="gpt41nano20250414" data-color="#92D050"><label for="filter-model-gpt41nano20250414">gpt41nano</label></div>
+                <div class="filter-item"><input type="checkbox" id="filter-model-llama318b" class="model-filter" value="llama318b" checked style="border-color: #C8A2C8;" data-model="llama318b" data-color="#C8A2C8"><label for="filter-model-llama318b">llama318b</label></div>
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <h3>Temperature</h3>
+            <div class="filter-row" id="temperature-filters">
+                <div class="filter-item"><input type="checkbox" id="filter-temp-0-1" class="temp-filter" value="0.1" checked><label for="filter-temp-0-1">0.1</label></div>
+                <div class="filter-item"><input type="checkbox" id="filter-temp-0-8" class="temp-filter" value="0.8" checked><label for="filter-temp-0-8">0.8</label></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="plots-container">
+    <div class="aggregated-section loading" id="aggregated-section">
+        <div class="plot-title" id="aggregated-title">Aggregated Results</div>
+        <div class="plot-wrapper" id="aggregated-plot">
+            <div id="graph-aggregated" style="height:600px;"></div>
+        </div>
+    </div>
+
+    </div>
+    </div>
+
+    <script>
+        // Store data for dynamic aggregation
+        const aggregationData = {
+            items: [],
+            comboData: {},
+            globalMaxY: 1
+        };
+        const plotConfigs = [];
+
+        // Snapshot of main-content HTML before any Plotly rendering — only bare <div>
+        // placeholders, no SVG. Used by initializeDualColumns instead of cloneNode(true).
+        const mainContentTemplate = document.getElementById('main-content').innerHTML;
+
+        // Build lookup map for O(1) access by divId, pre-compute per-plot max Y
+        const plotConfigMap = {};
+        plotConfigs.forEach(function(cfg) {
+            plotConfigMap[cfg.divId] = cfg;
+            cfg.maxY = Math.max.apply(null, cfg.data[0].y);
+        });
+
+        // Dynamic Y-axis max for individual plots (updated as filters change)
+        var currentMaxY = aggregationData.globalMaxY;
+
+        // Lazy rendering: IntersectionObserver renders plots as they scroll into view
+        var activeObservers = [];
+
+        function observePlots(container) {
+            // In two-column mode, columns are the scroll containers; otherwise use viewport
+            var scrollRoot = (container.classList && container.classList.contains('column')) ? container : null;
+
+            var observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        var div = entry.target;
+                        var cfg = plotConfigMap[div.id];
+                        if (cfg) {
+                            var layout = Object.assign({}, cfg.layout);
+                            layout.yaxis = Object.assign({}, cfg.layout.yaxis, {range: [0, currentMaxY]});
+                            Plotly.newPlot(div, cfg.data, layout);
+                            var section = div.closest('.plot-section');
+                            if (section) section.classList.remove('plot-loading');
+                        }
+                        observer.unobserve(div);
+                    }
+                });
+            }, { root: scrollRoot, rootMargin: '500px' });
+
+            container.querySelectorAll('.plotly-graph-div').forEach(function(div) {
+                if (!div.classList.contains('js-plotly-plot')) {
+                    var section = div.closest('.plot-section');
+                    if (section) section.classList.add('plot-loading');
+                    observer.observe(div);
+                }
+            });
+
+            activeObservers.push(observer);
+            return observer;
+        }
+
+        function cleanupObservers() {
+            activeObservers.forEach(function(obs) { obs.disconnect(); });
+            activeObservers = [];
+        }
+
+        // Update Y-axis scale for all individual plots based on visible plot maximums
+        var yAxisScaleTimeout;
+        function updatePlotYAxisScale() {
+            // Find all active containers
+            var containers = [];
+            if (isInTwoColumnMode && savedColumns) {
+                containers = [savedColumns.column1, savedColumns.column2];
+            } else {
+                var mc = document.getElementById('main-content');
+                if (mc) containers = [mc];
+            }
+
+            // Find max Y across all visible plots in all containers
+            var maxY = 0;
+            containers.forEach(function(container) {
+                container.querySelectorAll('.plot-section:not(.hidden)').forEach(function(section) {
+                    var plotDiv = section.querySelector('.plotly-graph-div');
+                    if (plotDiv) {
+                        var cfg = plotConfigMap[plotDiv.id];
+                        if (cfg && cfg.maxY > maxY) maxY = cfg.maxY;
+                    }
+                });
+            });
+
+            if (maxY === 0) maxY = 1;
+            if (maxY === currentMaxY) return;  // Skip relayout if scale unchanged
+            currentMaxY = maxY;
+
+            // Update only visible rendered individual plots' Y-axis ranges
+            containers.forEach(function(container) {
+                container.querySelectorAll('.plot-section:not(.hidden) .js-plotly-plot').forEach(function(plotDiv) {
+                    if (plotDiv.id === 'graph-aggregated') return;
+                    Plotly.relayout(plotDiv, {'yaxis.range': [0, maxY]});
+                });
+            });
+        }
+
+        // Recalculate aggregated plot based on visible plots, scoped to one container
+        function updateAggregatedPlot(primaryContainer) {
+            const selectedExps = new Set(Array.from(primaryContainer.querySelectorAll('.exp-filter'))
+                .filter(function(cb) { return cb.checked; }).map(function(cb) { return cb.value; }));
+            const selectedPrompts = new Set(Array.from(primaryContainer.querySelectorAll('.prompt-filter'))
+                .filter(function(cb) { return cb.checked; }).map(function(cb) { return cb.value; }));
+            const selectedFormats = new Set(Array.from(primaryContainer.querySelectorAll('.format-filter'))
+                .filter(function(cb) { return cb.checked && !cb.classList.contains('agg-toggle'); }).map(function(cb) { return cb.value; }));
+            const selectedModels = new Set(Array.from(primaryContainer.querySelectorAll('.model-filter'))
+                .filter(function(cb) { return cb.checked; }).map(function(cb) { return cb.value; }));
+            const selectedTemps = new Set(Array.from(primaryContainer.querySelectorAll('.temp-filter'))
+                .filter(function(cb) { return cb.checked; }).map(function(cb) { return cb.value; }));
+
+            // Sum y_values from all matching combos
+            const aggregatedY = new Array(aggregationData.items.length).fill(0);
+            const itemLen = aggregationData.items.length;
+
+            // Pre-build filter check for efficiency
+            const hasFilters = selectedExps.size > 0 && selectedPrompts.size > 0 &&
+                               selectedFormats.size > 0 && selectedModels.size > 0 && selectedTemps.size > 0;
+
+            if (hasFilters) {
+                const combos = Object.keys(aggregationData.comboData);
+                for (let i = 0; i < combos.length; i++) {
+                    const comboKeyStr = combos[i];
+                    const parts = comboKeyStr.split('|');
+                    const fmt = parts[0];
+                    const model = parts[1];
+                    const temp = parts[2];
+                    const exp = parts[3];
+                    const prompt = parts[4];
+
+                    // Check if this combo matches all selected filters
+                    if (selectedExps.has(exp) && selectedPrompts.has(prompt) &&
+                        selectedFormats.has(fmt) && selectedModels.has(model) && selectedTemps.has(temp)) {
+                        // Sum y values across all matching combos
+                        const yValues = aggregationData.comboData[comboKeyStr];
+                        for (let j = 0; j < itemLen; j++) {
+                            aggregatedY[j] += yValues[j];
+                        }
+                    }
+                }
+            }
+
+            // Render aggregated plot scoped to this container (full item set on X-axis)
+            // Y-axis max is the sum of the most frequently appearing item in selected filters
+            var aggMaxY = Math.max.apply(null, aggregatedY) || 1;
+            var aggPlot = primaryContainer.querySelector('[id="graph-aggregated"]');
+            if (aggPlot) {
+                Plotly.react(aggPlot, [{
+                    type: 'bar',
+                    x: aggregationData.items,
+                    y: aggregatedY,
+                    marker: {color: '#636363'},
+                    hovertemplate: '<b>%{x}</b><br>Count: %{y}<extra></extra>'
+                }], {
+                    height: 600,
+                    showlegend: false,
+                    hovermode: 'x unified',
+                    margin: {l: 50, r: 10, t: 40, b: 200},
+                    xaxis: {tickangle: 90},
+                    yaxis: {range: [0, aggMaxY]},
+                    autosize: true,
+                    bargap: 0.02,
+                    hoverlabel: {font: {size: 16}}
+                });
+            }
+
+            // Calculate and update aggregated plot header with statistics
+            const totalItems = aggregatedY.reduce(function(sum, val) { return sum + val; }, 0);
+            const uniqueItems = aggregatedY.filter(function(val) { return val > 0; }).length;
+            const newTitle = 'Aggregated Results (' + totalItems + ' items; ' + uniqueItems + ' unique)';
+
+            var titleDiv = primaryContainer.querySelector('[id="aggregated-title"]');
+            if (titleDiv) {
+                titleDiv.textContent = newTitle;
+            }
+
+            // Remove loading state from aggregated section
+            var aggSection = primaryContainer.querySelector('[id="aggregated-section"]');
+            if (aggSection) {
+                aggSection.classList.remove('loading');
+            }
+        }
+
+        // Handle dual-column layout if requested
+        function initializeDualColumns() {
+            const mainContent = document.getElementById('main-content');
+
+            // Build columns from the pre-render template (bare <div> placeholders, no SVG).
+            // This is nearly instant compared to cloneNode(true) on a rendered Plotly document.
+            const clone1 = document.createElement('div');
+            clone1.innerHTML = mainContentTemplate;
+            const clone2 = document.createElement('div');
+            clone2.innerHTML = mainContentTemplate;
+
+            const column1 = document.createElement('div');
+            column1.className = 'column';
+            column1.appendChild(clone1);
+
+            const column2 = document.createElement('div');
+            column2.className = 'column';
+            column2.appendChild(clone2);
+
+            mainContent.style.display = 'none';
+            document.body.classList.add('columns-2');
+            document.body.appendChild(column1);
+            document.body.appendChild(column2);
+
+            savedColumns = { column1: column1, column2: column2, mainContent: mainContent };
+
+            // Add toggle button to right column header
+            const rightHeader = column2.querySelector('.header');
+            if (rightHeader) {
+                const rightHeaderTop = rightHeader.querySelector('.header-top');
+                if (rightHeaderTop) {
+                    const rightToggleBtn = document.createElement('button');
+                    rightToggleBtn.id = 'right-column-toggle-btn';
+                    rightToggleBtn.className = 'right-column-toggle-btn';
+                    rightToggleBtn.textContent = 'Single Column';
+                    rightToggleBtn.addEventListener('click', function() {
+                        document.getElementById('column-toggle-btn').click();
+                    });
+                    rightHeaderTop.appendChild(rightToggleBtn);
+                }
+            }
+
+            column1.addEventListener('scroll', function() { column2.scrollTop = column1.scrollTop; });
+            column2.addEventListener('scroll', function() { column1.scrollTop = column2.scrollTop; });
+
+            // Set up event listeners and lazy-render plots via IntersectionObserver
+            cleanupObservers();
+            setupColumnEventListeners(column1);
+            setupColumnEventListeners(column2);
+            observePlots(column1);
+            observePlots(column2);
+            updatePlotYAxisScale();
+        }
+
+        // Don't initialize dual columns on page load - start in single column mode
+        // User can toggle to dual columns with the button
+
+        // Column-scoped visibility: each column's checkboxes control only
+        // that column's plots. In single-column mode, scope is the document.
+        var columnContainers = document.querySelectorAll('.column');
+        var primaryContainer;  // The container used for aggregated plot calculation
+        if (columnContainers.length === 0) {
+            columnContainers = [document];
+            primaryContainer = document;
+        } else {
+            primaryContainer = columnContainers[0];  // Left column in dual-column mode
+        }
+
+        var aggregatedPlotTimeouts = new WeakMap();  // Per-container debounce timers
+
+        function updateColumnVisibility(container) {
+            var selectedExps = new Set(Array.from(container.querySelectorAll('.exp-filter'))
+                .filter(function(cb) { return cb.checked; }).map(function(cb) { return cb.value; }));
+            var selectedPrompts = new Set(Array.from(container.querySelectorAll('.prompt-filter'))
+                .filter(function(cb) { return cb.checked; }).map(function(cb) { return cb.value; }));
+            var selectedFormats = new Set(Array.from(container.querySelectorAll('.format-filter'))
+                .filter(function(cb) { return cb.checked; }).map(function(cb) { return cb.value; }));
+            var selectedModels = new Set(Array.from(container.querySelectorAll('.model-filter'))
+                .filter(function(cb) { return cb.checked; }).map(function(cb) { return cb.value; }));
+            var selectedTemps = new Set(Array.from(container.querySelectorAll('.temp-filter'))
+                .filter(function(cb) { return cb.checked; }).map(function(cb) { return cb.value; }));
+
+            container.querySelectorAll('.plot-section').forEach(function(section) {
+                var shouldShow = selectedExps.has(section.getAttribute('data-experiment')) &&
+                                 selectedPrompts.has(section.getAttribute('data-prompt')) &&
+                                 selectedFormats.has(section.getAttribute('data-format')) &&
+                                 selectedModels.has(section.getAttribute('data-model')) &&
+                                 selectedTemps.has(section.getAttribute('data-temperature'));
+                section.classList.toggle('hidden', !shouldShow);
+            });
+
+            // Debounce aggregated plot update per container
+            var existingTimeout = aggregatedPlotTimeouts.get(container);
+            if (existingTimeout) clearTimeout(existingTimeout);
+            aggregatedPlotTimeouts.set(container, setTimeout(function() {
+                updateAggregatedPlot(container);
+            }, 100));
+
+            // Debounce global Y-axis scale update (cross-column)
+            clearTimeout(yAxisScaleTimeout);
+            yAxisScaleTimeout = setTimeout(updatePlotYAxisScale, 100);
+        }
+
+        function resizeColumnPlots(container) {
+            container.querySelectorAll('.js-plotly-plot').forEach(function(plotDiv) {
+                var plotSection = plotDiv.closest('.plot-section');
+                if (!plotSection || !plotSection.classList.contains('hidden')) {
+                    Plotly.Plots.resize(plotDiv);
+                }
+            });
+            // Also resize aggregated plot within this container
+            container.querySelectorAll('[id="graph-aggregated"]').forEach(function(aggPlot) {
+                var aggSection = aggPlot.closest('.aggregated-section');
+                if (aggSection && !aggSection.classList.contains('hidden')) {
+                    Plotly.Plots.resize(aggPlot);
+                }
+            });
+        }
+
+        function setupColumnEventListeners(container) {
+            // This function sets up all event listeners for a column
+            // It needs to be called both on page load and after creating dual columns
+
+            // Style format checkboxes: outline with format color, fill on check
+            container.querySelectorAll('.format-filter').forEach(function(checkbox) {
+                var color = checkbox.getAttribute('data-color');
+                if (color) {
+                    checkbox.style.borderColor = color;
+                    checkbox.style.color = color;
+                    checkbox.addEventListener('change', function() {
+                        this.style.backgroundColor = this.checked ? color : 'white';
+                    });
+                    if (checkbox.checked) {
+                        checkbox.style.backgroundColor = color;
+                    }
+                }
+            });
+
+            // Style model checkboxes: outline with model color, fill on check
+            container.querySelectorAll('.model-filter').forEach(function(checkbox) {
+                var color = checkbox.getAttribute('data-color');
+                if (color) {
+                    checkbox.style.borderColor = color;
+                    checkbox.style.color = color;
+                    checkbox.addEventListener('change', function() {
+                        this.style.backgroundColor = this.checked ? color : 'white';
+                    });
+                    if (checkbox.checked) {
+                        checkbox.style.backgroundColor = color;
+                    }
+                }
+            });
+
+            // Handle aggregated plot toggle
+            container.querySelectorAll('.agg-toggle').forEach(function(aggToggle) {
+                var aggregatedTitle = container.querySelector('[id="aggregated-title"]');
+                var aggregatedPlot = container.querySelector('[id="aggregated-plot"]');
+                if (aggregatedTitle && aggregatedPlot) {
+                    aggToggle.addEventListener('change', function() {
+                        aggregatedTitle.style.display = this.checked ? 'block' : 'none';
+                        aggregatedPlot.style.display = this.checked ? 'block' : 'none';
+                        resizeColumnPlots(container);
+                    });
+                }
+            });
+
+            // Attach change listeners to all filter checkboxes in this column
+            container.querySelectorAll('.exp-filter, .prompt-filter, .format-filter, .model-filter, .temp-filter')
+                .forEach(function(checkbox) {
+                    checkbox.addEventListener('change', function() {
+                        updateColumnVisibility(container);
+                    });
+                });
+
+            // Initialize visibility for this column
+            updateColumnVisibility(container);
+        }
+
+        // Set up event listeners for initial column containers
+        columnContainers.forEach(function(container) {
+            setupColumnEventListeners(container);
+        });
+
+        // Lazy-render individual plots via IntersectionObserver
+        if (columnContainers[0] === document) {
+            observePlots(document.getElementById('main-content') || document.body);
+        } else {
+            columnContainers.forEach(function(container) {
+                observePlots(container);
+            });
+        }
+
+        // Update aggregated plot immediately (always visible at the top)
+        columnContainers.forEach(function(container) {
+            updateAggregatedPlot(container);
+        });
+
+        // Initialize Y-axis scale for individual plots
+        updatePlotYAxisScale();
+
+        // Column mode toggle
+        var isInTwoColumnMode = false;
+        var columnToggleBtn = document.getElementById('column-toggle-btn');
+        var savedColumns = null;  // Store column references for cleanup
+
+        function updateColumnModeButton() {
+            if (isInTwoColumnMode) {
+                columnToggleBtn.textContent = 'Single Column';
+            } else {
+                columnToggleBtn.textContent = 'Two Columns';
+            }
+        }
+
+        columnToggleBtn.addEventListener('click', function() {
+            if (isInTwoColumnMode) {
+                // Switch to single column mode
+                isInTwoColumnMode = false;
+                document.body.classList.remove('columns-2');
+
+                // Remove columns from DOM and show main content
+                cleanupObservers();
+                if (savedColumns) {
+                    savedColumns.column1.remove();
+                    savedColumns.column2.remove();
+                    savedColumns.mainContent.style.display = 'block';
+                    savedColumns = null;
+                }
+
+                // Re-setup listeners and re-observe any unrendered plots
+                var mainContent = document.getElementById('main-content');
+                if (mainContent) {
+                    setupColumnEventListeners(mainContent);
+                    observePlots(mainContent);
+                    updatePlotYAxisScale();
+                    // Resize already-rendered plots after layout reflow
+                    setTimeout(function() {
+                        mainContent.querySelectorAll('.js-plotly-plot').forEach(function(plotDiv) {
+                            Plotly.Plots.resize(plotDiv);
+                        });
+                    }, 50);
+                }
+            } else {
+                // Switch to two column mode
+                isInTwoColumnMode = true;
+                initializeDualColumns();
+            }
+            updateColumnModeButton();
+        });
+
+        updateColumnModeButton();
+    </script>
+
+</body>
+</html>

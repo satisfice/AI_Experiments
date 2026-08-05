@@ -1,0 +1,26 @@
+Experiment Log
+==============
+
+Timestamp: 20260301224755
+Experiment: animals_30
+Model: claude-haiku-4-5-20251001
+Prompt: animals_random_hard_30.prompt
+Format(s): txt, txt1, md, json, yml, csv, html
+Temperature: default
+Iterations: 20
+
+Files Requiring UTF-8 Encoding (Non-ASCII Characters):
+-----------------------------------------------------
+  - 20260301224843-animals_30-animals_random_hard_30-claudehaiku4520251001-txx-13.txt1
+  - 20260301224925-animals_30-animals_random_hard_30-claudehaiku4520251001-txx-05.md
+  - 20260301224925-animals_30-animals_random_hard_30-claudehaiku4520251001-txx-07.md
+  - 20260301225010-animals_30-animals_random_hard_30-claudehaiku4520251001-txx-13.json
+  - 20260301225055-animals_30-animals_random_hard_30-claudehaiku4520251001-txx-02.yml
+  - 20260301225055-animals_30-animals_random_hard_30-claudehaiku4520251001-txx-11.yml
+  - 20260301225221-animals_30-animals_random_hard_30-claudehaiku4520251001-txx-01.html
+  - 20260301225221-animals_30-animals_random_hard_30-claudehaiku4520251001-txx-07.html
+  - 20260301225221-animals_30-animals_random_hard_30-claudehaiku4520251001-txx-09.html
+  - 20260301225221-animals_30-animals_random_hard_30-claudehaiku4520251001-txx-18.html
+
+Total Files Generated: 140
+Files with Non-ASCII Characters: 10

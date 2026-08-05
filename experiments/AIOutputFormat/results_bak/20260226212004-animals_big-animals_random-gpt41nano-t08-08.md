@@ -1,0 +1,20 @@
+- Red Fox  
+- Spotted Salamander  
+- African Grey Parrot  
+- Bengal Tiger  
+- Snow Leopard  
+- Komodo Dragon  
+- Golden Eagle  
+- Blue Poison Dart Frog  
+- Emperor Penguin  
+- African Elephant  
+- Mountain Goat  
+- Komodo Wryneck  
+- Australian Zebra Finch  
+- Arctic Fox  
+- Sumatran Orangutan  
+- Kiwi  
+- Green Iguana  
+- Amur Leopard  
+- Red Kangaroo  
+- Atlantic Puffin

@@ -1,0 +1,40 @@
+ Volume in drive C is Windows
+ Volume Serial Number is F687-A5C9
+
+ Directory of C:\Users\Michael\Documents\Dev\AI_Experiments\experiments\AIOutputFormat
+
+2026-05-27  17:48    <DIR>          .
+2026-03-26  06:47    <DIR>          ..
+2026-03-26  06:47               255 addresses-soft.prompt
+2026-03-26  06:47             2,887 analyze_isolation.py
+2026-03-26  06:47               234 animals.prompt
+2026-03-26  06:47               436 animals_hard.prompt
+2026-03-26  06:47               241 animals_random.prompt
+2026-03-26  06:47               584 animals_random_hard.prompt
+2026-03-26  06:47             9,403 check_for_models.py
+2026-05-25  22:45             5,703 claude_errors.log
+2026-05-17  17:49             1,016 cleanup tasks.txt
+2026-04-06  07:34            24,540 cleanup_rules.json
+2026-03-26  06:47             9,886 config.py
+2026-03-26  06:47            42,678 experiment.py
+2026-05-26  00:21               617 experiment_run.log
+2026-05-27  17:33             2,049 formats.json
+2026-05-25  23:19             1,687 formats_hard.json
+2026-03-26  06:47               721 formats_soft.json
+2026-05-27  17:48                 0 fs.txt
+2026-05-25  22:45            70,978 generate_report.py
+2026-03-26  06:47             1,048 models.json
+2026-04-05  23:58               299 notes.txt
+2026-03-26  06:47            10,565 providers.py
+2026-04-06  07:33             9,607 quality_issues.json
+2026-03-26  06:47             2,425 query_models.py
+2026-03-26  06:47             6,251 README.md
+2026-05-27  17:47    <DIR>          results
+2026-05-27  17:37    <DIR>          results_bak
+2026-05-26  00:05           121,017 summarize.py
+2026-04-06  06:23             2,206 TODO.txt
+2026-03-26  07:16             1,108 utils.py
+2026-03-26  07:01    <DIR>          venv
+2026-04-06  07:34    <DIR>          __pycache__
+              27 File(s)        328,441 bytes
+               6 Dir(s)  899,786,665,984 bytes free

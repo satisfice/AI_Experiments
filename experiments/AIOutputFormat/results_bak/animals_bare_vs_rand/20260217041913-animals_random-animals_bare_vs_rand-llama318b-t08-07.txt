@@ -1,0 +1,10 @@
+Penguin
+Falcon
+Cheetah
+Kangaroo
+Giraffe
+Tiger
+Bear
+Wolf
+Hedgehog
+Fox

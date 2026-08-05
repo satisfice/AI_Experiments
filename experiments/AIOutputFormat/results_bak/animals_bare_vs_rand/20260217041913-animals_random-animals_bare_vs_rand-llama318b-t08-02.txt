@@ -1,0 +1,16 @@
+Badger
+Koala
+Fennec
+Meerkat
+Okapi
+Quokka
+Tapir
+Aardvark
+Pangolin
+Rhinoceros
+Axolotl
+Toucan
+Capybara
+Vulture
+Dolphin
+Wombat

@@ -1,0 +1,19 @@
+Experiment Log
+==============
+
+Timestamp: 20260226212333
+Experiment: animals_big
+Model: claude-haiku-4-5-20251001
+Prompt: animals_random.prompt
+Format(s): txt, txt1, md, json, yml, csv, html
+Temperature: default
+Iterations: 20
+
+Files Requiring UTF-8 Encoding (Non-ASCII Characters):
+-----------------------------------------------------
+  - 20260226212443-animals_random-animals_big-claudehaiku4520251001-txx-07.md
+  - 20260226212548-animals_random-animals_big-claudehaiku4520251001-txx-08.yml
+  - 20260226212548-animals_random-animals_big-claudehaiku4520251001-txx-11.yml
+
+Total Files Generated: 140
+Files with Non-ASCII Characters: 3

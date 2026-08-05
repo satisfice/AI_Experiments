@@ -1,0 +1,20 @@
+Elephant
+Kangaroo
+Penguin
+Cheetah
+Salmon
+Giraffe
+Owl
+Frog
+Tiger
+Hammerhead Shark
+Koala
+Labrador Retriever
+Cobra
+Camel
+Dolphin
+Rhinoceros
+Squirrel
+Panda
+Eagle
+Anaconda

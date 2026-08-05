@@ -1,0 +1,100 @@
+Lion
+Elephant
+Giraffe
+Tiger
+Monkey
+Zebra
+Kangaroo
+Hippo
+Rhino
+Penguin
+Dolphin
+Polar Bear
+Gorilla
+Cheetah
+Panda
+Koala
+Fox
+Jaguar
+Sloth
+Ostrich
+Wolf
+Otter
+Raccoon
+Giraffe
+Camel
+Llama
+Seal
+Walrus
+Buffalo
+Koala
+Meerkat
+Penguin
+Eagle
+Owl
+Pelican
+Sparrow
+Flamingo
+Hummingbird
+Parrot
+Pigeon
+Swan
+Goose
+Falcon
+Seagull
+Iguana
+Chameleon
+Python
+Boa
+Rattlesnake
+Anaconda
+Cobra
+Turtle
+Tortoise
+Frog
+Toad
+Salamander
+Newt
+Axolotl
+Alligator
+Crocodile
+Salamander
+Salamander
+Gecko
+Leopard Gecko
+Bearded Dragon
+Iguana
+Chameleon
+Basilisk
+Chameleon
+Basilisk
+Skink
+Mantis
+Leaf Insect
+Cockroach
+Grasshopper
+Cricket
+Beetle
+Ant
+Bee
+Wasp
+Fly
+Mosquito
+Moth
+Butterfly
+Daddy Longlegs
+Spider
+Tarantula
+Scorpion
+Centipede
+Millipede
+Woodlouse
+Ladybug
+Monarch Butterfly
+Praying Mantis
+Exotic Shorthair
+Ragdoll
+Persian
+Siamese
+Maine Coon
+British Shorthair

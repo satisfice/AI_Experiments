@@ -1,0 +1,22 @@
+```python
+- lion
+- elephant
+- giraffe
+- monkey
+- kangaroo
+- koala
+- penguin
+- wolf
+- bear
+- tiger
+- snake
+- dolphin
+- whale
+- seal
+- raccoon
+- fox
+- rabbit
+- deer
+- squirrel
+- hedgehog
+```

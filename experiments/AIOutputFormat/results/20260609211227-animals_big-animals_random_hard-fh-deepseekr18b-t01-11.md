@@ -1,0 +1,36 @@
+```
+- cat
+- elephant
+- dolphin
+- fox
+- bear
+- rabbit
+- turtle
+- snake
+- bird
+- fish
+- wolf
+- deer
+- monkey
+- kangaroo
+- penguin
+- lion
+- tiger
+- zebra
+- giraffe
+- crocodile
+- octopus
+- whale
+- seal
+- bear
+- dolphin
+- hawk
+- owl
+- ant
+- bee
+- butterfly
+- spider
+- worm
+- frog
+- newt
+```

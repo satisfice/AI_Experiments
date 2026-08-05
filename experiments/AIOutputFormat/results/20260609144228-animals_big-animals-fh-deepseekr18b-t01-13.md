@@ -1,0 +1,27 @@
+```
+- ant
+- bear
+- cat
+- dog
+- eagle
+- fox
+- giraffe
+- hamster
+- iguana
+- jaguar
+- kangaroo
+- lemur
+- monkey
+- newt
+- octopus
+- panda
+- quail
+- rabbit
+- snake
+- tiger
+- turtle
+- viper
+- wallaby
+- yak
+- zebra
+```

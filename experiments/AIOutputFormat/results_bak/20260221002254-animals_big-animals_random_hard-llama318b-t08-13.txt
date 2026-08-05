@@ -1,0 +1,10 @@
+Ocelot
+Mongoose
+Wallaby
+Addax
+Numbat 
+Capybara
+Pangolin
+Okapi
+Fennec
+Takin

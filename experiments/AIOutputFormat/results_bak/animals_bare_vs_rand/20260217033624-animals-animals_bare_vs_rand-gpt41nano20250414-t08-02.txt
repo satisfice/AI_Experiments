@@ -1,0 +1,58 @@
+Lion  
+Tiger  
+Elephant  
+Giraffe  
+Zebra  
+Panda  
+Kangaroo  
+Penguin  
+Koala  
+Hippopotamus  
+Rhinoceros  
+Cheetah  
+Leopard  
+Jaguar  
+Hyena  
+Wolf  
+Fox  
+Bear  
+Camel  
+Deer  
+Moose  
+Raccoon  
+Otter  
+Beaver  
+Squirrel  
+Hedgehog  
+Rabbit  
+Chinchilla  
+Skunk  
+Armadillo  
+Alligator  
+Crocodile  
+Monitor Lizard  
+Komodo Dragon  
+Anaconda  
+Boa Constrictor  
+Python  
+Salamander  
+Frog  
+Toad  
+Turtle  
+Sea Turtle  
+Octopus  
+Squid  
+Jellyfish  
+Starfish  
+Crab  
+Lobster  
+Shrimp  
+Seahorse  
+Dolphin  
+Porpoise  
+Whale  
+Shark  
+Barracuda  
+Eel  
+ manta ray  
+Stingray

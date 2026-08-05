@@ -1,0 +1,207 @@
+```
+-aardvark
+-african buffalo
+-alligator
+-alpaca
+-ant
+-aquatic frog
+-baboon
+-badger
+-bald eagle
+-barbados swallowtail
+-bear
+-beaver
+-bee
+-bison
+-bobcat
+-buffalo
+-butterfly
+-caecilian
+-caiman
+-camel
+-canary
+-capybara
+-carp
+-cassowary
+-cat
+-caterpillar
+-cattle
+-celacanth
+-chameleon
+-chinchilla
+-chicken
+-chimpanzee
+-cobra
+-cocker spaniel
+-cod
+-cobra
+-colibri
+-cormorant
+-cow
+-coyote
+-crab
+-crane
+-crocodile
+-crow
+-cuckoo
+-deer
+-dog
+-dolphin
+-dove
+-dragonfly
+-eagle
+-eel
+-elephant
+-emu
+-ferret
+-fish
+-flamingo
+-fly
+-frog
+-gazelle
+-gibbon
+-goldfish
+-gorilla
+-grasshopper
+-great white shark
+-groundhog
+-guacamole snake
+-guinea pig
+-hagfish
+-hawk
+-hedgehog
+-herring
+-horse
+-hummingbird
+-hyena
+-ibis
+-iguana
+-jaguar
+-javelina
+-jellyfish
+-john dory
+-jungle cat
+-kangaroo
+-kapuas monitor
+-kite
+-koala
+-krill
+-kud
+-kukulkan
+-kunlun bear
+-ladybug
+-lamb
+-lamprey
+-lapwing
+-largemouth bass
+-leopard
+-lethbridge giant water bug
+-liger
+-lion
+-lizard
+-loaderina
+-loris
+-macaque
+-mallard
+-manatee
+-mandrill
+-mantis
+-marabou
+-marlin
+-marten
+-maulik fish
+-mayfly
+-megamouth shark
+-melon-headed upis
+-mercury monkey
+-mink
+-mole
+-monkey
+-mongoose
+-moose
+-mouse
+-mouse deer
+-mouse lemur
+-mousebird
+-mudskipper
+-mud turtle
+-muflon
+-mule
+-mustang
+-musk ox
+-mynah
+-narwhal
+-newt
+-nightingale
+-northern cardinal
+-norway lobster
+-nudist cichlid
+-ocelot
+-ophidiomorpha
+-ophisternon
+-oriole
+-oryx
+-otter
+-owl
+-oyster
+-ostrich
+-otter
+-owl monkey
+-paca
+-pack rat
+-packrat
+-panda
+-parrot
+-passerine
+-pause
+-peacock
+-peafowl
+-penguin
+-perch
+-perissodactyl
+-pheasant
+-pig
+-pigeon
+-piranha
+-platypus
+-player
+-platypus
+-possum
+-praying mantis
+-puma
+-puffin
+-puma
+-quetzal
+-quetzalcoatlus
+-quetzalquixtlac
+-quetzalcueyi
+-quetzalgalpa
+-quetzalindigo
+-quetzalnave
+-quetzalquixotzcuauhtli
+-quetzalraptor
+-quetzalsa
+-quetzaltepeque
+-quetzaluna
+-quetzaltzin
+-quetzalvaca
+-quetzalxochitl
+-quetzalxochtl
+-quetzalzoo
+-quetzalcoatlus
+-quetzalcueyi
+-quetzalnave
+-quetzalquixotzcuauhtli
+-quetzalraptor
+-quetzalsa
+-quetzaltepeque
+-quetzaluna
+-quetzalquixtli
+-quetzalvaca
+-quetzalxochitl
+-quetzalxochtl
+-quetzalzoo
+-quetzalcoatlus
+-quetzalcueyi
+-
+```

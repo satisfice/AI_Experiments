@@ -1,0 +1,13 @@
+Penguin
+Koala
+Octopus
+Fennec Fox
+Armadillo
+Cheetah
+Hedgehog
+Rhinoceros
+Giraffe
+Lemur 
+Tapir
+Jaguar 
+Ostrich

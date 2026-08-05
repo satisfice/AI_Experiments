@@ -1,0 +1,1362 @@
+cat
+dog
+elephant
+lion
+tiger
+bear
+wolf
+fox
+rabbit
+mouse
+bird
+eagle
+sparrow
+dove
+owl
+fish
+shark
+goldfish
+whale
+dolphin
+snake
+cobra
+python
+lizard
+frog
+toad
+turtle
+newt
+hedgehog
+kangaroo
+koala
+panda
+tiger
+zebra
+giraffe
+buffalo
+cattle
+deer
+antelope
+goat
+sheep
+pig
+chicken
+turkey
+duck
+goose
+eagle
+hawk
+parrot
+monkey
+ape
+gibbon
+baboon
+chimpanzee
+gorilla
+monkey
+kangaroo
+possum
+squirrel
+rat
+mouse
+hamster
+gerbil
+hamster
+guinea pig
+rabbit
+ferret
+donkey
+horse
+camel
+llama
+alpaca
+ox
+buffalo
+frog
+toad
+newt
+turtle
+snail
+slug
+octopus
+squid
+crab
+lobster
+shrimp
+prawn
+ant
+bee
+butterfly
+moth
+dragonfly
+grasshopper
+cricket
+grasshopper
+centipede
+millipede
+spider
+scorpion
+vulture
+vulture
+hawk
+eagle
+osprey
+owl
+bat
+bat
+penguin
+dove
+woodcock
+nightingale
+robin
+thrush
+warbler
+finch
+sparrow
+jackdaw
+magpie
+crow
+raven
+owl
+eagle
+hawk
+falcon
+kite
+swallow
+swift
+hummingbird
+woodpecker
+owl
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+k
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+k
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+hawk
+falcon
+kite
+eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ kite
+ eagle
+ hawk
+ falcon
+ k> 
+(Continued from the original response, but cut off due to length limitations)

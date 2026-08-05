@@ -1,0 +1,12 @@
+Monkey
+Tiger
+Kangaroo
+Butterfly
+Penguin
+Hedgehog
+Giraffe
+Chimpanzee
+Ostrich
+Cheetah 
+Rabbit 
+Lion

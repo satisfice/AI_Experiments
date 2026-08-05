@@ -1,0 +1,15 @@
+- Zebra
+- Octopus
+- Flamingo
+- Otter
+- Giraffe
+- Platypus
+- Hyena
+- Macaw
+- Meerkat
+- Pangolin
+- Albatross
+- Capybara
+- Wolverine
+- Seahorse
+- Lemur

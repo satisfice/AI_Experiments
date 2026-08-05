@@ -1,0 +1,45 @@
+```
+- cat
+- dog
+- whale
+- octopus
+- snake
+- frog
+- bear
+- lion
+- tiger
+- rabbit
+- bird
+- fish
+- dolphin
+- eagle
+- zebra
+- giraffe
+- panda
+- koala
+- sloth
+- monkey
+- ape
+- wolf
+- fox
+- bear
+- deer
+- ant
+- bee
+- butterfly
+- spider
+- worm
+- snail
+- turtle
+- lizard
+- crocodile
+- penguin
+- seal
+- otter
+- newt
+- skunk
+- raccoon
+- badger
+- mongoose
+
+```
