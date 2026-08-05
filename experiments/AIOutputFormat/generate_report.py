@@ -1311,20 +1311,10 @@ def get_unique_items_sorted(data):
     return sorted_items
 
 
-def generate_html_report_with_filters(items_by_format_model, all_items_sorted, formats, models, temperatures, experiments, prompts, data, output_path, quality_data=None, prompt_texts=None, format_prompts=None):
-    """
-    Generate individual charts for each (experiment, format, prompt, model, temperature) combination.
-    Wrap each in divs with CSS classes for filtering based on experiment/prompt/format/model/temperature.
-    Uses CSS display:none to show/hide based on checkbox selections.
-    data: raw data for counting trials per combination
-    items_by_format_model: dict with 5-tuple keys (experiment, format, prompt, model, temperature)
-    quality_data: dict with quality issues by model/temperature/format (from quality.json)
-    """
-    if quality_data is None:
-        quality_data = {}
-    # Build mapping from 5-tuple keys to metadata and counters
-    combo_info = {}  # (fmt, model, temp, exp, prompt) -> {"counter": Counter, ...}
-
+def _build_combo_info(items_by_format_model):
+    """Build mapping from 5-tuple keys to per-combo metadata and counters.
+    Returns {(format, model, temp_str, experiment, prompt): {...}}."""
+    combo_info = {}
     for key_tuple, value_dict in items_by_format_model.items():
         experiment, format_type, prompt, model, temperature = key_tuple
         counter = value_dict["counter"] if isinstance(value_dict, dict) else value_dict
@@ -1351,28 +1341,32 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
             "temperature": str(temperature),
             "formatHardness": format_hardness
         }
+    return combo_info
 
-    # First pass: collect all y values to find the maximum range for individual plots
-    all_y_values = []
+
+def _compute_x_items_and_max_y(all_items_sorted, combo_info):
+    """Compute the shared x-axis items (full and display-truncated) and the
+    global max Y value used to give every individual plot the same Y range."""
     x_items = [item for item, _ in all_items_sorted]
     # Create display version with truncated names (limit to 15 characters)
     x_items_display = [item[:15] if len(item) > 15 else item for item in x_items]
 
+    all_y_values = []
     for combo_key, info in combo_info.items():
         y_values = [info["counter"].get(item, 0) for item in x_items]
         all_y_values.extend(y_values)
 
-    # Calculate max Y value for individual plots
     max_y = max(all_y_values) if all_y_values else 1
+    return x_items, x_items_display, max_y
 
-# Generate a figure for each (format, model, temperature, experiment, prompt) combination
-    # The aggregated plot is rendered entirely by JavaScript after filters are applied.
+
+def _generate_combo_figures(combo_info, x_items, x_items_display, max_y):
+    """Generate a Plotly bar-chart figure for each combo. Returns (figures_html,
+    figures_metadata, plot_configs, combo_y_values)."""
     figures_html = {}
     figures_metadata = {}  # Store metadata for each plot
     plot_configs = []  # Plot data for deferred JavaScript rendering
-
-    # Store per-combo y_values for dynamic aggregation in JavaScript
-    combo_y_values = {}  # {combo_key_str: [y_values]}
+    combo_y_values = {}  # {combo_key_str: [y_values]} -- for dynamic aggregation in JavaScript
 
     for combo_key, info in combo_info.items():
         fmt, model, temp, exp, prompt = combo_key
@@ -1418,11 +1412,16 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
             "temperature": temp,
             "experiment": exp,
             "prompt": prompt,
-            "formatHardness": combo_info[combo_key].get("formatHardness", "soft")
+            "formatHardness": info.get("formatHardness", "soft")
         }
 
-    # Build HTML with filters
-    html_content = _REPORT_HEAD_AND_CSS
+    return figures_html, figures_metadata, plot_configs, combo_y_values
+
+
+def _build_filter_checkboxes_html(experiments, prompts, formats, models, temperatures):
+    """Build the experiment/prompt/format/model/temperature filter-checkbox HTML,
+    plus the plots-container opening and aggregated-plot placeholder div."""
+    html_content = ""
 
     # Add experiment checkboxes
     for exp in experiments:
@@ -1498,6 +1497,32 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
         </div>
     </div>
 """
+    return html_content
+
+
+def generate_html_report_with_filters(items_by_format_model, all_items_sorted, formats, models, temperatures, experiments, prompts, data, output_path, quality_data=None, prompt_texts=None, format_prompts=None):
+    """
+    Generate individual charts for each (experiment, format, prompt, model, temperature) combination.
+    Wrap each in divs with CSS classes for filtering based on experiment/prompt/format/model/temperature.
+    Uses CSS display:none to show/hide based on checkbox selections.
+    data: raw data for counting trials per combination
+    items_by_format_model: dict with 5-tuple keys (experiment, format, prompt, model, temperature)
+    quality_data: dict with quality issues by model/temperature/format (from quality.json)
+    """
+    if quality_data is None:
+        quality_data = {}
+
+    combo_info = _build_combo_info(items_by_format_model)
+    x_items, x_items_display, max_y = _compute_x_items_and_max_y(all_items_sorted, combo_info)
+    # Generate a figure for each (format, model, temperature, experiment, prompt) combination.
+    # The aggregated plot is rendered entirely by JavaScript after filters are applied.
+    figures_html, figures_metadata, plot_configs, combo_y_values = _generate_combo_figures(
+        combo_info, x_items, x_items_display, max_y)
+
+    # Build HTML with filters
+    html_content = _REPORT_HEAD_AND_CSS
+
+    html_content += _build_filter_checkboxes_html(experiments, prompts, formats, models, temperatures)
 
     # Group plots by prompt
     plots_by_prompt = defaultdict(list)
