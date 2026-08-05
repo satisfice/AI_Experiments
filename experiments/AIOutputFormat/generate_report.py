@@ -54,433 +54,7 @@ FORMAT_SHORT_TO_DISPLAY = {
 }
 
 
-def get_file_extension(format_name):
-    """Convert data format name to filename extension."""
-    # Try exact match first, then try lowercase, then return lowercase as fallback
-    format_lower = format_name.lower()
-    return FORMAT_TO_EXTENSION.get(format_name, FORMAT_TO_EXTENSION.get(format_lower, format_lower))
-
-
-def is_preamble(item):
-    """
-    Filter preamble text patterns.
-    Returns True if the item should be filtered out.
-    """
-    if not isinstance(item, str):
-        return True
-
-    item_lower = item.lower().strip()
-
-    # Empty or very short
-    if len(item_lower) < 2:
-        return True
-
-    # Markdown headers (lines starting with #)
-    if item.lstrip().startswith('#'):
-        return True
-
-    # Starts with common preamble phrases
-    if any(item_lower.startswith(prefix) for prefix in [
-        "here's", "here are", "here is", "sure", "certainly",
-        "here's a", "here are the", "here is the",
-        "here are some", "here's some"
-    ]):
-        return True
-
-    # Contains list indicators
-    if any(phrase in item_lower for phrase in [
-        "list of", "the following", "are the", "is a list"
-    ]):
-        return True
-
-    # Ends with colon or ellipsis (likely intro text)
-    if item_lower.endswith(":") or item_lower.endswith("..."):
-        return True
-
-    return False
-
-
-def hsl_to_rgb(h, s, l):
-    """
-    Convert HSL (hue [0-360], saturation [0-100], lightness [0-100]) to RGB hex color.
-    """
-    s = s / 100.0
-    l = l / 100.0
-
-    c = (1 - abs(2 * l - 1)) * s
-    h_prime = h / 60.0
-    x = c * (1 - abs(h_prime % 2 - 1))
-
-    if h_prime < 1:
-        r, g, b = c, x, 0
-    elif h_prime < 2:
-        r, g, b = x, c, 0
-    elif h_prime < 3:
-        r, g, b = 0, c, x
-    elif h_prime < 4:
-        r, g, b = 0, x, c
-    elif h_prime < 5:
-        r, g, b = x, 0, c
-    else:
-        r, g, b = c, 0, x
-
-    m = l - c / 2
-    r = int((r + m) * 255)
-    g = int((g + m) * 255)
-    b = int((b + m) * 255)
-
-    return f'#{r:02x}{g:02x}{b:02x}'
-
-
-
-
-def adjust_color_by_temperature(base_color_hex, temperature_str, model_name=None, models_list=None, max_temperature=2.0):
-    """
-    Adjust color based on temperature if model supports it.
-    For models that support temperature: adjust from soft to vivid based on temperature
-    For models that don't support temperature: return base color (more saturated)
-
-    Args:
-        base_color_hex: color in #rrggbb format
-        temperature_str: temperature as string (e.g., "0.0", "1.0", "2.0")
-        model_name: name of the model (for checking temperature support)
-        models_list: list of all models (for context)
-        max_temperature: temperature value that gives maximum vividness
-    """
-    # Check if model supports temperature
-    supports_temp = True
-    if model_name:
-        try:
-            supports_temp = model_supports_temperature(model_name)
-        except:
-            supports_temp = True  # default to adjusting if we can't determine
-
-    # If model doesn't support temperature, increase saturation for the base color
-    if not supports_temp:
-        # Increase saturation of the base color
-        from color_picker import increase_saturation
-        return increase_saturation(base_color_hex, factor=1.4)
-
-    try:
-        # Handle "None" string from JSON serialization of None values
-        if temperature_str == "None" or temperature_str is None:
-            temp_value = 1.0
-        else:
-            temp_value = float(temperature_str)
-    except (ValueError, TypeError):
-        temp_value = 1.0
-
-    # Normalize temperature (0.0 to 1.0 scale)
-    temp_factor = min(temp_value / max_temperature, 1.0)
-
-    # Parse hex color to RGB
-    hex_color = base_color_hex.lstrip('#')
-    r = int(hex_color[0:2], 16)
-    g = int(hex_color[2:4], 16)
-    b = int(hex_color[4:6], 16)
-
-    # Convert RGB to HSL
-    r_norm = r / 255.0
-    g_norm = g / 255.0
-    b_norm = b / 255.0
-
-    max_c = max(r_norm, g_norm, b_norm)
-    min_c = min(r_norm, g_norm, b_norm)
-    l = (max_c + min_c) / 2
-
-    if max_c == min_c:
-        h = s = 0
-    else:
-        d = max_c - min_c
-        s = d / (2 - max_c - min_c) if l > 0.5 else d / (max_c + min_c)
-
-        if max_c == r_norm:
-            h = (60 * ((g_norm - b_norm) / d) + 360) % 360
-        elif max_c == g_norm:
-            h = (60 * ((b_norm - r_norm) / d) + 120) % 360
-        else:
-            h = (60 * ((r_norm - g_norm) / d) + 240) % 360
-
-    # Adjust saturation and lightness based on temperature
-    # Low temp: soft (low saturation, higher lightness)
-    # High temp: vivid (high saturation, medium lightness)
-    new_saturation = 30 + (temp_factor * 70)   # 30-100% (soft to vivid)
-    new_lightness = 70 - (temp_factor * 25)    # 70-45% (soft to darker)
-
-    return hsl_to_rgb(h, new_saturation, new_lightness)
-
-
-def load_results_json(json_path):
-    """Load and parse results.json with UTF-8 encoding and error handling"""
-    try:
-        with open(json_path, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    except UnicodeDecodeError as e:
-        # Find line number by counting newlines up to error position
-        with open(json_path, 'rb') as f:
-            content_before = f.read(e.start)
-            line_num = content_before.count(b'\n') + 1
-        raise ValueError(
-            f"Character encoding error in {json_path} at line {line_num}: {e.reason}"
-        )
-    except json.JSONDecodeError as e:
-        raise ValueError(
-            f"Invalid JSON in {json_path} at line {e.lineno}, column {e.colno}: {e.msg}"
-        )
-
-
-def aggregate_items_by_format_and_model(data):
-    """
-    For each unique combination of (experiment, format, prompt, model, temperature),
-    count items (filtered) and track number of trials (files).
-    Returns: dict[tuple] -> dict with Counter, trial_count, per_trial_counts, and metadata
-    where tuple is (experiment, format, prompt, model, temperature)
-    """
-    result = defaultdict(lambda: {"counter": Counter(), "trial_count": 0, "per_trial_counts": [], "filenames": [], "metadata": {}})
-
-    for file_type, entries in data.items():
-        # Skip non-file-type entries (like malformedOutput metadata)
-        if not isinstance(entries, list):
-            continue
-
-        for entry in entries:
-            metadata = entry['metadata']
-            model = metadata['model']
-            format_type = metadata['format']
-            experiment = metadata.get('experiment', 'unknown')
-            prompt = metadata.get('prompt', 'unknown')
-            temperature = metadata.get('temperature', 'default')
-            items = entry.get('items', [])
-
-            # Filter out preamble text
-            filtered_items = [item for item in items if not is_preamble(item)]
-
-            # Create unique key for this combination
-            key = (experiment, format_type, prompt, model, temperature)
-
-            # Count items for this combination
-            result[key]["counter"].update(filtered_items)
-            # Track items per trial
-            result[key]["per_trial_counts"].append(len(filtered_items))
-            # Increment trial count for each file/entry
-            result[key]["trial_count"] += 1
-            if "filename" in entry:
-                result[key]["filenames"].append(entry["filename"])
-
-            # Store metadata
-            result[key]["metadata"] = {
-                "experiment": experiment,
-                "format": format_type,
-                "prompt": prompt,
-                "model": model,
-                "temperature": temperature
-            }
-
-    return result
-
-
-def _trial_numbers_str(instances):
-    """Given a list of {"instance": ..., "source": filename} dicts, return a
-    parenthesised sorted list of trial numbers extracted from the source filenames,
-    e.g. '(3, 11, 17)'.  Returns an empty string if no sources are present."""
-    nums = set()
-    for entry in instances:
-        src = entry.get("source", "")
-        if src:
-            try:
-                nums.add(int(Path(src).stem.split('-')[-1]))
-            except (ValueError, IndexError):
-                pass
-    if not nums:
-        return ""
-    return "(" + ", ".join(str(n) for n in sorted(nums)) + ")"
-
-
-def get_cleanup_data_for_combo(quality_data, model, temperature, format_type, prompt):
-    """
-    Return (quality_issues, cleanup_rules) for a specific combo.
-    quality_issues: list of human-readable issue strings (empty list if none).
-    cleanup_rules: list of "rule (N)" strings showing trial counts (empty list if none).
-    quality_data is keyed by abbreviated model name.
-    """
-    if not quality_data:
-        return [], []
-
-    abbrev_model = abbreviate_model_name(model)
-    prompt_data = quality_data.get(abbrev_model, {}).get(str(temperature), {}).get(format_type, {}).get(prompt, {})
-    if not prompt_data:
-        return [], []
-
-    issues = []
-
-    # Prepend inconsistent format warning if flagged
-    if not prompt_data.get("consistentFormat", True):
-        issues.append("Inconsistent output format")
-
-    # Non-empty issue lists (skip metadata keys)
-    NON_ISSUE_KEYS = {"consistentFormat", "formatIssues", "cleanupRules"}
-    for key, value in prompt_data.items():
-        if key in NON_ISSUE_KEYS:
-            continue
-        if not value:
-            continue
-        if key == "parse-failed":
-            # List each failed file individually instead of just the category label.
-            for entry in sorted(value, key=lambda e: e.get("instance", "")):
-                issues.append(f"Parsing failed completely for {entry['instance']}")
-        elif key.startswith("inconsistent_"):
-            # Extract format name from key (e.g., "inconsistent_md_format" -> "md")
-            format_abbrev = key.replace('inconsistent_', '').replace('_format', '')
-            format_display = FORMAT_SHORT_TO_DISPLAY.get(format_abbrev, format_abbrev.title())
-            issues.append(f"Inconsistent {format_display}")
-        else:
-            label = key.replace('_', ' ').title()
-            trial_str = _trial_numbers_str(value)
-            issues.append(f"{label} {trial_str}".strip() if trial_str else label)
-
-    # cleanupRules is a dict {rule: trial_count} in the current format, or a list in the old format.
-    raw = prompt_data.get("cleanupRules", {})
-    if isinstance(raw, dict):
-        cleanup_rules = [f"{rule} ({count})" for rule, count in sorted(raw.items())]
-    else:
-        cleanup_rules = list(raw)
-    return issues, cleanup_rules
-
-
-def get_unique_items_sorted(data):
-    """
-    Get all unique items (filtered) sorted by total count descending.
-    Returns: list of (item, total_count) tuples
-    """
-    all_items = Counter()
-
-    for file_type, entries in data.items():
-        # Skip non-file-type entries (like malformedOutput metadata)
-        if not isinstance(entries, list):
-            continue
-
-        for entry in entries:
-            items = entry.get('items', [])
-            filtered_items = [item for item in items if not is_preamble(item)]
-            all_items.update(filtered_items)
-
-    # Sort by count descending, then alphabetically
-    sorted_items = sorted(all_items.items(), key=lambda x: (-x[1], x[0]))
-    return sorted_items
-
-
-def generate_html_report_with_filters(items_by_format_model, all_items_sorted, formats, models, temperatures, experiments, prompts, data, output_path, quality_data=None, prompt_texts=None, format_prompts=None):
-    """
-    Generate individual charts for each (experiment, format, prompt, model, temperature) combination.
-    Wrap each in divs with CSS classes for filtering based on experiment/prompt/format/model/temperature.
-    Uses CSS display:none to show/hide based on checkbox selections.
-    data: raw data for counting trials per combination
-    items_by_format_model: dict with 5-tuple keys (experiment, format, prompt, model, temperature)
-    quality_data: dict with quality issues by model/temperature/format (from quality.json)
-    """
-    if quality_data is None:
-        quality_data = {}
-    # Build mapping from 5-tuple keys to metadata and counters
-    combo_info = {}  # (fmt, model, temp, exp, prompt) -> {"counter": Counter, ...}
-
-    for key_tuple, value_dict in items_by_format_model.items():
-        experiment, format_type, prompt, model, temperature = key_tuple
-        counter = value_dict["counter"] if isinstance(value_dict, dict) else value_dict
-        trial_count = value_dict.get("trial_count", 0) if isinstance(value_dict, dict) else 0
-        per_trial_counts = value_dict.get("per_trial_counts", []) if isinstance(value_dict, dict) else []
-        metadata = value_dict.get("metadata", {}) if isinstance(value_dict, dict) else {}
-        format_hardness = metadata.get("formatHardness", "soft")  # Default to soft for backward compatibility
-
-        # Calculate max, min, and average items per trial
-        max_items = max(per_trial_counts) if per_trial_counts else 0
-        min_items = min(per_trial_counts) if per_trial_counts else 0
-
-        combo_key = (format_type, model, str(temperature), experiment, prompt)
-        combo_info[combo_key] = {
-            "counter": counter,
-            "trial_count": trial_count,
-            "per_trial_counts": per_trial_counts,
-            "max_items": max_items,
-            "min_items": min_items,
-            "experiment": experiment,
-            "format": format_type,
-            "prompt": prompt,
-            "model": model,
-            "temperature": str(temperature),
-            "formatHardness": format_hardness
-        }
-
-    # First pass: collect all y values to find the maximum range for individual plots
-    all_y_values = []
-    x_items = [item for item, _ in all_items_sorted]
-    # Create display version with truncated names (limit to 15 characters)
-    x_items_display = [item[:15] if len(item) > 15 else item for item in x_items]
-
-    for combo_key, info in combo_info.items():
-        y_values = [info["counter"].get(item, 0) for item in x_items]
-        all_y_values.extend(y_values)
-
-    # Calculate max Y value for individual plots
-    max_y = max(all_y_values) if all_y_values else 1
-
-# Generate a figure for each (format, model, temperature, experiment, prompt) combination
-    # The aggregated plot is rendered entirely by JavaScript after filters are applied.
-    figures_html = {}
-    figures_metadata = {}  # Store metadata for each plot
-    plot_configs = []  # Plot data for deferred JavaScript rendering
-
-    # Store per-combo y_values for dynamic aggregation in JavaScript
-    combo_y_values = {}  # {combo_key_str: [y_values]}
-
-    for combo_key, info in combo_info.items():
-        fmt, model, temp, exp, prompt = combo_key
-        counter = info["counter"]
-        y_values = [counter.get(item, 0) for item in x_items]
-
-        # Store for JavaScript dynamic aggregation
-        combo_key_str = f"{fmt}|{model}|{temp}|{exp}|{prompt}"
-        combo_y_values[combo_key_str] = y_values
-
-        # Build a simple bar chart with fixed Y axis range
-        fig = go.Figure(
-            data=[go.Bar(
-                x=x_items_display,
-                y=y_values,
-                marker=dict(color=FORMAT_COLORS.get(fmt.lower(), '#636363')),
-                hovertemplate='<b>%{x}</b><br>Count: %{y}<extra></extra>',
-            )]
-        )
-
-        fig.update_layout(
-            height=400,
-            showlegend=False,
-            hovermode='x unified',
-            margin=dict(l=10, r=10, t=40, b=30),
-            xaxis=dict(tickangle=90),
-            yaxis=dict(range=[0, max_y]),
-            autosize=True,
-            bargap=0.02,
-            hoverlabel=dict(font=dict(size=16)),
-        )
-
-        chart_id = f"{fmt}-{model}-{temp}-{exp}-{prompt}".replace('.', '-').replace('+', '-').replace(' ', '-').replace('_', '-')
-        div_id = f"graph-{chart_id}"
-
-        # Collect plot config for deferred JavaScript rendering; embed a bare placeholder div.
-        fig_dict = json.loads(fig.to_json())
-        plot_configs.append({"divId": div_id, "data": fig_dict["data"], "layout": fig_dict["layout"]})
-        figures_html[combo_key] = f'<div id="{div_id}" class="plotly-graph-div" style="height:400px; width:100%;"></div>'
-        figures_metadata[combo_key] = {
-            "format": fmt,
-            "model": model,
-            "temperature": temp,
-            "experiment": exp,
-            "prompt": prompt,
-            "formatHardness": combo_info[combo_key].get("formatHardness", "soft")
-        }
-
-    # Build HTML with filters
-    html_content = """<!DOCTYPE html>
+_REPORT_HEAD_AND_CSS = """<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -812,258 +386,11 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
             <div class="filter-row" id="experiment-filters">
 """
 
-    # Add experiment checkboxes
-    for exp in experiments:
-        safe_id = exp.replace('.', '-').replace('+', '-').replace(' ', '-').replace('_', '-')
-        html_content += f'                <div class="filter-item"><input type="checkbox" id="filter-exp-{safe_id}" class="exp-filter" value="{exp}" checked><label for="filter-exp-{safe_id}">{exp}</label></div>\n'
 
-    html_content += """            </div>
-        </div>
-
-        <div class="filter-section">
-            <h3>Prompt</h3>
-            <div class="filter-row" id="prompt-filters">
-"""
-
-    # Add prompt checkboxes
-    for prompt in prompts:
-        safe_id = prompt.replace('.', '-').replace('+', '-').replace(' ', '-').replace('_', '-')
-        html_content += f'                <div class="filter-item"><input type="checkbox" id="filter-prompt-{safe_id}" class="prompt-filter" value="{prompt}" checked><label for="filter-prompt-{safe_id}">{prompt}</label></div>\n'
-
-    html_content += """            </div>
-        </div>
-
-        <div class="filter-section">
-            <h3>Format</h3>
-            <div class="filter-row" id="format-filters">
-"""
-
-    # Add format checkboxes with format-specific colors
-    for fmt in formats:
-        format_color = FORMAT_COLORS.get(fmt.lower(), '#636363')
-        html_content += f'                <div class="filter-item"><input type="checkbox" id="filter-format-{fmt}" class="format-filter" value="{fmt}" checked style="border-color: {format_color};" data-format="{fmt}" data-color="{format_color}"><label for="filter-format-{fmt}">{fmt}</label></div>\n'
-
-    # Add Aggregated as a format option
-    html_content += '                <div class="filter-item"><input type="checkbox" id="filter-format-aggregated" class="format-filter agg-toggle" value="aggregated" checked data-format="aggregated"><label for="filter-format-aggregated">Aggregated</label></div>\n'
-
-    html_content += """                <button class="clear-all-btn" data-filter-class="format-filter">Clear All</button>
-            </div>
-        </div>
-
-        <div class="filter-section">
-            <h3>Model</h3>
-            <div class="filter-row" id="model-filters">
-"""
-
-    # Add model checkboxes with model-specific colors
-    for model in models:
-        safe_id = model.replace('.', '-').replace('+', '-').replace(' ', '-')
-        model_color = get_model_color(model)
-        html_content += f'                <div class="filter-item"><input type="checkbox" id="filter-model-{safe_id}" class="model-filter" value="{model}" checked style="border-color: {model_color};" data-model="{model}" data-color="{model_color}"><label for="filter-model-{safe_id}">{abbreviate_model_name(model)}</label></div>\n'
-
-    html_content += """            </div>
-        </div>
-
-        <div class="filter-section">
-            <h3>Temperature</h3>
-            <div class="filter-row" id="temperature-filters">
-"""
-
-    # Add temperature checkboxes
-    for temp in temperatures:
-        safe_id = temp.replace('.', '-').replace(' ', '-')
-        html_content += f'                <div class="filter-item"><input type="checkbox" id="filter-temp-{safe_id}" class="temp-filter" value="{temp}" checked><label for="filter-temp-{safe_id}">{temp}</label></div>\n'
-
-    html_content += """            </div>
-        </div>
-    </div>
-
-    <div id="plots-container">
-    <div class="plot-section aggregated-plot-section">
-        <div class="plot-title" id="aggregated-title">Aggregated Results</div>
-        <div class="plot-wrapper">
-            <div id="graph-aggregated" style="height:600px; width:100%;"></div>
-        </div>
-    </div>
-"""
-
-    # Group plots by prompt
-    plots_by_prompt = defaultdict(list)
-    for combo_key, metadata in figures_metadata.items():
-        prompt = metadata["prompt"]
-        plots_by_prompt[prompt].append((combo_key, metadata))
-
-    # Get sorted list of unique prompts
-    sorted_prompts = sorted(plots_by_prompt.keys())
-
-    # Single column layout - no dynamic CSS needed
-
-    # Add each prompt column with its plots
-    for prompt in sorted_prompts:
-        html_content += f'    <div class="prompt-column" data-prompt="{prompt}">\n'
-        html_content += f'        <div class="prompt-column-header">{prompt}</div>\n'
-
-        # Add all plots for this prompt
-        for combo_key, metadata in plots_by_prompt[prompt]:
-            fmt = metadata["format"]
-            model = metadata["model"]
-            temp = metadata["temperature"]
-            exp = metadata["experiment"]
-            format_hardness = metadata.get("formatHardness", "soft")
-
-            # Get item counts for this specific combination
-            counter = combo_info[combo_key]["counter"]
-            total_items = sum(counter.values())
-            unique_items = len(counter)
-            trial_count = combo_info[combo_key]["trial_count"]
-            max_items = combo_info[combo_key]["max_items"]
-            min_items = combo_info[combo_key]["min_items"]
-
-            # Get colors
-            format_color = FORMAT_COLORS.get(fmt.lower(), '#636363')
-            model_base_color = get_model_color(model)
-            background_color = adjust_color_by_temperature(model_base_color, temp, model, models)
-
-            # Calculate percentage of unique items and average per trial
-            unique_pct = (unique_items / total_items * 100) if total_items > 0 else 0
-            avg_per_trial = total_items / trial_count if trial_count > 0 else 0
-
-            # Build cleanup indicator with rich tooltip (quality issues in bold + cleanup rules).
-            # Always emitted: red if quality problems, #555 if cleanup only, #aaa if nothing to clean.
-            quality_issues, cleanup_rules = get_cleanup_data_for_combo(quality_data, model, temp, fmt, prompt)
-            if quality_issues or cleanup_rules:
-                # Build HTML tooltip content: quality issues in bold first, then cleanup rules.
-                # Use raw strings in tooltip_lines (no pre-escaping); html_mod.escape() is
-                # applied once to the assembled HTML for safe embedding in the attribute value.
-                # JavaScript's getAttribute() decodes the entities, then innerHTML renders the HTML.
-                tooltip_lines = []
-                for issue in quality_issues:
-                    tooltip_lines.append(f'<b>{issue}</b>')
-                if cleanup_rules:
-                    if quality_issues:
-                        tooltip_lines.append('<span style="display:block;margin-top:4px"></span>')
-                    for rule in cleanup_rules:
-                        tooltip_lines.append(rule)
-                tooltip_html = html_mod.escape('<br>'.join(tooltip_lines))
-                color = "red" if quality_issues else "#555"
-                quality_indicator = (
-                    f' | <span class="cleanup-indicator" data-tooltip-html="{tooltip_html}"'
-                    f' style="color: {color}; cursor: default;">Cleanup</span>'
-                )
-            else:
-                # No cleanup or quality issues: show grayed-out indicator with no tooltip.
-                quality_indicator = (
-                    ' | <span style="color: #aaa; cursor: default;">Cleanup</span>'
-                )
-
-            # Build clipboard string for "Load set" button using actual filenames in the set
-            set_filenames = sorted(combo_info[combo_key].get("filenames", []))
-            if set_filenames:
-                load_set_str = "np " + " ".join(set_filenames)
-            else:
-                # Fallback to wildcard if filenames were not recorded
-                # New format: YYYYMMDDHHMMSS-experiment-prompt-hardness-model-tNN-nn.ext
-                # Wildcard only the trial number (last two digits before extension)
-                abbr_model = abbreviate_model_name(model)
-                temp_code = "txx" if temp in ("None", None) else f"t{int(float(temp) * 10):02d}"
-                file_ext = get_file_extension(fmt)
-                hardness_code = "fs" if format_hardness == "soft" else "fh"
-                load_set_str = f"np *{exp}-{prompt}-{hardness_code}-{abbr_model}-{temp_code}-*.{file_ext}"
-
-            # Build button HTML with onclick handler for clipboard copy
-            load_set_button = (
-                f' | <button '
-                f'style="font-size: 0.85em; padding: 2px 8px; cursor: pointer; '
-                f'background-color: #4169e1; color: #fff; border: none; border-radius: 4px;" '
-                f'title="{load_set_str}" '
-                f'onclick="var b=this; navigator.clipboard.writeText(\'{load_set_str}\').then(function(){{'
-                f'b.textContent=\'Copied!\'; setTimeout(function(){{b.textContent=\'Load set\';}},1000);}});"'
-                f'>Load set</button>'
-            )
-
-            # Build per-trial data for "Show Item Counts" histogram popup
-            _tc_counts = combo_info[combo_key]["per_trial_counts"]
-            _tc_filenames = combo_info[combo_key].get("filenames", [])
-            _tc_trials = []
-            for _i, _fn in enumerate(_tc_filenames):
-                try:
-                    _tc_trials.append(int(Path(_fn).stem.split('-')[-1]))
-                except (ValueError, IndexError):
-                    _tc_trials.append(_i + 1)
-            if not _tc_trials:
-                _tc_trials = list(range(1, len(_tc_counts) + 1))
-            # Extract run date from first filename timestamp (YYYYMMDDHHMMSS prefix)
-            _tc_date = ''
-            if _tc_filenames:
-                _ts = Path(_tc_filenames[0]).stem.split('-')[0]
-                if len(_ts) == 14 and _ts.isdigit():
-                    _tc_date = f"{_ts[:4]}-{_ts[4:6]}-{_ts[6:8]} {_ts[8:10]}:{_ts[10:12]}"
-            _tc_subtitle = '  '.join(p for p in [_tc_date, exp, prompt, fmt, format_hardness, abbreviate_model_name(model), str(temp)] if p)
-            _tc_json_escaped = html_mod.escape(json.dumps({
-                "trials": _tc_trials,
-                "counts": _tc_counts,
-                "barColor": format_color,
-                "borderColor": model_base_color,
-                "subtitle": _tc_subtitle,
-            }))
-            item_counts_button = (
-                f' | <button '
-                f'style="font-size: 0.85em; padding: 2px 8px; cursor: pointer; '
-                f'background-color: #4169e1; color: #fff; border: none; border-radius: 4px;" '
-                f'data-trial-counts="{_tc_json_escaped}" '
-                f'onmouseover="showItemCountsPopup(this);" onmouseout="_icScheduleHide();" onclick="pinItemCountsPopup(this);"'
-                f'>Show Item Counts</button>'
-            )
-
-            # Build prompt tooltip: prompt text + double line break + format instruction.
-            # Text is wrapped at 80 chars; lines separated by <br> for HTML rendering.
-            _prompt_body = (prompt_texts or {}).get(prompt, '')
-            _fmt_ext = get_file_extension(fmt)
-            _fmt_instruction = (format_prompts or {}).get(_fmt_ext, '')
-            _tooltip_parts = []
-            if _prompt_body:
-                _tooltip_parts.append('<br>'.join(textwrap.wrap(_prompt_body, width=80)))
-            if _fmt_instruction:
-                if _tooltip_parts:
-                    _tooltip_parts.append('<br><br>')
-                _tooltip_parts.append('<br>'.join(textwrap.wrap(_fmt_instruction, width=80)))
-            _prompt_tooltip_attr = ''
-            if _tooltip_parts:
-                _escaped = html_mod.escape(''.join(_tooltip_parts))
-                _prompt_tooltip_attr = f' class="prompt-indicator" data-tooltip-html="{_escaped}"'
-
-            # Build hardness tooltip: format instruction for the specific hardness
-            _hardness_tooltip_attr = ''
-            _hardness_instruction = get_format_instruction(fmt, format_hardness)
-            if _hardness_instruction:
-                _hardness_escaped = html_mod.escape('<br>'.join(textwrap.wrap(_hardness_instruction, width=80)))
-                _hardness_tooltip_attr = f' class="hardness-indicator" data-tooltip-html="{_hardness_escaped}"'
-
-            # Build HTML title with colored text (three lines)
-            # Line 1: Experiment | Prompt | Format (hardness) | Model | Temperature
-            # Line 2: Trials | Min | Max | Average | Total | Unique
-            # Line 3: Cleanup | Load set
-            title_html = (
-                f'Experiment: <span style="color: #333;">{exp}</span> | '
-                f'Prompt: <span style="color: #333;"{_prompt_tooltip_attr}>{prompt}</span> | '
-                f'Format: <span style="color: {format_color}; font-weight: bold;"{_hardness_tooltip_attr}>{fmt} ({format_hardness})</span> | '
-                f'Model: <span style="color: {model_base_color}; font-weight: bold;">{abbreviate_model_name(model)}</span> | '
-                f'Temperature: <span style="color: {background_color}; font-weight: bold;">{temp}</span><br>'
-                f'Trials: {trial_count} | Min: {min_items} | Max: {max_items} | Average: {avg_per_trial:.1f} | '
-                f'Total: {total_items} | Unique: {unique_items} ({unique_pct:.1f}%)<br>'
-                f'{quality_indicator.lstrip(" | ")}{load_set_button}{item_counts_button}'
-            )
-
-            html_content += f'        <div class="plot-section" data-format="{fmt}" data-model="{model}" data-temperature="{temp}" data-prompt="{prompt}" data-experiment="{exp}">\n'
-            html_content += f'            <div class="plot-title">{title_html}</div>\n'
-            html_content += f'            <div class="plot-wrapper" style="background-color: {background_color}; border-color: {model_base_color};">\n'
-            html_content += figures_html[combo_key]
-            html_content += '            </div>\n'
-            html_content += '        </div>\n\n'
-
-        html_content += '    </div>\n\n'
-
-    html_content += """    </div>
+def _build_report_footer(x_items_display, combo_y_values, max_y, plot_configs):
+    """Build the closing HTML/JS block (aggregation data + script), with the
+    dynamic plot data embedded as JSON."""
+    return """    </div>
     </div>
 
     <div id="cleanup-tooltip"></div>
@@ -1667,6 +994,688 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
 
 </body>
 </html>"""
+
+
+def get_file_extension(format_name):
+    """Convert data format name to filename extension."""
+    # Try exact match first, then try lowercase, then return lowercase as fallback
+    format_lower = format_name.lower()
+    return FORMAT_TO_EXTENSION.get(format_name, FORMAT_TO_EXTENSION.get(format_lower, format_lower))
+
+
+def is_preamble(item):
+    """
+    Filter preamble text patterns.
+    Returns True if the item should be filtered out.
+    """
+    if not isinstance(item, str):
+        return True
+
+    item_lower = item.lower().strip()
+
+    # Empty or very short
+    if len(item_lower) < 2:
+        return True
+
+    # Markdown headers (lines starting with #)
+    if item.lstrip().startswith('#'):
+        return True
+
+    # Starts with common preamble phrases
+    if any(item_lower.startswith(prefix) for prefix in [
+        "here's", "here are", "here is", "sure", "certainly",
+        "here's a", "here are the", "here is the",
+        "here are some", "here's some"
+    ]):
+        return True
+
+    # Contains list indicators
+    if any(phrase in item_lower for phrase in [
+        "list of", "the following", "are the", "is a list"
+    ]):
+        return True
+
+    # Ends with colon or ellipsis (likely intro text)
+    if item_lower.endswith(":") or item_lower.endswith("..."):
+        return True
+
+    return False
+
+
+def hsl_to_rgb(h, s, l):
+    """
+    Convert HSL (hue [0-360], saturation [0-100], lightness [0-100]) to RGB hex color.
+    """
+    s = s / 100.0
+    l = l / 100.0
+
+    c = (1 - abs(2 * l - 1)) * s
+    h_prime = h / 60.0
+    x = c * (1 - abs(h_prime % 2 - 1))
+
+    if h_prime < 1:
+        r, g, b = c, x, 0
+    elif h_prime < 2:
+        r, g, b = x, c, 0
+    elif h_prime < 3:
+        r, g, b = 0, c, x
+    elif h_prime < 4:
+        r, g, b = 0, x, c
+    elif h_prime < 5:
+        r, g, b = x, 0, c
+    else:
+        r, g, b = c, 0, x
+
+    m = l - c / 2
+    r = int((r + m) * 255)
+    g = int((g + m) * 255)
+    b = int((b + m) * 255)
+
+    return f'#{r:02x}{g:02x}{b:02x}'
+
+
+
+
+def adjust_color_by_temperature(base_color_hex, temperature_str, model_name=None, models_list=None, max_temperature=2.0):
+    """
+    Adjust color based on temperature if model supports it.
+    For models that support temperature: adjust from soft to vivid based on temperature
+    For models that don't support temperature: return base color (more saturated)
+
+    Args:
+        base_color_hex: color in #rrggbb format
+        temperature_str: temperature as string (e.g., "0.0", "1.0", "2.0")
+        model_name: name of the model (for checking temperature support)
+        models_list: list of all models (for context)
+        max_temperature: temperature value that gives maximum vividness
+    """
+    # Check if model supports temperature
+    supports_temp = True
+    if model_name:
+        try:
+            supports_temp = model_supports_temperature(model_name)
+        except:
+            supports_temp = True  # default to adjusting if we can't determine
+
+    # If model doesn't support temperature, increase saturation for the base color
+    if not supports_temp:
+        # Increase saturation of the base color
+        from color_picker import increase_saturation
+        return increase_saturation(base_color_hex, factor=1.4)
+
+    try:
+        # Handle "None" string from JSON serialization of None values
+        if temperature_str == "None" or temperature_str is None:
+            temp_value = 1.0
+        else:
+            temp_value = float(temperature_str)
+    except (ValueError, TypeError):
+        temp_value = 1.0
+
+    # Normalize temperature (0.0 to 1.0 scale)
+    temp_factor = min(temp_value / max_temperature, 1.0)
+
+    # Parse hex color to RGB
+    hex_color = base_color_hex.lstrip('#')
+    r = int(hex_color[0:2], 16)
+    g = int(hex_color[2:4], 16)
+    b = int(hex_color[4:6], 16)
+
+    # Convert RGB to HSL
+    r_norm = r / 255.0
+    g_norm = g / 255.0
+    b_norm = b / 255.0
+
+    max_c = max(r_norm, g_norm, b_norm)
+    min_c = min(r_norm, g_norm, b_norm)
+    l = (max_c + min_c) / 2
+
+    if max_c == min_c:
+        h = s = 0
+    else:
+        d = max_c - min_c
+        s = d / (2 - max_c - min_c) if l > 0.5 else d / (max_c + min_c)
+
+        if max_c == r_norm:
+            h = (60 * ((g_norm - b_norm) / d) + 360) % 360
+        elif max_c == g_norm:
+            h = (60 * ((b_norm - r_norm) / d) + 120) % 360
+        else:
+            h = (60 * ((r_norm - g_norm) / d) + 240) % 360
+
+    # Adjust saturation and lightness based on temperature
+    # Low temp: soft (low saturation, higher lightness)
+    # High temp: vivid (high saturation, medium lightness)
+    new_saturation = 30 + (temp_factor * 70)   # 30-100% (soft to vivid)
+    new_lightness = 70 - (temp_factor * 25)    # 70-45% (soft to darker)
+
+    return hsl_to_rgb(h, new_saturation, new_lightness)
+
+
+def load_results_json(json_path):
+    """Load and parse results.json with UTF-8 encoding and error handling"""
+    try:
+        with open(json_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except UnicodeDecodeError as e:
+        # Find line number by counting newlines up to error position
+        with open(json_path, 'rb') as f:
+            content_before = f.read(e.start)
+            line_num = content_before.count(b'\n') + 1
+        raise ValueError(
+            f"Character encoding error in {json_path} at line {line_num}: {e.reason}"
+        )
+    except json.JSONDecodeError as e:
+        raise ValueError(
+            f"Invalid JSON in {json_path} at line {e.lineno}, column {e.colno}: {e.msg}"
+        )
+
+
+def aggregate_items_by_format_and_model(data):
+    """
+    For each unique combination of (experiment, format, prompt, model, temperature),
+    count items (filtered) and track number of trials (files).
+    Returns: dict[tuple] -> dict with Counter, trial_count, per_trial_counts, and metadata
+    where tuple is (experiment, format, prompt, model, temperature)
+    """
+    result = defaultdict(lambda: {"counter": Counter(), "trial_count": 0, "per_trial_counts": [], "filenames": [], "metadata": {}})
+
+    for file_type, entries in data.items():
+        # Skip non-file-type entries (like malformedOutput metadata)
+        if not isinstance(entries, list):
+            continue
+
+        for entry in entries:
+            metadata = entry['metadata']
+            model = metadata['model']
+            format_type = metadata['format']
+            experiment = metadata.get('experiment', 'unknown')
+            prompt = metadata.get('prompt', 'unknown')
+            temperature = metadata.get('temperature', 'default')
+            items = entry.get('items', [])
+
+            # Filter out preamble text
+            filtered_items = [item for item in items if not is_preamble(item)]
+
+            # Create unique key for this combination
+            key = (experiment, format_type, prompt, model, temperature)
+
+            # Count items for this combination
+            result[key]["counter"].update(filtered_items)
+            # Track items per trial
+            result[key]["per_trial_counts"].append(len(filtered_items))
+            # Increment trial count for each file/entry
+            result[key]["trial_count"] += 1
+            if "filename" in entry:
+                result[key]["filenames"].append(entry["filename"])
+
+            # Store metadata
+            result[key]["metadata"] = {
+                "experiment": experiment,
+                "format": format_type,
+                "prompt": prompt,
+                "model": model,
+                "temperature": temperature
+            }
+
+    return result
+
+
+def _trial_numbers_str(instances):
+    """Given a list of {"instance": ..., "source": filename} dicts, return a
+    parenthesised sorted list of trial numbers extracted from the source filenames,
+    e.g. '(3, 11, 17)'.  Returns an empty string if no sources are present."""
+    nums = set()
+    for entry in instances:
+        src = entry.get("source", "")
+        if src:
+            try:
+                nums.add(int(Path(src).stem.split('-')[-1]))
+            except (ValueError, IndexError):
+                pass
+    if not nums:
+        return ""
+    return "(" + ", ".join(str(n) for n in sorted(nums)) + ")"
+
+
+def get_cleanup_data_for_combo(quality_data, model, temperature, format_type, prompt):
+    """
+    Return (quality_issues, cleanup_rules) for a specific combo.
+    quality_issues: list of human-readable issue strings (empty list if none).
+    cleanup_rules: list of "rule (N)" strings showing trial counts (empty list if none).
+    quality_data is keyed by abbreviated model name.
+    """
+    if not quality_data:
+        return [], []
+
+    abbrev_model = abbreviate_model_name(model)
+    prompt_data = quality_data.get(abbrev_model, {}).get(str(temperature), {}).get(format_type, {}).get(prompt, {})
+    if not prompt_data:
+        return [], []
+
+    issues = []
+
+    # Prepend inconsistent format warning if flagged
+    if not prompt_data.get("consistentFormat", True):
+        issues.append("Inconsistent output format")
+
+    # Non-empty issue lists (skip metadata keys)
+    NON_ISSUE_KEYS = {"consistentFormat", "formatIssues", "cleanupRules"}
+    for key, value in prompt_data.items():
+        if key in NON_ISSUE_KEYS:
+            continue
+        if not value:
+            continue
+        if key == "parse-failed":
+            # List each failed file individually instead of just the category label.
+            for entry in sorted(value, key=lambda e: e.get("instance", "")):
+                issues.append(f"Parsing failed completely for {entry['instance']}")
+        elif key.startswith("inconsistent_"):
+            # Extract format name from key (e.g., "inconsistent_md_format" -> "md")
+            format_abbrev = key.replace('inconsistent_', '').replace('_format', '')
+            format_display = FORMAT_SHORT_TO_DISPLAY.get(format_abbrev, format_abbrev.title())
+            issues.append(f"Inconsistent {format_display}")
+        else:
+            label = key.replace('_', ' ').title()
+            trial_str = _trial_numbers_str(value)
+            issues.append(f"{label} {trial_str}".strip() if trial_str else label)
+
+    # cleanupRules is a dict {rule: trial_count} in the current format, or a list in the old format.
+    raw = prompt_data.get("cleanupRules", {})
+    if isinstance(raw, dict):
+        cleanup_rules = [f"{rule} ({count})" for rule, count in sorted(raw.items())]
+    else:
+        cleanup_rules = list(raw)
+    return issues, cleanup_rules
+
+
+def get_unique_items_sorted(data):
+    """
+    Get all unique items (filtered) sorted by total count descending.
+    Returns: list of (item, total_count) tuples
+    """
+    all_items = Counter()
+
+    for file_type, entries in data.items():
+        # Skip non-file-type entries (like malformedOutput metadata)
+        if not isinstance(entries, list):
+            continue
+
+        for entry in entries:
+            items = entry.get('items', [])
+            filtered_items = [item for item in items if not is_preamble(item)]
+            all_items.update(filtered_items)
+
+    # Sort by count descending, then alphabetically
+    sorted_items = sorted(all_items.items(), key=lambda x: (-x[1], x[0]))
+    return sorted_items
+
+
+def generate_html_report_with_filters(items_by_format_model, all_items_sorted, formats, models, temperatures, experiments, prompts, data, output_path, quality_data=None, prompt_texts=None, format_prompts=None):
+    """
+    Generate individual charts for each (experiment, format, prompt, model, temperature) combination.
+    Wrap each in divs with CSS classes for filtering based on experiment/prompt/format/model/temperature.
+    Uses CSS display:none to show/hide based on checkbox selections.
+    data: raw data for counting trials per combination
+    items_by_format_model: dict with 5-tuple keys (experiment, format, prompt, model, temperature)
+    quality_data: dict with quality issues by model/temperature/format (from quality.json)
+    """
+    if quality_data is None:
+        quality_data = {}
+    # Build mapping from 5-tuple keys to metadata and counters
+    combo_info = {}  # (fmt, model, temp, exp, prompt) -> {"counter": Counter, ...}
+
+    for key_tuple, value_dict in items_by_format_model.items():
+        experiment, format_type, prompt, model, temperature = key_tuple
+        counter = value_dict["counter"] if isinstance(value_dict, dict) else value_dict
+        trial_count = value_dict.get("trial_count", 0) if isinstance(value_dict, dict) else 0
+        per_trial_counts = value_dict.get("per_trial_counts", []) if isinstance(value_dict, dict) else []
+        metadata = value_dict.get("metadata", {}) if isinstance(value_dict, dict) else {}
+        format_hardness = metadata.get("formatHardness", "soft")  # Default to soft for backward compatibility
+
+        # Calculate max, min, and average items per trial
+        max_items = max(per_trial_counts) if per_trial_counts else 0
+        min_items = min(per_trial_counts) if per_trial_counts else 0
+
+        combo_key = (format_type, model, str(temperature), experiment, prompt)
+        combo_info[combo_key] = {
+            "counter": counter,
+            "trial_count": trial_count,
+            "per_trial_counts": per_trial_counts,
+            "max_items": max_items,
+            "min_items": min_items,
+            "experiment": experiment,
+            "format": format_type,
+            "prompt": prompt,
+            "model": model,
+            "temperature": str(temperature),
+            "formatHardness": format_hardness
+        }
+
+    # First pass: collect all y values to find the maximum range for individual plots
+    all_y_values = []
+    x_items = [item for item, _ in all_items_sorted]
+    # Create display version with truncated names (limit to 15 characters)
+    x_items_display = [item[:15] if len(item) > 15 else item for item in x_items]
+
+    for combo_key, info in combo_info.items():
+        y_values = [info["counter"].get(item, 0) for item in x_items]
+        all_y_values.extend(y_values)
+
+    # Calculate max Y value for individual plots
+    max_y = max(all_y_values) if all_y_values else 1
+
+# Generate a figure for each (format, model, temperature, experiment, prompt) combination
+    # The aggregated plot is rendered entirely by JavaScript after filters are applied.
+    figures_html = {}
+    figures_metadata = {}  # Store metadata for each plot
+    plot_configs = []  # Plot data for deferred JavaScript rendering
+
+    # Store per-combo y_values for dynamic aggregation in JavaScript
+    combo_y_values = {}  # {combo_key_str: [y_values]}
+
+    for combo_key, info in combo_info.items():
+        fmt, model, temp, exp, prompt = combo_key
+        counter = info["counter"]
+        y_values = [counter.get(item, 0) for item in x_items]
+
+        # Store for JavaScript dynamic aggregation
+        combo_key_str = f"{fmt}|{model}|{temp}|{exp}|{prompt}"
+        combo_y_values[combo_key_str] = y_values
+
+        # Build a simple bar chart with fixed Y axis range
+        fig = go.Figure(
+            data=[go.Bar(
+                x=x_items_display,
+                y=y_values,
+                marker=dict(color=FORMAT_COLORS.get(fmt.lower(), '#636363')),
+                hovertemplate='<b>%{x}</b><br>Count: %{y}<extra></extra>',
+            )]
+        )
+
+        fig.update_layout(
+            height=400,
+            showlegend=False,
+            hovermode='x unified',
+            margin=dict(l=10, r=10, t=40, b=30),
+            xaxis=dict(tickangle=90),
+            yaxis=dict(range=[0, max_y]),
+            autosize=True,
+            bargap=0.02,
+            hoverlabel=dict(font=dict(size=16)),
+        )
+
+        chart_id = f"{fmt}-{model}-{temp}-{exp}-{prompt}".replace('.', '-').replace('+', '-').replace(' ', '-').replace('_', '-')
+        div_id = f"graph-{chart_id}"
+
+        # Collect plot config for deferred JavaScript rendering; embed a bare placeholder div.
+        fig_dict = json.loads(fig.to_json())
+        plot_configs.append({"divId": div_id, "data": fig_dict["data"], "layout": fig_dict["layout"]})
+        figures_html[combo_key] = f'<div id="{div_id}" class="plotly-graph-div" style="height:400px; width:100%;"></div>'
+        figures_metadata[combo_key] = {
+            "format": fmt,
+            "model": model,
+            "temperature": temp,
+            "experiment": exp,
+            "prompt": prompt,
+            "formatHardness": combo_info[combo_key].get("formatHardness", "soft")
+        }
+
+    # Build HTML with filters
+    html_content = _REPORT_HEAD_AND_CSS
+
+    # Add experiment checkboxes
+    for exp in experiments:
+        safe_id = exp.replace('.', '-').replace('+', '-').replace(' ', '-').replace('_', '-')
+        html_content += f'                <div class="filter-item"><input type="checkbox" id="filter-exp-{safe_id}" class="exp-filter" value="{exp}" checked><label for="filter-exp-{safe_id}">{exp}</label></div>\n'
+
+    html_content += """            </div>
+        </div>
+
+        <div class="filter-section">
+            <h3>Prompt</h3>
+            <div class="filter-row" id="prompt-filters">
+"""
+
+    # Add prompt checkboxes
+    for prompt in prompts:
+        safe_id = prompt.replace('.', '-').replace('+', '-').replace(' ', '-').replace('_', '-')
+        html_content += f'                <div class="filter-item"><input type="checkbox" id="filter-prompt-{safe_id}" class="prompt-filter" value="{prompt}" checked><label for="filter-prompt-{safe_id}">{prompt}</label></div>\n'
+
+    html_content += """            </div>
+        </div>
+
+        <div class="filter-section">
+            <h3>Format</h3>
+            <div class="filter-row" id="format-filters">
+"""
+
+    # Add format checkboxes with format-specific colors
+    for fmt in formats:
+        format_color = FORMAT_COLORS.get(fmt.lower(), '#636363')
+        html_content += f'                <div class="filter-item"><input type="checkbox" id="filter-format-{fmt}" class="format-filter" value="{fmt}" checked style="border-color: {format_color};" data-format="{fmt}" data-color="{format_color}"><label for="filter-format-{fmt}">{fmt}</label></div>\n'
+
+    # Add Aggregated as a format option
+    html_content += '                <div class="filter-item"><input type="checkbox" id="filter-format-aggregated" class="format-filter agg-toggle" value="aggregated" checked data-format="aggregated"><label for="filter-format-aggregated">Aggregated</label></div>\n'
+
+    html_content += """                <button class="clear-all-btn" data-filter-class="format-filter">Clear All</button>
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <h3>Model</h3>
+            <div class="filter-row" id="model-filters">
+"""
+
+    # Add model checkboxes with model-specific colors
+    for model in models:
+        safe_id = model.replace('.', '-').replace('+', '-').replace(' ', '-')
+        model_color = get_model_color(model)
+        html_content += f'                <div class="filter-item"><input type="checkbox" id="filter-model-{safe_id}" class="model-filter" value="{model}" checked style="border-color: {model_color};" data-model="{model}" data-color="{model_color}"><label for="filter-model-{safe_id}">{abbreviate_model_name(model)}</label></div>\n'
+
+    html_content += """            </div>
+        </div>
+
+        <div class="filter-section">
+            <h3>Temperature</h3>
+            <div class="filter-row" id="temperature-filters">
+"""
+
+    # Add temperature checkboxes
+    for temp in temperatures:
+        safe_id = temp.replace('.', '-').replace(' ', '-')
+        html_content += f'                <div class="filter-item"><input type="checkbox" id="filter-temp-{safe_id}" class="temp-filter" value="{temp}" checked><label for="filter-temp-{safe_id}">{temp}</label></div>\n'
+
+    html_content += """            </div>
+        </div>
+    </div>
+
+    <div id="plots-container">
+    <div class="plot-section aggregated-plot-section">
+        <div class="plot-title" id="aggregated-title">Aggregated Results</div>
+        <div class="plot-wrapper">
+            <div id="graph-aggregated" style="height:600px; width:100%;"></div>
+        </div>
+    </div>
+"""
+
+    # Group plots by prompt
+    plots_by_prompt = defaultdict(list)
+    for combo_key, metadata in figures_metadata.items():
+        prompt = metadata["prompt"]
+        plots_by_prompt[prompt].append((combo_key, metadata))
+
+    # Get sorted list of unique prompts
+    sorted_prompts = sorted(plots_by_prompt.keys())
+
+    # Single column layout - no dynamic CSS needed
+
+    # Add each prompt column with its plots
+    for prompt in sorted_prompts:
+        html_content += f'    <div class="prompt-column" data-prompt="{prompt}">\n'
+        html_content += f'        <div class="prompt-column-header">{prompt}</div>\n'
+
+        # Add all plots for this prompt
+        for combo_key, metadata in plots_by_prompt[prompt]:
+            fmt = metadata["format"]
+            model = metadata["model"]
+            temp = metadata["temperature"]
+            exp = metadata["experiment"]
+            format_hardness = metadata.get("formatHardness", "soft")
+
+            # Get item counts for this specific combination
+            counter = combo_info[combo_key]["counter"]
+            total_items = sum(counter.values())
+            unique_items = len(counter)
+            trial_count = combo_info[combo_key]["trial_count"]
+            max_items = combo_info[combo_key]["max_items"]
+            min_items = combo_info[combo_key]["min_items"]
+
+            # Get colors
+            format_color = FORMAT_COLORS.get(fmt.lower(), '#636363')
+            model_base_color = get_model_color(model)
+            background_color = adjust_color_by_temperature(model_base_color, temp, model, models)
+
+            # Calculate percentage of unique items and average per trial
+            unique_pct = (unique_items / total_items * 100) if total_items > 0 else 0
+            avg_per_trial = total_items / trial_count if trial_count > 0 else 0
+
+            # Build cleanup indicator with rich tooltip (quality issues in bold + cleanup rules).
+            # Always emitted: red if quality problems, #555 if cleanup only, #aaa if nothing to clean.
+            quality_issues, cleanup_rules = get_cleanup_data_for_combo(quality_data, model, temp, fmt, prompt)
+            if quality_issues or cleanup_rules:
+                # Build HTML tooltip content: quality issues in bold first, then cleanup rules.
+                # Use raw strings in tooltip_lines (no pre-escaping); html_mod.escape() is
+                # applied once to the assembled HTML for safe embedding in the attribute value.
+                # JavaScript's getAttribute() decodes the entities, then innerHTML renders the HTML.
+                tooltip_lines = []
+                for issue in quality_issues:
+                    tooltip_lines.append(f'<b>{issue}</b>')
+                if cleanup_rules:
+                    if quality_issues:
+                        tooltip_lines.append('<span style="display:block;margin-top:4px"></span>')
+                    for rule in cleanup_rules:
+                        tooltip_lines.append(rule)
+                tooltip_html = html_mod.escape('<br>'.join(tooltip_lines))
+                color = "red" if quality_issues else "#555"
+                quality_indicator = (
+                    f' | <span class="cleanup-indicator" data-tooltip-html="{tooltip_html}"'
+                    f' style="color: {color}; cursor: default;">Cleanup</span>'
+                )
+            else:
+                # No cleanup or quality issues: show grayed-out indicator with no tooltip.
+                quality_indicator = (
+                    ' | <span style="color: #aaa; cursor: default;">Cleanup</span>'
+                )
+
+            # Build clipboard string for "Load set" button using actual filenames in the set
+            set_filenames = sorted(combo_info[combo_key].get("filenames", []))
+            if set_filenames:
+                load_set_str = "np " + " ".join(set_filenames)
+            else:
+                # Fallback to wildcard if filenames were not recorded
+                # New format: YYYYMMDDHHMMSS-experiment-prompt-hardness-model-tNN-nn.ext
+                # Wildcard only the trial number (last two digits before extension)
+                abbr_model = abbreviate_model_name(model)
+                temp_code = "txx" if temp in ("None", None) else f"t{int(float(temp) * 10):02d}"
+                file_ext = get_file_extension(fmt)
+                hardness_code = "fs" if format_hardness == "soft" else "fh"
+                load_set_str = f"np *{exp}-{prompt}-{hardness_code}-{abbr_model}-{temp_code}-*.{file_ext}"
+
+            # Build button HTML with onclick handler for clipboard copy
+            load_set_button = (
+                f' | <button '
+                f'style="font-size: 0.85em; padding: 2px 8px; cursor: pointer; '
+                f'background-color: #4169e1; color: #fff; border: none; border-radius: 4px;" '
+                f'title="{load_set_str}" '
+                f'onclick="var b=this; navigator.clipboard.writeText(\'{load_set_str}\').then(function(){{'
+                f'b.textContent=\'Copied!\'; setTimeout(function(){{b.textContent=\'Load set\';}},1000);}});"'
+                f'>Load set</button>'
+            )
+
+            # Build per-trial data for "Show Item Counts" histogram popup
+            _tc_counts = combo_info[combo_key]["per_trial_counts"]
+            _tc_filenames = combo_info[combo_key].get("filenames", [])
+            _tc_trials = []
+            for _i, _fn in enumerate(_tc_filenames):
+                try:
+                    _tc_trials.append(int(Path(_fn).stem.split('-')[-1]))
+                except (ValueError, IndexError):
+                    _tc_trials.append(_i + 1)
+            if not _tc_trials:
+                _tc_trials = list(range(1, len(_tc_counts) + 1))
+            # Extract run date from first filename timestamp (YYYYMMDDHHMMSS prefix)
+            _tc_date = ''
+            if _tc_filenames:
+                _ts = Path(_tc_filenames[0]).stem.split('-')[0]
+                if len(_ts) == 14 and _ts.isdigit():
+                    _tc_date = f"{_ts[:4]}-{_ts[4:6]}-{_ts[6:8]} {_ts[8:10]}:{_ts[10:12]}"
+            _tc_subtitle = '  '.join(p for p in [_tc_date, exp, prompt, fmt, format_hardness, abbreviate_model_name(model), str(temp)] if p)
+            _tc_json_escaped = html_mod.escape(json.dumps({
+                "trials": _tc_trials,
+                "counts": _tc_counts,
+                "barColor": format_color,
+                "borderColor": model_base_color,
+                "subtitle": _tc_subtitle,
+            }))
+            item_counts_button = (
+                f' | <button '
+                f'style="font-size: 0.85em; padding: 2px 8px; cursor: pointer; '
+                f'background-color: #4169e1; color: #fff; border: none; border-radius: 4px;" '
+                f'data-trial-counts="{_tc_json_escaped}" '
+                f'onmouseover="showItemCountsPopup(this);" onmouseout="_icScheduleHide();" onclick="pinItemCountsPopup(this);"'
+                f'>Show Item Counts</button>'
+            )
+
+            # Build prompt tooltip: prompt text + double line break + format instruction.
+            # Text is wrapped at 80 chars; lines separated by <br> for HTML rendering.
+            _prompt_body = (prompt_texts or {}).get(prompt, '')
+            _fmt_ext = get_file_extension(fmt)
+            _fmt_instruction = (format_prompts or {}).get(_fmt_ext, '')
+            _tooltip_parts = []
+            if _prompt_body:
+                _tooltip_parts.append('<br>'.join(textwrap.wrap(_prompt_body, width=80)))
+            if _fmt_instruction:
+                if _tooltip_parts:
+                    _tooltip_parts.append('<br><br>')
+                _tooltip_parts.append('<br>'.join(textwrap.wrap(_fmt_instruction, width=80)))
+            _prompt_tooltip_attr = ''
+            if _tooltip_parts:
+                _escaped = html_mod.escape(''.join(_tooltip_parts))
+                _prompt_tooltip_attr = f' class="prompt-indicator" data-tooltip-html="{_escaped}"'
+
+            # Build hardness tooltip: format instruction for the specific hardness
+            _hardness_tooltip_attr = ''
+            _hardness_instruction = get_format_instruction(fmt, format_hardness)
+            if _hardness_instruction:
+                _hardness_escaped = html_mod.escape('<br>'.join(textwrap.wrap(_hardness_instruction, width=80)))
+                _hardness_tooltip_attr = f' class="hardness-indicator" data-tooltip-html="{_hardness_escaped}"'
+
+            # Build HTML title with colored text (three lines)
+            # Line 1: Experiment | Prompt | Format (hardness) | Model | Temperature
+            # Line 2: Trials | Min | Max | Average | Total | Unique
+            # Line 3: Cleanup | Load set
+            title_html = (
+                f'Experiment: <span style="color: #333;">{exp}</span> | '
+                f'Prompt: <span style="color: #333;"{_prompt_tooltip_attr}>{prompt}</span> | '
+                f'Format: <span style="color: {format_color}; font-weight: bold;"{_hardness_tooltip_attr}>{fmt} ({format_hardness})</span> | '
+                f'Model: <span style="color: {model_base_color}; font-weight: bold;">{abbreviate_model_name(model)}</span> | '
+                f'Temperature: <span style="color: {background_color}; font-weight: bold;">{temp}</span><br>'
+                f'Trials: {trial_count} | Min: {min_items} | Max: {max_items} | Average: {avg_per_trial:.1f} | '
+                f'Total: {total_items} | Unique: {unique_items} ({unique_pct:.1f}%)<br>'
+                f'{quality_indicator.lstrip(" | ")}{load_set_button}{item_counts_button}'
+            )
+
+            html_content += f'        <div class="plot-section" data-format="{fmt}" data-model="{model}" data-temperature="{temp}" data-prompt="{prompt}" data-experiment="{exp}">\n'
+            html_content += f'            <div class="plot-title">{title_html}</div>\n'
+            html_content += f'            <div class="plot-wrapper" style="background-color: {background_color}; border-color: {model_base_color};">\n'
+            html_content += figures_html[combo_key]
+            html_content += '            </div>\n'
+            html_content += '        </div>\n\n'
+
+        html_content += '    </div>\n\n'
+
+    html_content += _build_report_footer(x_items_display, combo_y_values, max_y, plot_configs)
 
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html_content)
