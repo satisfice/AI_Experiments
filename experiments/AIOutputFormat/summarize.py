@@ -2437,6 +2437,116 @@ def _passes_metadata_filters(filename_metadata, file_name, experiment, model, ex
     return True
 
 
+def _track_item_quality_issues(metadata, model_name, temp_value, file_type, prompt_name, ext,
+                                quality_issues_output, quality_issues_examples, filename):
+    """Track item-level and format-level quality issues from one file's metadata
+    into quality_issues_output/examples. Mutates both in place."""
+    if "itemIssues" in metadata:
+        item_issues = metadata["itemIssues"]
+        for issue_type in ["leading_punctuation", "trailing_punctuation", "internal_punctuation",
+                           "exceeds_max_length", "preamble_leak",
+                           "markup_artifact", "repeated_chars"]:
+            example = item_issues.get(issue_type)
+            if not example:
+                continue
+            # txt1 exception: leading-number items are expected format, not quality issues
+            if issue_type == "leading_punctuation" and ext == '.txt1' \
+                    and re.match(r'^\d+[\.\)\-\s]', example):
+                continue
+            quality_issues_output[model_name][str(temp_value)][file_type][prompt_name][issue_type].add(example)
+            if example not in quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][issue_type]:
+                quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][issue_type][example] = filename
+
+        # repeated_sequence: use filename as instance so every affected trial
+        # accumulates independently (items may repeat the same value across trials,
+        # which would deduplicate if stored as instance strings).
+        if item_issues.get("repeated_sequence"):
+            quality_issues_output[model_name][str(temp_value)][file_type][prompt_name]["repeated_sequence"].add(filename)
+            if filename not in quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name]["repeated_sequence"]:
+                quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name]["repeated_sequence"][filename] = filename
+
+    # Track format-level issues from metadata["formatIssues"]
+    # (populated by parser_quality_issues and processingQualityIssues)
+    if "formatIssues" in metadata:
+        for fs_label in metadata["formatIssues"]:
+            # For format-style quality issues, track the filename as the instance so
+            # _trial_numbers_str can extract trial numbers and show abbreviated ranges
+            quality_issues_output[model_name][str(temp_value)][file_type][prompt_name][fs_label].add(filename)
+            if filename not in quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][fs_label]:
+                quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][fs_label][filename] = filename
+
+
+def _write_results_and_quality_json(consolidated_dict, quality_issues_dict, file_count, verbose):
+    """Write results.json (always) and quality.json (if there are any quality
+    issues), printing verbose summary stats if requested."""
+    with open(RESULTS_FILE, 'w', encoding='utf-8') as f:
+        json.dump(consolidated_dict, f, indent=2, ensure_ascii=False)
+
+    if verbose:
+        click.echo(f"\nConsolidated {file_count} files into {RESULTS_FILE}")
+        file_types = sorted(consolidated_dict.keys())
+        click.echo(f"File types: {', '.join(file_types)}")
+
+        if quality_issues_dict:
+            with open(QUALITY_FILE, 'w', encoding='utf-8') as f:
+                json.dump(quality_issues_dict, f, indent=2, ensure_ascii=False)
+            click.echo(f"Wrote quality issues to {QUALITY_FILE}")
+        total_items = 0
+        for ext in file_types:
+            items = consolidated_dict[ext]
+            item_count = sum(len(entry['items']) for entry in items)
+            total_items += item_count
+            click.echo(f"  {ext}: {len(items)} files, {item_count} items")
+
+        click.echo(f"Total items: {total_items}")
+    else:
+        # Still write quality JSON even if not verbose
+        if quality_issues_dict:
+            with open(QUALITY_FILE, 'w', encoding='utf-8') as f:
+                json.dump(quality_issues_dict, f, indent=2, ensure_ascii=False)
+
+
+def _print_skip_summary(skipped_trials, zero_item_files):
+    """Print the skipped-trials and zero-item-files summaries, if any."""
+    if skipped_trials:
+        click.echo(f"Skipped {len(skipped_trials)} trials:")
+        for trial_name in sorted(skipped_trials):
+            click.echo(f"  {trial_name}")
+
+    if zero_item_files:
+        click.echo(f"Files with 0 items ({len(zero_item_files)}):")
+        for filename in sorted(zero_item_files):
+            click.echo(f"  {filename}")
+
+
+def _write_unique_items_file(consolidated_dict, verbose):
+    """Write the always-on unique-items file (all non-empty items across every
+    consolidated entry, deduplicated and sorted)."""
+    unique_set = set()
+    for ext_key in consolidated_dict:
+        for entry in consolidated_dict[ext_key]:
+            for item in entry.get("items", []):
+                if item:
+                    unique_set.add(item)
+    sorted_items = sorted(unique_set)
+    with open(UNIQUE_ITEMS_FILE, 'w', encoding='utf-8') as f:
+        for item in sorted_items:
+            f.write(item + '\n')
+    if verbose:
+        click.echo(f"Wrote {len(sorted_items)} unique items to {UNIQUE_ITEMS_FILE}")
+
+
+def _write_unique_source_items_file(source_items, verbose):
+    """Write the raw parsed source items (before processing), sorted by first
+    alphabetical string (case-insensitive), preserving original case in output."""
+    sorted_source_items = sorted(source_items, key=extract_first_alpha_string)
+    with open(UNIQUE_SOURCE_ITEMS_FILE, 'w', encoding='utf-8') as f:
+        for item in sorted_source_items:
+            f.write(item + '\n')
+    if verbose:
+        click.echo(f"Wrote {len(sorted_source_items)} unique source items to {UNIQUE_SOURCE_ITEMS_FILE}")
+
+
 def summarize_results(options):
     """
     Read all result files by type, parse items, and summarize into a single JSON.
@@ -2640,43 +2750,8 @@ def summarize_results(options):
                 format_style_counts[model_name][str(temp_value)][file_type][prompt_name][fs_label] += 1
 
             # Track quality issues by model, temperature, file type, and prompt
-            # Track item-level issues (itemIssues stores one example per type)
-            if "itemIssues" in metadata:
-                item_issues = metadata["itemIssues"]
-                filename = file_path.name
-                for issue_type in ["leading_punctuation", "trailing_punctuation", "internal_punctuation",
-                                   "exceeds_max_length", "preamble_leak",
-                                   "markup_artifact", "repeated_chars"]:
-                    example = item_issues.get(issue_type)
-                    if not example:
-                        continue
-                    # txt1 exception: leading-number items are expected format, not quality issues
-                    if issue_type == "leading_punctuation" and ext == '.txt1' \
-                            and re.match(r'^\d+[\.\)\-\s]', example):
-                        continue
-                    quality_issues_output[model_name][str(temp_value)][file_type][prompt_name][issue_type].add(example)
-                    if example not in quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][issue_type]:
-                        quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][issue_type][example] = filename
-
-                # repeated_sequence: use filename as instance so every affected trial
-                # accumulates independently (items may repeat the same value across trials,
-                # which would deduplicate if stored as instance strings).
-                if item_issues.get("repeated_sequence"):
-                    fn = file_path.name
-                    quality_issues_output[model_name][str(temp_value)][file_type][prompt_name]["repeated_sequence"].add(fn)
-                    if fn not in quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name]["repeated_sequence"]:
-                        quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name]["repeated_sequence"][fn] = fn
-
-            # Track format-level issues from metadata["formatIssues"]
-            # (populated by parser_quality_issues and processingQualityIssues)
-            if "formatIssues" in metadata:
-                filename = file_path.name
-                for fs_label in metadata["formatIssues"]:
-                    # For format-style quality issues, track the filename as the instance so
-                    # _trial_numbers_str can extract trial numbers and show abbreviated ranges
-                    quality_issues_output[model_name][str(temp_value)][file_type][prompt_name][fs_label].add(filename)
-                    if filename not in quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][fs_label]:
-                        quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][fs_label][filename] = filename
+            _track_item_quality_issues(metadata, model_name, temp_value, file_type, prompt_name,
+                                        ext, quality_issues_output, quality_issues_examples, file_path.name)
 
             # Count duplicate items (items appearing more than once)
             item_counts = Counter(items)
@@ -2741,42 +2816,9 @@ def summarize_results(options):
 
     # Write results JSON (without quality issues)
     try:
-        with open(RESULTS_FILE, 'w', encoding='utf-8') as f:
-            json.dump(consolidated_dict, f, indent=2, ensure_ascii=False)
+        _write_results_and_quality_json(consolidated_dict, quality_issues_dict, file_count, verbose)
 
-        if verbose:
-            click.echo(f"\nConsolidated {file_count} files into {RESULTS_FILE}")
-            file_types = sorted(consolidated_dict.keys())
-            click.echo(f"File types: {', '.join(file_types)}")
-
-            # Write quality JSON (quality issues by model)
-            if quality_issues_dict:
-                with open(QUALITY_FILE, 'w', encoding='utf-8') as f:
-                    json.dump(quality_issues_dict, f, indent=2, ensure_ascii=False)
-                click.echo(f"Wrote quality issues to {QUALITY_FILE}")
-            total_items = 0
-            for ext in file_types:
-                items = consolidated_dict[ext]
-                item_count = sum(len(entry['items']) for entry in items)
-                total_items += item_count
-                click.echo(f"  {ext}: {len(items)} files, {item_count} items")
-
-            click.echo(f"Total items: {total_items}")
-        else:
-            # Still write quality JSON even if not verbose
-            if quality_issues_dict:
-                with open(QUALITY_FILE, 'w', encoding='utf-8') as f:
-                    json.dump(quality_issues_dict, f, indent=2, ensure_ascii=False)
-
-        if skipped_trials:
-            click.echo(f"Skipped {len(skipped_trials)} trials:")
-            for trial_name in sorted(skipped_trials):
-                click.echo(f"  {trial_name}")
-
-        if zero_item_files:
-            click.echo(f"Files with 0 items ({len(zero_item_files)}):")
-            for filename in sorted(zero_item_files):
-                click.echo(f"  {filename}")
+        _print_skip_summary(skipped_trials, zero_item_files)
 
         # Print analysis report for all file types per model and temperature
         if analysis and verbose:
@@ -2787,28 +2829,8 @@ def summarize_results(options):
             except Exception as report_err:
                 click.echo(f"Warning: Could not generate full analysis report ({report_err})")
 
-        # Write unique items file (always)
-        unique_set = set()
-        for ext_key in consolidated_dict:
-            for entry in consolidated_dict[ext_key]:
-                for item in entry.get("items", []):
-                    if item:
-                        unique_set.add(item)
-        sorted_items = sorted(unique_set)
-        with open(UNIQUE_ITEMS_FILE, 'w', encoding='utf-8') as f:
-            for item in sorted_items:
-                f.write(item + '\n')
-        if verbose:
-            click.echo(f"Wrote {len(sorted_items)} unique items to {UNIQUE_ITEMS_FILE}")
-
-        # Write unique source items file (raw parsed items before processing)
-        # Sort by first alphabetical string (case-insensitive), preserving original case in output
-        sorted_source_items = sorted(source_items, key=extract_first_alpha_string)
-        with open(UNIQUE_SOURCE_ITEMS_FILE, 'w', encoding='utf-8') as f:
-            for item in sorted_source_items:
-                f.write(item + '\n')
-        if verbose:
-            click.echo(f"Wrote {len(sorted_source_items)} unique source items to {UNIQUE_SOURCE_ITEMS_FILE}")
+        _write_unique_items_file(consolidated_dict, verbose)
+        _write_unique_source_items_file(source_items, verbose)
 
         return True
 
