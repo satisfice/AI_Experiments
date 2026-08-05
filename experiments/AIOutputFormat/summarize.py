@@ -246,6 +246,118 @@ def _repair_truncated_json(content):
     return stripped + '\n' + ''.join(reversed(stack)), True
 
 
+def _looks_like_json_set_format(content):
+    """True if content is object-shaped ({...}) but contains no colons outside
+    quoted strings -- i.e. it's actually a set-like list, not key-value pairs."""
+    if not (content.startswith('{') and content.rstrip().endswith('}')):
+        return False
+    in_quotes = False
+    colon_count = 0
+    for char in content:
+        if char == '"':
+            in_quotes = not in_quotes
+        elif char == ':' and not in_quotes:
+            colon_count += 1
+    return colon_count == 0
+
+
+def _convert_json_set_to_array(content):
+    """Convert a set-like {a, b, c} string to array syntax [a, b, c]."""
+    converted = content.replace('{', '[').replace('}', ']')
+    # Remove trailing commas before closing bracket
+    return converted.replace(',\n]', '\n]').replace(', ]', ']').replace(',]', ']')
+
+
+def _json_data_to_items(data, cleanups, note_dict_extraction=False, note_nested_flatten=False):
+    """Convert parsed JSON data to a flat list of items: array -> as-is, object ->
+    its values, scalar -> single-item list. Extracts a common key from dict-list
+    items and flattens any nested lists. Mutates cleanups.
+
+    note_dict_extraction/note_nested_flatten control whether those two steps record
+    a cleanup entry -- callers differ on this (kept as-is from the prior inline code,
+    not unified, since that's a behavioral choice beyond a structural refactor)."""
+    if isinstance(data, list):
+        items = data
+    elif isinstance(data, dict):
+        items = list(data.values())
+        if note_dict_extraction:
+            cleanups.append("JSON-Dict-Value-Extraction")
+    else:
+        items = [data]
+
+    # Check if items are dicts with a common key that should be extracted
+    items = _extract_from_dict_list(items, cleanups)
+
+    # Flatten any list items
+    flattened = []
+    had_nested_lists = False
+    for item in items:
+        if isinstance(item, list):
+            had_nested_lists = True
+            flattened.extend(item)
+        else:
+            flattened.append(item)
+    if had_nested_lists and note_nested_flatten:
+        cleanups.append("JSON-Nested-List-Flattening")
+    return flattened
+
+
+def _parse_json_direct(content_to_parse, cleanups, quality_issues, unwrap_pairs, repeated_keys_found):
+    """Parse content directly as JSON and convert to a flat item list.
+    Raises json.JSONDecodeError if content_to_parse isn't valid JSON."""
+    data = json.loads(content_to_parse, object_pairs_hook=unwrap_pairs)
+    if repeated_keys_found[0]:
+        quality_issues.append("repeated-json-keys")
+        cleanups.append("JSON-Repeated-Key-Unwinding")
+    return _json_data_to_items(data, cleanups, note_dict_extraction=True, note_nested_flatten=True)
+
+
+def _try_json_set_like_repair(content_to_parse, cleanups, quality_issues):
+    """If content looks like a set-like {a, b, c} object, convert and parse it.
+    Returns items on success, else None."""
+    if not _looks_like_json_set_format(content_to_parse):
+        return None
+    try:
+        converted = _convert_json_set_to_array(content_to_parse)
+        data = json.loads(converted)
+        cleanups.append("JSON-Set-Format-Conversion")
+        return _json_data_to_items(data, cleanups)
+    except json.JSONDecodeError:
+        return None
+
+
+def _try_json_python_syntax_repair(content_to_parse, cleanups, quality_issues):
+    """If content has single quotes (Python dict/list syntax), retry with them
+    converted to double quotes. Returns items on success, else None."""
+    if "'" not in content_to_parse or "{" not in content_to_parse:
+        return None
+    try:
+        # This is a heuristic that works for simple Python dicts in JSON
+        fixed_content = content_to_parse.replace("'", '"')
+        data = json.loads(fixed_content)
+        flattened = _json_data_to_items(data, cleanups)
+        cleanups.append("JSON-Python-Syntax-Repair")
+        return flattened
+    except json.JSONDecodeError:
+        return None
+
+
+def _try_json_truncated_repair(content_to_parse, cleanups, quality_issues, unwrap_pairs):
+    """If content looks like model output truncated before closing brackets,
+    attempt to repair and reparse it. Returns items on success, else None."""
+    repaired, was_repaired = _repair_truncated_json(content_to_parse)
+    if not was_repaired:
+        return None
+    try:
+        data = json.loads(repaired, object_pairs_hook=unwrap_pairs)
+        flattened = _json_data_to_items(data, cleanups, note_dict_extraction=True)
+        quality_issues.append("json-truncated")
+        cleanups.append("JSON-Truncated-Recovery")
+        return flattened
+    except json.JSONDecodeError:
+        return None
+
+
 def parse_json(content):
     """Parse JSON file: if array, each element; if object, each value. Flatten any list items.
     Handles multiple JSON formats:
@@ -255,7 +367,9 @@ def parse_json(content):
     - JSON with single quotes (Python dict syntax)
     - JSON wrapped in triple backticks (markdown code fence format)
     Extracts values from list of dicts with common keys.
-    Returns (items, cleanups, quality_issues)."""
+
+    On failure, tries three repairs in turn (set-like format, Python-dict-syntax,
+    truncated output) before giving up. Returns (items, cleanups, quality_issues)."""
     cleanups = []
     quality_issues = []
 
@@ -274,25 +388,9 @@ def parse_json(content):
         cleanups.append("Extract-from-JSON-Codefence-Markdown")
 
     # Try to detect and convert set-like format {item1, item2, ...} to array format
-    # Set-like format has { } with strings separated by commas, but no colons (no key-value pairs)
-    if content_to_parse.startswith('{') and content_to_parse.rstrip().endswith('}'):
-        # Check if this looks like a set-like format (no colons outside of strings)
-        # Count colons not in quotes
-        in_quotes = False
-        colon_count = 0
-        for char in content_to_parse:
-            if char == '"':
-                in_quotes = not in_quotes
-            elif char == ':' and not in_quotes:
-                colon_count += 1
-
-        if colon_count == 0:
-            # Looks like a set-like format - convert to array format
-            converted = content_to_parse.replace('{', '[').replace('}', ']')
-            # Remove trailing commas before closing bracket
-            converted = converted.replace(',\n]', '\n]').replace(', ]', ']').replace(',]', ']')
-            content_to_parse = converted
-            cleanups.append("JSON-Set-Format-Conversion")
+    if _looks_like_json_set_format(content_to_parse):
+        content_to_parse = _convert_json_set_to_array(content_to_parse)
+        cleanups.append("JSON-Set-Format-Conversion")
 
     # Remove trailing commas before ] or } (invalid JSON but common model output)
     stripped, n_subs = re.subn(r',(\s*[}\]])', r'\1', content_to_parse)
@@ -303,139 +401,31 @@ def parse_json(content):
     # Detect repeated-key JSON objects at any nesting level: {"k":"v1","k":"v2",...}
     # Standard json.loads silently drops duplicates; object_pairs_hook replaces such
     # objects with a flat list of their values so downstream flattening picks them up.
-    _repeated_keys_found = [False]
-    def _unwrap_pairs(pairs):
+    repeated_keys_found = [False]
+    def unwrap_pairs(pairs):
         keys = [k for k, v in pairs]
         if len(keys) > len(set(keys)):
-            _repeated_keys_found[0] = True
+            repeated_keys_found[0] = True
             return [v for k, v in pairs]
         return dict(pairs)
 
     try:
-        data = json.loads(content_to_parse, object_pairs_hook=_unwrap_pairs)
-        if _repeated_keys_found[0]:
-            quality_issues.append("repeated-json-keys")
-            cleanups.append("JSON-Repeated-Key-Unwinding")
-        if isinstance(data, list):
-            items = data
-        elif isinstance(data, dict):
-            items = list(data.values())
-            cleanups.append("JSON-Dict-Value-Extraction")
-        else:
-            items = [data]
-
-        # Check if items are dicts with a common key that should be extracted
-        items = _extract_from_dict_list(items, cleanups)
-
-        # Flatten any list items
-        flattened = []
-        had_nested_lists = False
-        for item in items:
-            if isinstance(item, list):
-                had_nested_lists = True
-                flattened.extend(item)
-            else:
-                flattened.append(item)
-
-        if had_nested_lists:
-            cleanups.append("JSON-Nested-List-Flattening")
-
+        flattened = _parse_json_direct(content_to_parse, cleanups, quality_issues, unwrap_pairs, repeated_keys_found)
         return flattened, cleanups, quality_issues
+    except json.JSONDecodeError:
+        # Try repairs in turn before giving up
+        items = _try_json_set_like_repair(content_to_parse, cleanups, quality_issues)
+        if items is not None:
+            return items, cleanups, quality_issues
 
-    except json.JSONDecodeError as e:
-        # Try other conversions before giving up
-        fixed_content = None
+        items = _try_json_python_syntax_repair(content_to_parse, cleanups, quality_issues)
+        if items is not None:
+            return items, cleanups, quality_issues
 
-        # First, try to fix set-like format if not already converted
-        if content_to_parse.startswith('{') and content_to_parse.rstrip().endswith('}'):
-            # Check if no colons (set-like format)
-            in_quotes = False
-            colon_count = 0
-            for char in content_to_parse:
-                if char == '"':
-                    in_quotes = not in_quotes
-                elif char == ':' and not in_quotes:
-                    colon_count += 1
-
-            if colon_count == 0:
-                try:
-                    converted = content_to_parse.replace('{', '[').replace('}', ']')
-                    converted = converted.replace(',\n]', '\n]').replace(', ]', ']').replace(',]', ']')
-                    data = json.loads(converted)
-                    cleanups.append("JSON-Set-Format-Conversion")
-                    if isinstance(data, list):
-                        items = data
-                    elif isinstance(data, dict):
-                        items = list(data.values())
-                    else:
-                        items = [data]
-                    items = _extract_from_dict_list(items, cleanups)
-                    flattened = []
-                    for item in items:
-                        if isinstance(item, list):
-                            flattened.extend(item)
-                        else:
-                            flattened.append(item)
-                    return flattened, cleanups, quality_issues
-                except json.JSONDecodeError:
-                    pass  # Try next method
-
-        # Try to fix non-standard JSON (Python dict syntax) (single quotes)
-        if "'" in content_to_parse and "{" in content_to_parse:
-            try:
-                # Replace single quotes with double quotes for dict/list syntax
-                # This is a heuristic that works for simple Python dicts in JSON
-                fixed_content = content_to_parse.replace("'", '"')
-                data = json.loads(fixed_content)
-
-                if isinstance(data, list):
-                    items = data
-                elif isinstance(data, dict):
-                    items = list(data.values())
-                else:
-                    items = [data]
-
-                # Check if items are dicts with a common key that should be extracted
-                items = _extract_from_dict_list(items, cleanups)
-
-                # Flatten any list items
-                flattened = []
-                for item in items:
-                    if isinstance(item, list):
-                        flattened.extend(item)
-                    else:
-                        flattened.append(item)
-
-                cleanups.append("JSON-Python-Syntax-Repair")
-                return flattened, cleanups, quality_issues
-            except json.JSONDecodeError:
-                pass  # Fall through to truncated-JSON repair
-
-        # Try to repair truncated JSON (model output cut off before closing brackets)
-        _repeated_keys_found[0] = False
-        repaired, was_repaired = _repair_truncated_json(content_to_parse)
-        if was_repaired:
-            try:
-                data = json.loads(repaired, object_pairs_hook=_unwrap_pairs)
-                if isinstance(data, list):
-                    items = data
-                elif isinstance(data, dict):
-                    items = list(data.values())
-                    cleanups.append("JSON-Dict-Value-Extraction")
-                else:
-                    items = [data]
-                items = _extract_from_dict_list(items, cleanups)
-                flattened = []
-                for item in items:
-                    if isinstance(item, list):
-                        flattened.extend(item)
-                    else:
-                        flattened.append(item)
-                quality_issues.append("json-truncated")
-                cleanups.append("JSON-Truncated-Recovery")
-                return flattened, cleanups, quality_issues
-            except json.JSONDecodeError:
-                pass
+        repeated_keys_found[0] = False
+        items = _try_json_truncated_repair(content_to_parse, cleanups, quality_issues, unwrap_pairs)
+        if items is not None:
+            return items, cleanups, quality_issues
 
         quality_issues.append("parse-failed")
         return [], cleanups, quality_issues
