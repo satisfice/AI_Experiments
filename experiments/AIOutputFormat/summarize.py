@@ -996,6 +996,37 @@ def _extract_from_html_formatting_tag(tag_nodes, tag):
     return items, cleanups
 
 
+def _try_numbered_items_in_tag(raw_items, tag_nodes, tag, had_br, cleanups, quality_issues):
+    """If every item in raw_items is a numbered entry (e.g. "<span>1. Lion</span>"),
+    strip the numbers and return the items. Returns None if not all are numbered."""
+    num_matches = [re.match(r'^\d+\.\s+(.+)$', it) for it in raw_items]
+    if not (raw_items and all(num_matches)):
+        return None
+    items = [m.group(1) for m in num_matches]
+    cleanups.extend(_path_tag_cleanups(tag_nodes, tag))
+    if had_br:
+        cleanups.append("Remove-BR-Tags")
+    cleanups.append("HTML-Numbered-Items-In-Tags")
+    quality_issues.append("numbered-items-in-tags")
+    return items
+
+
+def _split_comma_separated_items(raw_items, tag):
+    """Split inline comma-separated values within items of p/span/div tags.
+    Returns (final_items, comma_split_used)."""
+    final_items = []
+    comma_split_used = False
+    for item in raw_items:
+        if ',' in item and tag in ['p', 'span', 'div']:
+            parts = [p.strip() for p in item.split(',') if p.strip()]
+            if len(parts) > 1 and all(len(p) < 100 for p in parts):
+                final_items.extend(parts)
+                comma_split_used = True
+                continue
+        final_items.append(item)
+    return final_items, comma_split_used
+
+
 def _try_fallback_tags(root, cleanups, quality_issues):
     """Try each tag in _HTML_FALLBACK_TAGS priority order; return raw items for the
     first tag that yields any (mutating cleanups/quality_issues along the way), or
@@ -1008,29 +1039,11 @@ def _try_fallback_tags(root, cleanups, quality_issues):
         if not raw_items:
             continue
 
-        # Check if every item is a numbered entry (e.g. "<span>1. Lion</span>")
-        num_matches = [re.match(r'^\d+\.\s+(.+)$', it) for it in raw_items]
-        if raw_items and all(num_matches):
-            items = [m.group(1) for m in num_matches]
-            cleanups.extend(_path_tag_cleanups(tag_nodes, tag))
-            if had_br:
-                cleanups.append("Remove-BR-Tags")
-            cleanups.append("HTML-Numbered-Items-In-Tags")
-            quality_issues.append("numbered-items-in-tags")
-            return items
+        numbered_items = _try_numbered_items_in_tag(raw_items, tag_nodes, tag, had_br, cleanups, quality_issues)
+        if numbered_items is not None:
+            return numbered_items
 
-        # Per-item comma-split check for inline comma-separated values
-        final_items = []
-        comma_split_used = False
-        for item in raw_items:
-            if ',' in item and tag in ['p', 'span', 'div']:
-                parts = [p.strip() for p in item.split(',') if p.strip()]
-                if len(parts) > 1 and all(len(p) < 100 for p in parts):
-                    final_items.extend(parts)
-                    comma_split_used = True
-                    continue
-            final_items.append(item)
-
+        final_items, comma_split_used = _split_comma_separated_items(raw_items, tag)
         cleanups.extend(_path_tag_cleanups(tag_nodes, tag))
         if had_br:
             cleanups.append("Remove-BR-Tags")
