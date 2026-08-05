@@ -6,6 +6,8 @@ import yaml
 import re
 import sys
 import click
+from dataclasses import dataclass
+from typing import Optional
 from html.parser import HTMLParser
 from pathlib import Path
 from collections import defaultdict, Counter
@@ -2053,23 +2055,171 @@ def _make_format_aggregation_dicts():
     return case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg
 
 
-def summarize_results(filename_filter=None, model=None, format_type=None, experiment=None, timestamp=None, temperature=None, max_item_length=25, analysis=False, exclude_model=None, verbose=False):
+def _flag_format_inconsistencies(cleanup_agg, quality_issues_output, quality_issues_examples,
+                                  file_type_label, issue_key):
+    """Flag trial sets whose cleanup-rule sets differ across files for one file type
+    (markdown/HTML/JSON/YAML), recording which rules varied and an example filename
+    for each. Mutates quality_issues_output and quality_issues_examples in place."""
+    for model_name in cleanup_agg:
+        for temp_value in cleanup_agg[model_name]:
+            for prompt_name in cleanup_agg[model_name][temp_value]:
+                entries = cleanup_agg[model_name][temp_value][prompt_name]
+                rule_sets = [rules for rules, _ in entries]
+                if len(set(rule_sets)) <= 1:
+                    continue
+                all_rules = set().union(*rule_sets)
+                common_rules = set.intersection(*[set(r) for r in rule_sets])
+                varying_rules = all_rules - common_rules
+                for rule in varying_rules:
+                    quality_issues_output[model_name][temp_value][file_type_label][prompt_name][issue_key].add(rule)
+                    if rule not in quality_issues_examples[model_name][temp_value][file_type_label][prompt_name][issue_key]:
+                        example_fname = next((fname for rules, fname in entries if rule in rules), "unknown")
+                        quality_issues_examples[model_name][temp_value][file_type_label][prompt_name][issue_key][rule] = example_fname
+
+
+def _print_analysis_report(item_count_stats, quality_issues_dict, quality_issues_examples,
+                            format_consistency, treatment_fields):
+    """Print the verbose per-model/temperature/file-type analysis report
+    (the `analysis and verbose` report, extracted out of summarize_results)."""
+    def safe_write(text):
+        """Write text to stdout with error handling for encoding issues"""
+        sys.stdout.write(text + '\n')
+        sys.stdout.flush()
+
+    safe_write("\n" + "="*70)
+    safe_write("DATA ANALYSIS REPORT BY MODEL, TEMPERATURE, AND FILE TYPE")
+    safe_write("="*70)
+
+    # Iterate over item_count_stats which has entries for every
+    # model/temperature/file_type combination that was processed
+    for model_name in sorted(item_count_stats.keys()):
+        safe_write(f"\n{model_name}:")
+        for temp_value in sorted(item_count_stats[model_name].keys(), key=lambda x: (x == "unknown", x)):
+            safe_write(f"  Temperature {temp_value}:")
+            for file_type in sorted(item_count_stats[model_name][temp_value].keys(), key=str.casefold):
+                counts = item_count_stats[model_name][temp_value][file_type]
+                stats = calculate_statistics(counts)
+                safe_write(f"    {file_type} ({len(counts)} files):")
+                safe_write(f"      Items: max={stats['max']}, min={stats['min']}, avg={stats['avg']}, var={stats['var']}, mode={stats['mode']}")
+
+                # Per-prompt quality details
+                prompts_data = quality_issues_dict.get(model_name, {}).get(str(temp_value), {}).get(file_type, {})
+                for prompt_name in sorted(prompts_data.keys()):
+                    pd = prompts_data[prompt_name]
+                    safe_write(f"      {prompt_name}:")
+
+                    # Format consistency
+                    is_consistent = pd.get("consistentFormat", True)
+                    if is_consistent:
+                        safe_write(f"        Format: ✓ consistent")
+                    else:
+                        fc = format_consistency.get((model_name, str(temp_value), file_type, prompt_name), {})
+                        varying = [f for f in treatment_fields if len(set(fc.get(f, []))) > 1]
+
+                        # Build human-readable description of what varies.
+                        # treatment_fields is ["formatStyle", "codeblock"]; list
+                        # all distinct formatStyle values when that field varies.
+                        parts = []
+                        if "formatStyle" in varying:
+                            parts.extend(sorted(set(fc.get("formatStyle", []))))
+                        if "codeblock" in varying:
+                            parts.append("codeblock")
+                        safe_write(f"        Format: ✗ inconsistent ({', '.join(parts)})")
+
+                    # Format issues breakdown
+                    format_issue_counts = pd.get("formatIssues", {})
+                    if format_issue_counts:
+                        issues_str = ", ".join(f"{i}: {c}" for i, c in sorted(format_issue_counts.items()))
+                        safe_write(f"        Format Issues: {issues_str}")
+
+                    # Punctuation issues (leading / trailing / internal)
+                    for punct_type, label in [
+                        ("leading_punctuation",   "Leading punctuation"),
+                        ("trailing_punctuation",  "Trailing punctuation"),
+                        ("internal_punctuation",  "Internal punctuation"),
+                    ]:
+                        punct_items = [e["instance"] for e in pd.get(punct_type, [])]
+                        if punct_items:
+                            safe_write(f"        {label} ({len(punct_items)} unique):")
+                            for item in punct_items[:5]:
+                                example_file = quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][punct_type].get(item)
+                                suffix = f" Example: {example_file}" if example_file else ""
+                                safe_write(f"          - {ascii(item)}{suffix}")
+                            if len(punct_items) > 5:
+                                safe_write(f"          ... and {len(punct_items) - 5} more")
+
+                    # Exceeds max length
+                    exceed_items = [e["instance"] for e in pd.get("exceeds_max_length", [])]
+                    if exceed_items:
+                        safe_write(f"        Exceeds max length ({len(exceed_items)} unique):")
+                        for item in exceed_items[:5]:
+                            safe_write(f"          - {ascii(item)}")
+                        if len(exceed_items) > 5:
+                            safe_write(f"          ... and {len(exceed_items) - 5} more")
+
+                    # Preamble leaks
+                    preamble_items = [e["instance"] for e in pd.get("preamble_leak", [])]
+                    if preamble_items:
+                        safe_write(f"        Preamble leaks ({len(preamble_items)} unique):")
+                        for item in preamble_items[:5]:
+                            safe_write(f"          - {ascii(item)}")
+                        if len(preamble_items) > 5:
+                            safe_write(f"          ... and {len(preamble_items) - 5} more")
+
+                    # Markup artifacts
+                    markup_items = [e["instance"] for e in pd.get("markup_artifact", [])]
+                    if markup_items:
+                        safe_write(f"        Markup artifacts ({len(markup_items)} unique):")
+                        for item in markup_items[:5]:
+                            safe_write(f"          - {ascii(item)}")
+                        if len(markup_items) > 5:
+                            safe_write(f"          ... and {len(markup_items) - 5} more")
+
+                    # Repeated characters
+                    repeated_items = [e["instance"] for e in pd.get("repeated_chars", [])]
+                    if repeated_items:
+                        safe_write(f"        Repeated characters ({len(repeated_items)} unique):")
+                        for item in repeated_items[:5]:
+                            safe_write(f"          - {ascii(item)}")
+                        if len(repeated_items) > 5:
+                            safe_write(f"          ... and {len(repeated_items) - 5} more")
+
+
+@dataclass
+class SummarizeFilters:
+    """Filter and behavior options for summarize_results(), bundled to avoid a
+    10-argument function signature."""
+    filename_filter: Optional[str] = None    # Legacy filter: substring match on filename (e.g., "experiment1")
+    model: Optional[str] = None              # Include only this model (e.g., "gpt4"); None includes all
+    format_type: Optional[str] = None        # Filter by file format/extension (e.g., "json", "txt")
+    experiment: Optional[str] = None         # Filter by experiment name (e.g., "animals5")
+    timestamp: Optional[str] = None          # Filter by timestamp (e.g., "202602061922")
+    temperature: Optional[float] = None      # Filter by temperature (e.g., 1.0)
+    max_item_length: int = 25                # Items longer than this are flagged
+    analysis: bool = False                   # Whether to generate the analysis report
+    exclude_model: Optional[tuple] = None    # Model name patterns to EXCLUDE (e.g., ("gpt4", "llama*"))
+    verbose: bool = False                    # Show detailed summary output; skipped files always shown
+
+
+def summarize_results(options):
     """
     Read all result files by type, parse items, and summarize into a single JSON.
     Structure: {filetype: [{filename: str, items: [...]}, ...], ...}
 
     Args:
-        filename_filter: Optional string to filter files by name (legacy, e.g., "experiment1")
-        model: Optional model name to INCLUDE (e.g., "gpt4"). If not specified, all models included.
-        format_type: Optional file format/extension to filter by (e.g., "json", "txt")
-        experiment: Optional experiment name to filter by (e.g., "animals5")
-        timestamp: Optional timestamp to filter by (e.g., "202602061922")
-        temperature: Optional temperature to filter by (e.g., "1.0", "10" as int/10)
-        max_item_length: Maximum allowed item length in characters (default 25, items longer are flagged)
-        analysis: Whether to generate analysis report by model and temperature
-        exclude_model: Optional tuple of model names to EXCLUDE (e.g., ("gpt4", "llama318b"))
-        verbose: If True, show detailed summary output; skipped files always shown regardless
+        options: SummarizeFilters instance (see its field comments for details).
     """
+    filename_filter = options.filename_filter
+    model = options.model
+    format_type = options.format_type
+    experiment = options.experiment
+    timestamp = options.timestamp
+    temperature = options.temperature
+    max_item_length = options.max_item_length
+    analysis = options.analysis
+    exclude_model = options.exclude_model
+    verbose = options.verbose
+
     if not RESULTS_DIR.exists():
         click.echo(format_error("summarize", f"{RESULTS_DIR} directory not found"), err=True)
         return False
@@ -2427,81 +2577,18 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
                             if case_val not in quality_issues_examples[model_name][temp_value][file_type][prompt_name]["inconsistent_case"]:
                                 quality_issues_examples[model_name][temp_value][file_type][prompt_name]["inconsistent_case"][case_val] = fname
 
-    # Compute markdown format inconsistency across trials.
-    # A markdown trial set is flagged when files have differing sets of cleanup rules applied,
+    # Flag trial sets whose cleanup-rule sets differ across files, per file type.
+    # A trial set is flagged when files have differing sets of cleanup rules applied,
     # indicating the model produced different structural formats across trials.
     # Instances are the rule names that appeared in some files but not all.
-    for model_name in md_cleanup_agg:
-        for temp_value in md_cleanup_agg[model_name]:
-            for prompt_name in md_cleanup_agg[model_name][temp_value]:
-                entries = md_cleanup_agg[model_name][temp_value][prompt_name]
-                rule_sets = [rules for rules, _ in entries]
-                if len(set(rule_sets)) > 1:
-                    all_rules = set().union(*rule_sets)
-                    common_rules = set.intersection(*[set(r) for r in rule_sets])
-                    varying_rules = all_rules - common_rules
-                    for rule in varying_rules:
-                        quality_issues_output[model_name][temp_value]["markdown"][prompt_name]["inconsistent_md_format"].add(rule)
-                        if rule not in quality_issues_examples[model_name][temp_value]["markdown"][prompt_name]["inconsistent_md_format"]:
-                            example_fname = next((fname for rules, fname in entries if rule in rules), "unknown")
-                            quality_issues_examples[model_name][temp_value]["markdown"][prompt_name]["inconsistent_md_format"][rule] = example_fname
-
-    # Compute HTML format inconsistency across trials.
-    # An HTML trial set is flagged when files have differing sets of cleanup rules applied,
-    # indicating the model produced different structural formats across trials.
-    # Instances are the rule names that appeared in some files but not all.
-    for model_name in html_cleanup_agg:
-        for temp_value in html_cleanup_agg[model_name]:
-            for prompt_name in html_cleanup_agg[model_name][temp_value]:
-                entries = html_cleanup_agg[model_name][temp_value][prompt_name]
-                rule_sets = [rules for rules, _ in entries]
-                if len(set(rule_sets)) > 1:
-                    all_rules = set().union(*rule_sets)
-                    common_rules = set.intersection(*[set(r) for r in rule_sets])
-                    varying_rules = all_rules - common_rules
-                    for rule in varying_rules:
-                        quality_issues_output[model_name][temp_value]["HTML"][prompt_name]["inconsistent_html_format"].add(rule)
-                        if rule not in quality_issues_examples[model_name][temp_value]["HTML"][prompt_name]["inconsistent_html_format"]:
-                            example_fname = next((fname for rules, fname in entries if rule in rules), "unknown")
-                            quality_issues_examples[model_name][temp_value]["HTML"][prompt_name]["inconsistent_html_format"][rule] = example_fname
-
-    # Compute JSON format inconsistency across trials.
-    # A JSON trial set is flagged when files have differing sets of cleanup rules applied,
-    # indicating the model produced different structural formats across trials.
-    # Instances are the rule names that appeared in some files but not all.
-    for model_name in json_cleanup_agg:
-        for temp_value in json_cleanup_agg[model_name]:
-            for prompt_name in json_cleanup_agg[model_name][temp_value]:
-                entries = json_cleanup_agg[model_name][temp_value][prompt_name]
-                rule_sets = [rules for rules, _ in entries]
-                if len(set(rule_sets)) > 1:
-                    all_rules = set().union(*rule_sets)
-                    common_rules = set.intersection(*[set(r) for r in rule_sets])
-                    varying_rules = all_rules - common_rules
-                    for rule in varying_rules:
-                        quality_issues_output[model_name][temp_value]["JSON"][prompt_name]["inconsistent_json_format"].add(rule)
-                        if rule not in quality_issues_examples[model_name][temp_value]["JSON"][prompt_name]["inconsistent_json_format"]:
-                            example_fname = next((fname for rules, fname in entries if rule in rules), "unknown")
-                            quality_issues_examples[model_name][temp_value]["JSON"][prompt_name]["inconsistent_json_format"][rule] = example_fname
-
-    # Compute YAML format inconsistency across trials.
-    # A YAML trial set is flagged when files have differing sets of cleanup rules applied,
-    # indicating the model produced different structural formats across trials.
-    # Instances are the rule names that appeared in some files but not all.
-    for model_name in yaml_cleanup_agg:
-        for temp_value in yaml_cleanup_agg[model_name]:
-            for prompt_name in yaml_cleanup_agg[model_name][temp_value]:
-                entries = yaml_cleanup_agg[model_name][temp_value][prompt_name]
-                rule_sets = [rules for rules, _ in entries]
-                if len(set(rule_sets)) > 1:
-                    all_rules = set().union(*rule_sets)
-                    common_rules = set.intersection(*[set(r) for r in rule_sets])
-                    varying_rules = all_rules - common_rules
-                    for rule in varying_rules:
-                        quality_issues_output[model_name][temp_value]["YAML"][prompt_name]["inconsistent_yaml_format"].add(rule)
-                        if rule not in quality_issues_examples[model_name][temp_value]["YAML"][prompt_name]["inconsistent_yaml_format"]:
-                            example_fname = next((fname for rules, fname in entries if rule in rules), "unknown")
-                            quality_issues_examples[model_name][temp_value]["YAML"][prompt_name]["inconsistent_yaml_format"][rule] = example_fname
+    _flag_format_inconsistencies(md_cleanup_agg, quality_issues_output, quality_issues_examples,
+                                  "markdown", "inconsistent_md_format")
+    _flag_format_inconsistencies(html_cleanup_agg, quality_issues_output, quality_issues_examples,
+                                  "HTML", "inconsistent_html_format")
+    _flag_format_inconsistencies(json_cleanup_agg, quality_issues_output, quality_issues_examples,
+                                  "JSON", "inconsistent_json_format")
+    _flag_format_inconsistencies(yaml_cleanup_agg, quality_issues_output, quality_issues_examples,
+                                  "YAML", "inconsistent_yaml_format")
 
     # Build quality_issues_dict with hierarchy: model -> temperature -> file_type -> prompt
     # Each prompt entry contains: issue lists, consistentFormat (bool), formatIssues (counts)
@@ -2612,110 +2699,9 @@ def summarize_results(filename_filter=None, model=None, format_type=None, experi
         # Print analysis report for all file types per model and temperature
         if analysis and verbose:
             try:
-                def safe_write(text):
-                    """Write text to stdout with error handling for encoding issues"""
-                    sys.stdout.write(text + '\n')
-                    sys.stdout.flush()
-
-                safe_write("\n" + "="*70)
-                safe_write("DATA ANALYSIS REPORT BY MODEL, TEMPERATURE, AND FILE TYPE")
-                safe_write("="*70)
-
-                # Iterate over item_count_stats which has entries for every
-                # model/temperature/file_type combination that was processed
-                for model_name in sorted(item_count_stats.keys()):
-                    safe_write(f"\n{model_name}:")
-                    for temp_value in sorted(item_count_stats[model_name].keys(), key=lambda x: (x == "unknown", x)):
-                        safe_write(f"  Temperature {temp_value}:")
-                        for file_type in sorted(item_count_stats[model_name][temp_value].keys(), key=str.casefold):
-                            counts = item_count_stats[model_name][temp_value][file_type]
-                            stats = calculate_statistics(counts)
-                            safe_write(f"    {file_type} ({len(counts)} files):")
-                            safe_write(f"      Items: max={stats['max']}, min={stats['min']}, avg={stats['avg']}, var={stats['var']}, mode={stats['mode']}")
-
-
-                            # Per-prompt quality details
-                            prompts_data = quality_issues_dict.get(model_name, {}).get(str(temp_value), {}).get(file_type, {})
-                            for prompt_name in sorted(prompts_data.keys()):
-                                pd = prompts_data[prompt_name]
-                                safe_write(f"      {prompt_name}:")
-
-                                # Format consistency
-                                is_consistent = pd.get("consistentFormat", True)
-                                if is_consistent:
-                                    safe_write(f"        Format: ✓ consistent")
-                                else:
-                                    fc = format_consistency.get((model_name, str(temp_value), file_type, prompt_name), {})
-                                    varying = [f for f in TREATMENT_FIELDS if len(set(fc.get(f, []))) > 1]
-
-                                    # Build human-readable description of what varies.
-                                    # TREATMENT_FIELDS is ["formatStyle", "codeblock"]; list
-                                    # all distinct formatStyle values when that field varies.
-                                    parts = []
-                                    if "formatStyle" in varying:
-                                        parts.extend(sorted(set(fc.get("formatStyle", []))))
-                                    if "codeblock" in varying:
-                                        parts.append("codeblock")
-                                    safe_write(f"        Format: ✗ inconsistent ({', '.join(parts)})")
-
-                                # Format issues breakdown
-                                format_issue_counts = pd.get("formatIssues", {})
-                                if format_issue_counts:
-                                    issues_str = ", ".join(f"{i}: {c}" for i, c in sorted(format_issue_counts.items()))
-                                    safe_write(f"        Format Issues: {issues_str}")
-
-                                # Punctuation issues (leading / trailing / internal)
-                                for punct_type, label in [
-                                    ("leading_punctuation",   "Leading punctuation"),
-                                    ("trailing_punctuation",  "Trailing punctuation"),
-                                    ("internal_punctuation",  "Internal punctuation"),
-                                ]:
-                                    punct_items = [e["instance"] for e in pd.get(punct_type, [])]
-                                    if punct_items:
-                                        safe_write(f"        {label} ({len(punct_items)} unique):")
-                                        for item in punct_items[:5]:
-                                            example_file = quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][punct_type].get(item)
-                                            suffix = f" Example: {example_file}" if example_file else ""
-                                            safe_write(f"          - {ascii(item)}{suffix}")
-                                        if len(punct_items) > 5:
-                                            safe_write(f"          ... and {len(punct_items) - 5} more")
-
-                                # Exceeds max length
-                                exceed_items = [e["instance"] for e in pd.get("exceeds_max_length", [])]
-                                if exceed_items:
-                                    safe_write(f"        Exceeds max length ({len(exceed_items)} unique):")
-                                    for item in exceed_items[:5]:
-                                        safe_write(f"          - {ascii(item)}")
-                                    if len(exceed_items) > 5:
-                                        safe_write(f"          ... and {len(exceed_items) - 5} more")
-
-                                # Preamble leaks
-                                preamble_items = [e["instance"] for e in pd.get("preamble_leak", [])]
-                                if preamble_items:
-                                    safe_write(f"        Preamble leaks ({len(preamble_items)} unique):")
-                                    for item in preamble_items[:5]:
-                                        safe_write(f"          - {ascii(item)}")
-                                    if len(preamble_items) > 5:
-                                        safe_write(f"          ... and {len(preamble_items) - 5} more")
-
-                                # Markup artifacts
-                                markup_items = [e["instance"] for e in pd.get("markup_artifact", [])]
-                                if markup_items:
-                                    safe_write(f"        Markup artifacts ({len(markup_items)} unique):")
-                                    for item in markup_items[:5]:
-                                        safe_write(f"          - {ascii(item)}")
-                                    if len(markup_items) > 5:
-                                        safe_write(f"          ... and {len(markup_items) - 5} more")
-
-                                # Repeated characters
-                                repeated_items = [e["instance"] for e in pd.get("repeated_chars", [])]
-                                if repeated_items:
-                                    safe_write(f"        Repeated characters ({len(repeated_items)} unique):")
-                                    for item in repeated_items[:5]:
-                                        safe_write(f"          - {ascii(item)}")
-                                    if len(repeated_items) > 5:
-                                        safe_write(f"          ... and {len(repeated_items) - 5} more")
-
+                _print_analysis_report(item_count_stats, quality_issues_dict,
+                                        quality_issues_examples, format_consistency,
+                                        TREATMENT_FIELDS)
             except Exception as report_err:
                 click.echo(f"Warning: Could not generate full analysis report ({report_err})")
 
@@ -2869,7 +2855,11 @@ def main(filter, experiment, exclude_model, model, format_type, timestamp, tempe
         if exclude_models_list:
             exclude_model = tuple(exclude_models_list)
 
-    success = summarize_results(filter, model, format_type, experiment, timestamp, temperature, max_item_length, analysis, exclude_model, verbose)
+    success = summarize_results(SummarizeFilters(
+        filename_filter=filter, model=model, format_type=format_type, experiment=experiment,
+        timestamp=timestamp, temperature=temperature, max_item_length=max_item_length,
+        analysis=analysis, exclude_model=exclude_model, verbose=verbose,
+    ))
     raise SystemExit(0 if success else 1)
 
 
