@@ -2129,6 +2129,60 @@ def _flag_format_inconsistencies(cleanup_agg, quality_issues_output, quality_iss
                         quality_issues_examples[model_name][temp_value][file_type_label][prompt_name][issue_key][rule] = example_fname
 
 
+def _print_prompt_analysis(pd, model_name, temp_value, file_type, prompt_name,
+                            format_consistency, treatment_fields, quality_issues_examples, safe_write):
+    """Print one prompt's quality-issue breakdown within the analysis report."""
+    safe_write(f"      {prompt_name}:")
+
+    # Format consistency
+    is_consistent = pd.get("consistentFormat", True)
+    if is_consistent:
+        safe_write(f"        Format: ✓ consistent")
+    else:
+        fc = format_consistency.get((model_name, str(temp_value), file_type, prompt_name), {})
+        varying = [f for f in treatment_fields if len(set(fc.get(f, []))) > 1]
+
+        # Build human-readable description of what varies.
+        # treatment_fields is ["formatStyle", "codeblock"]; list
+        # all distinct formatStyle values when that field varies.
+        parts = []
+        if "formatStyle" in varying:
+            parts.extend(sorted(set(fc.get("formatStyle", []))))
+        if "codeblock" in varying:
+            parts.append("codeblock")
+        safe_write(f"        Format: ✗ inconsistent ({', '.join(parts)})")
+
+    # Format issues breakdown
+    format_issue_counts = pd.get("formatIssues", {})
+    if format_issue_counts:
+        issues_str = ", ".join(f"{i}: {c}" for i, c in sorted(format_issue_counts.items()))
+        safe_write(f"        Format Issues: {issues_str}")
+
+    # Per-issue-type breakdown (punctuation types show an example filename; the rest don't)
+    issue_display = [
+        ("leading_punctuation", "Leading punctuation", True),
+        ("trailing_punctuation", "Trailing punctuation", True),
+        ("internal_punctuation", "Internal punctuation", True),
+        ("exceeds_max_length", "Exceeds max length", False),
+        ("preamble_leak", "Preamble leaks", False),
+        ("markup_artifact", "Markup artifacts", False),
+        ("repeated_chars", "Repeated characters", False),
+    ]
+    for issue_key, label, with_example in issue_display:
+        items = [e["instance"] for e in pd.get(issue_key, [])]
+        if not items:
+            continue
+        safe_write(f"        {label} ({len(items)} unique):")
+        for item in items[:5]:
+            suffix = ""
+            if with_example:
+                example_file = quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][issue_key].get(item)
+                suffix = f" Example: {example_file}" if example_file else ""
+            safe_write(f"          - {ascii(item)}{suffix}")
+        if len(items) > 5:
+            safe_write(f"          ... and {len(items) - 5} more")
+
+
 def _print_analysis_report(item_count_stats, quality_issues_dict, quality_issues_examples,
                             format_consistency, treatment_fields):
     """Print the verbose per-model/temperature/file-type analysis report
@@ -2157,84 +2211,9 @@ def _print_analysis_report(item_count_stats, quality_issues_dict, quality_issues
                 # Per-prompt quality details
                 prompts_data = quality_issues_dict.get(model_name, {}).get(str(temp_value), {}).get(file_type, {})
                 for prompt_name in sorted(prompts_data.keys()):
-                    pd = prompts_data[prompt_name]
-                    safe_write(f"      {prompt_name}:")
-
-                    # Format consistency
-                    is_consistent = pd.get("consistentFormat", True)
-                    if is_consistent:
-                        safe_write(f"        Format: ✓ consistent")
-                    else:
-                        fc = format_consistency.get((model_name, str(temp_value), file_type, prompt_name), {})
-                        varying = [f for f in treatment_fields if len(set(fc.get(f, []))) > 1]
-
-                        # Build human-readable description of what varies.
-                        # treatment_fields is ["formatStyle", "codeblock"]; list
-                        # all distinct formatStyle values when that field varies.
-                        parts = []
-                        if "formatStyle" in varying:
-                            parts.extend(sorted(set(fc.get("formatStyle", []))))
-                        if "codeblock" in varying:
-                            parts.append("codeblock")
-                        safe_write(f"        Format: ✗ inconsistent ({', '.join(parts)})")
-
-                    # Format issues breakdown
-                    format_issue_counts = pd.get("formatIssues", {})
-                    if format_issue_counts:
-                        issues_str = ", ".join(f"{i}: {c}" for i, c in sorted(format_issue_counts.items()))
-                        safe_write(f"        Format Issues: {issues_str}")
-
-                    # Punctuation issues (leading / trailing / internal)
-                    for punct_type, label in [
-                        ("leading_punctuation",   "Leading punctuation"),
-                        ("trailing_punctuation",  "Trailing punctuation"),
-                        ("internal_punctuation",  "Internal punctuation"),
-                    ]:
-                        punct_items = [e["instance"] for e in pd.get(punct_type, [])]
-                        if punct_items:
-                            safe_write(f"        {label} ({len(punct_items)} unique):")
-                            for item in punct_items[:5]:
-                                example_file = quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][punct_type].get(item)
-                                suffix = f" Example: {example_file}" if example_file else ""
-                                safe_write(f"          - {ascii(item)}{suffix}")
-                            if len(punct_items) > 5:
-                                safe_write(f"          ... and {len(punct_items) - 5} more")
-
-                    # Exceeds max length
-                    exceed_items = [e["instance"] for e in pd.get("exceeds_max_length", [])]
-                    if exceed_items:
-                        safe_write(f"        Exceeds max length ({len(exceed_items)} unique):")
-                        for item in exceed_items[:5]:
-                            safe_write(f"          - {ascii(item)}")
-                        if len(exceed_items) > 5:
-                            safe_write(f"          ... and {len(exceed_items) - 5} more")
-
-                    # Preamble leaks
-                    preamble_items = [e["instance"] for e in pd.get("preamble_leak", [])]
-                    if preamble_items:
-                        safe_write(f"        Preamble leaks ({len(preamble_items)} unique):")
-                        for item in preamble_items[:5]:
-                            safe_write(f"          - {ascii(item)}")
-                        if len(preamble_items) > 5:
-                            safe_write(f"          ... and {len(preamble_items) - 5} more")
-
-                    # Markup artifacts
-                    markup_items = [e["instance"] for e in pd.get("markup_artifact", [])]
-                    if markup_items:
-                        safe_write(f"        Markup artifacts ({len(markup_items)} unique):")
-                        for item in markup_items[:5]:
-                            safe_write(f"          - {ascii(item)}")
-                        if len(markup_items) > 5:
-                            safe_write(f"          ... and {len(markup_items) - 5} more")
-
-                    # Repeated characters
-                    repeated_items = [e["instance"] for e in pd.get("repeated_chars", [])]
-                    if repeated_items:
-                        safe_write(f"        Repeated characters ({len(repeated_items)} unique):")
-                        for item in repeated_items[:5]:
-                            safe_write(f"          - {ascii(item)}")
-                        if len(repeated_items) > 5:
-                            safe_write(f"          ... and {len(repeated_items) - 5} more")
+                    _print_prompt_analysis(prompts_data[prompt_name], model_name, temp_value, file_type,
+                                            prompt_name, format_consistency, treatment_fields,
+                                            quality_issues_examples, safe_write)
 
 
 @dataclass
