@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import csv
 import html as html_mod
 import json
 import sys
@@ -1673,66 +1672,6 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
         f.write(html_content)
 
 
-def write_spreadsheet_csv(items_by_format_model, output_path):
-    """Write summary spreadsheet CSV with one row per (experiment, prompt, model, temperature, format).
-
-    Columns: experiment, prompt, model, temperature, format, trials,
-             min items, max items, average items, variance, total items,
-             unique items, percent unique.
-
-    'unique items' counts distinct items across all trials in the group.
-    'total items' is the sum of item counts across all trials.
-    'percent unique' is unique / total * 100.
-    Variance is sample variance (n-1 denominator); 0 when trials <= 1.
-    """
-    rows = []
-    for (experiment, format_type, prompt, model, temperature), group in items_by_format_model.items():
-        counts = group["per_trial_counts"]
-        counter = group["counter"]
-        trials = group["trial_count"]
-
-        if counts:
-            min_items = min(counts)
-            max_items = max(counts)
-            avg_items = sum(counts) / len(counts)
-            variance = (sum((x - avg_items) ** 2 for x in counts) / (len(counts) - 1)
-                        if len(counts) > 1 else 0.0)
-        else:
-            min_items = max_items = avg_items = variance = 0.0
-
-        total_items = sum(counter.values())
-        unique_items = len(counter)
-        percent_unique = round(unique_items / total_items * 100, 1) if total_items > 0 else 0.0
-
-        rows.append({
-            "experiment": experiment,
-            "prompt": prompt,
-            "model": model,
-            "temperature": temperature,
-            "format": format_type,
-            "trials": trials,
-            "min items": min_items,
-            "max items": max_items,
-            "average items": round(avg_items, 2),
-            "variance": round(variance, 2),
-            "total items": total_items,
-            "unique items": unique_items,
-            "percent unique": percent_unique,
-        })
-
-    rows.sort(key=lambda r: (r["experiment"], r["prompt"], r["model"], str(r["temperature"]), r["format"]))
-
-    fieldnames = [
-        "experiment", "prompt", "model", "temperature", "format",
-        "trials", "min items", "max items", "average items", "variance",
-        "total items", "unique items", "percent unique",
-    ]
-    with open(output_path, 'w', newline='', encoding='utf-8') as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(rows)
-
-
 @click.command()
 @click.option('--experiment', type=str, default=None,
               help='Experiment name to filter (optional). Output: results/report_{experiment}.html')
@@ -1855,11 +1794,6 @@ def main(experiment, input, output):
         generate_html_report_with_filters(items_by_format_model, all_items_sorted, formats, models, temperatures, experiments, prompts, data, str(output_path), quality_data, prompt_texts=prompt_texts, format_prompts=format_prompts)
 
         click.echo(f"Success. Report generated at {output_path}")
-
-        # Write summary spreadsheet alongside the report
-        spreadsheet_path = output_path.parent / "spreadsheet.csv"
-        write_spreadsheet_csv(items_by_format_model, spreadsheet_path)
-        click.echo(f"Wrote spreadsheet to {spreadsheet_path}")
 
     except Exception as e:
         click.echo(format_error("generate_report", str(e)), err=True)
