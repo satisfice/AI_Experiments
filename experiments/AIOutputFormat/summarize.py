@@ -654,66 +654,93 @@ def parse_md(content):
     return items, cleanups, quality_issues
 
 
+def _strip_yaml_directive_marker(content, cleanups):
+    """Strip a YAML end-of-directives / document-separator marker (---) found on a
+    non-first line, and everything from that line onward, so it doesn't corrupt
+    the parse."""
+    all_lines = content.strip().split('\n')
+    for i, line in enumerate(all_lines):
+        if i > 0 and line.strip() == '---':
+            cleanups.append("YAML-Directive-Marker-Handling")
+            return '\n'.join(all_lines[:i])
+    return content
+
+
+def _is_yaml_plain_text_list(lines):
+    """True if content looks like a plain text list: multiple lines, none of which
+    start with a YAML list marker (-, *, •) or a numbered prefix."""
+    return (
+        len(lines) > 1 and
+        all(not line.strip().startswith(('-', '*', '•')) and
+            not re.match(r'^\d+\.\s', line.strip())
+            for line in lines if line.strip())
+    )
+
+
+def _yaml_data_to_items(data, cleanups):
+    """Convert parsed YAML data to a list of items: a list (possibly a single
+    dict-wrapped inner list), a dict's values, a plain string (possibly containing
+    numbered items), or any other scalar."""
+    if isinstance(data, list):
+        items = data
+        # Handle [{key: [item1, item2, ...]}] — model wrapped the list in a named key.
+        # Extract the inner list so downstream flattening can normalise it.
+        if len(items) == 1 and isinstance(items[0], dict):
+            values = list(items[0].values())
+            if len(values) == 1 and isinstance(values[0], list):
+                items = values[0]
+                cleanups.append("YAML-Wrapped-List-Extraction")
+        return items
+
+    if isinstance(data, dict):
+        cleanups.append("YAML-Dict-Value-Extraction")
+        return list(data.values())
+
+    if isinstance(data, str):
+        # YAML parsed as a plain string (likely non-standard YAML with numbered/bulleted lines)
+        # Try to parse as text with numbered items (1. item 2. item 3. item, etc.)
+        # Look for pattern: digit(s) followed by period and space
+        numbered_items = re.findall(r'\d+\.\s+([^0-9]+?)(?=\d+\.\s|$)', data)
+        if numbered_items:
+            cleanups.append("YAML-Numbered-Item-Extraction")
+            return [item.strip() for item in numbered_items if item.strip()]
+        return [data] if data else []
+
+    return [data] if data is not None else []
+
+
+def _try_yaml_marker_fallback(content):
+    """Fallback for unparseable YAML: extract lines that start with a YAML list
+    marker (-, *, •). Returns items, or [] if none found."""
+    items = []
+    for line in content.strip().split('\n'):
+        stripped = line.strip()
+        if stripped and stripped[0] in ('-', '*', '•'):
+            # Remove the marker and following whitespace
+            item = re.sub(r'^[-*•]\s*', '', stripped).strip()
+            items.append(item)
+    return items
+
+
 def parse_yaml(content):
     """Parse YAML: extract items from structure. If single item is a list, flatten it.
-    Falls back to text parsing if content looks like plain text list.
+    Falls back to text parsing if content looks like plain text list, and to
+    marker-based line extraction if content isn't valid YAML at all.
     Returns (items, cleanups, quality_issues)."""
     cleanups = []
     quality_issues = []
     try:
-        # Check for a YAML end-of-directives / document-separator marker (---) on a non-first
-        # line; strip everything from that line onward so it doesn't corrupt the parse.
-        all_lines = content.strip().split('\n')
-        for i, line in enumerate(all_lines):
-            if i > 0 and line.strip() == '---':
-                cleanups.append("YAML-Directive-Marker-Handling")
-                content = '\n'.join(all_lines[:i])
-                break
+        content = _strip_yaml_directive_marker(content, cleanups)
 
         # Check if content looks like plain text list (newline-separated, no YAML syntax)
         lines = content.strip().split('\n')
-        # If content has multiple lines AND none start with YAML list markers or numbers+period,
-        # treat it as a plain text list
-        is_plain_text_list = (
-            len(lines) > 1 and
-            all(not line.strip().startswith(('-', '*', '•')) and
-                not re.match(r'^\d+\.\s', line.strip())
-                for line in lines if line.strip())
-        )
-
-        if is_plain_text_list:
+        if _is_yaml_plain_text_list(lines):
             # Plain text list: one item per line
             items = [line.strip() for line in lines if line.strip()]
             cleanups.append("YAML-Plain-Text-Detection")
         else:
-            # Parse as YAML
             data = yaml.safe_load(content)
-            if isinstance(data, list):
-                items = data
-                # Handle [{key: [item1, item2, ...]}] — model wrapped the list in a named key.
-                # Extract the inner list so downstream flattening can normalise it.
-                if len(items) == 1 and isinstance(items[0], dict):
-                    values = list(items[0].values())
-                    if len(values) == 1 and isinstance(values[0], list):
-                        items = values[0]
-                        cleanups.append("YAML-Wrapped-List-Extraction")
-            elif isinstance(data, dict):
-                items = list(data.values())
-                cleanups.append("YAML-Dict-Value-Extraction")
-            elif isinstance(data, str):
-                # YAML parsed as a plain string (likely non-standard YAML with numbered/bulleted lines)
-                # Try to parse as text with numbered items (1. item 2. item 3. item, etc.)
-                # Look for pattern: digit(s) followed by period and space
-                numbered_items = re.findall(r'\d+\.\s+([^0-9]+?)(?=\d+\.\s|$)', data)
-                if numbered_items:
-                    # Found numbered items - use them, stripping whitespace
-                    items = [item.strip() for item in numbered_items if item.strip()]
-                    cleanups.append("YAML-Numbered-Item-Extraction")
-                else:
-                    # No numbered items found, treat as single item
-                    items = [data] if data else []
-            else:
-                items = [data] if data is not None else []
+            items = _yaml_data_to_items(data, cleanups)
 
         # If only one item and it's a list, flatten it
         if len(items) == 1 and isinstance(items[0], list):
@@ -722,21 +749,11 @@ def parse_yaml(content):
 
         return items, cleanups, quality_issues
 
-    except yaml.YAMLError as e:
+    except yaml.YAMLError:
         # YAML parse error - fall back to plain text parsing with YAML list markers
         cleanups.append("YAML-Parse-Error-Fallback")
-
-        # Try to extract items with YAML list markers (-, *, •) as fallback
         try:
-            lines = content.strip().split('\n')
-            items = []
-            for line in lines:
-                stripped = line.strip()
-                if stripped and stripped[0] in ('-', '*', '•'):
-                    # Remove the marker and following whitespace
-                    item = re.sub(r'^[-*•]\s*', '', stripped).strip()
-                    items.append(item)
-
+            items = _try_yaml_marker_fallback(content)
             if items:
                 return items, cleanups, quality_issues
         except Exception:
