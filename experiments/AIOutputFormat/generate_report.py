@@ -10,7 +10,7 @@ from typing import NamedTuple
 from collections import Counter, defaultdict
 import plotly.graph_objects as go
 from config import abbreviate_model_name, get_model_color, model_supports_temperature, get_format_instruction
-from utils import format_error, print_error
+from utils import format_error, print_error, detect_preamble_leak
 
 # Color palette for formats (normalized to lowercase for matching)
 FORMAT_COLORS = {
@@ -1004,44 +1004,6 @@ def get_file_extension(format_name):
     return FORMAT_TO_EXTENSION.get(format_name, FORMAT_TO_EXTENSION.get(format_lower, format_lower))
 
 
-def is_preamble(item):
-    """
-    Filter preamble text patterns.
-    Returns True if the item should be filtered out.
-    """
-    if not isinstance(item, str):
-        return True
-
-    item_lower = item.lower().strip()
-
-    # Empty or very short
-    if len(item_lower) < 2:
-        return True
-
-    # Markdown headers (lines starting with #)
-    if item.lstrip().startswith('#'):
-        return True
-
-    # Starts with common preamble phrases
-    if any(item_lower.startswith(prefix) for prefix in [
-        "here's", "here are", "here is", "sure", "certainly",
-        "here's a", "here are the", "here is the",
-        "here are some", "here's some"
-    ]):
-        return True
-
-    # Contains list indicators
-    if any(phrase in item_lower for phrase in [
-        "list of", "the following", "are the", "is a list"
-    ]):
-        return True
-
-    # Ends with colon or ellipsis (likely intro text)
-    if item_lower.endswith(":") or item_lower.endswith("..."):
-        return True
-
-    return False
-
 
 def hsl_to_rgb(h, s, l):
     """
@@ -1196,7 +1158,7 @@ def aggregate_items_by_format_and_model(data):
             items = entry.get('items', [])
 
             # Filter out preamble text
-            filtered_items = [item for item in items if not is_preamble(item)]
+            filtered_items = [item for item in items if not detect_preamble_leak(item)]
 
             # Create unique key for this combination
             key = (experiment, format_type, prompt, model, temperature)
@@ -1304,7 +1266,7 @@ def get_unique_items_sorted(data):
 
         for entry in entries:
             items = entry.get('items', [])
-            filtered_items = [item for item in items if not is_preamble(item)]
+            filtered_items = [item for item in items if not detect_preamble_leak(item)]
             all_items.update(filtered_items)
 
     # Sort by count descending, then alphabetically

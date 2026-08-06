@@ -14,7 +14,7 @@ from collections import defaultdict, Counter
 from io import StringIO
 from fnmatch import fnmatch
 from config import abbreviate_model_name
-from utils import format_error, print_error
+from utils import format_error, print_error, detect_preamble_leak
 
 RESULTS_DIR = Path("results")
 META_DIR = RESULTS_DIR / "meta"
@@ -1573,62 +1573,6 @@ def extract_first_alpha_string(item):
         return match.group(0).lower()
     return item.lower()
 
-
-def detect_preamble_leak(item):
-    """Check if item looks like LLM preamble/instruction text.
-    Matches common LLM response prefixes, items with 6+ words, and various preamble patterns."""
-    # Non-string items are filtered out
-    if not isinstance(item, str):
-        return True
-
-    item_lower = item.lower().strip()
-
-    # Empty or very short
-    if len(item_lower) < 2:
-        return True
-
-    # Markdown headers (lines starting with #)
-    if item.lstrip().startswith('#'):
-        return True
-
-    # Starts with common preamble phrases
-    if any(item_lower.startswith(prefix) for prefix in [
-        "here's", "here are", "here is", "sure", "certainly",
-        "here's a", "here are the", "here is the",
-        "here are some", "here's some"
-    ]):
-        return True
-
-    # Contains list indicators
-    if any(phrase in item_lower for phrase in [
-        "list of", "the following", "are the", "is a list"
-    ]):
-        return True
-
-    # Ends with colon or ellipsis (likely intro text)
-    if item_lower.endswith(":") or item_lower.endswith("..."):
-        return True
-
-    # Items with 6+ words are suspicious (item names are typically 1-3 words)
-    if len(item_lower.split()) >= 6:
-        return True
-
-    # Additional regex patterns for preamble indicators
-    preamble_patterns = [
-        r'\bhere\s+(is|are)\b',
-        r'\bsure\b',
-        r'\bcertainly\b',
-        r'\blist\s+of\b',
-        r'\bfollowing\b',
-        r'\bi\'?ll\b',
-        r'\bi\s+can\b',
-        r'\bbelow\b',
-    ]
-    for pattern in preamble_patterns:
-        if re.search(pattern, item_lower):
-            return True
-
-    return False
 
 def detect_markup_artifact(item):
     """Check if item contains residual HTML/XML/markdown markup."""
