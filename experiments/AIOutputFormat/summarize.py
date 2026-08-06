@@ -2107,6 +2107,24 @@ def _make_format_aggregation_dicts():
     return case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg
 
 
+def _flag_case_inconsistencies(case_values_agg, quality_issues_output, quality_issues_examples):
+    """Flag trial sets whose case type differs across files (more than one distinct
+    case type observed for the same model/temperature/file_type/prompt). Mutates
+    quality_issues_output and quality_issues_examples in place."""
+    for model_name in case_values_agg:
+        for temp_value in case_values_agg[model_name]:
+            for file_type in case_values_agg[model_name][temp_value]:
+                for prompt_name in case_values_agg[model_name][temp_value][file_type]:
+                    entries = case_values_agg[model_name][temp_value][file_type][prompt_name]
+                    distinct = set(v for v, _ in entries)
+                    if len(distinct) <= 1:
+                        continue
+                    for case_val, fname in entries:
+                        quality_issues_output[model_name][temp_value][file_type][prompt_name]["inconsistent_case"].add(case_val)
+                        if case_val not in quality_issues_examples[model_name][temp_value][file_type][prompt_name]["inconsistent_case"]:
+                            quality_issues_examples[model_name][temp_value][file_type][prompt_name]["inconsistent_case"][case_val] = fname
+
+
 def _flag_format_inconsistencies(cleanup_agg, quality_issues_output, quality_issues_examples,
                                   file_type_label, issue_key):
     """Flag trial sets whose cleanup-rule sets differ across files for one file type
@@ -2772,17 +2790,7 @@ def summarize_results(options):
 
     # Compute cross-trial case inconsistency and populate quality_issues_output.
     # A trial set is flagged when more than one distinct case type is observed across files.
-    for model_name in case_values_agg:
-        for temp_value in case_values_agg[model_name]:
-            for file_type in case_values_agg[model_name][temp_value]:
-                for prompt_name in case_values_agg[model_name][temp_value][file_type]:
-                    entries = case_values_agg[model_name][temp_value][file_type][prompt_name]
-                    distinct = set(v for v, _ in entries)
-                    if len(distinct) > 1:
-                        for case_val, fname in entries:
-                            quality_issues_output[model_name][temp_value][file_type][prompt_name]["inconsistent_case"].add(case_val)
-                            if case_val not in quality_issues_examples[model_name][temp_value][file_type][prompt_name]["inconsistent_case"]:
-                                quality_issues_examples[model_name][temp_value][file_type][prompt_name]["inconsistent_case"][case_val] = fname
+    _flag_case_inconsistencies(case_values_agg, quality_issues_output, quality_issues_examples)
 
     # Flag trial sets whose cleanup-rule sets differ across files, per file type.
     # A trial set is flagged when files have differing sets of cleanup rules applied,
