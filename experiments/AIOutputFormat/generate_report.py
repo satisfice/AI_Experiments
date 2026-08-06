@@ -6,6 +6,7 @@ import sys
 import textwrap
 import click
 from pathlib import Path
+from typing import NamedTuple
 from collections import Counter, defaultdict
 import plotly.graph_objects as go
 from config import abbreviate_model_name, get_model_color, model_supports_temperature, get_format_instruction
@@ -1311,9 +1312,22 @@ def get_unique_items_sorted(data):
     return sorted_items
 
 
+class Combo(NamedTuple):
+    """Identifies one (format, model, temperature, experiment, prompt) combination.
+    A plain, hashable, drop-in tuple replacement -- usable as a dict key exactly
+    like the raw 5-tuple it replaces, but with named field access at call sites
+    that previously had to pass format/model/temperature/experiment/prompt as
+    four or five separate positional arguments."""
+    format: str
+    model: str
+    temperature: str
+    experiment: str
+    prompt: str
+
+
 def _build_combo_info(items_by_format_model):
-    """Build mapping from 5-tuple keys to per-combo metadata and counters.
-    Returns {(format, model, temp_str, experiment, prompt): {...}}."""
+    """Build mapping from Combo keys to per-combo metadata and counters.
+    Returns {Combo(format, model, temp_str, experiment, prompt): {...}}."""
     combo_info = {}
     for key_tuple, value_dict in items_by_format_model.items():
         experiment, format_type, prompt, model, temperature = key_tuple
@@ -1327,7 +1341,7 @@ def _build_combo_info(items_by_format_model):
         max_items = max(per_trial_counts) if per_trial_counts else 0
         min_items = min(per_trial_counts) if per_trial_counts else 0
 
-        combo_key = (format_type, model, str(temperature), experiment, prompt)
+        combo_key = Combo(format_type, model, str(temperature), experiment, prompt)
         combo_info[combo_key] = {
             "counter": counter,
             "trial_count": trial_count,
@@ -1500,63 +1514,40 @@ def _build_filter_checkboxes_html(experiments, prompts, formats, models, tempera
     return html_content
 
 
-def _build_plot_section_html(combo_key, metadata, combo_info, figures_html, quality_data, models, prompt_texts, format_prompts):
-    """Build the HTML for one combo's plot section: title (with cleanup/prompt/
-    hardness tooltips, load-set button, item-counts button) plus the figure div."""
-    fmt = metadata["format"]
-    model = metadata["model"]
-    temp = metadata["temperature"]
-    exp = metadata["experiment"]
-    prompt = metadata["prompt"]
-    format_hardness = metadata.get("formatHardness", "soft")
-
-    # Get item counts for this specific combination
-    info = combo_info[combo_key]
-    counter = info["counter"]
-    total_items = sum(counter.values())
-    unique_items = len(counter)
-    trial_count = info["trial_count"]
-    max_items = info["max_items"]
-    min_items = info["min_items"]
-
-    # Get colors
-    format_color = FORMAT_COLORS.get(fmt.lower(), '#636363')
-    model_base_color = get_model_color(model)
-    background_color = adjust_color_by_temperature(model_base_color, temp, model, models)
-
-    # Calculate percentage of unique items and average per trial
-    unique_pct = (unique_items / total_items * 100) if total_items > 0 else 0
-    avg_per_trial = total_items / trial_count if trial_count > 0 else 0
-
-    # Build cleanup indicator with rich tooltip (quality issues in bold + cleanup rules).
-    # Always emitted: red if quality problems, #555 if cleanup only, #aaa if nothing to clean.
+def _build_cleanup_indicator(quality_data, combo):
+    """Build the cleanup indicator span with a rich tooltip (quality issues in
+    bold + cleanup rules). Always returned: red if quality problems, #555 if
+    cleanup only, #aaa if nothing to clean."""
+    fmt, model, temp, exp, prompt = combo
     quality_issues, cleanup_rules = get_cleanup_data_for_combo(quality_data, model, temp, fmt, prompt)
-    if quality_issues or cleanup_rules:
-        # Build HTML tooltip content: quality issues in bold first, then cleanup rules.
-        # Use raw strings in tooltip_lines (no pre-escaping); html_mod.escape() is
-        # applied once to the assembled HTML for safe embedding in the attribute value.
-        # JavaScript's getAttribute() decodes the entities, then innerHTML renders the HTML.
-        tooltip_lines = []
-        for issue in quality_issues:
-            tooltip_lines.append(f'<b>{issue}</b>')
-        if cleanup_rules:
-            if quality_issues:
-                tooltip_lines.append('<span style="display:block;margin-top:4px"></span>')
-            for rule in cleanup_rules:
-                tooltip_lines.append(rule)
-        tooltip_html = html_mod.escape('<br>'.join(tooltip_lines))
-        color = "red" if quality_issues else "#555"
-        quality_indicator = (
-            f' | <span class="cleanup-indicator" data-tooltip-html="{tooltip_html}"'
-            f' style="color: {color}; cursor: default;">Cleanup</span>'
-        )
-    else:
+    if not (quality_issues or cleanup_rules):
         # No cleanup or quality issues: show grayed-out indicator with no tooltip.
-        quality_indicator = (
-            ' | <span style="color: #aaa; cursor: default;">Cleanup</span>'
-        )
+        return ' | <span style="color: #aaa; cursor: default;">Cleanup</span>'
 
-    # Build clipboard string for "Load set" button using actual filenames in the set
+    # Build HTML tooltip content: quality issues in bold first, then cleanup rules.
+    # Use raw strings in tooltip_lines (no pre-escaping); html_mod.escape() is
+    # applied once to the assembled HTML for safe embedding in the attribute value.
+    # JavaScript's getAttribute() decodes the entities, then innerHTML renders the HTML.
+    tooltip_lines = []
+    for issue in quality_issues:
+        tooltip_lines.append(f'<b>{issue}</b>')
+    if cleanup_rules:
+        if quality_issues:
+            tooltip_lines.append('<span style="display:block;margin-top:4px"></span>')
+        for rule in cleanup_rules:
+            tooltip_lines.append(rule)
+    tooltip_html = html_mod.escape('<br>'.join(tooltip_lines))
+    color = "red" if quality_issues else "#555"
+    return (
+        f' | <span class="cleanup-indicator" data-tooltip-html="{tooltip_html}"'
+        f' style="color: {color}; cursor: default;">Cleanup</span>'
+    )
+
+
+def _build_load_set_button(info, combo, format_hardness):
+    """Build the clipboard-copy 'Load set' button, using actual filenames when
+    recorded or a wildcard pattern as fallback."""
+    fmt, model, temp, exp, prompt = combo
     set_filenames = sorted(info.get("filenames", []))
     if set_filenames:
         load_set_str = "np " + " ".join(set_filenames)
@@ -1570,8 +1561,7 @@ def _build_plot_section_html(combo_key, metadata, combo_info, figures_html, qual
         hardness_code = "fs" if format_hardness == "soft" else "fh"
         load_set_str = f"np *{exp}-{prompt}-{hardness_code}-{abbr_model}-{temp_code}-*.{file_ext}"
 
-    # Build button HTML with onclick handler for clipboard copy
-    load_set_button = (
+    return (
         f' | <button '
         f'style="font-size: 0.85em; padding: 2px 8px; cursor: pointer; '
         f'background-color: #4169e1; color: #fff; border: none; border-radius: 4px;" '
@@ -1581,7 +1571,11 @@ def _build_plot_section_html(combo_key, metadata, combo_info, figures_html, qual
         f'>Load set</button>'
     )
 
-    # Build per-trial data for "Show Item Counts" histogram popup
+
+def _build_item_counts_button(info, combo, format_hardness, format_color, model_base_color):
+    """Build the 'Show Item Counts' button, embedding per-trial data as JSON
+    for the client-side histogram popup."""
+    fmt, model, temp, exp, prompt = combo
     _tc_counts = info["per_trial_counts"]
     _tc_filenames = info.get("filenames", [])
     _tc_trials = []
@@ -1606,7 +1600,7 @@ def _build_plot_section_html(combo_key, metadata, combo_info, figures_html, qual
         "borderColor": model_base_color,
         "subtitle": _tc_subtitle,
     }))
-    item_counts_button = (
+    return (
         f' | <button '
         f'style="font-size: 0.85em; padding: 2px 8px; cursor: pointer; '
         f'background-color: #4169e1; color: #fff; border: none; border-radius: 4px;" '
@@ -1615,8 +1609,11 @@ def _build_plot_section_html(combo_key, metadata, combo_info, figures_html, qual
         f'>Show Item Counts</button>'
     )
 
-    # Build prompt tooltip: prompt text + double line break + format instruction.
-    # Text is wrapped at 80 chars; lines separated by <br> for HTML rendering.
+
+def _build_prompt_tooltip_attr(combo, prompt_texts, format_prompts):
+    """Build the prompt tooltip attribute: prompt text + double line break +
+    format instruction, wrapped at 80 chars with <br> line breaks."""
+    fmt, prompt = combo.format, combo.prompt
     _prompt_body = (prompt_texts or {}).get(prompt, '')
     _fmt_ext = get_file_extension(fmt)
     _fmt_instruction = (format_prompts or {}).get(_fmt_ext, '')
@@ -1627,17 +1624,54 @@ def _build_plot_section_html(combo_key, metadata, combo_info, figures_html, qual
         if _tooltip_parts:
             _tooltip_parts.append('<br><br>')
         _tooltip_parts.append('<br>'.join(textwrap.wrap(_fmt_instruction, width=80)))
-    _prompt_tooltip_attr = ''
-    if _tooltip_parts:
-        _escaped = html_mod.escape(''.join(_tooltip_parts))
-        _prompt_tooltip_attr = f' class="prompt-indicator" data-tooltip-html="{_escaped}"'
+    if not _tooltip_parts:
+        return ''
+    _escaped = html_mod.escape(''.join(_tooltip_parts))
+    return f' class="prompt-indicator" data-tooltip-html="{_escaped}"'
 
-    # Build hardness tooltip: format instruction for the specific hardness
-    _hardness_tooltip_attr = ''
+
+def _build_hardness_tooltip_attr(combo, format_hardness):
+    """Build the hardness tooltip attribute: format instruction for this hardness."""
+    fmt = combo.format
     _hardness_instruction = get_format_instruction(fmt, format_hardness)
-    if _hardness_instruction:
-        _hardness_escaped = html_mod.escape('<br>'.join(textwrap.wrap(_hardness_instruction, width=80)))
-        _hardness_tooltip_attr = f' class="hardness-indicator" data-tooltip-html="{_hardness_escaped}"'
+    if not _hardness_instruction:
+        return ''
+    _hardness_escaped = html_mod.escape('<br>'.join(textwrap.wrap(_hardness_instruction, width=80)))
+    return f' class="hardness-indicator" data-tooltip-html="{_hardness_escaped}"'
+
+
+def _build_plot_section_html(combo, metadata, combo_info, figures_html, quality_data, models, prompt_texts, format_prompts):
+    """Build the HTML for one combo's plot section: title (with cleanup/prompt/
+    hardness tooltips, load-set button, item-counts button) plus the figure div."""
+    # metadata's format/model/temperature/experiment/prompt are always identical
+    # to combo's fields by construction (see _generate_combo_figures); formatHardness
+    # is the one piece of information metadata carries that combo doesn't.
+    fmt, model, temp, exp, prompt = combo
+    format_hardness = metadata.get("formatHardness", "soft")
+
+    # Get item counts for this specific combination
+    info = combo_info[combo]
+    counter = info["counter"]
+    total_items = sum(counter.values())
+    unique_items = len(counter)
+    trial_count = info["trial_count"]
+    max_items = info["max_items"]
+    min_items = info["min_items"]
+
+    # Get colors
+    format_color = FORMAT_COLORS.get(fmt.lower(), '#636363')
+    model_base_color = get_model_color(model)
+    background_color = adjust_color_by_temperature(model_base_color, temp, model, models)
+
+    # Calculate percentage of unique items and average per trial
+    unique_pct = (unique_items / total_items * 100) if total_items > 0 else 0
+    avg_per_trial = total_items / trial_count if trial_count > 0 else 0
+
+    quality_indicator = _build_cleanup_indicator(quality_data, combo)
+    load_set_button = _build_load_set_button(info, combo, format_hardness)
+    item_counts_button = _build_item_counts_button(info, combo, format_hardness, format_color, model_base_color)
+    _prompt_tooltip_attr = _build_prompt_tooltip_attr(combo, prompt_texts, format_prompts)
+    _hardness_tooltip_attr = _build_hardness_tooltip_attr(combo, format_hardness)
 
     # Build HTML title with colored text (three lines)
     # Line 1: Experiment | Prompt | Format (hardness) | Model | Temperature
@@ -1658,7 +1692,7 @@ def _build_plot_section_html(combo_key, metadata, combo_info, figures_html, qual
         f'        <div class="plot-section" data-format="{fmt}" data-model="{model}" data-temperature="{temp}" data-prompt="{prompt}" data-experiment="{exp}">\n'
         f'            <div class="plot-title">{title_html}</div>\n'
         f'            <div class="plot-wrapper" style="background-color: {background_color}; border-color: {model_base_color};">\n'
-        + figures_html[combo_key] +
+        + figures_html[combo] +
         '            </div>\n'
         '        </div>\n\n'
     )
