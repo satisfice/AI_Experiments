@@ -7,7 +7,7 @@ import re
 import sys
 import click
 from dataclasses import dataclass
-from typing import Optional
+from typing import NamedTuple, Optional
 from html.parser import HTMLParser
 from pathlib import Path
 from collections import defaultdict, Counter
@@ -2129,9 +2129,19 @@ def _flag_format_inconsistencies(cleanup_agg, quality_issues_output, quality_iss
                         quality_issues_examples[model_name][temp_value][file_type_label][prompt_name][issue_key][rule] = example_fname
 
 
-def _print_prompt_analysis(pd, model_name, temp_value, file_type, prompt_name,
-                            format_consistency, treatment_fields, quality_issues_examples, safe_write):
+class TrialKey(NamedTuple):
+    """Identifies one (model, temperature, file_type, prompt) combination --
+    matches the tuple key already used for format_consistency lookups. A
+    drop-in replacement for that raw tuple, with named field access."""
+    model: str
+    temperature: str
+    file_type: str
+    prompt: str
+
+
+def _print_prompt_analysis(pd, key, format_consistency, treatment_fields, quality_issues_examples, safe_write):
     """Print one prompt's quality-issue breakdown within the analysis report."""
+    model_name, temp_value, file_type, prompt_name = key
     safe_write(f"      {prompt_name}:")
 
     # Format consistency
@@ -2211,9 +2221,8 @@ def _print_analysis_report(item_count_stats, quality_issues_dict, quality_issues
                 # Per-prompt quality details
                 prompts_data = quality_issues_dict.get(model_name, {}).get(str(temp_value), {}).get(file_type, {})
                 for prompt_name in sorted(prompts_data.keys()):
-                    _print_prompt_analysis(prompts_data[prompt_name], model_name, temp_value, file_type,
-                                            prompt_name, format_consistency, treatment_fields,
-                                            quality_issues_examples, safe_write)
+                    _print_prompt_analysis(prompts_data[prompt_name], TrialKey(model_name, temp_value, file_type, prompt_name),
+                                            format_consistency, treatment_fields, quality_issues_examples, safe_write)
 
 
 @dataclass
@@ -2416,10 +2425,10 @@ def _passes_metadata_filters(filename_metadata, file_name, experiment, model, ex
     return True
 
 
-def _track_item_quality_issues(metadata, model_name, temp_value, file_type, prompt_name, ext,
-                                quality_issues_output, quality_issues_examples, filename):
+def _track_item_quality_issues(metadata, key, ext, quality_issues_output, quality_issues_examples, filename):
     """Track item-level and format-level quality issues from one file's metadata
     into quality_issues_output/examples. Mutates both in place."""
+    model_name, temp_value, file_type, prompt_name = key
     if "itemIssues" in metadata:
         item_issues = metadata["itemIssues"]
         for issue_type in ["leading_punctuation", "trailing_punctuation", "internal_punctuation",
@@ -2729,7 +2738,7 @@ def summarize_results(options):
                 format_style_counts[model_name][str(temp_value)][file_type][prompt_name][fs_label] += 1
 
             # Track quality issues by model, temperature, file type, and prompt
-            _track_item_quality_issues(metadata, model_name, temp_value, file_type, prompt_name,
+            _track_item_quality_issues(metadata, TrialKey(model_name, temp_value, file_type, prompt_name),
                                         ext, quality_issues_output, quality_issues_examples, file_path.name)
 
             # Count duplicate items (items appearing more than once)
