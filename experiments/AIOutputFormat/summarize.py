@@ -2015,10 +2015,11 @@ def _make_cleanup_rules_agg():
 
 
 def _make_format_aggregation_dicts():
-    """Create the format-specific cleanup rule aggregation dicts (case, markdown, HTML, JSON, YAML).
+    """Create the format-specific cleanup rule aggregation dicts (case, markdown, HTML, JSON, YAML, CSV, txt1).
 
     Returns:
-        (case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg)
+        (case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg,
+         csv_cleanup_agg, txt1_cleanup_agg)
         Used for detecting cross-trial inconsistencies in formatting/casing.
     """
     case_values_agg = defaultdict(
@@ -2028,27 +2029,17 @@ def _make_format_aggregation_dicts():
             )
         )
     )
-    md_cleanup_agg = defaultdict(
-        lambda: defaultdict(
-            lambda: defaultdict(list)
-        )
+    cleanup_agg_template = lambda: defaultdict(
+        lambda: defaultdict(list)
     )
-    html_cleanup_agg = defaultdict(
-        lambda: defaultdict(
-            lambda: defaultdict(list)
-        )
-    )
-    json_cleanup_agg = defaultdict(
-        lambda: defaultdict(
-            lambda: defaultdict(list)
-        )
-    )
-    yaml_cleanup_agg = defaultdict(
-        lambda: defaultdict(
-            lambda: defaultdict(list)
-        )
-    )
-    return case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg
+    md_cleanup_agg = cleanup_agg_template()
+    html_cleanup_agg = cleanup_agg_template()
+    json_cleanup_agg = cleanup_agg_template()
+    yaml_cleanup_agg = cleanup_agg_template()
+    csv_cleanup_agg = cleanup_agg_template()
+    txt1_cleanup_agg = cleanup_agg_template()
+
+    return case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg
 
 
 def _flag_case_inconsistencies(case_values_agg, quality_issues_output, quality_issues_examples):
@@ -2530,7 +2521,7 @@ def summarize_results(options):
         "numbered-items-in-tags", "repeated-json-keys", "non-western-characters",
         "comma-separated", "txt1-no-numbers", "html_no_markup", "invalid-html-tags", "pointy-bracket-wrapping",
         "inconsistent_case", "inconsistent_md_format", "inconsistent_html_format",
-        "inconsistent_json_format", "inconsistent_yaml_format",
+        "inconsistent_json_format", "inconsistent_yaml_format", "inconsistent_csv_format", "inconsistent_txt1_format",
         "parse-failed", "json-truncated", "stray-html-markup", "blockquote-markup",
         "Markdown-Cleanup-Partially-Bold-Line", "Markdown-Cleanup-Partially-Italic-Star-Line",
         "Markdown-Cleanup-Partially-Italic-Underscore-Line",
@@ -2542,7 +2533,18 @@ def summarize_results(options):
     format_style_counts = _make_format_style_counts()
     item_count_stats = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
     cleanup_rules_agg = _make_cleanup_rules_agg()
-    case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg = _make_format_aggregation_dicts()
+    case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg = _make_format_aggregation_dicts()
+
+    # Map format types to their aggregations and metadata for post-scan flagging.
+    format_aggs = {
+        '.md': {'agg': md_cleanup_agg, 'label': 'markdown', 'issue_key': 'inconsistent_md_format'},
+        '.html': {'agg': html_cleanup_agg, 'label': 'HTML', 'issue_key': 'inconsistent_html_format'},
+        '.json': {'agg': json_cleanup_agg, 'label': 'JSON', 'issue_key': 'inconsistent_json_format'},
+        '.yml': {'agg': yaml_cleanup_agg, 'label': 'YAML', 'issue_key': 'inconsistent_yaml_format'},
+        '.yaml': {'agg': yaml_cleanup_agg, 'label': 'YAML', 'issue_key': 'inconsistent_yaml_format'},
+        '.csv': {'agg': csv_cleanup_agg, 'label': 'CSV', 'issue_key': 'inconsistent_csv_format'},
+        '.txt1': {'agg': txt1_cleanup_agg, 'label': 'numberedText', 'issue_key': 'inconsistent_txt1_format'},
+    }
     file_count = 0
     skipped_trials = []  # Track trial filenames that were skipped
     zero_item_files = []  # Track files that produced 0 items
@@ -2684,14 +2686,8 @@ def summarize_results(options):
             # Track the full set of cleanup keys applied to each file, per format.
             # After the file loop, trial sets where rule sets differ are flagged as inconsistent.
             rule_set = frozenset(metadata.get("cleanup", {}).keys())
-            for format_exts, agg in (
-                (('.md',), md_cleanup_agg),
-                (('.html',), html_cleanup_agg),
-                (('.json',), json_cleanup_agg),
-                (('.yml', '.yaml'), yaml_cleanup_agg),
-            ):
-                if ext in format_exts:
-                    agg[model_name][str(temp_value)][prompt_name].append((rule_set, file_path.name))
+            if ext in format_aggs:
+                format_aggs[ext]['agg'][model_name][str(temp_value)][prompt_name].append((rule_set, file_path.name))
 
             # Track formatStyle counts per prompt (primary detect_format_style() value)
             format_style_counts[model_name][str(temp_value)][file_type][prompt_name][metadata.get("formatStyle", "unknown")] += 1
@@ -2728,7 +2724,6 @@ def summarize_results(options):
     consolidated_dict = dict(consolidated)
 
     # Detect treatment consistency for each trial set.
-    # Group by (abbreviated_model, str(temperature), file_type, prompt) — no experiment level.
     TREATMENT_FIELDS = ["formatStyle", "codeblock"]
     format_consistency = _compute_format_consistency(consolidated_dict, TREATMENT_FIELDS)
 
@@ -2740,14 +2735,10 @@ def summarize_results(options):
     # A trial set is flagged when files have differing sets of cleanup rules applied,
     # indicating the model produced different structural formats across trials.
     # Instances are the rule names that appeared in some files but not all.
-    _flag_format_inconsistencies(md_cleanup_agg, quality_issues_output, quality_issues_examples,
-                                  "markdown", "inconsistent_md_format")
-    _flag_format_inconsistencies(html_cleanup_agg, quality_issues_output, quality_issues_examples,
-                                  "HTML", "inconsistent_html_format")
-    _flag_format_inconsistencies(json_cleanup_agg, quality_issues_output, quality_issues_examples,
-                                  "JSON", "inconsistent_json_format")
-    _flag_format_inconsistencies(yaml_cleanup_agg, quality_issues_output, quality_issues_examples,
-                                  "YAML", "inconsistent_yaml_format")
+    # Loop over format types instead of repeating the same call four times.
+    for ext, fmt_meta in format_aggs.items():
+        _flag_format_inconsistencies(fmt_meta['agg'], quality_issues_output, quality_issues_examples,
+                                      fmt_meta['label'], fmt_meta['issue_key'])
 
     # Build quality_issues_dict with hierarchy: model -> temperature -> file_type -> prompt
     quality_issues_dict = _build_quality_issues_dict(
