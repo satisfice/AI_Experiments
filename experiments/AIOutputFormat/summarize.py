@@ -385,7 +385,7 @@ def parse_json(content):
             content_to_parse = content_to_parse[3:]
         # Remove closing backticks
         content_to_parse = content_to_parse[:-3].strip()
-        cleanups.append("Extract-from-JSON-Codefence-Markdown")
+        cleanups.append("Extract-from-Codefence-Markdown")
 
     # Try to detect and convert set-like format {item1, item2, ...} to array format
     if _looks_like_json_set_format(content_to_parse):
@@ -1069,7 +1069,7 @@ def _try_html_codefence_fallback(content, cleanups, quality_issues):
         return None, content
 
     extracted_content = match.group(1)
-    cleanups.append("Extract-from-HTML-Codefence-Markdown")
+    cleanups.append("Extract-from-Codefence-Markdown")
     quality_issues.append("html_no_markup")
 
     # If inner content is an all-numbered list, return it immediately
@@ -1280,20 +1280,8 @@ def extract_code_block(content):
     Returns (extracted_content, had_codeblock, cleanups) tuple.
     If code blocks found, returns the content inside them.
     If no code blocks found, returns original content.
-    Cleanup key emitted is named by the language specifier of the first block:
-      ```json  -> Extract-from-JSON-Codefence-Markdown
-      ```yaml / ```yml -> Extract-from-YAML-Codefence-Markdown
-      ```html  -> Extract-from-HTML-Codefence-Markdown
-      ```csv   -> Extract-from-CSV-Codefence-Markdown
-      ``` (no specifier or unrecognized) -> Extract-from-Generic-Codefence-Markdown
+    Cleanup emitted is always "Extract-from-Codefence-Markdown" (language specifier irrelevant).
     """
-    _LANG_CLEANUP_MAP = {
-        'json': 'Extract-from-JSON-Codefence-Markdown',
-        'yaml': 'Extract-from-YAML-Codefence-Markdown',
-        'yml':  'Extract-from-YAML-Codefence-Markdown',
-        'html': 'Extract-from-HTML-Codefence-Markdown',
-        'csv':  'Extract-from-CSV-Codefence-Markdown',
-    }
     cleanups = []
     # Capture language specifier and block content separately
     code_block_pattern = r'```([\w]*)\n(.*?)\n```'
@@ -1302,9 +1290,7 @@ def extract_code_block(content):
     if matches:
         # Found code blocks - concatenate content from all blocks
         extracted = '\n'.join(m[1] for m in matches)
-        # Name the cleanup from the language specifier of the first block
-        lang_spec = matches[0][0].lower()
-        cleanups.append(_LANG_CLEANUP_MAP.get(lang_spec, 'Extract-from-Generic-Codefence-Markdown'))
+        cleanups.append('Extract-from-Codefence-Markdown')
         return extracted, True, cleanups
     else:
         # No code blocks found
