@@ -268,14 +268,24 @@ def _convert_json_set_to_array(content):
     return converted.replace(',\n]', '\n]').replace(', ]', ']').replace(',]', ']')
 
 
+def _flatten_nested_items(items):
+    """Flatten any nested list items into a single list.
+    Returns (flattened_items, had_nested_lists)."""
+    flattened = []
+    had_nested_lists = False
+    for item in items:
+        if isinstance(item, list):
+            had_nested_lists = True
+            flattened.extend(item)
+        else:
+            flattened.append(item)
+    return flattened, had_nested_lists
+
+
 def _json_data_to_items(data, cleanups, note_dict_extraction=False, note_nested_flatten=False):
     """Convert parsed JSON data to a flat list of items: array -> as-is, object ->
     its values, scalar -> single-item list. Extracts a common key from dict-list
-    items and flattens any nested lists. Mutates cleanups.
-
-    note_dict_extraction/note_nested_flatten control whether those two steps record
-    a cleanup entry -- callers differ on this (kept as-is from the prior inline code,
-    not unified, since that's a behavioral choice beyond a structural refactor)."""
+    items and flattens any nested lists. Mutates cleanups."""
     if isinstance(data, list):
         items = data
     elif isinstance(data, dict):
@@ -289,14 +299,7 @@ def _json_data_to_items(data, cleanups, note_dict_extraction=False, note_nested_
     items = _extract_from_dict_list(items, cleanups)
 
     # Flatten any list items
-    flattened = []
-    had_nested_lists = False
-    for item in items:
-        if isinstance(item, list):
-            had_nested_lists = True
-            flattened.extend(item)
-        else:
-            flattened.append(item)
+    flattened, had_nested_lists = _flatten_nested_items(items)
     if had_nested_lists and note_nested_flatten:
         cleanups.append("JSON-Nested-List-Flattening")
     return flattened
@@ -690,11 +693,16 @@ def _yaml_data_to_items(data, cleanups):
             if len(values) == 1 and isinstance(values[0], list):
                 items = values[0]
                 cleanups.append("YAML-Wrapped-List-Extraction")
+        # Use shared flattening (though rarely needed for YAML lists)
+        items, had_nested = _flatten_nested_items(items)
         return items
 
     if isinstance(data, dict):
         cleanups.append("YAML-Dict-Value-Extraction")
-        return list(data.values())
+        items = list(data.values())
+        # Flatten any nested lists in the dict values
+        items, had_nested = _flatten_nested_items(items)
+        return items
 
     if isinstance(data, str):
         # YAML parsed as a plain string (likely non-standard YAML with numbered/bulleted lines)
@@ -1215,32 +1223,34 @@ def parse_html(content):
     cleanups = []
     quality_issues = []
 
+    # Try codefence extraction first (takes content, may modify it)
     codefence_items, content = _try_html_codefence_fallback(content, cleanups, quality_issues)
     if codefence_items is not None:
         return codefence_items, cleanups, quality_issues
 
     root = _parse_html_tree(content)
 
-    formatting_items = _try_formatting_tag_only(root, cleanups, quality_issues)
-    if formatting_items:
-        return formatting_items, cleanups, quality_issues
+    # Define strategies that operate on parsed root. Each returns items (may be None or empty).
+    # Try each in order; first one that returns non-empty items succeeds.
+    strategies = [
+        _try_formatting_tag_only,
+        _try_li_primary_path,
+        _try_bare_list_path,
+        _try_fallback_tags,
+        _try_invalid_tag_fallback,
+    ]
 
-    li_items = _try_li_primary_path(root, cleanups)
-    if li_items is not None:
-        return li_items, cleanups, quality_issues
+    for strategy in strategies:
+        # Most strategies take (root, cleanups, quality_issues); _try_li_primary_path only takes (root, cleanups)
+        if strategy == _try_li_primary_path:
+            items = strategy(root, cleanups)
+        else:
+            items = strategy(root, cleanups, quality_issues)
+        if items:
+            return items, cleanups, quality_issues
 
-    bare_items = _try_bare_list_path(root, cleanups, quality_issues)
-    if bare_items:
-        return bare_items, cleanups, quality_issues
-
-    items = _try_fallback_tags(root, cleanups, quality_issues)
-
-    if not items:
-        items = _try_invalid_tag_fallback(root, cleanups, quality_issues)
-
-    if not items:
-        items = _try_plain_text_fallback(content, cleanups, quality_issues)
-
+    # Final fallback: try as plain text
+    items = _try_plain_text_fallback(content, cleanups, quality_issues)
     return items, cleanups, quality_issues
 
 
@@ -1523,23 +1533,38 @@ _LEADING_PUNCT_RE = re.compile(r'^[' + _PUNCT_CHARS + r']+')
 _TRAILING_PUNCT_RE = re.compile(r'[' + _PUNCT_CHARS + r']+$')
 
 
+def _detect_pattern_in_item(item, pattern, location='full'):
+    """Check if item matches a pattern at a specific location.
+    location: 'start' (match), 'end' (search), 'full' (search), or 'interior' (after stripping edges).
+    """
+    if location == 'start':
+        return bool(pattern.match(item))
+    elif location == 'end':
+        return bool(pattern.search(item))
+    elif location == 'interior':
+        inner = _LEADING_PUNCT_RE.sub('', item)
+        inner = _TRAILING_PUNCT_RE.sub('', inner)
+        # For interior, check if any character doesn't fit the whitelist
+        return any(not (c.isalpha() or c.isdigit() or c in " '-") for c in inner)
+    else:  # 'full'
+        return bool(pattern.search(item))
+
+
 def detect_leading_punctuation(item):
     """Return True if item begins with a punctuation/formatting character."""
-    return bool(_LEADING_PUNCT_RE.match(item))
+    return _detect_pattern_in_item(item, _LEADING_PUNCT_RE, location='start')
 
 
 def detect_trailing_punctuation(item):
     """Return True if item ends with a punctuation/formatting character."""
-    return bool(_TRAILING_PUNCT_RE.search(item))
+    return _detect_pattern_in_item(item, _TRAILING_PUNCT_RE, location='end')
 
 
 def detect_internal_punctuation(item):
     """Return True if item contains a special character in its interior
     (i.e. after stripping leading/trailing formatting chars the cleanup pipeline
     would remove). Catches things like slashes or colons inside words."""
-    inner = _LEADING_PUNCT_RE.sub('', item)
-    inner = _TRAILING_PUNCT_RE.sub('', inner)
-    return any(not (c.isalpha() or c.isdigit() or c in " '-") for c in inner)
+    return _detect_pattern_in_item(item, None, location='interior')
 
 
 def extract_first_alpha_string(item):
