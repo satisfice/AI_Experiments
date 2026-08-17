@@ -2499,72 +2499,14 @@ def _write_unique_source_items_file(source_items, verbose):
         click.echo(f"Wrote {len(sorted_source_items)} unique source items to {UNIQUE_SOURCE_ITEMS_FILE}")
 
 
-def summarize_results(options):
-    """
-    Read all result files by type, parse items, and summarize into a single JSON.
-    Structure: {filetype: [{filename: str, items: [...]}, ...], ...}
-
-    Args:
-        options: SummarizeFilters instance (see its field comments for details).
-    """
-    filename_filter = options.filename_filter
-    model = options.model
-    format_type = options.format_type
-    experiment = options.experiment
-    timestamp = options.timestamp
-    temperature = options.temperature
-    max_item_length = options.max_item_length
-    analysis = options.analysis
-    exclude_model = options.exclude_model
-    verbose = options.verbose
-
-    if not RESULTS_DIR.exists():
-        click.echo(format_error("summarize", f"{RESULTS_DIR} directory not found"), err=True)
-        return False
-
-    consolidated = defaultdict(list)
-    # All tracked issue types (item-level first, then format-style-derived using dash-separated names)
-    ISSUE_TYPES = [
-        "leading_punctuation", "trailing_punctuation", "internal_punctuation",
-        "exceeds_max_length", "preamble_leak",
-        "markup_artifact", "repeated_chars", "repeated_sequence",
-        "single-span-tag",
-        "numbered-items-in-tags", "repeated-json-keys", "non-western-characters",
-        "comma-separated", "txt1-no-numbers", "html_no_markup", "invalid-html-tags", "pointy-bracket-wrapping",
-        "inconsistent_case", "inconsistent_md_format", "inconsistent_html_format",
-        "inconsistent_json_format", "inconsistent_yaml_format", "inconsistent_csv_format", "inconsistent_txt1_format",
-        "parse-failed", "json-truncated", "stray-html-markup", "blockquote-markup",
-        "Markdown-Cleanup-Partially-Bold-Line", "Markdown-Cleanup-Partially-Italic-Star-Line",
-        "Markdown-Cleanup-Partially-Italic-Underscore-Line",
-        "HTML_Only_Bold_Tags", "HTML_Only_Italic_Tags", "HTML_Only_Emphasis_Tags", "HTML_Only_Underline_Tags",
-        "HTML_Only_Pre_Tags", "items-not-in-li",
-    ]
-    # Initialize quality issue tracking structures
-    quality_issues_output, quality_issues_examples = _make_issue_output_dicts(ISSUE_TYPES)
-    format_style_counts = _make_format_style_counts()
-    item_count_stats = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
-    cleanup_rules_agg = _make_cleanup_rules_agg()
-    case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg = _make_format_aggregation_dicts()
-
-    # Map format types to their aggregations and metadata for post-scan flagging.
-    format_aggs = {
-        '.md': {'agg': md_cleanup_agg, 'label': 'markdown', 'issue_key': 'inconsistent_md_format'},
-        '.html': {'agg': html_cleanup_agg, 'label': 'HTML', 'issue_key': 'inconsistent_html_format'},
-        '.json': {'agg': json_cleanup_agg, 'label': 'JSON', 'issue_key': 'inconsistent_json_format'},
-        '.yml': {'agg': yaml_cleanup_agg, 'label': 'YAML', 'issue_key': 'inconsistent_yaml_format'},
-        '.yaml': {'agg': yaml_cleanup_agg, 'label': 'YAML', 'issue_key': 'inconsistent_yaml_format'},
-        '.csv': {'agg': csv_cleanup_agg, 'label': 'CSV', 'issue_key': 'inconsistent_csv_format'},
-        '.txt1': {'agg': txt1_cleanup_agg, 'label': 'numberedText', 'issue_key': 'inconsistent_txt1_format'},
-    }
+def _scan_and_process_files(filename_filter, format_type, experiment, model, exclude_model,
+                             temperature, timestamp, max_item_length, verbose,
+                             consolidated, quality_issues_output, quality_issues_examples,
+                             format_style_counts, item_count_stats, cleanup_rules_agg,
+                             case_values_agg, format_aggs, skipped_trials, zero_item_files, source_items):
+    """Scan result files, parse them, and populate aggregation dicts.
+    Mutates all passed dicts and lists in place. Returns file_count."""
     file_count = 0
-    skipped_trials = []  # Track trial filenames that were skipped
-    zero_item_files = []  # Track files that produced 0 items
-    source_items = set()  # Track unique items from raw parsed data
-
-    # Display filter parameters
-    filters_applied = _describe_active_filters(options)
-    if filters_applied:
-        click.echo(f"Filters: {', '.join(filters_applied)}\n")
 
     # Scan results directory
     for file_path in sorted(RESULTS_DIR.iterdir()):
@@ -2603,7 +2545,6 @@ def summarize_results(options):
             filename_metadata = parse_filename_metadata(file_path.name)
 
             # Apply metadata filters BEFORE collecting source items
-            # This prevents filtered files from being included in unique items
             if not _passes_metadata_filters(filename_metadata, file_path.name, experiment,
                                              model, exclude_model, temperature, timestamp):
                 continue
@@ -2695,24 +2636,18 @@ def summarize_results(options):
             case_values_agg[model_name][str(temp_value)][file_type][prompt_name].append((case_value, file_path.name))
 
             # Track the full set of cleanup keys applied to each file, per format.
-            # After the file loop, trial sets where rule sets differ are flagged as inconsistent.
             rule_set = frozenset(metadata.get("cleanup", {}).keys())
             if ext in format_aggs:
                 format_aggs[ext]['agg'][model_name][str(temp_value)][prompt_name].append((rule_set, file_path.name))
 
-            # Track formatStyle counts per prompt (primary detect_format_style() value)
+            # Track formatStyle counts per prompt
             format_style_counts[model_name][str(temp_value)][file_type][prompt_name][metadata.get("formatStyle", "unknown")] += 1
-            # Also count format-level issues (from metadata["formatIssues"])
             for fs_label in metadata.get("formatIssues", []):
                 format_style_counts[model_name][str(temp_value)][file_type][prompt_name][fs_label] += 1
 
             # Track quality issues by model, temperature, file type, and prompt
             _track_item_quality_issues(metadata, TrialKey(model_name, temp_value, file_type, prompt_name),
                                         ext, quality_issues_output, quality_issues_examples, file_path.name)
-
-            # Count duplicate items (items appearing more than once)
-            item_counts = Counter(items)
-            duplicate_count = sum(1 for count in item_counts.values() if count > 1)
 
             # Track item count for statistics
             item_count_stats[model_name][str(temp_value)][file_type].append(len(items))
@@ -2730,6 +2665,83 @@ def summarize_results(options):
             click.echo(f"Error parsing {file_path.name}: {e}")
             skipped_trials.append(file_path.name)
             continue
+
+    return file_count
+
+
+def summarize_results(options):
+    """
+    Read all result files by type, parse items, and summarize into a single JSON.
+    Structure: {filetype: [{filename: str, items: [...]}, ...], ...}
+
+    Args:
+        options: SummarizeFilters instance (see its field comments for details).
+    """
+    filename_filter = options.filename_filter
+    model = options.model
+    format_type = options.format_type
+    experiment = options.experiment
+    timestamp = options.timestamp
+    temperature = options.temperature
+    max_item_length = options.max_item_length
+    analysis = options.analysis
+    exclude_model = options.exclude_model
+    verbose = options.verbose
+
+    if not RESULTS_DIR.exists():
+        click.echo(format_error("summarize", f"{RESULTS_DIR} directory not found"), err=True)
+        return False
+
+    consolidated = defaultdict(list)
+    # All tracked issue types (item-level first, then format-style-derived using dash-separated names)
+    ISSUE_TYPES = [
+        "leading_punctuation", "trailing_punctuation", "internal_punctuation",
+        "exceeds_max_length", "preamble_leak",
+        "markup_artifact", "repeated_chars", "repeated_sequence",
+        "single-span-tag",
+        "numbered-items-in-tags", "repeated-json-keys", "non-western-characters",
+        "comma-separated", "txt1-no-numbers", "html_no_markup", "invalid-html-tags", "pointy-bracket-wrapping",
+        "inconsistent_case", "inconsistent_md_format", "inconsistent_html_format",
+        "inconsistent_json_format", "inconsistent_yaml_format", "inconsistent_csv_format", "inconsistent_txt1_format",
+        "parse-failed", "json-truncated", "stray-html-markup", "blockquote-markup",
+        "Markdown-Cleanup-Partially-Bold-Line", "Markdown-Cleanup-Partially-Italic-Star-Line",
+        "Markdown-Cleanup-Partially-Italic-Underscore-Line",
+        "HTML_Only_Bold_Tags", "HTML_Only_Italic_Tags", "HTML_Only_Emphasis_Tags", "HTML_Only_Underline_Tags",
+        "HTML_Only_Pre_Tags", "items-not-in-li",
+    ]
+    # Initialize quality issue tracking structures
+    quality_issues_output, quality_issues_examples = _make_issue_output_dicts(ISSUE_TYPES)
+    format_style_counts = _make_format_style_counts()
+    item_count_stats = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
+    cleanup_rules_agg = _make_cleanup_rules_agg()
+    case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg = _make_format_aggregation_dicts()
+
+    # Map format types to their aggregations and metadata for post-scan flagging.
+    format_aggs = {
+        '.md': {'agg': md_cleanup_agg, 'label': 'markdown', 'issue_key': 'inconsistent_md_format'},
+        '.html': {'agg': html_cleanup_agg, 'label': 'HTML', 'issue_key': 'inconsistent_html_format'},
+        '.json': {'agg': json_cleanup_agg, 'label': 'JSON', 'issue_key': 'inconsistent_json_format'},
+        '.yml': {'agg': yaml_cleanup_agg, 'label': 'YAML', 'issue_key': 'inconsistent_yaml_format'},
+        '.yaml': {'agg': yaml_cleanup_agg, 'label': 'YAML', 'issue_key': 'inconsistent_yaml_format'},
+        '.csv': {'agg': csv_cleanup_agg, 'label': 'CSV', 'issue_key': 'inconsistent_csv_format'},
+        '.txt1': {'agg': txt1_cleanup_agg, 'label': 'numberedText', 'issue_key': 'inconsistent_txt1_format'},
+    }
+    file_count = 0
+    skipped_trials = []  # Track trial filenames that were skipped
+    zero_item_files = []  # Track files that produced 0 items
+    source_items = set()  # Track unique items from raw parsed data
+
+    # Display filter parameters
+    filters_applied = _describe_active_filters(options)
+    if filters_applied:
+        click.echo(f"Filters: {', '.join(filters_applied)}\n")
+
+    # Scan and process all result files
+    file_count = _scan_and_process_files(filename_filter, format_type, experiment, model, exclude_model,
+                                         temperature, timestamp, max_item_length, verbose,
+                                         consolidated, quality_issues_output, quality_issues_examples,
+                                         format_style_counts, item_count_stats, cleanup_rules_agg,
+                                         case_values_agg, format_aggs, skipped_trials, zero_item_files, source_items)
 
     # Convert defaultdict to regular dict for JSON serialization
     consolidated_dict = dict(consolidated)
