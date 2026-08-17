@@ -2746,19 +2746,30 @@ def summarize_results(options):
     # Convert defaultdict to regular dict for JSON serialization
     consolidated_dict = dict(consolidated)
 
+    # Compute cross-trial consistency flags and quality issues
+    format_consistency, quality_issues_dict = _compute_quality_and_consistency(
+        consolidated_dict, case_values_agg, format_aggs, quality_issues_output,
+        quality_issues_examples, format_style_counts, cleanup_rules_agg, ISSUE_TYPES)
+
+    # Write results and reports
+    return _write_results_and_reports(consolidated_dict, quality_issues_dict, file_count, analysis, verbose,
+                                      item_count_stats, quality_issues_examples, format_consistency,
+                                      source_items, skipped_trials, zero_item_files)
+
+
+def _compute_quality_and_consistency(consolidated_dict, case_values_agg, format_aggs,
+                                     quality_issues_output, quality_issues_examples,
+                                     format_style_counts, cleanup_rules_agg, ISSUE_TYPES):
+    """Compute cross-trial consistency flags and build quality issues dict.
+    Returns (format_consistency, quality_issues_dict)."""
     # Detect treatment consistency for each trial set.
     TREATMENT_FIELDS = ["formatStyle", "codeblock"]
     format_consistency = _compute_format_consistency(consolidated_dict, TREATMENT_FIELDS)
 
-    # Compute cross-trial case inconsistency and populate quality_issues_output.
-    # A trial set is flagged when more than one distinct case type is observed across files.
+    # Compute cross-trial case inconsistency.
     _flag_case_inconsistencies(case_values_agg, quality_issues_output, quality_issues_examples)
 
     # Flag trial sets whose cleanup-rule sets differ across files, per file type.
-    # A trial set is flagged when files have differing sets of cleanup rules applied,
-    # indicating the model produced different structural formats across trials.
-    # Instances are the rule names that appeared in some files but not all.
-    # Loop over format types instead of repeating the same call four times.
     for ext, fmt_meta in format_aggs.items():
         _flag_format_inconsistencies(fmt_meta['agg'], quality_issues_output, quality_issues_examples,
                                       fmt_meta['label'], fmt_meta['issue_key'])
@@ -2768,10 +2779,16 @@ def summarize_results(options):
         format_consistency, format_style_counts, quality_issues_output,
         quality_issues_examples, cleanup_rules_agg, ISSUE_TYPES, TREATMENT_FIELDS)
 
-    # Write results JSON (without quality issues)
+    return format_consistency, quality_issues_dict
+
+
+def _write_results_and_reports(consolidated_dict, quality_issues_dict, file_count, analysis, verbose,
+                               item_count_stats, quality_issues_examples, format_consistency,
+                               source_items, skipped_trials, zero_item_files):
+    """Write all result files and reports. Returns True on success, False on error."""
+    TREATMENT_FIELDS = ["formatStyle", "codeblock"]
     try:
         _write_results_and_quality_json(consolidated_dict, quality_issues_dict, file_count, verbose)
-
         _print_skip_summary(skipped_trials, zero_item_files)
 
         # Print analysis report for all file types per model and temperature
