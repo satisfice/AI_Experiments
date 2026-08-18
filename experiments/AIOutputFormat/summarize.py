@@ -2225,14 +2225,8 @@ def _compute_format_consistency(consolidated_dict, treatment_fields):
     return format_consistency
 
 
-def _build_quality_issues_dict(format_consistency, format_style_counts, quality_issues_output,
-                                quality_issues_examples, cleanup_rules_agg, issue_types, treatment_fields):
-    """Build quality_issues_dict with hierarchy: model -> temperature -> file_type -> prompt.
-    Each prompt entry contains: issue lists, consistentFormat (bool), formatIssues (counts),
-    cleanupRules (counts)."""
-    quality_issues_dict = {}
-
-    # Gather all (model, temp, file_type, prompt) combos from all sources
+def _gather_all_combos(format_consistency, format_style_counts, quality_issues_output):
+    """Collect all (model, temp, file_type, prompt) tuples from all data sources."""
     all_combos = set(format_consistency.keys())
     for model_name in format_style_counts:
         for temp_value in format_style_counts[model_name]:
@@ -2244,51 +2238,66 @@ def _build_quality_issues_dict(format_consistency, format_style_counts, quality_
             for file_type in quality_issues_output[model_name][temp_value]:
                 for prompt_name in quality_issues_output[model_name][temp_value][file_type]:
                     all_combos.add((model_name, str(temp_value), file_type, prompt_name))
+    return sorted(all_combos, key=lambda x: (x[0], x[1], x[2].casefold(), x[3]))
 
-    for (model_name, temp_value, file_type, prompt_name) in sorted(all_combos, key=lambda x: (x[0], x[1], x[2].casefold(), x[3])):
-        prompt_data = {}
 
-        # Add quality issues (omit empty lists)
-        issues = quality_issues_output.get(model_name, {}).get(temp_value, {}).get(file_type, {}).get(prompt_name, {})
-        for issue_type in issue_types:
-            raw_items = issues.get(issue_type, set())
-            if raw_items:
-                items_with_source = []
-                for item in raw_items:
-                    source = quality_issues_examples[model_name][temp_value][file_type][prompt_name][issue_type].get(item, "unknown")
-                    items_with_source.append({"instance": item, "source": source})
-                items_with_source.sort(key=lambda x: x["instance"].lower())
-                prompt_data[issue_type] = items_with_source
+def _build_prompt_data_section(model_name, temp_value, file_type, prompt_name, quality_issues_output,
+                                quality_issues_examples, format_consistency, format_style_counts,
+                                cleanup_rules_agg, issue_types, treatment_fields):
+    """Build quality issues, consistency, formatIssues, and cleanupRules for one prompt."""
+    prompt_data = {}
 
-        # Add consistentFormat: True if no treatment field varies across trials
-        # AND no format structure inconsistencies detected (inconsistent_*_format issues)
-        fc = format_consistency.get((model_name, temp_value, file_type, prompt_name), {})
-        has_format_inconsistency = False
-        inconsistency_issue_types = {
-            "markdown": "inconsistent_md_format",
-            "HTML": "inconsistent_html_format",
-            "JSON": "inconsistent_json_format",
-            "YAML": "inconsistent_yaml_format",
-        }
-        if file_type in inconsistency_issue_types:
-            inconsistency_type = inconsistency_issue_types[file_type]
-            has_format_inconsistency = inconsistency_type in prompt_data and bool(prompt_data[inconsistency_type])
+    issues = quality_issues_output.get(model_name, {}).get(temp_value, {}).get(file_type, {}).get(prompt_name, {})
+    for issue_type in issue_types:
+        raw_items = issues.get(issue_type, set())
+        if raw_items:
+            items_with_source = []
+            for item in raw_items:
+                source = quality_issues_examples[model_name][temp_value][file_type][prompt_name][issue_type].get(item, "unknown")
+                items_with_source.append({"instance": item, "source": source})
+            items_with_source.sort(key=lambda x: x["instance"].lower())
+            prompt_data[issue_type] = items_with_source
 
-        if fc:
-            varying = [f for f in treatment_fields if len(set(fc[f])) > 1]
-            prompt_data["consistentFormat"] = len(varying) == 0 and not has_format_inconsistency
-        else:
-            prompt_data["consistentFormat"] = not has_format_inconsistency
+    fc = format_consistency.get((model_name, temp_value, file_type, prompt_name), {})
+    has_format_inconsistency = False
+    inconsistency_issue_types = {
+        "markdown": "inconsistent_md_format",
+        "HTML": "inconsistent_html_format",
+        "JSON": "inconsistent_json_format",
+        "YAML": "inconsistent_yaml_format",
+    }
+    if file_type in inconsistency_issue_types:
+        inconsistency_type = inconsistency_issue_types[file_type]
+        has_format_inconsistency = inconsistency_type in prompt_data and bool(prompt_data[inconsistency_type])
 
-        # Add formatIssues: count of each format issue seen for this prompt
-        style_counts = format_style_counts.get(model_name, {}).get(temp_value, {}).get(file_type, {}).get(prompt_name, {})
-        if style_counts:
-            prompt_data["formatIssues"] = dict(style_counts)
+    if fc:
+        varying = [f for f in treatment_fields if len(set(fc[f])) > 1]
+        prompt_data["consistentFormat"] = len(varying) == 0 and not has_format_inconsistency
+    else:
+        prompt_data["consistentFormat"] = not has_format_inconsistency
 
-        # Add cleanupRules: dict of {rule_name: trial_count} sorted by rule name
-        rules_counter = cleanup_rules_agg.get(model_name, {}).get(temp_value, {}).get(file_type, {}).get(prompt_name, {})
-        if rules_counter:
-            prompt_data["cleanupRules"] = dict(sorted(rules_counter.items()))
+    style_counts = format_style_counts.get(model_name, {}).get(temp_value, {}).get(file_type, {}).get(prompt_name, {})
+    if style_counts:
+        prompt_data["formatIssues"] = dict(style_counts)
+
+    rules_counter = cleanup_rules_agg.get(model_name, {}).get(temp_value, {}).get(file_type, {}).get(prompt_name, {})
+    if rules_counter:
+        prompt_data["cleanupRules"] = dict(sorted(rules_counter.items()))
+
+    return prompt_data
+
+
+def _build_quality_issues_dict(format_consistency, format_style_counts, quality_issues_output,
+                                quality_issues_examples, cleanup_rules_agg, issue_types, treatment_fields):
+    """Build quality_issues_dict with hierarchy: model -> temperature -> file_type -> prompt."""
+    quality_issues_dict = {}
+    all_combos = _gather_all_combos(format_consistency, format_style_counts, quality_issues_output)
+
+    for model_name, temp_value, file_type, prompt_name in all_combos:
+        prompt_data = _build_prompt_data_section(
+            model_name, temp_value, file_type, prompt_name,
+            quality_issues_output, quality_issues_examples, format_consistency,
+            format_style_counts, cleanup_rules_agg, issue_types, treatment_fields)
 
         quality_issues_dict \
             .setdefault(model_name, {}) \
