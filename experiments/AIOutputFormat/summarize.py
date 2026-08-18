@@ -1774,62 +1774,12 @@ def clean_format_specific(items, ext):
     return result, cleanups, quality_issues
 
 
-def process_and_track(items, ext, max_item_length=25):
-    """
-    Process items in the correct order:
-    1. Trim items
-    2. Clean format-specific formatting
-    3. Check quality issues on cleaned items
-    4. Apply general item cleanup pipeline
-
-    Args:
-        items: List of items to process
-        ext: File extension
-        max_item_length: Maximum allowed item length (items longer are flagged in cleanups)
-    Returns (processed_items, processing_metadata, metadata).
-    """
-    processing = {
-        "consistentCase": True,
-        "case": "lower",
-    }
-    # quality_issues stores one example string per issue type (first occurrence only).
-    # Keys are added only when an issue is found, so no empty keys are stored.
+def _check_item_quality_issues(cleaned_items, max_item_length):
+    """Check for quality issues in cleaned items. Returns (quality_issues, preamble_set, processing_quality_issues)."""
     quality_issues = {}
-    # preamble_set collects ALL preamble items for filtering; quality_issues["preamble_leak"]
-    # holds only the first example for reporting purposes.
     preamble_set = set()
-    processing_cleanups = []
     processing_quality_issues = []
 
-    if not items:
-        metadata = {
-            "itemCount": 0,
-            "alphabeticalOrder": True
-        }
-        return items, processing, metadata
-
-    # Step 1: Trim items
-    trimmed = trim_items(items)
-
-    # Step 2: Clean format-specific formatting FIRST
-    cleaned_items, format_cleanups, format_quality_issues = clean_format_specific(trimmed, ext)
-    if format_cleanups:
-        processing_cleanups.extend(format_cleanups)
-    if format_quality_issues:
-        processing_quality_issues.extend(format_quality_issues)
-
-    # Check alphabetical order of original items
-    alphabetical = is_alphabetical_order(trimmed)
-
-    # Detect case pattern in original items
-    case_type, consistent_case = detect_case(trimmed)
-    processing["case"] = case_type
-    processing["consistentCase"] = consistent_case
-
-    # Step 3: Check for quality issues on CLEANED items (after format-specific removal).
-    # For markdown, "1. Dog" won't be in cleaned_items anymore, so we won't flag it as inappropriate.
-    # Only the first example of each issue type is stored (sufficient for reporting).
-    # Each check below is independent (no shared keys), so check order doesn't affect the result.
     item_quality_checks = [
         ("leading_punctuation", detect_leading_punctuation),
         ("trailing_punctuation", detect_trailing_punctuation),
@@ -1843,25 +1793,19 @@ def process_and_track(items, ext, max_item_length=25):
             if detector(item) and key not in quality_issues:
                 quality_issues[key] = item
 
-        # Check for LLM preamble leaks — collect all for filtering; store only first as example
         if detect_preamble_leak(item):
             preamble_set.add(item)
             if "preamble_leak" not in quality_issues:
                 quality_issues["preamble_leak"] = item
 
-    # Check for non-Western (non-ASCII) characters across all items; applies to any format.
     if any(ord(c) > 127 for item in cleaned_items for c in item):
         processing_quality_issues.append("non-western-characters")
 
-    # Note: misspelling detection is deferred to a second pass in summarize_results()
-    # after the corpus word frequency table is built across all files.
+    return quality_issues, preamble_set, processing_quality_issues
 
-    # Step 4: Filter preamble items then apply general item cleanup pipeline.
-    # Preamble items are LLM contamination and are excluded entirely.
-    # All other items pass through each named cleanup function in order;
-    # each function reports a cleanup only when it actually changed something.
-    filtered = [item for item in cleaned_items if item not in preamble_set]
 
+def _apply_cleanup_pipeline(items):
+    """Apply cleanup pipeline to items. Returns (processed_items, processing_cleanups)."""
     cleanup_pipeline = [
         clean_strip_leading_format,
         clean_strip_number_word_prefix,
@@ -1871,39 +1815,67 @@ def process_and_track(items, ext, max_item_length=25):
         clean_strip_leading_hyphens,
     ]
 
-    processed = filtered
+    processed = items
+    processing_cleanups = []
     for step in cleanup_pipeline:
         processed, cleanup = step(processed)
         if cleanup:
             processing_cleanups.append(cleanup)
 
-    # Conditional lowercasing: only if uppercase characters are found
     if any(any(c.isupper() for c in item) for item in processed):
         processed, cleanup = clean_lowercase(processed)
         if cleanup:
             processing_cleanups.append(cleanup)
 
-    # Detect runs of 3+ consecutive identical items (model stuck in a generation loop)
-    for i in range(len(processed) - 2):
-        if processed[i] == processed[i + 1] == processed[i + 2]:
-            quality_issues["repeated_sequence"] = processed[i]
-            break
+    return processed, processing_cleanups
 
-    # Create metadata
+
+def _detect_repeated_sequence(items):
+    """Detect if items have 3+ consecutive identical entries. Returns issue_key or None."""
+    for i in range(len(items) - 2):
+        if items[i] == items[i + 1] == items[i + 2]:
+            return items[i]
+    return None
+
+
+def process_and_track(items, ext, max_item_length=25):
+    """Process items: trim → format-clean → check quality → apply cleanup pipeline."""
+    if not items:
+        return items, {"consistentCase": True, "case": "lower"}, {"itemCount": 0, "alphabeticalOrder": True}
+
+    processing = {"consistentCase": True, "case": "lower"}
+    processing_cleanups = []
+
+    trimmed = trim_items(items)
+    cleaned_items, format_cleanups, format_quality_issues = clean_format_specific(trimmed, ext)
+    if format_cleanups:
+        processing_cleanups.extend(format_cleanups)
+
+    alphabetical = is_alphabetical_order(trimmed)
+    case_type, consistent_case = detect_case(trimmed)
+    processing["case"] = case_type
+    processing["consistentCase"] = consistent_case
+
+    quality_issues, preamble_set, processing_quality_issues = _check_item_quality_issues(cleaned_items, max_item_length)
+    if format_quality_issues:
+        processing_quality_issues.extend(format_quality_issues)
+
+    filtered = [item for item in cleaned_items if item not in preamble_set]
+    processed, cleanup_results = _apply_cleanup_pipeline(filtered)
+    processing_cleanups.extend(cleanup_results)
+
+    repeated = _detect_repeated_sequence(processed)
+    if repeated:
+        quality_issues["repeated_sequence"] = repeated
+
     metadata = {
         "itemCount": len(processed),
         "alphabeticalOrder": alphabetical
     }
-
-    # Store item-level issues (only non-empty; each value is a single example string)
     if quality_issues:
         metadata["itemIssues"] = quality_issues
-
-    # Store processing cleanups
     if processing_cleanups:
         metadata["processingCleanups"] = processing_cleanups
-
-    # Store processing quality issues (format-specific and item-level detections)
     if processing_quality_issues:
         metadata["processingQualityIssues"] = processing_quality_issues
 
