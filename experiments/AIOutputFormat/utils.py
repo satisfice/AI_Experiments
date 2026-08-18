@@ -92,3 +92,38 @@ def detect_preamble_leak(item):
             return True
 
     return False
+
+
+def format_timestamp(timestamp_str):
+    """Convert timestamp to YYYY-MM-DD HH:MM:SS format.
+    Supports both old 12-digit (YYYYMMDDhhmm) and new 14-digit (YYYYMMDDhhmmss) formats."""
+    if not timestamp_str.isdigit():
+        return timestamp_str
+
+    if len(timestamp_str) == 12:
+        return f"{timestamp_str[0:4]}-{timestamp_str[4:6]}-{timestamp_str[6:8]} {timestamp_str[8:10]}:{timestamp_str[10:12]}:00"
+    elif len(timestamp_str) == 14:
+        return f"{timestamp_str[0:4]}-{timestamp_str[4:6]}-{timestamp_str[6:8]} {timestamp_str[8:10]}:{timestamp_str[10:12]}:{timestamp_str[12:14]}"
+    else:
+        return timestamp_str
+
+
+def is_standard_filename(filename):
+    """Check if filename follows standard naming convention.
+    Format: YYYYMMDDHHMMSS-EXPERIMENT-PROMPT-HARDNESS-MODEL-TEMP-ITERATION.EXT
+    Requires 14-digit timestamp and 7+ parts (hardness code is 'fs' or 'fh')."""
+    name_without_ext = Path(filename).stem
+    parts = name_without_ext.split('-')
+
+    if not parts[0].isdigit() or len(parts[0]) != 14:
+        return False
+    if len(parts) < 7:
+        return False
+    if not parts[-1].isdigit() or len(parts[-1]) != 2:
+        return False
+    if not parts[-2].startswith('t'):
+        return False
+    if parts[3] not in ('fs', 'fh'):
+        return False
+
+    return True

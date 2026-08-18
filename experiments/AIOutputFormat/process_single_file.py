@@ -11,7 +11,7 @@ from collections import Counter
 from pathlib import Path
 
 from config import abbreviate_model_name
-from utils import detect_preamble_leak
+from utils import detect_preamble_leak, format_timestamp, is_standard_filename
 
 # Map file extensions to format types
 FORMAT_MAP = {
@@ -1836,124 +1836,6 @@ def process_and_track(items, ext, max_item_length=25):
         metadata["processingQualityIssues"] = processing_quality_issues
 
     return processed, processing, metadata
-def process_and_track(items, ext, max_item_length=25):
-    """Process items: trim → format-clean → check quality → apply cleanup pipeline."""
-    if not items:
-        return items, {"consistentCase": True, "case": "lower"}, {"itemCount": 0, "alphabeticalOrder": True}
-
-    processing = {"consistentCase": True, "case": "lower"}
-    processing_cleanups = []
-
-    trimmed = trim_items(items)
-    cleaned_items, format_cleanups, format_quality_issues = clean_format_specific(trimmed, ext)
-    if format_cleanups:
-        processing_cleanups.extend(format_cleanups)
-
-    alphabetical = is_alphabetical_order(trimmed)
-    case_type, consistent_case = detect_case(trimmed)
-    processing["case"] = case_type
-    processing["consistentCase"] = consistent_case
-
-    quality_issues, preamble_set, processing_quality_issues = _check_item_quality_issues(cleaned_items, max_item_length)
-    if format_quality_issues:
-        processing_quality_issues.extend(format_quality_issues)
-
-    filtered = [item for item in cleaned_items if item not in preamble_set]
-    processed, cleanup_results = _apply_cleanup_pipeline(filtered)
-    processing_cleanups.extend(cleanup_results)
-
-    repeated = _detect_repeated_sequence(processed)
-    if repeated:
-        quality_issues["repeated_sequence"] = repeated
-
-    metadata = {
-        "itemCount": len(processed),
-        "alphabeticalOrder": alphabetical
-    }
-    if quality_issues:
-        metadata["itemIssues"] = quality_issues
-    if processing_cleanups:
-        metadata["processingCleanups"] = processing_cleanups
-    if processing_quality_issues:
-        metadata["processingQualityIssues"] = processing_quality_issues
-
-    return processed, processing, metadata
-
-
-def classify_prevalence(true_count, total_count):
-    """
-    Classify prevalence of a boolean attribute across multiple files.
-    Returns 'all', 'some', or 'none' based on the proportion of true values.
-    """
-    if total_count == 0:
-        return "none"
-    proportion = true_count / total_count
-    if proportion == 1.0:
-        return "all"
-    elif proportion == 0.0:
-        return "none"
-    else:
-        return "some"
-
-
-def calculate_statistics(counts):
-    """
-    Calculate statistics for a list of item counts.
-
-    Args:
-        counts: List of integers (item counts)
-
-    Returns:
-        Dictionary with max, min, avg, var, and mode
-    """
-def is_standard_filename(filename):
-    """
-    Check if filename follows standard naming convention.
-    Format: YYYYMMDDHHMMSS-EXPERIMENT-PROMPT-HARDNESS-MODEL-TEMP-ITERATION.EXT
-    Requires 14-digit timestamp and 7+ parts (hardness code is 'fs' or 'fh').
-    """
-    name_without_ext = Path(filename).stem
-    parts = name_without_ext.split('-')
-
-    # Must have 14-digit timestamp
-    if not parts[0].isdigit() or len(parts[0]) != 14:
-        return False
-
-    # Need at least 7 parts (timestamp, experiment, prompt, hardness, model, temp, iteration)
-    if len(parts) < 7:
-        return False
-
-    # Check iteration is 2 digits
-    if not parts[-1].isdigit() or len(parts[-1]) != 2:
-        return False
-
-    # Check temperature starts with 't'
-    if not parts[-2].startswith('t'):
-        return False
-
-    # Check hardness code is 'fs' or 'fh'
-    if parts[3] not in ('fs', 'fh'):
-        return False
-
-    return True
-
-
-def format_timestamp(timestamp_str):
-    """
-    Convert timestamp to YYYY-MM-DD HH:MM:SS format.
-    Supports both old 12-digit (YYYYMMDDhhmm) and new 14-digit (YYYYMMDDhhmmss) formats.
-    """
-    if not timestamp_str.isdigit():
-        return timestamp_str
-
-    if len(timestamp_str) == 12:
-        # Old format: YYYYMMDDhhmm -> YYYY-MM-DD HH:MM:SS
-        return f"{timestamp_str[0:4]}-{timestamp_str[4:6]}-{timestamp_str[6:8]} {timestamp_str[8:10]}:{timestamp_str[10:12]}:00"
-    elif len(timestamp_str) == 14:
-        # New format: YYYYMMDDhhmmss -> YYYY-MM-DD HH:MM:SS
-        return f"{timestamp_str[0:4]}-{timestamp_str[4:6]}-{timestamp_str[6:8]} {timestamp_str[8:10]}:{timestamp_str[10:12]}:{timestamp_str[12:14]}"
-    else:
-        return timestamp_str
 
 
 def parse_filename_metadata(filename):
