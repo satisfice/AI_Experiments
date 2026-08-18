@@ -7,6 +7,7 @@ import re
 import sys
 import click
 from dataclasses import dataclass
+from dataclasses import dataclass
 from typing import NamedTuple, Optional
 from html.parser import HTMLParser
 from pathlib import Path
@@ -2041,7 +2042,9 @@ def _make_format_aggregation_dicts():
         )
     )
     cleanup_agg_template = lambda: defaultdict(
-        lambda: defaultdict(list)
+        lambda: defaultdict(
+            lambda: defaultdict(list)
+        )
     )
     md_cleanup_agg = cleanup_agg_template()
     html_cleanup_agg = cleanup_agg_template()
@@ -2499,13 +2502,130 @@ def _write_unique_source_items_file(source_items, verbose):
         click.echo(f"Wrote {len(sorted_source_items)} unique source items to {UNIQUE_SOURCE_ITEMS_FILE}")
 
 
-def _scan_and_process_files(filename_filter, format_type, experiment, model, exclude_model,
-                             temperature, timestamp, max_item_length, verbose,
-                             consolidated, quality_issues_output, quality_issues_examples,
-                             format_style_counts, item_count_stats, cleanup_rules_agg,
-                             case_values_agg, format_aggs, skipped_trials, zero_item_files, source_items):
-    """Scan result files, parse them, and populate aggregation dicts.
-    Mutates all passed dicts and lists in place. Returns file_count."""
+@dataclass
+class AggregationState:
+    """Bundles all mutable aggregation structures to avoid parameter explosion."""
+    consolidated: dict
+    quality_issues_output: dict
+    quality_issues_instances: dict
+    format_style_counts: dict
+    item_count_stats: dict
+    cleanup_rules_agg: dict
+    case_values_agg: dict
+    format_aggs: dict
+    skipped_trials: list
+    zero_item_files: list
+    source_items: set
+
+
+def _parse_and_build_file_metadata(file_path, content, ext, max_item_length, options):
+    """Parse file content and build complete metadata. Returns (items, metadata) or (None, None)."""
+    parser = PARSERS[ext]
+    cleaned_content, had_codeblock, codeblock_cleanups = extract_code_block(content)
+    items, parser_cleanups, parser_quality_issues = parser(cleaned_content)
+
+    filename_metadata = parse_filename_metadata(file_path.name)
+
+    if not _passes_metadata_filters(filename_metadata, file_path.name, options.experiment,
+                                     options.model, options.exclude_model, options.temperature, options.timestamp):
+        return None, None
+
+    # Process and track normalization
+    items, processing, metadata = process_and_track(items, ext, max_item_length)
+
+    # Merge all metadata sources
+    metadata.update(processing)
+    if had_codeblock:
+        metadata["codeblock"] = True
+    metadata["format"] = FORMAT_MAP.get(ext, "unknown")
+    metadata["formatStyle"] = detect_format_style(content, ext)
+
+    # Collect all cleanup strings
+    all_cleanups = codeblock_cleanups + parser_cleanups
+    if metadata.get("processingCleanups"):
+        all_cleanups.extend(metadata.pop("processingCleanups"))
+    if all_cleanups:
+        cleanup_dict = parse_cleanup_keys(all_cleanups)
+        if cleanup_dict:
+            metadata["cleanup"] = cleanup_dict
+
+    # Collect format-level issues
+    format_issues = []
+    if parser_quality_issues:
+        format_issues.extend(parser_quality_issues)
+    if metadata.get("processingQualityIssues"):
+        format_issues.extend(metadata.pop("processingQualityIssues"))
+    if format_issues:
+        metadata["formatIssues"] = format_issues
+
+    # Merge filename metadata
+    metadata.update(filename_metadata)
+
+    # Track duplicates
+    item_counts = Counter(items)
+    metadata["duplicates"] = sum(1 for count in item_counts.values() if count > 1)
+
+    # Merge sidecar metadata
+    meta_path = META_DIR / (file_path.stem + ".meta.json")
+    if meta_path.exists():
+        try:
+            with open(meta_path, 'r', encoding='utf-8') as mf:
+                file_meta = json.load(mf)
+            if "responseComplete" in file_meta:
+                metadata["responseComplete"] = file_meta["responseComplete"]
+            if "incompleteReason" in file_meta:
+                metadata["incompleteReason"] = file_meta["incompleteReason"]
+        except Exception:
+            pass
+
+    metadata = reorder_metadata(metadata)
+    return items, metadata
+
+
+def _update_aggregations_from_parsed_file(file_path, items, metadata, ext, state):
+    """Update all aggregation dicts from parsed file data."""
+    model_name = abbreviate_model_name(metadata.get("model", "unknown"))
+    temp_value = metadata.get("temperature", "unknown")
+    file_type = FORMAT_MAP.get(ext, ext)
+    prompt_name = metadata.get("prompt", "unknown")
+
+    # Track cleanup rules
+    for rule_name in metadata.get("cleanup", {}).keys():
+        state.cleanup_rules_agg[model_name][str(temp_value)][file_type][prompt_name][rule_name] += 1
+
+    # Track case values
+    case_value = metadata.pop("case", "lower")
+    metadata.pop("consistentCase", None)
+    state.case_values_agg[model_name][str(temp_value)][file_type][prompt_name].append((case_value, file_path.name))
+
+    # Track cleanup rule sets per format
+    rule_set = frozenset(metadata.get("cleanup", {}).keys())
+    if ext in state.format_aggs:
+        state.format_aggs[ext]['agg'][model_name][str(temp_value)][prompt_name].append((rule_set, file_path.name))
+
+    # Track format styles
+    state.format_style_counts[model_name][str(temp_value)][file_type][prompt_name][metadata.get("formatStyle", "unknown")] += 1
+    for fs_label in metadata.get("formatIssues", []):
+        state.format_style_counts[model_name][str(temp_value)][file_type][prompt_name][fs_label] += 1
+
+    # Track quality issues
+    _track_item_quality_issues(metadata, TrialKey(model_name, temp_value, file_type, prompt_name),
+                                ext, state.quality_issues_output, state.quality_issues_instances, file_path.name)
+
+    # Track item counts
+    state.item_count_stats[model_name][str(temp_value)][file_type].append(len(items))
+
+    # Add to consolidated
+    state.consolidated[ext].append({
+        "filename": file_path.name,
+        "metadata": metadata,
+        "items": items
+    })
+
+
+def _scan_and_process_files(filename_filter, format_type, max_item_length, verbose, options, state):
+    """Scan result files, parse them, and populate aggregation state.
+    Returns file_count."""
     file_count = 0
 
     # Scan results directory
@@ -2514,156 +2634,47 @@ def _scan_and_process_files(filename_filter, format_type, experiment, model, exc
         if ext is None:
             continue
 
-        # Skip certain extensions
         if ext in SKIP_EXTENSIONS:
-            skipped_trials.append(file_path.name)
+            state.skipped_trials.append(file_path.name)
             continue
 
-        # Read file content
         content = _read_result_file_content(file_path)
         if content is None:
             click.echo(f"Skipping (encoding error): {file_path.name}")
-            skipped_trials.append(file_path.name)
+            state.skipped_trials.append(file_path.name)
             continue
 
-        # Parse content based on file type
         if ext not in PARSERS:
             click.echo(f"Skipping (no parser): {file_path.name}")
-            skipped_trials.append(file_path.name)
+            state.skipped_trials.append(file_path.name)
             continue
 
         try:
-            parser = PARSERS[ext]
+            items, metadata = _parse_and_build_file_metadata(file_path, content, ext, max_item_length, options)
 
-            # Extract content from code blocks if present
-            cleaned_content, had_codeblock, codeblock_cleanups = extract_code_block(content)
-
-            # Parse the (possibly cleaned) content
-            items, parser_cleanups, parser_quality_issues = parser(cleaned_content)
-
-            # Parse filename for experiment, model, temperature FIRST (needed for filtering)
-            filename_metadata = parse_filename_metadata(file_path.name)
-
-            # Apply metadata filters BEFORE collecting source items
-            if not _passes_metadata_filters(filename_metadata, file_path.name, experiment,
-                                             model, exclude_model, temperature, timestamp):
+            if items is None:
                 continue
 
-            # NOW collect source items (only after filtering passes)
+            # Collect source items (only after filtering passes)
             for item in items:
-                if item:  # Only track non-empty items
-                    source_items.add(item)
+                if item:
+                    state.source_items.add(item)
 
-            # Process and track normalization
-            items, processing, metadata = process_and_track(items, ext, max_item_length)
-
-            # Track files where itemCount is 0
             if metadata.get("itemCount") == 0:
-                zero_item_files.append(file_path.name)
+                state.zero_item_files.append(file_path.name)
 
-            # Merge processing into metadata
-            metadata.update(processing)
+            # Update all aggregations from this file
+            _update_aggregations_from_parsed_file(file_path, items, metadata, ext, state)
 
-            # Add codeblock flag if code blocks were found and processed
-            if had_codeblock:
-                metadata["codeblock"] = True
-
-            # Add format from extension
-            metadata["format"] = FORMAT_MAP.get(ext, "unknown")
-
-            # Add format style (how the data was structured in the file)
-            metadata["formatStyle"] = detect_format_style(content, ext)
-
-            # Collect all cleanup strings from parsers and codeblock processing
-            all_cleanups = codeblock_cleanups + parser_cleanups
-            if metadata.get("processingCleanups"):
-                all_cleanups.extend(metadata.pop("processingCleanups"))
-
-            # Convert cleanup task names to structured cleanup dict
-            if all_cleanups:
-                cleanup_dict = parse_cleanup_keys(all_cleanups)
-                if cleanup_dict:
-                    metadata["cleanup"] = cleanup_dict
-
-            # Collect format-level issues from parsers and processing
-            format_issues = []
-            if parser_quality_issues:
-                format_issues.extend(parser_quality_issues)
-            if metadata.get("processingQualityIssues"):
-                format_issues.extend(metadata.pop("processingQualityIssues"))
-            if format_issues:
-                metadata["formatIssues"] = format_issues
-
-            # Merge filename metadata with processing metadata
-            metadata.update(filename_metadata)
-
-            # Count duplicate items (items appearing more than once)
-            item_counts = Counter(items)
-            duplicate_count = sum(1 for count in item_counts.values() if count > 1)
-
-            # Add duplicates to metadata before reordering
-            metadata["duplicates"] = duplicate_count
-
-            # Merge completion metadata from sidecar if present
-            meta_path = META_DIR / (file_path.stem + ".meta.json")
-            if meta_path.exists():
-                try:
-                    with open(meta_path, 'r', encoding='utf-8') as mf:
-                        file_meta = json.load(mf)
-                    if "responseComplete" in file_meta:
-                        metadata["responseComplete"] = file_meta["responseComplete"]
-                    if "incompleteReason" in file_meta:
-                        metadata["incompleteReason"] = file_meta["incompleteReason"]
-                except Exception:
-                    pass
-
-            # Reorder metadata keys
-            metadata = reorder_metadata(metadata)
-
-            # Get model, temperature, file type, and prompt for tracking
-            model_name = abbreviate_model_name(metadata.get("model", "unknown"))
-            temp_value = metadata.get("temperature", "unknown")
-            file_type = FORMAT_MAP.get(ext, ext)
-            prompt_name = metadata.get("prompt", "unknown")
-
-            # Count how many trials in this set triggered each cleanup rule
-            for rule_name in metadata.get("cleanup", {}).keys():
-                cleanup_rules_agg[model_name][str(temp_value)][file_type][prompt_name][rule_name] += 1
-
-            # Remove case keys from per-file metadata (case consistency is tracked cross-trial).
-            case_value = metadata.pop("case", "lower")
-            metadata.pop("consistentCase", None)
-            case_values_agg[model_name][str(temp_value)][file_type][prompt_name].append((case_value, file_path.name))
-
-            # Track the full set of cleanup keys applied to each file, per format.
-            rule_set = frozenset(metadata.get("cleanup", {}).keys())
-            if ext in format_aggs:
-                format_aggs[ext]['agg'][model_name][str(temp_value)][prompt_name].append((rule_set, file_path.name))
-
-            # Track formatStyle counts per prompt
-            format_style_counts[model_name][str(temp_value)][file_type][prompt_name][metadata.get("formatStyle", "unknown")] += 1
-            for fs_label in metadata.get("formatIssues", []):
-                format_style_counts[model_name][str(temp_value)][file_type][prompt_name][fs_label] += 1
-
-            # Track quality issues by model, temperature, file type, and prompt
-            _track_item_quality_issues(metadata, TrialKey(model_name, temp_value, file_type, prompt_name),
-                                        ext, quality_issues_output, quality_issues_examples, file_path.name)
-
-            # Track item count for statistics
-            item_count_stats[model_name][str(temp_value)][file_type].append(len(items))
-
-            # Add to consolidated data
-            consolidated[ext].append({
-                "filename": file_path.name,
-                "metadata": metadata,
-                "items": items
-            })
             file_count += 1
             click.echo(f"Processed: {file_path.name} ({len(items)} items)")
 
         except Exception as e:
+            import traceback
             click.echo(f"Error parsing {file_path.name}: {e}")
-            skipped_trials.append(file_path.name)
+            if verbose:
+                click.echo(traceback.format_exc())
+            state.skipped_trials.append(file_path.name)
             continue
 
     return file_count
@@ -2736,25 +2747,36 @@ def summarize_results(options):
     if filters_applied:
         click.echo(f"Filters: {', '.join(filters_applied)}\n")
 
+    # Build aggregation state object
+    state = AggregationState(
+        consolidated=consolidated,
+        quality_issues_output=quality_issues_output,
+        quality_issues_instances=quality_issues_examples,
+        format_style_counts=format_style_counts,
+        item_count_stats=item_count_stats,
+        cleanup_rules_agg=cleanup_rules_agg,
+        case_values_agg=case_values_agg,
+        format_aggs=format_aggs,
+        skipped_trials=skipped_trials,
+        zero_item_files=zero_item_files,
+        source_items=source_items
+    )
+
     # Scan and process all result files
-    file_count = _scan_and_process_files(filename_filter, format_type, experiment, model, exclude_model,
-                                         temperature, timestamp, max_item_length, verbose,
-                                         consolidated, quality_issues_output, quality_issues_examples,
-                                         format_style_counts, item_count_stats, cleanup_rules_agg,
-                                         case_values_agg, format_aggs, skipped_trials, zero_item_files, source_items)
+    file_count = _scan_and_process_files(filename_filter, format_type, max_item_length, verbose, options, state)
 
     # Convert defaultdict to regular dict for JSON serialization
     consolidated_dict = dict(consolidated)
 
     # Compute cross-trial consistency flags and quality issues
     format_consistency, quality_issues_dict = _compute_quality_and_consistency(
-        consolidated_dict, case_values_agg, format_aggs, quality_issues_output,
-        quality_issues_examples, format_style_counts, cleanup_rules_agg, ISSUE_TYPES)
+        consolidated_dict, state.case_values_agg, state.format_aggs, state.quality_issues_output,
+        state.quality_issues_instances, state.format_style_counts, state.cleanup_rules_agg, ISSUE_TYPES)
 
     # Write results and reports
     return _write_results_and_reports(consolidated_dict, quality_issues_dict, file_count, analysis, verbose,
-                                      item_count_stats, quality_issues_examples, format_consistency,
-                                      source_items, skipped_trials, zero_item_files)
+                                      state.item_count_stats, state.quality_issues_instances, format_consistency,
+                                      state.source_items, state.skipped_trials, state.zero_item_files)
 
 
 def _compute_quality_and_consistency(consolidated_dict, case_values_agg, format_aggs,
