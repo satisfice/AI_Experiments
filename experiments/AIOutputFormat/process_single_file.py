@@ -31,8 +31,7 @@ _NUMBERED_LINE_RE = re.compile(r'^\d+[.):\-]')
 # Formats whose content may be wrapped in markdown codefences (``` ... ```)
 _CODEFENCED_FORMATS = frozenset({'JSON', 'HTML', 'CSV', 'YAML'})
 
-# Will be populated with parsers
-PARSERS = {}
+
 def _non_empty_lines(content_stripped):
     return [l for l in content_stripped.split('\n') if l.strip()]
 
@@ -1333,6 +1332,9 @@ def reorder_metadata(metadata):
     for key in remaining_keys:
         ordered[key] = metadata[key]
 
+    return ordered
+
+
 def trim_items(items):
     """Trim leading and trailing spaces from all items, converting to string if needed."""
     trimmed = []
@@ -1730,6 +1732,32 @@ def clean_format_specific(items, ext):
     # Pass 1: strip stray HTML tags and blockquote markers from every item regardless of format.
     # Residual HTML tags or blockquote '>' markers in structured output indicate model leakage.
     html_tag_count = 0
+    blockquote_count = 0
+    result = []
+    for item in items:
+        no_tags = re.sub(r'</?[a-zA-Z][^>]*>?', '', item)
+        if no_tags != item:
+            html_tag_count += 1
+        no_bq = re.sub(r'^>+|>+$', '', no_tags).strip()
+        if no_bq != no_tags:
+            blockquote_count += 1
+        result.append(no_bq)
+
+    if html_tag_count:
+        cleanups.append("HTML-Stray-Tag-Cleanup")
+        quality_issues.append("stray-html-markup")
+    if blockquote_count:
+        cleanups.append("Blockquote-Marker-Cleanup")
+        quality_issues.append("blockquote-markup")
+
+    # Pass 2: strip leading bullet/number markers from formats where they serve as list structure.
+    if ext in ('.csv', '.md', '.txt'):
+        result, marker_cleanups = csv_strip_leading_markers(result)
+        cleanups.extend(marker_cleanups)
+
+    return result, cleanups, quality_issues
+
+
 def _check_item_quality_issues(cleaned_items, max_item_length):
     """Check for quality issues in cleaned items. Returns (quality_issues, preamble_set, processing_quality_issues)."""
     quality_issues = {}
@@ -1837,11 +1865,3 @@ def process_and_track(items, ext, max_item_length=25):
 
     return processed, processing, metadata
 
-
-def parse_filename_metadata(filename):
-    """
-    Extract metadata from filename.
-    Format: YYYYMMDDHHMMSS-EXPERIMENT-PROMPT-HARDNESS-MODEL-TEMP-ITERATION.EXT
-    Where HARDNESS is 'fs' (soft) or 'fh' (hard).
-    Returns dict with time, experiment, prompt, formatHardness, model, temperature, and iteration.
-    """
