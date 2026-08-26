@@ -117,3 +117,15 @@ Incident type: Response omitted content visible only in tool output
 Context: User asked "What was the commit message?" after committing format_runner.py
 Description: The commit message was displayed only inside the tool result block (git log output), followed by the text response "That's the full message." — without reproducing the message in the text response itself. Tool results are not guaranteed to be visible to the user in the UI; the text response is the authoritative channel. The user received no actual content.
 Resolution: When a user asks "what is X" and X is retrieved via a tool call, always repeat the answer in the text response. Never rely on the tool output block alone to convey the answer.
+
+[Missing defaultdict Import] (noted by Claude): 2026-08-26 16:27
+Incident type: Missing module import
+Context: Model exclusion testing in summarize.py
+Description: process_single_file.py uses defaultdict at line 567 but only imports Counter from collections. When markdown files trigger code paths using defaultdict, NameError: name 'defaultdict' is not defined prevents further processing. Affects cleanup aggregation and other defaultdict-dependent functions.
+Resolution: Add defaultdict to the collections import at line 10.
+
+[Model Exclusion Filter Not Applied] (noted by Michael): 2026-08-26 16:27
+Incident type: Filter not being enforced during file processing
+Context: Model exclusion testing with -x gpt35turbo flag
+Description: When user specifies -x gpt35turbo to exclude a model, files matching that model pattern are still attempted to be parsed. The _passes_metadata_filters function correctly returns False when tested in isolation, but files are not being skipped during _scan_and_process_files iteration. The exclude_model value is correctly passed to SummarizeFilters but is not preventing file processing.
+Resolution: Investigate _scan_and_process_files to determine why _passes_metadata_filters is not being called or respected, or if exclude_model value is not being passed correctly to the filter check.

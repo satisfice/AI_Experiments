@@ -7,7 +7,7 @@ import yaml
 import re
 from html.parser import HTMLParser
 from io import StringIO
-from collections import Counter
+from collections import Counter, defaultdict
 from pathlib import Path
 
 from config import abbreviate_model_name
