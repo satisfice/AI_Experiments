@@ -49,6 +49,18 @@ _CODEFENCED_FORMATS = frozenset({'JSON', 'HTML', 'CSV', 'YAML'})
 
 # ── Shared low-level helpers ──────────────────────────────────────────────────
 
+def _make_four_level_defaultdict(innermost_factory):
+    """Create a 4-level nested defaultdict: model -> temperature -> file_type -> prompt.
+    innermost_factory: callable that returns the innermost value."""
+    return defaultdict(
+        lambda: defaultdict(
+            lambda: defaultdict(
+                lambda: defaultdict(innermost_factory)
+            )
+        )
+    )
+
+
 def calculate_statistics(counts):
     """
     Calculate statistics for a list of item counts.
@@ -93,24 +105,8 @@ def _make_issue_output_dicts(issue_types):
         quality issues and their example source files.
         Structure: model -> temperature -> file_type -> prompt -> issue_type -> {items|examples}
     """
-    quality_issues_output = defaultdict(
-        lambda: defaultdict(
-            lambda: defaultdict(
-                lambda: defaultdict(
-                    lambda: {k: set() for k in issue_types}
-                )
-            )
-        )
-    )
-    quality_issues_examples = defaultdict(
-        lambda: defaultdict(
-            lambda: defaultdict(
-                lambda: defaultdict(
-                    lambda: {k: {} for k in issue_types}
-                )
-            )
-        )
-    )
+    quality_issues_output = _make_four_level_defaultdict(lambda: {k: set() for k in issue_types})
+    quality_issues_examples = _make_four_level_defaultdict(lambda: {k: {} for k in issue_types})
     return quality_issues_output, quality_issues_examples
 
 
@@ -121,15 +117,7 @@ def _make_format_style_counts():
         format_style_counts — nested dict for counting how many files use each format style.
         Structure: model -> temperature -> file_type -> prompt -> formatStyle -> count
     """
-    return defaultdict(
-        lambda: defaultdict(
-            lambda: defaultdict(
-                lambda: defaultdict(
-                    lambda: defaultdict(int)
-                )
-            )
-        )
-    )
+    return _make_four_level_defaultdict(lambda: defaultdict(int))
 
 
 def _make_cleanup_rules_agg():
@@ -140,13 +128,7 @@ def _make_cleanup_rules_agg():
         Structure: model -> temperature -> file_type -> prompt -> Counter(rule_name -> count)
         Each count is the number of trials in the set that triggered that rule.
     """
-    return defaultdict(
-        lambda: defaultdict(
-            lambda: defaultdict(
-                lambda: defaultdict(Counter)
-            )
-        )
-    )
+    return _make_four_level_defaultdict(Counter)
 
 
 def _make_format_aggregation_dicts():
@@ -157,13 +139,8 @@ def _make_format_aggregation_dicts():
          csv_cleanup_agg, txt1_cleanup_agg)
         Used for detecting cross-trial inconsistencies in formatting/casing.
     """
-    case_values_agg = defaultdict(
-        lambda: defaultdict(
-            lambda: defaultdict(
-                lambda: defaultdict(list)
-            )
-        )
-    )
+    case_values_agg = _make_four_level_defaultdict(list)
+
     cleanup_agg_template = lambda: defaultdict(
         lambda: defaultdict(
             lambda: defaultdict(list)
