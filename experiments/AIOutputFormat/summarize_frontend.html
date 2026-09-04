@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summarize Results Frontend</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 30px; }
+        h1 { font-size: 28px; margin-bottom: 30px; color: #333; }
+        .row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px; margin-bottom: 30px; }
+        @media (max-width: 1024px) { .row { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 640px) { .row { grid-template-columns: 1fr; } }
+
+        .section { }
+        .section h2 { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: #333; }
+        .checkboxes {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 12px;
+            background: #fafafa;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .checkbox-item:last-child { border-bottom: none; }
+        .checkbox-item input { margin-right: 8px; cursor: pointer; }
+        .checkbox-item label { cursor: pointer; flex: 1; }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button.primary {
+            background: #0066cc;
+            color: white;
+        }
+        button.primary:hover { background: #0052a3; }
+        button.secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        button.secondary:hover { background: #d0d0d0; }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .output-section {
+            margin-top: 30px;
+        }
+        .output-section h2 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #333;
+        }
+        textarea {
+            width: 100%;
+            height: 400px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            background: #fafafa;
+            color: #333;
+            resize: vertical;
+        }
+        .status {
+            margin-top: 10px;
+            padding: 10px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .status.loading { background: #e3f2fd; color: #1976d2; }
+        .status.success { background: #e8f5e9; color: #388e3c; }
+        .status.error { background: #ffebee; color: #d32f2f; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Summarize Results</h1>
+
+        <div class="row">
+            <div class="section">
+                <h2>Experiments to Include</h2>
+                <div class="checkboxes" id="experimentsCheckboxes"></div>
+            </div>
+
+            <div class="section">
+                <h2>Models to Ignore</h2>
+                <div class="checkboxes" id="modelsCheckboxes"></div>
+            </div>
+
+            <div class="section">
+                <h2>Temperatures</h2>
+                <div class="checkboxes" id="temperaturesCheckboxes"></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="secondary" onclick="loadDefaults()">Load Defaults</button>
+            <button class="primary" onclick="generateSummary()" id="generateBtn">Generate Summary</button>
+        </div>
+
+        <div class="output-section">
+            <h2>Output</h2>
+            <textarea id="output" readonly placeholder="Output will appear here..."></textarea>
+            <div class="status" id="status"></div>
+        </div>
+    </div>
+
+    <script>
+        let availableData = { experiments: [], models: [], temperatures: [] };
+
+        async function initPage() {
+            try {
+                const response = await fetch('/api/available-values');
+                availableData = await response.json();
+                await loadDefaults();
+                renderCheckboxes();
+            } catch (error) {
+                showStatus('Failed to load data', 'error');
+            }
+        }
+
+        function renderCheckboxes() {
+            renderSection('experimentsCheckboxes', availableData.experiments, 'experiments', false);
+            renderSection('modelsCheckboxes', availableData.models, 'models', true);
+            renderSection('temperaturesCheckboxes', availableData.temperatures, 'temperatures', true);
+        }
+
+        function renderSection(elementId, items, sectionName, checkByDefault) {
+            const container = document.getElementById(elementId);
+            container.innerHTML = items.map(item => `
+                <div class="checkbox-item">
+                    <input type="checkbox" id="${sectionName}_${item}" ${checkByDefault ? 'checked' : ''} data-section="${sectionName}" data-value="${item}">
+                    <label for="${sectionName}_${item}">${item}</label>
+                </div>
+            `).join('');
+        }
+
+        async function loadDefaults() {
+            try {
+                const response = await fetch('/api/config');
+                const config = await response.json();
+
+                // Set experiments (include mode)
+                if (config.experiments && config.experiments.length > 0) {
+                    document.querySelectorAll('[data-section="experiments"]').forEach(cb => {
+                        cb.checked = config.experiments.includes(cb.dataset.value);
+                    });
+                } else {
+                    // Default to animals_big
+                    document.querySelectorAll('[data-section="experiments"]').forEach(cb => {
+                        cb.checked = cb.dataset.value === 'animals_big';
+                    });
+                }
+
+                // Set models (exclude mode - invert logic)
+                if (config.exclude_model && config.exclude_model.length > 0) {
+                    document.querySelectorAll('[data-section="models"]').forEach(cb => {
+                        cb.checked = !config.exclude_model.includes(cb.dataset.value);
+                    });
+                } else {
+                    // Check all by default
+                    document.querySelectorAll('[data-section="models"]').forEach(cb => {
+                        cb.checked = true;
+                    });
+                }
+
+                showStatus('Defaults loaded', 'success');
+            } catch (error) {
+                console.log('No saved config found, using defaults');
+            }
+        }
+
+        async function generateSummary() {
+            const generateBtn = document.getElementById('generateBtn');
+            const output = document.getElementById('output');
+
+            generateBtn.disabled = true;
+            output.value = '';
+            showStatus('Generating summary...', 'loading');
+
+            try {
+                const experiments = getSelectedCheckboxes('experiments');
+                const modelsToInclude = getSelectedCheckboxes('models');
+                const temperatures = getSelectedCheckboxes('temperatures');
+
+                // Models to exclude are the opposite of selected
+                const modelsToExclude = availableData.models.filter(m => !modelsToInclude.includes(m));
+
+                const response = await fetch('/api/summarize', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        experiments,
+                        exclude_model: modelsToExclude,
+                        temperatures
+                    })
+                });
+
+                const data = await response.json();
+                output.value = data.output;
+                showStatus('Summary generated successfully', data.success ? 'success' : 'error');
+
+                // Save config
+                if (data.success) {
+                    await saveConfig({ experiments, exclude_model: modelsToExclude, temperatures });
+                }
+            } catch (error) {
+                output.value = `Error: ${error.message}`;
+                showStatus('Failed to generate summary', 'error');
+            } finally {
+                generateBtn.disabled = false;
+            }
+        }
+
+        function getSelectedCheckboxes(section) {
+            return Array.from(document.querySelectorAll(`[data-section="${section}"]:checked`))
+                .map(cb => cb.dataset.value);
+        }
+
+        async function saveConfig(config) {
+            try {
+                await fetch('/api/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+            } catch (error) {
+                console.log('Could not save config:', error);
+            }
+        }
+
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+        }
+
+        initPage();
+    </script>
+</body>
+</html>
