@@ -246,29 +246,28 @@ def _print_format_issues_breakdown(pd, safe_write):
         safe_write(f"        Format Issues: {issues_str}")
 
 
-def _print_issue_instance_items(items, issue_key, with_example, trial_key, quality_issues_instances, safe_write):
-    """Print example items for an issue type."""
-    model_name, temp_value, file_type, prompt_name = trial_key
+def _print_issue_instance_items(items, issue_key, with_example, trial_key, quality_ctx, safe_write):
+    """Print instance items for an issue type."""
     for item in items[:5]:
         suffix = ""
         if with_example:
-            example_file = quality_issues_instances[model_name][str(temp_value)][file_type][prompt_name][issue_key].get(item)
-            suffix = f" Example: {example_file}" if example_file else ""
+            instance_file = quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][issue_key].get(item)
+            suffix = f" Instance: {instance_file}" if instance_file else ""
         safe_write(f"          - {ascii(item)}{suffix}")
 
 
-def _print_single_issue_type(issue_key, label, with_example, pd, trial_key, quality_issues_instances, safe_write):
+def _print_single_issue_type(issue_key, label, with_example, pd, trial_key, quality_ctx, safe_write):
     """Print breakdown for a single issue type."""
     items = [e["instance"] for e in pd.get(issue_key, [])]
     if not items:
         return
     safe_write(f"        {label} ({len(items)} unique):")
-    _print_issue_instance_items(items, issue_key, with_example, trial_key, quality_issues_instances, safe_write)
+    _print_issue_instance_items(items, issue_key, with_example, trial_key, quality_ctx, safe_write)
     if len(items) > 5:
         safe_write(f"          ... and {len(items) - 5} more")
 
 
-def _print_issue_type_breakdown(pd, key, quality_issues_instances, safe_write):
+def _print_issue_type_breakdown(pd, key, quality_ctx, safe_write):
     """Print per-issue-type breakdown for a prompt."""
     trial_key = key
     issue_display = [
@@ -281,18 +280,18 @@ def _print_issue_type_breakdown(pd, key, quality_issues_instances, safe_write):
         ("repeated_chars", "Repeated characters", False),
     ]
     for issue_key, label, with_example in issue_display:
-        _print_single_issue_type(issue_key, label, with_example, pd, trial_key, quality_issues_instances, safe_write)
+        _print_single_issue_type(issue_key, label, with_example, pd, trial_key, quality_ctx, safe_write)
 
 
-def _print_prompt_analysis(pd, key, format_consistency, treatment_fields, quality_issues_instances, safe_write):
+def _print_prompt_analysis(pd, key, format_consistency, treatment_fields, quality_ctx, safe_write):
     """Print one prompt's quality-issue breakdown within the analysis report."""
     safe_write(f"      {key.prompt_name}:")
     _print_format_consistency_status(pd, key, format_consistency, treatment_fields, safe_write)
     _print_format_issues_breakdown(pd, safe_write)
-    _print_issue_type_breakdown(pd, key, quality_issues_instances, safe_write)
+    _print_issue_type_breakdown(pd, key, quality_ctx, safe_write)
 
 
-def _print_analysis_report(item_count_stats, quality_issues_dict, quality_issues_instances,
+def _print_analysis_report(item_count_stats, quality_issues_dict, quality_ctx,
                             format_consistency, treatment_fields):
     """Print the verbose per-model/temperature/file-type analysis report
     (the `analysis and verbose` report, extracted out of summarize_results)."""
@@ -1183,8 +1182,9 @@ def _write_results_and_reports(state, quality_results, options):
         # Print analysis report for all file types per model and temperature
         if options.analysis and options.verbose:
             try:
+                quality_ctx = QualityContext(output=state.quality_issues_output, instances=state.quality_issues_instances)
                 _print_analysis_report(state.item_count_stats, quality_results.quality_issues_dict,
-                                        state.quality_issues_instances, quality_results.format_consistency,
+                                        quality_ctx, quality_results.format_consistency,
                                         TREATMENT_FIELDS)
             except Exception as report_err:
                 click.echo(f"Warning: Could not generate full analysis report ({report_err})")
