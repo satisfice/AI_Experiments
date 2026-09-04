@@ -1,3 +1,39 @@
+[Circular Import Error] (noted by Claude): 2026-09-04 12:00
+
+Incident: Circular import between reporting.py and summarize.py
+
+Context:
+After extracting cli_helpers.py, file_io.py, and trial_loading.py, file imports were reorganized.
+- reporting.py imported TrialKey, QualityContext from summarize.py
+- summarize.py imported print_analysis_report from reporting.py
+- Result: ImportError on module load
+
+Error message:
+```
+Traceback (most recent call last):
+  File "...\summarize.py", line 25, in <module>
+    from reporting import print_analysis_report
+  File "...\reporting.py", line 9, in <module>
+    from summarize import TrialKey, QualityContext, calculate_statistics
+ImportError: cannot import name 'print_analysis_report'
+```
+
+Root cause:
+Shared dataclasses (TrialKey, QualityContext, Trial, TrialSet, AggregationState, etc.) were defined in summarize.py but needed by reporting.py and trial_loading.py, creating bidirectional dependencies.
+
+Resolution:
+Created data_models.py module containing all shared dataclasses with no logic dependencies. Updated imports:
+- reporting.py: imports TrialKey, QualityContext from data_models.py
+- trial_loading.py: imports Trial, QualityContext, AggregationState from data_models.py
+- summarize.py: imports all data models from data_models.py
+- No circular references; all modules compile cleanly
+
+Impact: Resolved without code loss; actually improved architecture by isolating data models.
+
+Lesson: Shared data structures should be in separate module to avoid circular dependencies; separating data from logic prevents import cycles.
+
+---
+
 [Tool Rejection] (noted by Claude): 2026-09-04 (during refactoring session)
 
 Incident: Bash tool invocation rejected twice during git push
