@@ -180,32 +180,31 @@ def _flag_case_inconsistencies(trial_sets, quality_issues_output, quality_issues
                                              quality_issues_output, quality_issues_examples)
 
 
-def _record_format_rule_inconsistencies(model_name, temp_value, file_type_label, prompt_name, entries,
-                                        quality_issues_output, quality_issues_examples, issue_key):
-    """Record format rule inconsistencies for a single trial set."""
-    rule_sets = [rules for rules, _ in entries]
-    if len(set(rule_sets)) <= 1:
+def _record_format_rule_inconsistencies_for_set(trial_set, inconsistencies, quality_issues_output,
+                                                 quality_issues_examples, issue_key):
+    """Record format rule inconsistencies detected in a trial set into aggregation dicts."""
+    if not inconsistencies:
         return
-    all_rules = set().union(*rule_sets)
-    common_rules = set.intersection(*[set(r) for r in rule_sets])
-    varying_rules = all_rules - common_rules
-    for rule in varying_rules:
-        quality_issues_output[model_name][temp_value][file_type_label][prompt_name][issue_key].add(rule)
-        if rule not in quality_issues_examples[model_name][temp_value][file_type_label][prompt_name][issue_key]:
-            example_fname = next((fname for rules, fname in entries if rule in rules), "unknown")
-            quality_issues_examples[model_name][temp_value][file_type_label][prompt_name][issue_key][rule] = example_fname
+
+    model = trial_set.model
+    temp = trial_set.temperature
+    file_type = trial_set.file_type
+    prompt = trial_set.prompt
+
+    for rule, example_filename in inconsistencies.items():
+        quality_issues_output[model][temp][file_type][prompt][issue_key].add(rule)
+        if rule not in quality_issues_examples[model][temp][file_type][prompt][issue_key]:
+            quality_issues_examples[model][temp][file_type][prompt][issue_key][rule] = example_filename
 
 
-def _flag_format_inconsistencies(cleanup_agg, quality_issues_output, quality_issues_examples,
+def _flag_format_inconsistencies(trial_sets, quality_issues_output, quality_issues_examples,
                                   file_type_label, issue_key):
-    """Flag trial sets whose cleanup-rule sets differ across files for one file type
-    (markdown/HTML/JSON/YAML), recording which rules varied and an example filename
-    for each. Mutates quality_issues_output and quality_issues_examples in place."""
-    for model_name in cleanup_agg:
-        for temp_value in cleanup_agg[model_name]:
-            for prompt_name in cleanup_agg[model_name][temp_value]:
-                entries = cleanup_agg[model_name][temp_value][prompt_name]
-                _record_format_rule_inconsistencies(model_name, temp_value, file_type_label, prompt_name, entries,
+    """Detect and record format rule inconsistencies for a specific file type across all trial sets."""
+    for trial_set in trial_sets.values():
+        if trial_set.file_type != file_type_label:
+            continue
+        inconsistencies = trial_set.detect_format_rule_inconsistencies()
+        _record_format_rule_inconsistencies_for_set(trial_set, inconsistencies,
                                                      quality_issues_output, quality_issues_examples, issue_key)
 
 
@@ -701,7 +700,7 @@ class TrialSet:
     def detect_case_inconsistencies(self):
         """Detect if trials in this set have inconsistent case handling.
 
-        Returns: {case_value: [example_filenames]} or {} if consistent.
+        Returns: {case_value: example_filename} or {} if consistent.
         """
         case_values = self.extract_case_values()
         distinct_cases = set(v for v, _ in case_values)
@@ -714,6 +713,30 @@ class TrialSet:
         for case_val, fname in case_values:
             if case_val not in issues:
                 issues[case_val] = fname
+        return issues
+
+    def detect_format_rule_inconsistencies(self):
+        """Detect if trials in this set have inconsistent cleanup rule sets.
+
+        Returns: {varying_rule: example_filename} or {} if consistent.
+        """
+        rule_sets = [frozenset(trial.metadata.get("cleanup", {}).keys()) for trial in self.trials]
+
+        if len(set(rule_sets)) <= 1:
+            return {}  # All trials have same rule set
+
+        all_rules = set().union(*rule_sets)
+        common_rules = set.intersection(*[set(r) for r in rule_sets]) if rule_sets else set()
+        varying_rules = all_rules - common_rules
+
+        # Find example filename for each varying rule
+        issues = {}
+        for rule in varying_rules:
+            for trial in self.trials:
+                trial_rules = frozenset(trial.metadata.get("cleanup", {}).keys())
+                if rule in trial_rules:
+                    issues[rule] = trial.filename
+                    break
         return issues
 
 
@@ -1049,9 +1072,9 @@ def _compute_quality_and_consistency(consolidated_dict, trial_sets, format_aggs,
     # Compute cross-trial case inconsistency using trial sets.
     _flag_case_inconsistencies(trial_sets, quality_issues_output, quality_issues_examples)
 
-    # Flag trial sets whose cleanup-rule sets differ across files, per file type.
+    # Detect format rule inconsistencies for each file type using trial sets.
     for ext, fmt_meta in format_aggs.items():
-        _flag_format_inconsistencies(fmt_meta['agg'], quality_issues_output, quality_issues_examples,
+        _flag_format_inconsistencies(trial_sets, quality_issues_output, quality_issues_examples,
                                       fmt_meta['label'], fmt_meta['issue_key'])
 
     # Build quality_issues_dict with hierarchy: model -> temperature -> file_type -> prompt
