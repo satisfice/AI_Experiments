@@ -243,6 +243,27 @@ def _print_format_issues_breakdown(pd, safe_write):
         safe_write(f"        Format Issues: {issues_str}")
 
 
+def _print_issue_example_items(items, issue_key, model_name, temp_value, file_type, prompt_name, with_example, quality_issues_examples, safe_write):
+    """Print example items for an issue type."""
+    for item in items[:5]:
+        suffix = ""
+        if with_example:
+            example_file = quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][issue_key].get(item)
+            suffix = f" Example: {example_file}" if example_file else ""
+        safe_write(f"          - {ascii(item)}{suffix}")
+
+
+def _print_single_issue_type(issue_key, label, with_example, pd, model_name, temp_value, file_type, prompt_name, quality_issues_examples, safe_write):
+    """Print breakdown for a single issue type."""
+    items = [e["instance"] for e in pd.get(issue_key, [])]
+    if not items:
+        return
+    safe_write(f"        {label} ({len(items)} unique):")
+    _print_issue_example_items(items, issue_key, model_name, temp_value, file_type, prompt_name, with_example, quality_issues_examples, safe_write)
+    if len(items) > 5:
+        safe_write(f"          ... and {len(items) - 5} more")
+
+
 def _print_issue_type_breakdown(pd, key, quality_issues_examples, safe_write):
     """Print per-issue-type breakdown for a prompt."""
     model_name, temp_value, file_type, prompt_name = key
@@ -256,18 +277,7 @@ def _print_issue_type_breakdown(pd, key, quality_issues_examples, safe_write):
         ("repeated_chars", "Repeated characters", False),
     ]
     for issue_key, label, with_example in issue_display:
-        items = [e["instance"] for e in pd.get(issue_key, [])]
-        if not items:
-            continue
-        safe_write(f"        {label} ({len(items)} unique):")
-        for item in items[:5]:
-            suffix = ""
-            if with_example:
-                example_file = quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][issue_key].get(item)
-                suffix = f" Example: {example_file}" if example_file else ""
-            safe_write(f"          - {ascii(item)}{suffix}")
-        if len(items) > 5:
-            safe_write(f"          ... and {len(items) - 5} more")
+        _print_single_issue_type(issue_key, label, with_example, pd, model_name, temp_value, file_type, prompt_name, quality_issues_examples, safe_write)
 
 
 def _print_prompt_analysis(pd, key, format_consistency, treatment_fields, quality_issues_examples, safe_write):
@@ -292,8 +302,6 @@ def _print_analysis_report(item_count_stats, quality_issues_dict, quality_issues
     safe_write("DATA ANALYSIS REPORT BY MODEL, TEMPERATURE, AND FILE TYPE")
     safe_write("="*70)
 
-    # Iterate over item_count_stats which has entries for every
-    # model/temperature/file_type combination that was processed
     for model_name in sorted(item_count_stats.keys()):
         safe_write(f"\n{model_name}:")
         for temp_value in sorted(item_count_stats[model_name].keys(), key=lambda x: (x == "unknown", x)):
@@ -304,7 +312,6 @@ def _print_analysis_report(item_count_stats, quality_issues_dict, quality_issues
                 safe_write(f"    {file_type} ({len(counts)} files):")
                 safe_write(f"      Items: max={stats['max']}, min={stats['min']}, avg={stats['avg']}, var={stats['var']}, mode={stats['mode']}")
 
-                # Per-prompt quality details
                 prompts_data = quality_issues_dict.get(model_name, {}).get(str(temp_value), {}).get(file_type, {})
                 for prompt_name in sorted(prompts_data.keys()):
                     _print_prompt_analysis(prompts_data[prompt_name], TrialKey(model_name, temp_value, file_type, prompt_name),
@@ -382,22 +389,6 @@ class _QualityDataContext:
     cleanup_rules_agg: dict
     issue_types: list
     treatment_fields: list
-
-
-def _gather_all_combos(format_consistency, format_style_counts, quality_issues_output):
-    """Collect all (model, temp, file_type, prompt) tuples from all data sources."""
-    all_combos = set(format_consistency.keys())
-    for model_name in format_style_counts:
-        for temp_value in format_style_counts[model_name]:
-            for file_type in format_style_counts[model_name][temp_value]:
-                for prompt_name in format_style_counts[model_name][temp_value][file_type]:
-                    all_combos.add((model_name, temp_value, file_type, prompt_name))
-    for model_name in quality_issues_output:
-        for temp_value in quality_issues_output[model_name]:
-            for file_type in quality_issues_output[model_name][temp_value]:
-                for prompt_name in quality_issues_output[model_name][temp_value][file_type]:
-                    all_combos.add((model_name, str(temp_value), file_type, prompt_name))
-    return sorted(all_combos, key=lambda x: (x[0], x[1], x[2].casefold(), x[3]))
 
 
 def _extract_quality_issues_for_prompt(model_name, temp_value, file_type, prompt_name, ctx):
@@ -488,6 +479,13 @@ def _build_quality_issues_dict(trial_sets, format_consistency, format_style_coun
     return quality_issues_dict
 
 
+def _matches_format_type(ext, format_type):
+    """Check if extension matches the requested format type."""
+    if not format_type:
+        return True
+    return ext == f".{format_type}" or ext == format_type
+
+
 def _should_attempt_result_file(file_path, filename_filter, format_type):
     """Pre-filter for the result-file scan: decide whether to even attempt parsing
     this file. Returns the lowercase extension if the file should be attempted, or
@@ -504,7 +502,7 @@ def _should_attempt_result_file(file_path, filename_filter, format_type):
     ext = file_path.suffix.lower()
     if not ext:
         return None
-    if format_type and ext != f".{format_type}" and ext != format_type:
+    if not _matches_format_type(ext, format_type):
         return None
     return ext
 
@@ -570,6 +568,41 @@ def _passes_metadata_filters(filename_metadata, file_name, experiment, model, ex
     )
 
 
+def _is_txt1_leading_number_exception(issue_type, ext, example):
+    """Check if this is a txt1 file with leading number (expected format, not a quality issue)."""
+    if issue_type != "leading_punctuation" or ext != '.txt1':
+        return False
+    return bool(re.match(r'^\d+[\.\)\-\s]', example))
+
+
+def _track_item_level_issues(item_issues, issue_type, ext, model_name, temp_value, file_type, prompt_name, quality_issues_output, quality_issues_examples, filename):
+    """Track a single item-level quality issue."""
+    example = item_issues.get(issue_type)
+    if not example:
+        return
+    if _is_txt1_leading_number_exception(issue_type, ext, example):
+        return
+    quality_issues_output[model_name][str(temp_value)][file_type][prompt_name][issue_type].add(example)
+    if example not in quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][issue_type]:
+        quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][issue_type][example] = filename
+
+
+def _track_repeated_sequence_issue(item_issues, model_name, temp_value, file_type, prompt_name, quality_issues_output, quality_issues_examples, filename):
+    """Track repeated_sequence issue using filename as instance."""
+    if item_issues.get("repeated_sequence"):
+        quality_issues_output[model_name][str(temp_value)][file_type][prompt_name]["repeated_sequence"].add(filename)
+        if filename not in quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name]["repeated_sequence"]:
+            quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name]["repeated_sequence"][filename] = filename
+
+
+def _track_format_level_issues(format_issues, model_name, temp_value, file_type, prompt_name, quality_issues_output, quality_issues_examples, filename):
+    """Track format-level quality issues from metadata."""
+    for fs_label in format_issues:
+        quality_issues_output[model_name][str(temp_value)][file_type][prompt_name][fs_label].add(filename)
+        if filename not in quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][fs_label]:
+            quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][fs_label][filename] = filename
+
+
 def _track_item_quality_issues(metadata, key, ext, quality_issues_output, quality_issues_examples, filename):
     """Track item-level and format-level quality issues from one file's metadata
     into quality_issues_output/examples. Mutates both in place."""
@@ -579,34 +612,13 @@ def _track_item_quality_issues(metadata, key, ext, quality_issues_output, qualit
         for issue_type in ["leading_punctuation", "trailing_punctuation", "internal_punctuation",
                            "exceeds_max_length", "preamble_leak",
                            "markup_artifact", "repeated_chars"]:
-            example = item_issues.get(issue_type)
-            if not example:
-                continue
-            # txt1 exception: leading-number items are expected format, not quality issues
-            if issue_type == "leading_punctuation" and ext == '.txt1' \
-                    and re.match(r'^\d+[\.\)\-\s]', example):
-                continue
-            quality_issues_output[model_name][str(temp_value)][file_type][prompt_name][issue_type].add(example)
-            if example not in quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][issue_type]:
-                quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][issue_type][example] = filename
-
-        # repeated_sequence: use filename as instance so every affected trial
-        # accumulates independently (items may repeat the same value across trials,
-        # which would deduplicate if stored as instance strings).
-        if item_issues.get("repeated_sequence"):
-            quality_issues_output[model_name][str(temp_value)][file_type][prompt_name]["repeated_sequence"].add(filename)
-            if filename not in quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name]["repeated_sequence"]:
-                quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name]["repeated_sequence"][filename] = filename
-
-    # Track format-level issues from metadata["formatIssues"]
-    # (populated by parser_quality_issues and processingQualityIssues)
+            _track_item_level_issues(item_issues, issue_type, ext, model_name, temp_value, file_type, prompt_name,
+                                     quality_issues_output, quality_issues_examples, filename)
+        _track_repeated_sequence_issue(item_issues, model_name, temp_value, file_type, prompt_name,
+                                       quality_issues_output, quality_issues_examples, filename)
     if "formatIssues" in metadata:
-        for fs_label in metadata["formatIssues"]:
-            # For format-style quality issues, track the filename as the instance so
-            # _trial_numbers_str can extract trial numbers and show abbreviated ranges
-            quality_issues_output[model_name][str(temp_value)][file_type][prompt_name][fs_label].add(filename)
-            if filename not in quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][fs_label]:
-                quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][fs_label][filename] = filename
+        _track_format_level_issues(metadata["formatIssues"], model_name, temp_value, file_type, prompt_name,
+                                   quality_issues_output, quality_issues_examples, filename)
 
 
 def _write_results_and_quality_json(consolidated_dict, quality_issues_dict, file_count, verbose):
@@ -652,19 +664,30 @@ def _print_skip_summary(skipped_trials, zero_item_files):
             click.echo(f"  {filename}")
 
 
-def _write_unique_items_file(consolidated_dict, verbose):
-    """Write the always-on unique-items file (all non-empty items across every
-    consolidated entry, deduplicated and sorted)."""
+def _collect_unique_items_from_consolidated(consolidated_dict):
+    """Collect all unique non-empty items from consolidated dict."""
     unique_set = set()
     for ext_key in consolidated_dict:
         for entry in consolidated_dict[ext_key]:
             for item in entry.get("items", []):
                 if item:
                     unique_set.add(item)
-    sorted_items = sorted(unique_set)
-    with open(UNIQUE_ITEMS_FILE, 'w', encoding='utf-8') as f:
+    return unique_set
+
+
+def _write_items_to_file(sorted_items, file_path):
+    """Write sorted items to file, one per line."""
+    with open(file_path, 'w', encoding='utf-8') as f:
         for item in sorted_items:
             f.write(item + '\n')
+
+
+def _write_unique_items_file(consolidated_dict, verbose):
+    """Write the always-on unique-items file (all non-empty items across every
+    consolidated entry, deduplicated and sorted)."""
+    unique_set = _collect_unique_items_from_consolidated(consolidated_dict)
+    sorted_items = sorted(unique_set)
+    _write_items_to_file(sorted_items, UNIQUE_ITEMS_FILE)
     if verbose:
         click.echo(f"Wrote {len(sorted_items)} unique items to {UNIQUE_ITEMS_FILE}")
 
@@ -957,6 +980,35 @@ def _update_aggregations_from_trial(trial, state):
     })
 
 
+def _track_trial_items(trial, state):
+    """Track source items from a trial."""
+    for item in trial.items:
+        if item:
+            state.source_items.add(item)
+
+
+def _track_zero_item_file(trial, state):
+    """Track files with zero items."""
+    if trial.metadata.get("itemCount") == 0:
+        state.zero_item_files.append(trial.filename)
+
+
+def _handle_trial_load_error(file_path, error, verbose, state):
+    """Handle errors during trial loading."""
+    import traceback
+    click.echo(f"Error loading {file_path.name}: {error}")
+    if verbose:
+        click.echo(traceback.format_exc())
+    state.skipped_trials.append(file_path.name)
+
+
+def _process_loaded_trial(trial, state):
+    """Process a successfully loaded trial."""
+    _track_trial_items(trial, state)
+    _track_zero_item_file(trial, state)
+    click.echo(f"Loaded: {trial.filename} ({len(trial.items)} items)")
+
+
 def _collect_trials(max_item_length, verbose, options, state):
     """Scan result files and load them as Trial objects.
 
@@ -966,7 +1018,6 @@ def _collect_trials(max_item_length, verbose, options, state):
     trials = []
     file_count = 0
 
-    # Scan results directory
     for file_path in sorted(RESULTS_DIR.iterdir()):
         try:
             trial, skip_reason = _create_trial_from_file(file_path, max_item_length, options)
@@ -975,27 +1026,14 @@ def _collect_trials(max_item_length, verbose, options, state):
                 if skip_reason:
                     click.echo(f"Skipping ({skip_reason}): {file_path.name}")
                     state.skipped_trials.append(file_path.name)
-                # Silent skips (metadata filters) are not reported
                 continue
 
-            # Track source items
-            for item in trial.items:
-                if item:
-                    state.source_items.add(item)
-
-            if trial.metadata.get("itemCount") == 0:
-                state.zero_item_files.append(trial.filename)
-
+            _process_loaded_trial(trial, state)
             trials.append(trial)
             file_count += 1
-            click.echo(f"Loaded: {trial.filename} ({len(trial.items)} items)")
 
         except Exception as e:
-            import traceback
-            click.echo(f"Error loading {file_path.name}: {e}")
-            if verbose:
-                click.echo(traceback.format_exc())
-            state.skipped_trials.append(file_path.name)
+            _handle_trial_load_error(file_path, e, verbose, state)
             continue
 
     return trials, file_count
@@ -1007,31 +1045,8 @@ def _process_trial_set(trial_set, state):
         _update_aggregations_from_trial(trial, state)
 
 
-def summarize_results(options):
-    """
-    Read all result files by type, parse items, and summarize into a single JSON.
-    Structure: {filetype: [{filename: str, items: [...]}, ...], ...}
-
-    Args:
-        options: SummarizeFilters instance (see its field comments for details).
-    """
-    filename_filter = options.filename_filter
-    model = options.model
-    format_type = options.format_type
-    experiment = options.experiment
-    timestamp = options.timestamp
-    temperature = options.temperature
-    max_item_length = options.max_item_length
-    analysis = options.analysis
-    exclude_model = options.exclude_model
-    verbose = options.verbose
-
-    if not RESULTS_DIR.exists():
-        click.echo(format_error("summarize", f"{RESULTS_DIR} directory not found"), err=True)
-        return False
-
-    consolidated = defaultdict(list)
-    # All tracked issue types (item-level first, then format-style-derived using dash-separated names)
+def _initialize_issue_types_and_aggregations():
+    """Initialize issue types and aggregation structures."""
     ISSUE_TYPES = [
         "leading_punctuation", "trailing_punctuation", "internal_punctuation",
         "exceeds_max_length", "preamble_leak",
@@ -1047,15 +1062,17 @@ def summarize_results(options):
         "HTML_Only_Bold_Tags", "HTML_Only_Italic_Tags", "HTML_Only_Emphasis_Tags", "HTML_Only_Underline_Tags",
         "HTML_Only_Pre_Tags", "items-not-in-li",
     ]
-    # Initialize quality issue tracking structures
     quality_issues_output, quality_issues_examples = _make_issue_output_dicts(ISSUE_TYPES)
     format_style_counts = _make_format_style_counts()
     item_count_stats = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
     cleanup_rules_agg = _make_cleanup_rules_agg()
     case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg = _make_format_aggregation_dicts()
+    return ISSUE_TYPES, quality_issues_output, quality_issues_examples, format_style_counts, item_count_stats, cleanup_rules_agg, case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg
 
-    # Map format types to their aggregations and metadata for post-scan flagging.
-    format_aggs = {
+
+def _build_format_aggregations(md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg):
+    """Build the format aggregations mapping."""
+    return {
         '.md': {'agg': md_cleanup_agg, 'label': 'markdown', 'issue_key': 'inconsistent_md_format'},
         '.html': {'agg': html_cleanup_agg, 'label': 'HTML', 'issue_key': 'inconsistent_html_format'},
         '.json': {'agg': json_cleanup_agg, 'label': 'JSON', 'issue_key': 'inconsistent_json_format'},
@@ -1064,18 +1081,11 @@ def summarize_results(options):
         '.csv': {'agg': csv_cleanup_agg, 'label': 'CSV', 'issue_key': 'inconsistent_csv_format'},
         '.txt1': {'agg': txt1_cleanup_agg, 'label': 'numberedText', 'issue_key': 'inconsistent_txt1_format'},
     }
-    file_count = 0
-    skipped_trials = []  # Track trial filenames that were skipped
-    zero_item_files = []  # Track files that produced 0 items
-    source_items = set()  # Track unique items from raw parsed data
 
-    # Display filter parameters
-    filters_applied = _describe_active_filters(options)
-    if filters_applied:
-        click.echo(f"Filters: {', '.join(filters_applied)}\n")
 
-    # Build aggregation state object
-    state = AggregationState(
+def _create_aggregation_state(consolidated, quality_issues_output, quality_issues_examples, format_style_counts, item_count_stats, cleanup_rules_agg, case_values_agg, format_aggs):
+    """Create aggregation state object."""
+    return AggregationState(
         consolidated=consolidated,
         quality_issues_output=quality_issues_output,
         quality_issues_instances=quality_issues_examples,
@@ -1084,23 +1094,43 @@ def summarize_results(options):
         cleanup_rules_agg=cleanup_rules_agg,
         case_values_agg=case_values_agg,
         format_aggs=format_aggs,
-        skipped_trials=skipped_trials,
-        zero_item_files=zero_item_files,
-        source_items=source_items
+        skipped_trials=[],
+        zero_item_files=[],
+        source_items=set()
     )
 
-    # Collect all trials from result files
-    trials, file_count = _collect_trials(max_item_length, verbose, options, state)
 
-    # Group trials into sets and process each set
+def summarize_results(options):
+    """
+    Read all result files by type, parse items, and summarize into a single JSON.
+    Structure: {filetype: [{filename: str, items: [...]}, ...], ...}
+
+    Args:
+        options: SummarizeFilters instance (see its field comments for details).
+    """
+    if not RESULTS_DIR.exists():
+        click.echo(format_error("summarize", f"{RESULTS_DIR} directory not found"), err=True)
+        return False
+
+    # Initialize data structures
+    consolidated = defaultdict(list)
+    ISSUE_TYPES, quality_issues_output, quality_issues_examples, format_style_counts, item_count_stats, cleanup_rules_agg, case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg = _initialize_issue_types_and_aggregations()
+    format_aggs = _build_format_aggregations(md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg)
+    state = _create_aggregation_state(consolidated, quality_issues_output, quality_issues_examples, format_style_counts, item_count_stats, cleanup_rules_agg, case_values_agg, format_aggs)
+
+    # Display filter parameters
+    filters_applied = _describe_active_filters(options)
+    if filters_applied:
+        click.echo(f"Filters: {', '.join(filters_applied)}\n")
+
+    # Collect and process trials
+    trials, file_count = _collect_trials(options.max_item_length, options.verbose, options, state)
     trial_sets = _group_trials_into_sets(trials)
     for trial_set in trial_sets.values():
         _process_trial_set(trial_set, state)
 
-    # Convert defaultdict to regular dict for JSON serialization
+    # Compute quality and consistency
     consolidated_dict = dict(consolidated)
-
-    # Compute cross-trial consistency flags and quality issues
     format_consistency, quality_issues_dict = _compute_quality_and_consistency(
         consolidated_dict, trial_sets, state.format_aggs, state.quality_issues_output,
         state.quality_issues_instances, state.format_style_counts, state.cleanup_rules_agg, ISSUE_TYPES)
@@ -1110,8 +1140,8 @@ def summarize_results(options):
         quality_issues_dict=quality_issues_dict,
         format_consistency=format_consistency
     )
-    options = ReportOptions(file_count=file_count, analysis=analysis, verbose=verbose)
-    return _write_results_and_reports(state, quality_results, options)
+    report_options = ReportOptions(file_count=file_count, analysis=options.analysis, verbose=options.verbose)
+    return _write_results_and_reports(state, quality_results, report_options)
 
 
 def _compute_quality_and_consistency(consolidated_dict, trial_sets, format_aggs,
@@ -1187,6 +1217,32 @@ def matches_model_pattern(model_name, pattern):
     return pattern_lower in model_lower
 
 
+def _display_choice_options(title, choices):
+    """Display choice options for user selection."""
+    click.echo(f"\n{title}:")
+    for idx, choice in enumerate(choices, 1):
+        click.echo(f"  {idx:2d}. {choice}")
+    click.echo(f"   0. (none/skip)")
+
+
+def _parse_selection_input(selection_input, num_choices):
+    """Parse user input into selected indices. Returns tuple (success, indices_or_error_msg)."""
+    if selection_input == '0' or selection_input == '':
+        return True, []
+    try:
+        indices = [int(x) - 1 for x in selection_input.split()]
+        return True, indices
+    except ValueError:
+        return False, "Invalid input. Please enter space-separated numbers."
+
+
+def _validate_selection_indices(indices, num_choices):
+    """Validate selected indices are within range. Returns tuple (valid, error_msg)."""
+    if any(idx < 0 or idx >= num_choices for idx in indices):
+        return False, "Invalid selection. Please enter valid numbers."
+    return True, None
+
+
 def prompt_for_selections(title, choices):
     """
     Prompt user to select from a list of choices by number or space-separated numbers.
@@ -1195,25 +1251,45 @@ def prompt_for_selections(title, choices):
     if not choices:
         return []
 
-    click.echo(f"\n{title}:")
-    for idx, choice in enumerate(choices, 1):
-        click.echo(f"  {idx:2d}. {choice}")
-    click.echo(f"   0. (none/skip)")
+    _display_choice_options(title, choices)
 
     while True:
         selection = click.prompt("Enter number(s) separated by spaces", default='0').strip()
-        if selection == '0' or selection == '':
+        success, result = _parse_selection_input(selection, len(choices))
+        if not success:
+            click.echo(result)
+            continue
+
+        if not result:
             return []
 
-        try:
-            selected_indices = [int(x) - 1 for x in selection.split()]
-            # Validate indices
-            if any(idx < 0 or idx >= len(choices) for idx in selected_indices):
-                click.echo("Invalid selection. Please enter valid numbers.")
-                continue
-            return [choices[idx] for idx in selected_indices]
-        except ValueError:
-            click.echo("Invalid input. Please enter space-separated numbers.")
+        valid, error_msg = _validate_selection_indices(result, len(choices))
+        if not valid:
+            click.echo(error_msg)
+            continue
+
+        return [choices[idx] for idx in result]
+
+
+def _extract_metadata_values(metadata, experiments, models, temperatures):
+    """Extract experiment, model, and temperature values from metadata."""
+    if metadata.get("experiment"):
+        experiments.add(metadata["experiment"])
+    if metadata.get("model"):
+        models.add(metadata["model"])
+    if metadata.get("temperature") is not None:
+        temperatures.add(metadata["temperature"])
+
+
+def _should_collect_from_file(file_path):
+    """Check if file should be processed for value collection."""
+    if not file_path.is_file():
+        return False
+    if file_path.name in SKIP_PATTERNS:
+        return False
+    if not is_standard_filename(file_path.name):
+        return False
+    return True
 
 
 def collect_available_values():
@@ -1223,21 +1299,12 @@ def collect_available_values():
     temperatures = set()
 
     for file_path in RESULTS_DIR.iterdir():
-        if not file_path.is_file():
-            continue
-        if file_path.name in SKIP_PATTERNS:
-            continue
-        if not is_standard_filename(file_path.name):
+        if not _should_collect_from_file(file_path):
             continue
 
         try:
             metadata = parse_filename_metadata(file_path.name)
-            if metadata.get("experiment"):
-                experiments.add(metadata["experiment"])
-            if metadata.get("model"):
-                models.add(metadata["model"])
-            if metadata.get("temperature") is not None:
-                temperatures.add(metadata["temperature"])
+            _extract_metadata_values(metadata, experiments, models, temperatures)
         except Exception:
             pass
 
