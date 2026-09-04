@@ -283,8 +283,7 @@ def _print_issue_type_breakdown(pd, key, quality_issues_examples, safe_write):
 
 def _print_prompt_analysis(pd, key, format_consistency, treatment_fields, quality_issues_examples, safe_write):
     """Print one prompt's quality-issue breakdown within the analysis report."""
-    model_name, temp_value, file_type, prompt_name = key
-    safe_write(f"      {prompt_name}:")
+    safe_write(f"      {key.prompt_name}:")
     _print_format_consistency_status(pd, key, format_consistency, treatment_fields, safe_write)
     _print_format_issues_breakdown(pd, safe_write)
     _print_issue_type_breakdown(pd, key, quality_issues_examples, safe_write)
