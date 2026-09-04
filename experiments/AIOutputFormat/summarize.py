@@ -10,7 +10,7 @@ from pathlib import Path
 from collections import defaultdict, Counter
 from fnmatch import fnmatch
 from config import abbreviate_model_name
-from utils import format_error, detect_preamble_leak, format_timestamp, is_standard_filename
+from utils import format_error, is_standard_filename
 from process_single_file import (
     trim_items, is_alphabetical_order, process_and_track,
     extract_code_block, parse_filename_metadata, parse_cleanup_keys,
