@@ -505,35 +505,51 @@ def _read_result_file_content(file_path):
             return None
 
 
-def _passes_metadata_filters(filename_metadata, file_name, experiment, model, exclude_model, temperature, timestamp):
-    """Check whether a file's parsed filename metadata passes all the active
-    experiment/model/exclude-model/temperature/timestamp filters."""
+def _check_experiment_filter(filename_metadata, experiment):
+    """Check if file's experiment matches filter."""
     if experiment and filename_metadata.get("experiment") != experiment:
         return False
+    return True
 
-    # Model filtering: include only specific model if specified, or exclude specific models
+
+def _check_model_filters(filename_metadata, model, exclude_model):
+    """Check if file's model passes inclusion and exclusion filters."""
     file_model = filename_metadata.get("model")
     if model and file_model != model:
         return False
-    # Exclude models by pattern (supports wildcards like gpt*, *llama*, etc.)
     if exclude_model and any(matches_model_pattern(file_model, pattern) for pattern in exclude_model):
         return False
-
-    if temperature is not None:
-        file_temp = filename_metadata.get("temperature")
-        try:
-            temp_filter = float(temperature)
-        except (ValueError, TypeError):
-            return False
-        if file_temp != temp_filter:
-            return False
-
-    if timestamp:
-        file_timestamp = Path(file_name).stem.split('-')[0]
-        if file_timestamp != timestamp:
-            return False
-
     return True
+
+
+def _check_temperature_filter(filename_metadata, temperature):
+    """Check if file's temperature matches filter."""
+    if temperature is None:
+        return True
+    file_temp = filename_metadata.get("temperature")
+    try:
+        temp_filter = float(temperature)
+    except (ValueError, TypeError):
+        return False
+    return file_temp == temp_filter
+
+
+def _check_timestamp_filter(file_name, timestamp):
+    """Check if file's timestamp matches filter."""
+    if not timestamp:
+        return True
+    file_timestamp = Path(file_name).stem.split('-')[0]
+    return file_timestamp == timestamp
+
+
+def _passes_metadata_filters(filename_metadata, file_name, experiment, model, exclude_model, temperature, timestamp):
+    """Check whether a file's parsed filename metadata passes all active filters."""
+    return (
+        _check_experiment_filter(filename_metadata, experiment) and
+        _check_model_filters(filename_metadata, model, exclude_model) and
+        _check_temperature_filter(filename_metadata, temperature) and
+        _check_timestamp_filter(file_name, timestamp)
+    )
 
 
 def _track_item_quality_issues(metadata, key, ext, quality_issues_output, quality_issues_examples, filename):
