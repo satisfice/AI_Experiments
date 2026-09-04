@@ -40,19 +40,21 @@ def parse_results_json(results_file):
 
     # Calculate percentages
     animal_format_pct = defaultdict(dict)
+    max_pct = 0
     for animal in animal_format_counts:
         for format_type in all_formats:
             count = animal_format_counts[animal][format_type]
             total = format_totals[format_type]
             pct = (count / total * 100) if total > 0 else 0
             animal_format_pct[animal][format_type] = pct
+            max_pct = max(max_pct, pct)
 
     # Sort formats and animals
     sorted_formats = sorted(all_formats)
     sorted_animals = sorted(animal_format_pct.keys())
 
     # Generate HTML
-    html = generate_html(sorted_animals, sorted_formats, animal_format_pct, format_totals)
+    html = generate_html(sorted_animals, sorted_formats, animal_format_pct, format_totals, max_pct)
 
     # Write file
     output_file = Path(results_file).parent / "animals_by_format_pct.html"
@@ -63,8 +65,13 @@ def parse_results_json(results_file):
     print(f"Animals: {len(sorted_animals)}, Formats: {len(sorted_formats)}")
     return output_file
 
-def generate_html(animals, formats, percentages, totals):
-    """Generate self-contained HTML with color-coded percentages."""
+def generate_html(animals, formats, percentages, totals, max_pct):
+    """Generate self-contained HTML with color-coded percentages scaled to actual max."""
+
+    # Determine color bands based on actual max
+    band_25 = max_pct * 0.25
+    band_50 = max_pct * 0.5
+    band_75 = max_pct * 0.75
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -257,13 +264,10 @@ def generate_html(animals, formats, percentages, totals):
         }}
 
         td.pct.pct-0 {{ background-color: rgba(102, 126, 234, 0.1); color: #999; }}
-        td.pct.pct-1 {{ background-color: rgba(102, 126, 234, 0.15); color: #777; }}
-        td.pct.pct-2 {{ background-color: rgba(102, 126, 234, 0.25); color: #555; }}
-        td.pct.pct-5 {{ background-color: rgba(102, 126, 234, 0.4); color: #333; }}
-        td.pct.pct-10 {{ background-color: rgba(102, 126, 234, 0.6); color: #fff; }}
-        td.pct.pct-15 {{ background-color: rgba(102, 126, 234, 0.75); color: #fff; }}
-        td.pct.pct-20 {{ background-color: rgba(102, 126, 234, 0.9); color: #fff; }}
-        td.pct.pct-25plus {{ background-color: #667eea; color: #fff; font-weight: 700; }}
+        td.pct.pct-1 {{ background-color: rgba(102, 126, 234, 0.25); color: #555; }}
+        td.pct.pct-25 {{ background-color: rgba(102, 126, 234, 0.5); color: #333; }}
+        td.pct.pct-50 {{ background-color: rgba(102, 126, 234, 0.75); color: #fff; }}
+        td.pct.pct-75plus {{ background-color: #667eea; color: #fff; font-weight: 700; }}
     </style>
 </head>
 <body>
@@ -272,10 +276,10 @@ def generate_html(animals, formats, percentages, totals):
         <div class="info">Each cell shows the percentage of that animal relative to total animals in that format • Click headers to sort</div>
 
         <div class="legend">
-            <div class="legend-item"><div class="legend-box legend-0"></div> <span>0–1%</span></div>
-            <div class="legend-item"><div class="legend-box legend-25"></div> <span>2–10%</span></div>
-            <div class="legend-item"><div class="legend-box legend-50"></div> <span>11–20%</span></div>
-            <div class="legend-item"><div class="legend-box legend-100"></div> <span>21%+</span></div>
+            <div class="legend-item"><div class="legend-box legend-0"></div> <span>0–{band_25:.1f}%</span></div>
+            <div class="legend-item"><div class="legend-box legend-25"></div> <span>{band_25:.1f}–{band_50:.1f}%</span></div>
+            <div class="legend-item"><div class="legend-box legend-50"></div> <span>{band_50:.1f}–{band_75:.1f}%</span></div>
+            <div class="legend-item"><div class="legend-box legend-100"></div> <span>{band_75:.1f}%+</span></div>
         </div>
 
         <div class="format-stats">
@@ -312,18 +316,12 @@ def generate_html(animals, formats, percentages, totals):
             pct = percentages[animal][fmt]
             if pct > 0:
                 pct_str = f"{pct:.1f}"
-                if pct >= 25:
-                    pct_class = "pct-25plus"
-                elif pct >= 20:
-                    pct_class = "pct-20"
-                elif pct >= 15:
-                    pct_class = "pct-15"
-                elif pct >= 10:
-                    pct_class = "pct-10"
-                elif pct >= 5:
-                    pct_class = "pct-5"
-                elif pct >= 2:
-                    pct_class = "pct-2"
+                if pct >= band_75:
+                    pct_class = "pct-75plus"
+                elif pct >= band_50:
+                    pct_class = "pct-50"
+                elif pct >= band_25:
+                    pct_class = "pct-25"
                 else:
                     pct_class = "pct-1"
                 html += f'                        <td class="pct {pct_class}">{pct_str}</td>\n'

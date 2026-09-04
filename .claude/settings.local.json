@@ -19,7 +19,14 @@
       "mcp__plugin_codescene_codescene__code_health_score",
       "mcp__plugin_codescene_codescene__code_health_review",
       "Bash(../../.venv/Scripts/python generate_report.py)",
-      "Bash(venv/Scripts/python format_runner.py -v)"
+      "Bash(venv/Scripts/python format_runner.py -v)",
+      "mcp__plugin_codescene_codescene__list_technical_debt_hotspots_for_project_file",
+      "Bash(git reset *)",
+      "Bash(mkdir -p /tmp/baseline_before)",
+      "Bash(cp results/results.json results/quality.json results/unique_items.txt results/unique_source_items.txt /tmp/baseline_before/)",
+      "Read(//tmp/**)",
+      "Bash(cp results/quality.json /tmp/run_a_quality.json)",
+      "Bash(cp results/unique_source_items.txt /tmp/run_a_unique_source.txt)"
     ]
   }
 }

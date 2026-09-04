@@ -1004,7 +1004,6 @@ def get_file_extension(format_name):
     return FORMAT_TO_EXTENSION.get(format_name, FORMAT_TO_EXTENSION.get(format_lower, format_lower))
 
 
-
 def hsl_to_rgb(h, s, l):
     """
     Convert HSL (hue [0-360], saturation [0-100], lightness [0-100]) to RGB hex color.
