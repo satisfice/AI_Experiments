@@ -25,6 +25,13 @@ from cli_helpers import (
 from reporting import (
     print_analysis_report
 )
+from file_io import (
+    write_results_and_quality_json, print_skip_summary,
+    write_unique_items_file, write_unique_source_items_file
+)
+from trial_loading import (
+    create_trial_from_file, collect_trials, process_trial_set
+)
 
 RESULTS_DIR = Path("results")
 META_DIR = RESULTS_DIR / "meta"
@@ -533,86 +540,6 @@ def _track_item_quality_issues(trial, quality_ctx):
         _track_format_level_issues(trial.metadata["formatIssues"], trial, quality_ctx)
 
 
-def _write_results_and_quality_json(consolidated_dict, quality_issues_dict, file_count, verbose):
-    """Write results.json (always) and quality.json (if there are any quality
-    issues), printing verbose summary stats if requested."""
-    with open(RESULTS_FILE, 'w', encoding='utf-8') as f:
-        json.dump(consolidated_dict, f, indent=2, ensure_ascii=False)
-
-    if verbose:
-        click.echo(f"\nConsolidated {file_count} files into {RESULTS_FILE}")
-        file_types = sorted(consolidated_dict.keys())
-        click.echo(f"File types: {', '.join(file_types)}")
-
-        if quality_issues_dict:
-            with open(QUALITY_FILE, 'w', encoding='utf-8') as f:
-                json.dump(quality_issues_dict, f, indent=2, ensure_ascii=False)
-            click.echo(f"Wrote quality issues to {QUALITY_FILE}")
-        total_items = 0
-        for ext in file_types:
-            items = consolidated_dict[ext]
-            item_count = sum(len(entry['items']) for entry in items)
-            total_items += item_count
-            click.echo(f"  {ext}: {len(items)} files, {item_count} items")
-
-        click.echo(f"Total items: {total_items}")
-    else:
-        # Still write quality JSON even if not verbose
-        if quality_issues_dict:
-            with open(QUALITY_FILE, 'w', encoding='utf-8') as f:
-                json.dump(quality_issues_dict, f, indent=2, ensure_ascii=False)
-
-
-def _print_skip_summary(skipped_trials, zero_item_files):
-    """Print the skipped-trials and zero-item-files summaries, if any."""
-    if skipped_trials:
-        click.echo(f"Skipped {len(skipped_trials)} trials:")
-        for trial_name in sorted(skipped_trials):
-            click.echo(f"  {trial_name}")
-
-    if zero_item_files:
-        click.echo(f"Files with 0 items ({len(zero_item_files)}):")
-        for filename in sorted(zero_item_files):
-            click.echo(f"  {filename}")
-
-
-def _collect_unique_items_from_consolidated(consolidated_dict):
-    """Collect all unique non-empty items from consolidated dict."""
-    unique_set = set()
-    for ext_key in consolidated_dict:
-        for entry in consolidated_dict[ext_key]:
-            for item in entry.get("items", []):
-                if item:
-                    unique_set.add(item)
-    return unique_set
-
-
-def _write_items_to_file(sorted_items, file_path):
-    """Write sorted items to file, one per line."""
-    with open(file_path, 'w', encoding='utf-8') as f:
-        for item in sorted_items:
-            f.write(item + '\n')
-
-
-def _write_unique_items_file(consolidated_dict, verbose):
-    """Write the always-on unique-items file (all non-empty items across every
-    consolidated entry, deduplicated and sorted)."""
-    unique_set = _collect_unique_items_from_consolidated(consolidated_dict)
-    sorted_items = sorted(unique_set)
-    _write_items_to_file(sorted_items, UNIQUE_ITEMS_FILE)
-    if verbose:
-        click.echo(f"Wrote {len(sorted_items)} unique items to {UNIQUE_ITEMS_FILE}")
-
-
-def _write_unique_source_items_file(source_items, verbose):
-    """Write the raw parsed source items (before processing), sorted by first
-    alphabetical string (case-insensitive), preserving original case in output."""
-    sorted_source_items = sorted(source_items, key=extract_first_alpha_string)
-    with open(UNIQUE_SOURCE_ITEMS_FILE, 'w', encoding='utf-8') as f:
-        for item in sorted_source_items:
-            f.write(item + '\n')
-    if verbose:
-        click.echo(f"Wrote {len(sorted_source_items)} unique source items to {UNIQUE_SOURCE_ITEMS_FILE}")
 
 
 @dataclass
@@ -741,220 +668,6 @@ def _group_trials_into_sets(trials):
     return sets_dict
 
 
-def _create_trial_from_file(file_path, max_item_length, options):
-    """Attempt to create a Trial from a file. Returns Trial or None if file should be skipped.
-
-    Returns (Trial, skip_reason) where skip_reason is None if successful, or a string explaining why skipped.
-    """
-    ext = _should_attempt_result_file(file_path, options.filename_filter, options.format_type)
-    if ext is None:
-        return None, None  # Silent skip (doesn't match filters)
-
-    if ext in SKIP_EXTENSIONS:
-        return None, f"extension {ext} skipped"
-
-    content = _read_result_file_content(file_path)
-    if content is None:
-        return None, f"encoding error"
-
-    if ext not in PARSERS:
-        return None, f"no parser for {ext}"
-
-    items, metadata = _parse_and_build_file_metadata(file_path, content, ext, max_item_length, options)
-    if items is None:
-        return None, None  # Filtered by metadata
-
-    file_type = FORMAT_MAP.get(ext, ext)
-    trial = Trial(
-        filename=file_path.name,
-        file_type=file_type,
-        extension=ext,
-        items=items,
-        metadata=metadata
-    )
-    return trial, None
-
-
-def _merge_cleanup_metadata(metadata, codeblock_cleanups, parser_cleanups):
-    """Merge cleanup information from multiple sources into metadata."""
-    all_cleanups = codeblock_cleanups + parser_cleanups
-    if metadata.get("processingCleanups"):
-        all_cleanups.extend(metadata.pop("processingCleanups"))
-    if all_cleanups:
-        cleanup_dict = parse_cleanup_keys(all_cleanups)
-        if cleanup_dict:
-            metadata["cleanup"] = cleanup_dict
-
-
-def _merge_format_issues(metadata, parser_quality_issues):
-    """Merge format-level issues from multiple sources into metadata."""
-    format_issues = []
-    if parser_quality_issues:
-        format_issues.extend(parser_quality_issues)
-    if metadata.get("processingQualityIssues"):
-        format_issues.extend(metadata.pop("processingQualityIssues"))
-    if format_issues:
-        metadata["formatIssues"] = format_issues
-
-
-def _merge_sidecar_metadata(file_path, metadata):
-    """Load and merge metadata from sidecar .meta.json file if it exists."""
-    meta_path = META_DIR / (file_path.stem + ".meta.json")
-    if not meta_path.exists():
-        return
-
-    try:
-        with open(meta_path, 'r', encoding='utf-8') as mf:
-            file_meta = json.load(mf)
-        if "responseComplete" in file_meta:
-            metadata["responseComplete"] = file_meta["responseComplete"]
-        if "incompleteReason" in file_meta:
-            metadata["incompleteReason"] = file_meta["incompleteReason"]
-    except Exception:
-        pass
-
-
-def _parse_and_build_file_metadata(file_path, content, ext, max_item_length, options):
-    """Parse file content and build complete metadata. Returns (items, metadata) or (None, None)."""
-    parser = PARSERS[ext]
-    cleaned_content, had_codeblock, codeblock_cleanups = extract_code_block(content)
-    items, parser_cleanups, parser_quality_issues = parser(cleaned_content)
-
-    filename_metadata = parse_filename_metadata(file_path.name)
-
-    if not _passes_metadata_filters(filename_metadata, file_path.name, options.experiment,
-                                     options.model, options.exclude_model, options.temperature, options.timestamp):
-        return None, None
-
-    # Process and track normalization
-    items, processing, metadata = process_and_track(items, ext, max_item_length)
-
-    # Merge all metadata sources
-    metadata.update(processing)
-    if had_codeblock:
-        metadata["codeblock"] = True
-    metadata["format"] = FORMAT_MAP.get(ext, "unknown")
-    metadata["formatStyle"] = detect_format_style(content, ext)
-
-    # Merge cleanup and quality issue metadata
-    _merge_cleanup_metadata(metadata, codeblock_cleanups, parser_cleanups)
-    _merge_format_issues(metadata, parser_quality_issues)
-
-    # Merge filename and sidecar metadata
-    metadata.update(filename_metadata)
-    _merge_sidecar_metadata(file_path, metadata)
-
-    # Track duplicates
-    item_counts = Counter(items)
-    metadata["duplicates"] = sum(1 for count in item_counts.values() if count > 1)
-
-    metadata = reorder_metadata(metadata)
-    return items, metadata
-
-
-def _update_aggregations_from_trial(trial, state):
-    """Update all aggregation dicts from a Trial."""
-    model_name = abbreviate_model_name(trial.metadata.get("model", "unknown"))
-    temp_value = trial.metadata.get("temperature", "unknown")
-    prompt_name = trial.metadata.get("prompt", "unknown")
-
-    # Track cleanup rules
-    for rule_name in trial.metadata.get("cleanup", {}).keys():
-        state.cleanup_rules_agg[model_name][str(temp_value)][trial.file_type][prompt_name][rule_name] += 1
-
-    # Track case values
-    case_value = trial.metadata.pop("case", "lower")
-    trial.metadata.pop("consistentCase", None)
-    state.case_values_agg[model_name][str(temp_value)][trial.file_type][prompt_name].append((case_value, trial.filename))
-
-    # Track cleanup rule sets per format
-    rule_set = frozenset(trial.metadata.get("cleanup", {}).keys())
-    if trial.extension in state.format_aggs:
-        state.format_aggs[trial.extension]['agg'][model_name][str(temp_value)][prompt_name].append((rule_set, trial.filename))
-
-    # Track format styles
-    state.format_style_counts[model_name][str(temp_value)][trial.file_type][prompt_name][trial.metadata.get("formatStyle", "unknown")] += 1
-    for fs_label in trial.metadata.get("formatIssues", []):
-        state.format_style_counts[model_name][str(temp_value)][trial.file_type][prompt_name][fs_label] += 1
-
-    # Track quality issues
-    quality_ctx = QualityContext(output=state.quality_issues_output, instances=state.quality_issues_instances)
-    _track_item_quality_issues(trial, quality_ctx)
-
-    # Track item counts
-    state.item_count_stats[model_name][str(temp_value)][trial.file_type].append(len(trial.items))
-
-    # Add to consolidated
-    state.consolidated[trial.extension].append({
-        "filename": trial.filename,
-        "metadata": trial.metadata,
-        "items": trial.items
-    })
-
-
-def _track_trial_items(trial, state):
-    """Track source items from a trial."""
-    for item in trial.items:
-        if item:
-            state.source_items.add(item)
-
-
-def _track_zero_item_file(trial, state):
-    """Track files with zero items."""
-    if trial.metadata.get("itemCount") == 0:
-        state.zero_item_files.append(trial.filename)
-
-
-def _handle_trial_load_error(file_path, error, verbose, state):
-    """Handle errors during trial loading."""
-    import traceback
-    click.echo(f"Error loading {file_path.name}: {error}")
-    if verbose:
-        click.echo(traceback.format_exc())
-    state.skipped_trials.append(file_path.name)
-
-
-def _process_loaded_trial(trial, state):
-    """Process a successfully loaded trial."""
-    _track_trial_items(trial, state)
-    _track_zero_item_file(trial, state)
-    click.echo(f"Loaded: {trial.filename} ({len(trial.items)} items)")
-
-
-def _collect_trials(max_item_length, verbose, options, state):
-    """Scan result files and load them as Trial objects.
-
-    Returns (trials, file_count, zero_item_files).
-    Tracks skipped files and reports progress.
-    """
-    trials = []
-    file_count = 0
-
-    for file_path in sorted(RESULTS_DIR.iterdir()):
-        try:
-            trial, skip_reason = _create_trial_from_file(file_path, max_item_length, options)
-
-            if trial is None:
-                if skip_reason:
-                    click.echo(f"Skipping ({skip_reason}): {file_path.name}")
-                    state.skipped_trials.append(file_path.name)
-                continue
-
-            _process_loaded_trial(trial, state)
-            trials.append(trial)
-            file_count += 1
-
-        except Exception as e:
-            _handle_trial_load_error(file_path, e, verbose, state)
-            continue
-
-    return trials, file_count
-
-
-def _process_trial_set(trial_set, state):
-    """Process all trials in a set: update consolidated data and aggregations."""
-    for trial in trial_set.trials:
-        _update_aggregations_from_trial(trial, state)
 
 
 def _initialize_issue_types_and_aggregations():
@@ -1036,10 +749,10 @@ def summarize_results(options):
         click.echo(f"Filters: {', '.join(filters_applied)}\n")
 
     # Collect and process trials
-    trials, file_count = _collect_trials(options.max_item_length, options.verbose, options, state)
+    trials, file_count = collect_trials(options.max_item_length, options.verbose, options, state)
     trial_sets = _group_trials_into_sets(trials)
     for trial_set in trial_sets.values():
-        _process_trial_set(trial_set, state)
+        process_trial_set(trial_set, state)
 
     # Compute quality and consistency
     consolidated_dict = dict(consolidated)
@@ -1087,9 +800,9 @@ def _write_results_and_reports(state, quality_results, options):
     TREATMENT_FIELDS = ["formatStyle", "codeblock"]
     consolidated_dict = dict(state.consolidated)
     try:
-        _write_results_and_quality_json(consolidated_dict, quality_results.quality_issues_dict,
+        write_results_and_quality_json(consolidated_dict, quality_results.quality_issues_dict,
                                         options.file_count, options.verbose)
-        _print_skip_summary(state.skipped_trials, state.zero_item_files)
+        print_skip_summary(state.skipped_trials, state.zero_item_files)
 
         # Print analysis report for all file types per model and temperature
         if options.analysis and options.verbose:
@@ -1101,8 +814,8 @@ def _write_results_and_reports(state, quality_results, options):
             except Exception as report_err:
                 click.echo(f"Warning: Could not generate full analysis report ({report_err})")
 
-        _write_unique_items_file(consolidated_dict, options.verbose)
-        _write_unique_source_items_file(state.source_items, options.verbose)
+        write_unique_items_file(consolidated_dict, options.verbose)
+        write_unique_source_items_file(state.source_items, options.verbose)
 
         return True
 
