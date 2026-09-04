@@ -15,11 +15,12 @@ from process_single_file import (
     extract_code_block, parse_filename_metadata, parse_cleanup_keys,
     detect_format_style, reorder_metadata, FORMAT_MAP, PARSERS, process_and_track
 )
+from data_models import Trial, QualityContext, AggregationState
 from summarize import (
-    Trial, QualityContext, _track_item_quality_issues,
+    _track_item_quality_issues,
     _make_issue_output_dicts, _make_format_style_counts, _make_cleanup_rules_agg,
     _make_four_level_defaultdict, _make_format_aggregation_dicts,
-    AggregationState, SKIP_EXTENSIONS, _read_result_file_content,
+    SKIP_EXTENSIONS, _read_result_file_content,
     _should_attempt_result_file, _passes_metadata_filters, META_DIR
 )
 

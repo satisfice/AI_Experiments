@@ -6,7 +6,8 @@ Handles printing analysis reports, quality issue breakdowns, and format consiste
 import sys
 from typing import List, Dict, Any, Tuple
 
-from summarize import TrialKey, QualityContext, calculate_statistics
+from data_models import TrialKey, QualityContext
+from summarize import calculate_statistics
 
 
 def _safe_write(text: str) -> None:
