@@ -529,37 +529,6 @@ def _passes_metadata_filters(filename_metadata, file_name, experiment, model, ex
     return True
 
 
-def _record_trial_set_quality_issues(trial_set, quality_issues, quality_issues_output, quality_issues_examples):
-    """Record quality issues aggregated from a trial set into aggregation dicts."""
-    model = trial_set.model
-    temp = trial_set.temperature
-    file_type = trial_set.file_type
-    prompt = trial_set.prompt
-
-    # Record item-level issues
-    for issue_type in ["leading_punctuation", "trailing_punctuation", "internal_punctuation",
-                       "exceeds_max_length", "preamble_leak", "markup_artifact", "repeated_chars"]:
-        if issue_type not in quality_issues:
-            continue
-        for example, source_filename in quality_issues[issue_type]:
-            quality_issues_output[model][temp][file_type][prompt][issue_type].add(example)
-            if example not in quality_issues_examples[model][temp][file_type][prompt][issue_type]:
-                quality_issues_examples[model][temp][file_type][prompt][issue_type][example] = source_filename
-
-    # Record repeated_sequence (uses filename as instance)
-    if "repeated_sequence" in quality_issues:
-        for filename, source_filename in quality_issues["repeated_sequence"]:
-            quality_issues_output[model][temp][file_type][prompt]["repeated_sequence"].add(filename)
-            if filename not in quality_issues_examples[model][temp][file_type][prompt]["repeated_sequence"]:
-                quality_issues_examples[model][temp][file_type][prompt]["repeated_sequence"][filename] = filename
-
-    # Record format-level issues
-    if "formatIssues" in quality_issues:
-        for fs_label in quality_issues["formatIssues"]:
-            quality_issues_output[model][temp][file_type][prompt][fs_label].add("issue")  # Placeholder
-            # For format issues, track by presence (not per-example)
-
-
 def _track_item_quality_issues(metadata, key, ext, quality_issues_output, quality_issues_examples, filename):
     """Track item-level and format-level quality issues from one file's metadata
     into quality_issues_output/examples. Mutates both in place."""
@@ -768,44 +737,6 @@ class TrialSet:
                 if rule in trial_rules:
                     issues[rule] = trial.filename
                     break
-        return issues
-
-    def aggregate_item_counts(self):
-        """Get item counts from all trials in this set.
-
-        Returns: list of item counts.
-        """
-        return [len(trial.items) for trial in self.trials]
-
-    def aggregate_quality_issues(self):
-        """Extract all quality issues from trials in this set.
-
-        Returns: {issue_type: [instances]} where instances are items or filenames.
-        """
-        issues = {}
-        for trial in self.trials:
-            if "itemIssues" in trial.metadata:
-                item_issues = trial.metadata["itemIssues"]
-                for issue_type in ["leading_punctuation", "trailing_punctuation", "internal_punctuation",
-                                   "exceeds_max_length", "preamble_leak", "markup_artifact", "repeated_chars"]:
-                    example = item_issues.get(issue_type)
-                    if example:
-                        if issue_type not in issues:
-                            issues[issue_type] = []
-                        issues[issue_type].append((example, trial.filename))
-
-                # repeated_sequence uses filename as instance
-                if item_issues.get("repeated_sequence"):
-                    if "repeated_sequence" not in issues:
-                        issues["repeated_sequence"] = []
-                    issues["repeated_sequence"].append((trial.filename, trial.filename))
-
-            # Format-level issues
-            if "formatIssues" in trial.metadata:
-                if "formatIssues" not in issues:
-                    issues["formatIssues"] = []
-                issues["formatIssues"].extend(trial.metadata["formatIssues"])
-
         return issues
 
 
@@ -1017,34 +948,9 @@ def _collect_trials(max_item_length, verbose, options, state):
 
 
 def _process_trial_set(trial_set, state):
-    """Process all trials in a set: update consolidated data and aggregations at set level."""
-    # Aggregate item counts
-    item_counts = trial_set.aggregate_item_counts()
-    state.item_count_stats[trial_set.model][trial_set.temperature][trial_set.file_type].extend(item_counts)
-
-    # Aggregate quality issues at set level
-    quality_issues = trial_set.aggregate_quality_issues()
-    _record_trial_set_quality_issues(trial_set, quality_issues, state.quality_issues_output,
-                                      state.quality_issues_instances)
-
-    # Add trials to consolidated data
+    """Process all trials in a set: update consolidated data and aggregations."""
     for trial in trial_set.trials:
-        state.consolidated[trial.extension].append({
-            "filename": trial.filename,
-            "metadata": trial.metadata,
-            "items": trial.items
-        })
-
-    # Track format styles and cleanup rules at set level
-    for trial in trial_set.trials:
-        # Track cleanup rules
-        for rule_name in trial.metadata.get("cleanup", {}).keys():
-            state.cleanup_rules_agg[trial_set.model][trial_set.temperature][trial_set.file_type][trial_set.prompt][rule_name] += 1
-
-        # Track format styles
-        state.format_style_counts[trial_set.model][trial_set.temperature][trial_set.file_type][trial_set.prompt][trial.metadata.get("formatStyle", "unknown")] += 1
-        for fs_label in trial.metadata.get("formatIssues", []):
-            state.format_style_counts[trial_set.model][trial_set.temperature][trial_set.file_type][trial_set.prompt][fs_label] += 1
+        _update_aggregations_from_trial(trial, state)
 
 
 def summarize_results(options):
