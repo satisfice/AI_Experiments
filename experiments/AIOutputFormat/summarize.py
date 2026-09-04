@@ -22,6 +22,9 @@ from cli_helpers import (
     extract_selection_from_indices, collect_available_values,
     build_selection_requests
 )
+from reporting import (
+    print_analysis_report
+)
 
 RESULTS_DIR = Path("results")
 META_DIR = RESULTS_DIR / "meta"
@@ -226,104 +229,6 @@ class QualityContext:
     instances: dict
 
 
-def _print_format_consistency_status(pd, key, format_consistency, treatment_fields, safe_write):
-    """Print format consistency status for a prompt."""
-    model_name, temp_value, file_type, prompt_name = key
-    is_consistent = pd.get("consistentFormat", True)
-    if is_consistent:
-        safe_write(f"        Format: ✓ consistent")
-    else:
-        fc = format_consistency.get((model_name, str(temp_value), file_type, prompt_name), {})
-        varying = [f for f in treatment_fields if len(set(fc.get(f, []))) > 1]
-        parts = []
-        if "formatStyle" in varying:
-            parts.extend(sorted(set(fc.get("formatStyle", []))))
-        if "codeblock" in varying:
-            parts.append("codeblock")
-        safe_write(f"        Format: ✗ inconsistent ({', '.join(parts)})")
-
-
-def _print_format_issues_breakdown(pd, safe_write):
-    """Print format issues summary for a prompt."""
-    format_issue_counts = pd.get("formatIssues", {})
-    if format_issue_counts:
-        issues_str = ", ".join(f"{i}: {c}" for i, c in sorted(format_issue_counts.items()))
-        safe_write(f"        Format Issues: {issues_str}")
-
-
-def _print_issue_instance_items(items, issue_key, with_instance, trial_key, quality_ctx, safe_write):
-    """Print instance items for an issue type."""
-    for item in items[:5]:
-        suffix = ""
-        if with_instance:
-            instance_file = quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][issue_key].get(item)
-            suffix = f" Instance: {instance_file}" if instance_file else ""
-        safe_write(f"          - {ascii(item)}{suffix}")
-
-
-def _print_single_issue_type(issue_key, label, with_instance, pd, trial_key, quality_ctx, safe_write):
-    """Print breakdown for a single issue type."""
-    items = [e["instance"] for e in pd.get(issue_key, [])]
-    if not items:
-        return
-    safe_write(f"        {label} ({len(items)} unique):")
-    _print_issue_instance_items(items, issue_key, with_instance, trial_key, quality_ctx, safe_write)
-    if len(items) > 5:
-        safe_write(f"          ... and {len(items) - 5} more")
-
-
-def _print_issue_type_breakdown(pd, key, quality_ctx, safe_write):
-    """Print per-issue-type breakdown for a prompt."""
-    trial_key = key
-    issue_display = [
-        ("leading_punctuation", "Leading punctuation", True),
-        ("trailing_punctuation", "Trailing punctuation", True),
-        ("internal_punctuation", "Internal punctuation", True),
-        ("exceeds_max_length", "Exceeds max length", False),
-        ("preamble_leak", "Preamble leaks", False),
-        ("markup_artifact", "Markup artifacts", False),
-        ("repeated_chars", "Repeated characters", False),
-    ]
-    for issue_key, label, with_instance in issue_display:
-        _print_single_issue_type(issue_key, label, with_instance, pd, trial_key, quality_ctx, safe_write)
-
-
-def _print_prompt_analysis(pd, key, format_consistency, treatment_fields, quality_ctx, safe_write):
-    """Print one prompt's quality-issue breakdown within the analysis report."""
-    safe_write(f"      {key.prompt_name}:")
-    _print_format_consistency_status(pd, key, format_consistency, treatment_fields, safe_write)
-    _print_format_issues_breakdown(pd, safe_write)
-    _print_issue_type_breakdown(pd, key, quality_ctx, safe_write)
-
-
-def _print_analysis_report(item_count_stats, quality_issues_dict, quality_ctx,
-                            format_consistency, treatment_fields):
-    """Print the verbose per-model/temperature/file-type analysis report
-    (the `analysis and verbose` report, extracted out of summarize_results)."""
-    def safe_write(text):
-        """Write text to stdout with error handling for encoding issues"""
-        sys.stdout.write(text + '\n')
-        sys.stdout.flush()
-
-    safe_write("\n" + "="*70)
-    safe_write("DATA ANALYSIS REPORT BY MODEL, TEMPERATURE, AND FILE TYPE")
-    safe_write("="*70)
-
-    for model_name in sorted(item_count_stats.keys()):
-        safe_write(f"\n{model_name}:")
-        for temp_value in sorted(item_count_stats[model_name].keys(), key=lambda x: (x == "unknown", x)):
-            safe_write(f"  Temperature {temp_value}:")
-            for file_type in sorted(item_count_stats[model_name][temp_value].keys(), key=str.casefold):
-                counts = item_count_stats[model_name][temp_value][file_type]
-                stats = calculate_statistics(counts)
-                safe_write(f"    {file_type} ({len(counts)} files):")
-                safe_write(f"      Items: max={stats['max']}, min={stats['min']}, avg={stats['avg']}, var={stats['var']}, mode={stats['mode']}")
-
-                prompts_data = quality_issues_dict.get(model_name, {}).get(str(temp_value), {}).get(file_type, {})
-                for prompt_name in sorted(prompts_data.keys()):
-                    tk = TrialKey(model_name, temp_value, file_type, prompt_name)
-                    _print_prompt_analysis(prompts_data[prompt_name], tk,
-                                            format_consistency, treatment_fields, quality_issues_instances, safe_write)
 
 
 @dataclass
@@ -1190,7 +1095,7 @@ def _write_results_and_reports(state, quality_results, options):
         if options.analysis and options.verbose:
             try:
                 quality_ctx = QualityContext(output=state.quality_issues_output, instances=state.quality_issues_instances)
-                _print_analysis_report(state.item_count_stats, quality_results.quality_issues_dict,
+                print_analysis_report(state.item_count_stats, quality_results.quality_issues_dict,
                                         quality_ctx, quality_results.format_consistency,
                                         TREATMENT_FIELDS)
             except Exception as report_err:
