@@ -314,7 +314,8 @@ def _print_analysis_report(item_count_stats, quality_issues_dict, quality_issues
 
                 prompts_data = quality_issues_dict.get(model_name, {}).get(str(temp_value), {}).get(file_type, {})
                 for prompt_name in sorted(prompts_data.keys()):
-                    _print_prompt_analysis(prompts_data[prompt_name], TrialKey(model_name, temp_value, file_type, prompt_name),
+                    tk = TrialKey(model_name, temp_value, file_type, prompt_name)
+                    _print_prompt_analysis(prompts_data[prompt_name], tk,
                                             format_consistency, treatment_fields, quality_issues_examples, safe_write)
 
 
