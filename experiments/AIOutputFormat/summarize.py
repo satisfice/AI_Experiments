@@ -400,10 +400,9 @@ def _gather_all_combos(format_consistency, format_style_counts, quality_issues_o
     return sorted(all_combos, key=lambda x: (x[0], x[1], x[2].casefold(), x[3]))
 
 
-def _build_prompt_data_section(model_name, temp_value, file_type, prompt_name, ctx):
-    """Build quality issues, consistency, formatIssues, and cleanupRules for one prompt."""
+def _extract_quality_issues_for_prompt(model_name, temp_value, file_type, prompt_name, ctx):
+    """Extract quality issues with sources for a prompt."""
     prompt_data = {}
-
     issues = ctx.quality_issues_output.get(model_name, {}).get(temp_value, {}).get(file_type, {}).get(prompt_name, {})
     for issue_type in ctx.issue_types:
         raw_items = issues.get(issue_type, set())
@@ -414,9 +413,14 @@ def _build_prompt_data_section(model_name, temp_value, file_type, prompt_name, c
                 items_with_source.append({"instance": item, "source": source})
             items_with_source.sort(key=lambda x: x["instance"].lower())
             prompt_data[issue_type] = items_with_source
+    return prompt_data
 
+
+def _compute_format_consistency_for_prompt(model_name, temp_value, file_type, prompt_name, prompt_data, ctx):
+    """Compute format consistency for a prompt."""
     fc = ctx.format_consistency.get((model_name, temp_value, file_type, prompt_name), {})
     has_format_inconsistency = False
+
     inconsistency_issue_types = {
         "markdown": "inconsistent_md_format",
         "HTML": "inconsistent_html_format",
@@ -433,14 +437,27 @@ def _build_prompt_data_section(model_name, temp_value, file_type, prompt_name, c
     else:
         prompt_data["consistentFormat"] = not has_format_inconsistency
 
+
+def _extract_format_issues_for_prompt(model_name, temp_value, file_type, prompt_name, prompt_data, ctx):
+    """Extract format style issues for a prompt."""
     style_counts = ctx.format_style_counts.get(model_name, {}).get(temp_value, {}).get(file_type, {}).get(prompt_name, {})
     if style_counts:
         prompt_data["formatIssues"] = dict(style_counts)
 
+
+def _extract_cleanup_rules_for_prompt(model_name, temp_value, file_type, prompt_name, prompt_data, ctx):
+    """Extract cleanup rules for a prompt."""
     rules_counter = ctx.cleanup_rules_agg.get(model_name, {}).get(temp_value, {}).get(file_type, {}).get(prompt_name, {})
     if rules_counter:
         prompt_data["cleanupRules"] = dict(sorted(rules_counter.items()))
 
+
+def _build_prompt_data_section(model_name, temp_value, file_type, prompt_name, ctx):
+    """Build quality issues, consistency, formatIssues, and cleanupRules for one prompt."""
+    prompt_data = _extract_quality_issues_for_prompt(model_name, temp_value, file_type, prompt_name, ctx)
+    _compute_format_consistency_for_prompt(model_name, temp_value, file_type, prompt_name, prompt_data, ctx)
+    _extract_format_issues_for_prompt(model_name, temp_value, file_type, prompt_name, prompt_data, ctx)
+    _extract_cleanup_rules_for_prompt(model_name, temp_value, file_type, prompt_name, prompt_data, ctx)
     return prompt_data
 
 
