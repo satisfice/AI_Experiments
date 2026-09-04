@@ -1,3 +1,21 @@
+[AttributeError: Trial metadata access] (noted by Claude): 2026-09-04
+
+Incident: AttributeError when processing trials during summarize_results
+
+Error:
+AttributeError: 'Trial' object has no attribute 'model'
+
+Context:
+In _track_item_level_issues, _track_repeated_sequence_issue, and _track_format_level_issues in trial_loading.py, code attempted to access trial.model, trial.temperature, trial.prompt directly as attributes. But Trial dataclass only has: filename, file_type, extension, items, metadata.
+
+Root cause:
+When moving functions from summarize.py to trial_loading.py, forgot to update attribute access from direct (trial.model) to dict access (trial.metadata.get("model")).
+
+Resolution:
+Updated all three tracking functions to extract model, temperature, and prompt from trial.metadata dict instead of accessing as direct attributes. TrialKey now constructed correctly from metadata values.
+
+---
+
 [Missing Dependencies] (noted by Claude): 2026-09-04
 
 Incident: ModuleNotFoundError when running summarize.py directly

@@ -94,31 +94,31 @@ def _is_txt1_leading_number_exception(issue_type, ext, instance):
 
 def _track_item_level_issues(item_issues, issue_type, trial, quality_ctx):
     """Track a single item-level quality issue."""
-    trial_key = TrialKey(trial.model, trial.temperature, trial.file_type, trial.prompt)
+    trial_key = TrialKey(trial.metadata.get("model", "unknown"), str(trial.metadata.get("temperature", "unknown")), trial.file_type, trial.metadata.get("prompt", "unknown"))
     instance = item_issues.get(issue_type)
     if not instance or _is_txt1_leading_number_exception(issue_type, trial.extension, instance):
         return
-    quality_ctx.output[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][issue_type].add(instance)
-    if instance not in quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][issue_type]:
-        quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][issue_type][instance] = trial.filename
+    quality_ctx.output[trial_key.model][trial_key.temperature][trial_key.file_type][trial_key.prompt][issue_type].add(instance)
+    if instance not in quality_ctx.instances[trial_key.model][trial_key.temperature][trial_key.file_type][trial_key.prompt][issue_type]:
+        quality_ctx.instances[trial_key.model][trial_key.temperature][trial_key.file_type][trial_key.prompt][issue_type][instance] = trial.filename
 
 
 def _track_repeated_sequence_issue(item_issues, trial, quality_ctx):
     """Track repeated_sequence issue using filename as instance."""
-    trial_key = TrialKey(trial.model, trial.temperature, trial.file_type, trial.prompt)
+    trial_key = TrialKey(trial.metadata.get("model", "unknown"), str(trial.metadata.get("temperature", "unknown")), trial.file_type, trial.metadata.get("prompt", "unknown"))
     if item_issues.get("repeated_sequence"):
-        quality_ctx.output[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt]["repeated_sequence"].add(trial.filename)
-        if trial.filename not in quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt]["repeated_sequence"]:
-            quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt]["repeated_sequence"][trial.filename] = trial.filename
+        quality_ctx.output[trial_key.model][trial_key.temperature][trial_key.file_type][trial_key.prompt]["repeated_sequence"].add(trial.filename)
+        if trial.filename not in quality_ctx.instances[trial_key.model][trial_key.temperature][trial_key.file_type][trial_key.prompt]["repeated_sequence"]:
+            quality_ctx.instances[trial_key.model][trial_key.temperature][trial_key.file_type][trial_key.prompt]["repeated_sequence"][trial.filename] = trial.filename
 
 
 def _track_format_level_issues(format_issues, trial, quality_ctx):
     """Track format-level quality issues from metadata."""
-    trial_key = TrialKey(trial.model, trial.temperature, trial.file_type, trial.prompt)
+    trial_key = TrialKey(trial.metadata.get("model", "unknown"), str(trial.metadata.get("temperature", "unknown")), trial.file_type, trial.metadata.get("prompt", "unknown"))
     for fs_label in format_issues:
-        quality_ctx.output[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][fs_label].add(trial.filename)
-        if trial.filename not in quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][fs_label]:
-            quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][fs_label][trial.filename] = trial.filename
+        quality_ctx.output[trial_key.model][trial_key.temperature][trial_key.file_type][trial_key.prompt][fs_label].add(trial.filename)
+        if trial.filename not in quality_ctx.instances[trial_key.model][trial_key.temperature][trial_key.file_type][trial_key.prompt][fs_label]:
+            quality_ctx.instances[trial_key.model][trial_key.temperature][trial_key.file_type][trial_key.prompt][fs_label][trial.filename] = trial.filename
 
 
 def _track_item_quality_issues(trial, quality_ctx):
