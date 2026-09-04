@@ -606,9 +606,10 @@ def _track_format_level_issues(format_issues, trial, trial_key, quality_ctx):
             quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][fs_label][trial.filename] = trial.filename
 
 
-def _track_item_quality_issues(trial, trial_key, quality_ctx):
+def _track_item_quality_issues(trial, quality_ctx):
     """Track item-level and format-level quality issues from one file's metadata
     into quality_ctx. Mutates in place."""
+    trial_key = TrialKey(trial.model, trial.temperature, trial.file_type, trial.prompt)
     if "itemIssues" in trial.metadata:
         item_issues = trial.metadata["itemIssues"]
         for issue_type in ["leading_punctuation", "trailing_punctuation", "internal_punctuation",
@@ -966,8 +967,7 @@ def _update_aggregations_from_trial(trial, state):
 
     # Track quality issues
     quality_ctx = QualityContext(output=state.quality_issues_output, instances=state.quality_issues_instances)
-    trial_key = TrialKey(model_name, temp_value, trial.file_type, prompt_name)
-    _track_item_quality_issues(trial, trial_key, quality_ctx)
+    _track_item_quality_issues(trial, quality_ctx)
 
     # Track item counts
     state.item_count_stats[model_name][str(temp_value)][trial.file_type].append(len(trial.items))
