@@ -576,49 +576,48 @@ def _is_txt1_leading_number_exception(issue_type, ext, example):
     return bool(re.match(r'^\d+[\.\)\-\s]', example))
 
 
-def _track_item_level_issues(item_issues, issue_type, ext, model_name, temp_value, file_type, prompt_name, quality_issues_output, quality_issues_examples, filename):
+def _track_item_level_issues(item_issues, issue_type, ext, trial_key, quality_issues_output, quality_issues_examples, filename):
     """Track a single item-level quality issue."""
     example = item_issues.get(issue_type)
     if not example:
         return
     if _is_txt1_leading_number_exception(issue_type, ext, example):
         return
-    quality_issues_output[model_name][str(temp_value)][file_type][prompt_name][issue_type].add(example)
-    if example not in quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][issue_type]:
-        quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][issue_type][example] = filename
+    quality_issues_output[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][issue_type].add(example)
+    if example not in quality_issues_examples[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][issue_type]:
+        quality_issues_examples[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][issue_type][example] = filename
 
 
-def _track_repeated_sequence_issue(item_issues, model_name, temp_value, file_type, prompt_name, quality_issues_output, quality_issues_examples, filename):
+def _track_repeated_sequence_issue(item_issues, trial_key, quality_issues_output, quality_issues_examples, filename):
     """Track repeated_sequence issue using filename as instance."""
     if item_issues.get("repeated_sequence"):
-        quality_issues_output[model_name][str(temp_value)][file_type][prompt_name]["repeated_sequence"].add(filename)
-        if filename not in quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name]["repeated_sequence"]:
-            quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name]["repeated_sequence"][filename] = filename
+        quality_issues_output[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt]["repeated_sequence"].add(filename)
+        if filename not in quality_issues_examples[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt]["repeated_sequence"]:
+            quality_issues_examples[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt]["repeated_sequence"][filename] = filename
 
 
-def _track_format_level_issues(format_issues, model_name, temp_value, file_type, prompt_name, quality_issues_output, quality_issues_examples, filename):
+def _track_format_level_issues(format_issues, trial_key, quality_issues_output, quality_issues_examples, filename):
     """Track format-level quality issues from metadata."""
     for fs_label in format_issues:
-        quality_issues_output[model_name][str(temp_value)][file_type][prompt_name][fs_label].add(filename)
-        if filename not in quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][fs_label]:
-            quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][fs_label][filename] = filename
+        quality_issues_output[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][fs_label].add(filename)
+        if filename not in quality_issues_examples[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][fs_label]:
+            quality_issues_examples[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][fs_label][filename] = filename
 
 
 def _track_item_quality_issues(metadata, key, ext, quality_issues_output, quality_issues_examples, filename):
     """Track item-level and format-level quality issues from one file's metadata
     into quality_issues_output/examples. Mutates both in place."""
-    model_name, temp_value, file_type, prompt_name = key
     if "itemIssues" in metadata:
         item_issues = metadata["itemIssues"]
         for issue_type in ["leading_punctuation", "trailing_punctuation", "internal_punctuation",
                            "exceeds_max_length", "preamble_leak",
                            "markup_artifact", "repeated_chars"]:
-            _track_item_level_issues(item_issues, issue_type, ext, model_name, temp_value, file_type, prompt_name,
+            _track_item_level_issues(item_issues, issue_type, ext, key,
                                      quality_issues_output, quality_issues_examples, filename)
-        _track_repeated_sequence_issue(item_issues, model_name, temp_value, file_type, prompt_name,
+        _track_repeated_sequence_issue(item_issues, key,
                                        quality_issues_output, quality_issues_examples, filename)
     if "formatIssues" in metadata:
-        _track_format_level_issues(metadata["formatIssues"], model_name, temp_value, file_type, prompt_name,
+        _track_format_level_issues(metadata["formatIssues"], key,
                                    quality_issues_output, quality_issues_examples, filename)
 
 
