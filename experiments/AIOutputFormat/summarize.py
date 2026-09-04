@@ -682,6 +682,45 @@ class Trial:
     metadata: dict          # All metadata including model, temperature, prompt, etc.
 
 
+@dataclass
+class TrialSet:
+    """Represents a set of trials with identical model/temperature/file_type/prompt.
+
+    A trial set is all trials that vary only in iteration number.
+    Example: 3 trials with same model/temp/prompt but iterations 01, 02, 03.
+    """
+    model: str              # Abbreviated model name
+    temperature: str        # Temperature value (as string)
+    file_type: str          # File format type (e.g., "JSON", "markdown")
+    prompt: str             # Prompt name
+    trials: list            # List of Trial objects in this set
+
+
+def _group_trials_into_sets(trials):
+    """Group trials by (model, temperature, file_type, prompt).
+
+    Returns a dict: {(model, temp, file_type, prompt): TrialSet}
+    """
+    sets_dict = {}
+    for trial in trials:
+        model = abbreviate_model_name(trial.metadata.get("model", "unknown"))
+        temp = str(trial.metadata.get("temperature", "unknown"))
+        prompt = trial.metadata.get("prompt", "unknown")
+
+        key = (model, temp, trial.file_type, prompt)
+        if key not in sets_dict:
+            sets_dict[key] = TrialSet(
+                model=model,
+                temperature=temp,
+                file_type=trial.file_type,
+                prompt=prompt,
+                trials=[]
+            )
+        sets_dict[key].trials.append(trial)
+
+    return sets_dict
+
+
 def _create_trial_from_file(file_path, max_item_length, options):
     """Attempt to create a Trial from a file. Returns Trial or None if file should be skipped.
 
