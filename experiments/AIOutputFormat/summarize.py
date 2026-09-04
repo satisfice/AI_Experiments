@@ -98,12 +98,12 @@ def calculate_statistics(counts):
 
 
 def _make_issue_output_dicts(issue_types):
-    """Create the quality issues output and examples tracking dicts.
+    """Create the quality issues output and instances tracking dicts.
 
     Returns:
         (quality_issues_output, quality_issues_instances) — nested dicts for tracking
-        quality issues and their example source files.
-        Structure: model -> temperature -> file_type -> prompt -> issue_type -> {items|examples}
+        quality issues and their instance source files.
+        Structure: model -> temperature -> file_type -> prompt -> issue_type -> {items|instances}
     """
     quality_issues_output = _make_four_level_defaultdict(lambda: {k: set() for k in issue_types})
     quality_issues_instances = _make_four_level_defaultdict(lambda: {k: {} for k in issue_types})
@@ -166,10 +166,10 @@ def _record_case_inconsistencies_for_set(trial_set, inconsistencies, quality_ctx
     file_type = trial_set.file_type
     prompt = trial_set.prompt
 
-    for case_val, example_filename in inconsistencies.items():
+    for case_val, instance_filename in inconsistencies.items():
         quality_ctx.output[model][temp][file_type][prompt]["inconsistent_case"].add(case_val)
         if case_val not in quality_ctx.instances[model][temp][file_type][prompt]["inconsistent_case"]:
-            quality_ctx.instances[model][temp][file_type][prompt]["inconsistent_case"][case_val] = example_filename
+            quality_ctx.instances[model][temp][file_type][prompt]["inconsistent_case"][case_val] = instance_filename
 
 
 def _flag_case_inconsistencies(trial_sets, quality_ctx):
@@ -189,10 +189,10 @@ def _record_format_rule_inconsistencies_for_set(trial_set, inconsistencies, qual
     file_type = trial_set.file_type
     prompt = trial_set.prompt
 
-    for rule, example_filename in inconsistencies.items():
+    for rule, instance_filename in inconsistencies.items():
         quality_ctx.output[model][temp][file_type][prompt][issue_key].add(rule)
         if rule not in quality_ctx.instances[model][temp][file_type][prompt][issue_key]:
-            quality_ctx.instances[model][temp][file_type][prompt][issue_key][rule] = example_filename
+            quality_ctx.instances[model][temp][file_type][prompt][issue_key][rule] = instance_filename
 
 
 def _flag_format_inconsistencies(trial_sets, quality_ctx, file_type_label, issue_key):
@@ -571,23 +571,23 @@ def _passes_metadata_filters(filename_metadata, file_name, experiment, model, ex
     )
 
 
-def _is_txt1_leading_number_exception(issue_type, ext, example):
+def _is_txt1_leading_number_exception(issue_type, ext, instance):
     """Check if this is a txt1 file with leading number (expected format, not a quality issue)."""
     if issue_type != "leading_punctuation" or ext != '.txt1':
         return False
-    return bool(re.match(r'^\d+[\.\)\-\s]', example))
+    return bool(re.match(r'^\d+[\.\)\-\s]', instance))
 
 
 def _track_item_level_issues(item_issues, issue_type, ext, trial_key, quality_ctx, filename):
     """Track a single item-level quality issue."""
-    example = item_issues.get(issue_type)
-    if not example:
+    instance = item_issues.get(issue_type)
+    if not instance:
         return
-    if _is_txt1_leading_number_exception(issue_type, ext, example):
+    if _is_txt1_leading_number_exception(issue_type, ext, instance):
         return
-    quality_ctx.output[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][issue_type].add(example)
-    if example not in quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][issue_type]:
-        quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][issue_type][example] = filename
+    quality_ctx.output[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][issue_type].add(instance)
+    if instance not in quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][issue_type]:
+        quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][issue_type][instance] = filename
 
 
 def _track_repeated_sequence_issue(item_issues, trial_key, quality_ctx, filename):
@@ -763,7 +763,7 @@ class TrialSet:
     def detect_case_inconsistencies(self):
         """Detect if trials in this set have inconsistent case handling.
 
-        Returns: {case_value: example_filename} or {} if consistent.
+        Returns: {case_value: instance_filename} or {} if consistent.
         """
         case_values = self.extract_case_values()
         distinct_cases = set(v for v, _ in case_values)
@@ -781,7 +781,7 @@ class TrialSet:
     def detect_format_rule_inconsistencies(self):
         """Detect if trials in this set have inconsistent cleanup rule sets.
 
-        Returns: {varying_rule: example_filename} or {} if consistent.
+        Returns: {varying_rule: instance_filename} or {} if consistent.
         """
         rule_sets = [frozenset(trial.metadata.get("cleanup", {}).keys()) for trial in self.trials]
 
@@ -792,7 +792,7 @@ class TrialSet:
         common_rules = set.intersection(*[set(r) for r in rule_sets]) if rule_sets else set()
         varying_rules = all_rules - common_rules
 
-        # Find example filename for each varying rule
+        # Find instance filename for each varying rule
         issues = {}
         for rule in varying_rules:
             for trial in self.trials:
@@ -965,7 +965,7 @@ def _update_aggregations_from_trial(trial, state):
         state.format_style_counts[model_name][str(temp_value)][trial.file_type][prompt_name][fs_label] += 1
 
     # Track quality issues
-    quality_ctx = QualityContext(output=state.quality_issues_output, examples=state.quality_issues_instances)
+    quality_ctx = QualityContext(output=state.quality_issues_output, instances=state.quality_issues_instances)
     _track_item_quality_issues(trial.metadata, TrialKey(model_name, temp_value, trial.file_type, prompt_name),
                                 trial.extension, quality_ctx, trial.filename)
 
