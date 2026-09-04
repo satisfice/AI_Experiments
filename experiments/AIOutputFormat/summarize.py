@@ -101,13 +101,13 @@ def _make_issue_output_dicts(issue_types):
     """Create the quality issues output and examples tracking dicts.
 
     Returns:
-        (quality_issues_output, quality_issues_examples) — nested dicts for tracking
+        (quality_issues_output, quality_issues_instances) — nested dicts for tracking
         quality issues and their example source files.
         Structure: model -> temperature -> file_type -> prompt -> issue_type -> {items|examples}
     """
     quality_issues_output = _make_four_level_defaultdict(lambda: {k: set() for k in issue_types})
-    quality_issues_examples = _make_four_level_defaultdict(lambda: {k: {} for k in issue_types})
-    return quality_issues_output, quality_issues_examples
+    quality_issues_instances = _make_four_level_defaultdict(lambda: {k: {} for k in issue_types})
+    return quality_issues_output, quality_issues_instances
 
 
 def _make_format_style_counts():
@@ -168,8 +168,8 @@ def _record_case_inconsistencies_for_set(trial_set, inconsistencies, quality_ctx
 
     for case_val, example_filename in inconsistencies.items():
         quality_ctx.output[model][temp][file_type][prompt]["inconsistent_case"].add(case_val)
-        if case_val not in quality_ctx.examples[model][temp][file_type][prompt]["inconsistent_case"]:
-            quality_ctx.examples[model][temp][file_type][prompt]["inconsistent_case"][case_val] = example_filename
+        if case_val not in quality_ctx.instances[model][temp][file_type][prompt]["inconsistent_case"]:
+            quality_ctx.instances[model][temp][file_type][prompt]["inconsistent_case"][case_val] = example_filename
 
 
 def _flag_case_inconsistencies(trial_sets, quality_ctx):
@@ -191,8 +191,8 @@ def _record_format_rule_inconsistencies_for_set(trial_set, inconsistencies, qual
 
     for rule, example_filename in inconsistencies.items():
         quality_ctx.output[model][temp][file_type][prompt][issue_key].add(rule)
-        if rule not in quality_ctx.examples[model][temp][file_type][prompt][issue_key]:
-            quality_ctx.examples[model][temp][file_type][prompt][issue_key][rule] = example_filename
+        if rule not in quality_ctx.instances[model][temp][file_type][prompt][issue_key]:
+            quality_ctx.instances[model][temp][file_type][prompt][issue_key][rule] = example_filename
 
 
 def _flag_format_inconsistencies(trial_sets, quality_ctx, file_type_label, issue_key):
@@ -216,9 +216,9 @@ class TrialKey(NamedTuple):
 
 @dataclass
 class QualityContext:
-    """Bundles quality issues output and examples for cohesive passing to functions."""
+    """Bundles quality issues output and instances for cohesive passing to functions."""
     output: dict
-    examples: dict
+    instances: dict
 
 
 def _print_format_consistency_status(pd, key, format_consistency, treatment_fields, safe_write):
@@ -246,29 +246,29 @@ def _print_format_issues_breakdown(pd, safe_write):
         safe_write(f"        Format Issues: {issues_str}")
 
 
-def _print_issue_example_items(items, issue_key, with_example, trial_key, quality_issues_examples, safe_write):
+def _print_issue_instance_items(items, issue_key, with_example, trial_key, quality_issues_instances, safe_write):
     """Print example items for an issue type."""
     model_name, temp_value, file_type, prompt_name = trial_key
     for item in items[:5]:
         suffix = ""
         if with_example:
-            example_file = quality_issues_examples[model_name][str(temp_value)][file_type][prompt_name][issue_key].get(item)
+            example_file = quality_issues_instances[model_name][str(temp_value)][file_type][prompt_name][issue_key].get(item)
             suffix = f" Example: {example_file}" if example_file else ""
         safe_write(f"          - {ascii(item)}{suffix}")
 
 
-def _print_single_issue_type(issue_key, label, with_example, pd, trial_key, quality_issues_examples, safe_write):
+def _print_single_issue_type(issue_key, label, with_example, pd, trial_key, quality_issues_instances, safe_write):
     """Print breakdown for a single issue type."""
     items = [e["instance"] for e in pd.get(issue_key, [])]
     if not items:
         return
     safe_write(f"        {label} ({len(items)} unique):")
-    _print_issue_example_items(items, issue_key, with_example, trial_key, quality_issues_examples, safe_write)
+    _print_issue_instance_items(items, issue_key, with_example, trial_key, quality_issues_instances, safe_write)
     if len(items) > 5:
         safe_write(f"          ... and {len(items) - 5} more")
 
 
-def _print_issue_type_breakdown(pd, key, quality_issues_examples, safe_write):
+def _print_issue_type_breakdown(pd, key, quality_issues_instances, safe_write):
     """Print per-issue-type breakdown for a prompt."""
     trial_key = key
     issue_display = [
@@ -281,18 +281,18 @@ def _print_issue_type_breakdown(pd, key, quality_issues_examples, safe_write):
         ("repeated_chars", "Repeated characters", False),
     ]
     for issue_key, label, with_example in issue_display:
-        _print_single_issue_type(issue_key, label, with_example, pd, trial_key, quality_issues_examples, safe_write)
+        _print_single_issue_type(issue_key, label, with_example, pd, trial_key, quality_issues_instances, safe_write)
 
 
-def _print_prompt_analysis(pd, key, format_consistency, treatment_fields, quality_issues_examples, safe_write):
+def _print_prompt_analysis(pd, key, format_consistency, treatment_fields, quality_issues_instances, safe_write):
     """Print one prompt's quality-issue breakdown within the analysis report."""
     safe_write(f"      {key.prompt_name}:")
     _print_format_consistency_status(pd, key, format_consistency, treatment_fields, safe_write)
     _print_format_issues_breakdown(pd, safe_write)
-    _print_issue_type_breakdown(pd, key, quality_issues_examples, safe_write)
+    _print_issue_type_breakdown(pd, key, quality_issues_instances, safe_write)
 
 
-def _print_analysis_report(item_count_stats, quality_issues_dict, quality_issues_examples,
+def _print_analysis_report(item_count_stats, quality_issues_dict, quality_issues_instances,
                             format_consistency, treatment_fields):
     """Print the verbose per-model/temperature/file-type analysis report
     (the `analysis and verbose` report, extracted out of summarize_results)."""
@@ -319,7 +319,7 @@ def _print_analysis_report(item_count_stats, quality_issues_dict, quality_issues
                 for prompt_name in sorted(prompts_data.keys()):
                     tk = TrialKey(model_name, temp_value, file_type, prompt_name)
                     _print_prompt_analysis(prompts_data[prompt_name], tk,
-                                            format_consistency, treatment_fields, quality_issues_examples, safe_write)
+                                            format_consistency, treatment_fields, quality_issues_instances, safe_write)
 
 
 @dataclass
@@ -387,7 +387,7 @@ def _compute_format_consistency(consolidated_dict, treatment_fields):
 class _QualityDataContext:
     """Context for building prompt data sections."""
     quality_issues_output: dict
-    quality_issues_examples: dict
+    quality_issues_instances: dict
     format_consistency: dict
     format_style_counts: dict
     cleanup_rules_agg: dict
@@ -404,7 +404,7 @@ def _extract_quality_issues_for_prompt(trial_key, ctx):
         if raw_items:
             items_with_source = []
             for item in raw_items:
-                source = ctx.quality_issues_examples[trial_key.model][trial_key.temperature][trial_key.file_type][trial_key.prompt][issue_type].get(item, "unknown")
+                source = ctx.quality_issues_instances[trial_key.model][trial_key.temperature][trial_key.file_type][trial_key.prompt][issue_type].get(item, "unknown")
                 items_with_source.append({"instance": item, "source": source})
             items_with_source.sort(key=lambda x: x["instance"].lower())
             prompt_data[issue_type] = items_with_source
@@ -457,11 +457,11 @@ def _build_prompt_data_section(trial_key, ctx):
 
 
 def _build_quality_issues_dict(trial_sets, format_consistency, format_style_counts, quality_issues_output,
-                                quality_issues_examples, cleanup_rules_agg, issue_types, treatment_fields):
+                                quality_issues_instances, cleanup_rules_agg, issue_types, treatment_fields):
     """Build quality_issues_dict from trial sets."""
     ctx = _QualityDataContext(
         quality_issues_output=quality_issues_output,
-        quality_issues_examples=quality_issues_examples,
+        quality_issues_instances=quality_issues_instances,
         format_consistency=format_consistency,
         format_style_counts=format_style_counts,
         cleanup_rules_agg=cleanup_rules_agg,
@@ -587,24 +587,24 @@ def _track_item_level_issues(item_issues, issue_type, ext, trial_key, quality_ct
     if _is_txt1_leading_number_exception(issue_type, ext, example):
         return
     quality_ctx.output[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][issue_type].add(example)
-    if example not in quality_ctx.examples[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][issue_type]:
-        quality_ctx.examples[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][issue_type][example] = filename
+    if example not in quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][issue_type]:
+        quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][issue_type][example] = filename
 
 
 def _track_repeated_sequence_issue(item_issues, trial_key, quality_ctx, filename):
     """Track repeated_sequence issue using filename as instance."""
     if item_issues.get("repeated_sequence"):
         quality_ctx.output[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt]["repeated_sequence"].add(filename)
-        if filename not in quality_ctx.examples[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt]["repeated_sequence"]:
-            quality_ctx.examples[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt]["repeated_sequence"][filename] = filename
+        if filename not in quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt]["repeated_sequence"]:
+            quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt]["repeated_sequence"][filename] = filename
 
 
 def _track_format_level_issues(format_issues, trial_key, quality_ctx, filename):
     """Track format-level quality issues from metadata."""
     for fs_label in format_issues:
         quality_ctx.output[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][fs_label].add(filename)
-        if filename not in quality_ctx.examples[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][fs_label]:
-            quality_ctx.examples[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][fs_label][filename] = filename
+        if filename not in quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][fs_label]:
+            quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][fs_label][filename] = filename
 
 
 def _track_item_quality_issues(metadata, key, ext, quality_ctx, filename):
@@ -1063,12 +1063,12 @@ def _initialize_issue_types_and_aggregations():
         "HTML_Only_Bold_Tags", "HTML_Only_Italic_Tags", "HTML_Only_Emphasis_Tags", "HTML_Only_Underline_Tags",
         "HTML_Only_Pre_Tags", "items-not-in-li",
     ]
-    quality_issues_output, quality_issues_examples = _make_issue_output_dicts(ISSUE_TYPES)
+    quality_issues_output, quality_issues_instances = _make_issue_output_dicts(ISSUE_TYPES)
     format_style_counts = _make_format_style_counts()
     item_count_stats = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
     cleanup_rules_agg = _make_cleanup_rules_agg()
     case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg = _make_format_aggregation_dicts()
-    return ISSUE_TYPES, quality_issues_output, quality_issues_examples, format_style_counts, item_count_stats, cleanup_rules_agg, case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg
+    return ISSUE_TYPES, quality_issues_output, quality_issues_instances, format_style_counts, item_count_stats, cleanup_rules_agg, case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg
 
 
 def _build_format_aggregations(md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg):
@@ -1084,12 +1084,12 @@ def _build_format_aggregations(md_cleanup_agg, html_cleanup_agg, json_cleanup_ag
     }
 
 
-def _create_aggregation_state(consolidated, quality_issues_output, quality_issues_examples, format_style_counts, item_count_stats, cleanup_rules_agg, case_values_agg, format_aggs):
+def _create_aggregation_state(consolidated, quality_issues_output, quality_issues_instances, format_style_counts, item_count_stats, cleanup_rules_agg, case_values_agg, format_aggs):
     """Create aggregation state object."""
     return AggregationState(
         consolidated=consolidated,
         quality_issues_output=quality_issues_output,
-        quality_issues_instances=quality_issues_examples,
+        quality_issues_instances=quality_issues_instances,
         format_style_counts=format_style_counts,
         item_count_stats=item_count_stats,
         cleanup_rules_agg=cleanup_rules_agg,
@@ -1115,9 +1115,9 @@ def summarize_results(options):
 
     # Initialize data structures
     consolidated = defaultdict(list)
-    ISSUE_TYPES, quality_issues_output, quality_issues_examples, format_style_counts, item_count_stats, cleanup_rules_agg, case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg = _initialize_issue_types_and_aggregations()
+    ISSUE_TYPES, quality_issues_output, quality_issues_instances, format_style_counts, item_count_stats, cleanup_rules_agg, case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg = _initialize_issue_types_and_aggregations()
     format_aggs = _build_format_aggregations(md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg)
-    state = _create_aggregation_state(consolidated, quality_issues_output, quality_issues_examples, format_style_counts, item_count_stats, cleanup_rules_agg, case_values_agg, format_aggs)
+    state = _create_aggregation_state(consolidated, quality_issues_output, quality_issues_instances, format_style_counts, item_count_stats, cleanup_rules_agg, case_values_agg, format_aggs)
 
     # Display filter parameters
     filters_applied = _describe_active_filters(options)
@@ -1146,7 +1146,7 @@ def summarize_results(options):
 
 
 def _compute_quality_and_consistency(consolidated_dict, trial_sets, format_aggs,
-                                     quality_issues_output, quality_issues_examples,
+                                     quality_issues_output, quality_issues_instances,
                                      format_style_counts, cleanup_rules_agg, ISSUE_TYPES):
     """Compute cross-trial consistency flags and build quality issues dict.
     Returns (format_consistency, quality_issues_dict)."""
@@ -1155,7 +1155,7 @@ def _compute_quality_and_consistency(consolidated_dict, trial_sets, format_aggs,
     format_consistency = _compute_format_consistency(consolidated_dict, TREATMENT_FIELDS)
 
     # Compute cross-trial case inconsistency using trial sets.
-    quality_ctx = QualityContext(output=quality_issues_output, examples=quality_issues_examples)
+    quality_ctx = QualityContext(output=quality_issues_output, examples=quality_issues_instances)
     _flag_case_inconsistencies(trial_sets, quality_ctx)
 
     # Detect format rule inconsistencies for each file type using trial sets.
@@ -1166,7 +1166,7 @@ def _compute_quality_and_consistency(consolidated_dict, trial_sets, format_aggs,
     # Build quality_issues_dict from trial sets
     quality_issues_dict = _build_quality_issues_dict(
         trial_sets, format_consistency, format_style_counts, quality_issues_output,
-        quality_issues_examples, cleanup_rules_agg, ISSUE_TYPES, TREATMENT_FIELDS)
+        quality_issues_instances, cleanup_rules_agg, ISSUE_TYPES, TREATMENT_FIELDS)
 
     return format_consistency, quality_issues_dict
 
