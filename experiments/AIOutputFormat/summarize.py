@@ -461,9 +461,9 @@ def _build_prompt_data_section(model_name, temp_value, file_type, prompt_name, c
     return prompt_data
 
 
-def _build_quality_issues_dict(format_consistency, format_style_counts, quality_issues_output,
+def _build_quality_issues_dict(trial_sets, format_consistency, format_style_counts, quality_issues_output,
                                 quality_issues_examples, cleanup_rules_agg, issue_types, treatment_fields):
-    """Build quality_issues_dict with hierarchy: model -> temperature -> file_type -> prompt."""
+    """Build quality_issues_dict from trial sets."""
     ctx = _QualityDataContext(
         quality_issues_output=quality_issues_output,
         quality_issues_examples=quality_issues_examples,
@@ -475,14 +475,15 @@ def _build_quality_issues_dict(format_consistency, format_style_counts, quality_
     )
 
     quality_issues_dict = {}
-    all_combos = _gather_all_combos(format_consistency, format_style_counts, quality_issues_output)
 
-    for model_name, temp_value, file_type, prompt_name in all_combos:
-        prompt_data = _build_prompt_data_section(model_name, temp_value, file_type, prompt_name, ctx)
+    # Iterate through trial sets instead of nested dict combos
+    for trial_set in trial_sets.values():
+        prompt_data = _build_prompt_data_section(trial_set.model, trial_set.temperature,
+                                                  trial_set.file_type, trial_set.prompt, ctx)
         quality_issues_dict \
-            .setdefault(model_name, {}) \
-            .setdefault(temp_value, {}) \
-            .setdefault(file_type, {})[prompt_name] = prompt_data
+            .setdefault(trial_set.model, {}) \
+            .setdefault(trial_set.temperature, {}) \
+            .setdefault(trial_set.file_type, {})[trial_set.prompt] = prompt_data
 
     return quality_issues_dict
 
@@ -1130,9 +1131,9 @@ def _compute_quality_and_consistency(consolidated_dict, trial_sets, format_aggs,
         _flag_format_inconsistencies(trial_sets, quality_issues_output, quality_issues_examples,
                                       fmt_meta['label'], fmt_meta['issue_key'])
 
-    # Build quality_issues_dict with hierarchy: model -> temperature -> file_type -> prompt
+    # Build quality_issues_dict from trial sets
     quality_issues_dict = _build_quality_issues_dict(
-        format_consistency, format_style_counts, quality_issues_output,
+        trial_sets, format_consistency, format_style_counts, quality_issues_output,
         quality_issues_examples, cleanup_rules_agg, ISSUE_TYPES, TREATMENT_FIELDS)
 
     return format_consistency, quality_issues_dict
