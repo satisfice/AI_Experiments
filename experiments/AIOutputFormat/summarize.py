@@ -181,6 +181,22 @@ def _flag_case_inconsistencies(case_values_agg, quality_issues_output, quality_i
                                                  quality_issues_output, quality_issues_examples)
 
 
+def _record_format_rule_inconsistencies(model_name, temp_value, file_type_label, prompt_name, entries,
+                                        quality_issues_output, quality_issues_examples, issue_key):
+    """Record format rule inconsistencies for a single trial set."""
+    rule_sets = [rules for rules, _ in entries]
+    if len(set(rule_sets)) <= 1:
+        return
+    all_rules = set().union(*rule_sets)
+    common_rules = set.intersection(*[set(r) for r in rule_sets])
+    varying_rules = all_rules - common_rules
+    for rule in varying_rules:
+        quality_issues_output[model_name][temp_value][file_type_label][prompt_name][issue_key].add(rule)
+        if rule not in quality_issues_examples[model_name][temp_value][file_type_label][prompt_name][issue_key]:
+            example_fname = next((fname for rules, fname in entries if rule in rules), "unknown")
+            quality_issues_examples[model_name][temp_value][file_type_label][prompt_name][issue_key][rule] = example_fname
+
+
 def _flag_format_inconsistencies(cleanup_agg, quality_issues_output, quality_issues_examples,
                                   file_type_label, issue_key):
     """Flag trial sets whose cleanup-rule sets differ across files for one file type
@@ -190,17 +206,8 @@ def _flag_format_inconsistencies(cleanup_agg, quality_issues_output, quality_iss
         for temp_value in cleanup_agg[model_name]:
             for prompt_name in cleanup_agg[model_name][temp_value]:
                 entries = cleanup_agg[model_name][temp_value][prompt_name]
-                rule_sets = [rules for rules, _ in entries]
-                if len(set(rule_sets)) <= 1:
-                    continue
-                all_rules = set().union(*rule_sets)
-                common_rules = set.intersection(*[set(r) for r in rule_sets])
-                varying_rules = all_rules - common_rules
-                for rule in varying_rules:
-                    quality_issues_output[model_name][temp_value][file_type_label][prompt_name][issue_key].add(rule)
-                    if rule not in quality_issues_examples[model_name][temp_value][file_type_label][prompt_name][issue_key]:
-                        example_fname = next((fname for rules, fname in entries if rule in rules), "unknown")
-                        quality_issues_examples[model_name][temp_value][file_type_label][prompt_name][issue_key][rule] = example_fname
+                _record_format_rule_inconsistencies(model_name, temp_value, file_type_label, prompt_name, entries,
+                                                     quality_issues_output, quality_issues_examples, issue_key)
 
 
 class TrialKey(NamedTuple):
