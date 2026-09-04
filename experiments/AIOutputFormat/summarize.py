@@ -392,25 +392,25 @@ class _QualityDataContext:
     treatment_fields: list
 
 
-def _extract_quality_issues_for_prompt(model_name, temp_value, file_type, prompt_name, ctx):
+def _extract_quality_issues_for_prompt(trial_key, ctx):
     """Extract quality issues with sources for a prompt."""
     prompt_data = {}
-    issues = ctx.quality_issues_output.get(model_name, {}).get(temp_value, {}).get(file_type, {}).get(prompt_name, {})
+    issues = ctx.quality_issues_output.get(trial_key.model, {}).get(trial_key.temperature, {}).get(trial_key.file_type, {}).get(trial_key.prompt, {})
     for issue_type in ctx.issue_types:
         raw_items = issues.get(issue_type, set())
         if raw_items:
             items_with_source = []
             for item in raw_items:
-                source = ctx.quality_issues_examples[model_name][temp_value][file_type][prompt_name][issue_type].get(item, "unknown")
+                source = ctx.quality_issues_examples[trial_key.model][trial_key.temperature][trial_key.file_type][trial_key.prompt][issue_type].get(item, "unknown")
                 items_with_source.append({"instance": item, "source": source})
             items_with_source.sort(key=lambda x: x["instance"].lower())
             prompt_data[issue_type] = items_with_source
     return prompt_data
 
 
-def _compute_format_consistency_for_prompt(model_name, temp_value, file_type, prompt_name, prompt_data, ctx):
+def _compute_format_consistency_for_prompt(trial_key, prompt_data, ctx):
     """Compute format consistency for a prompt."""
-    fc = ctx.format_consistency.get((model_name, temp_value, file_type, prompt_name), {})
+    fc = ctx.format_consistency.get((trial_key.model, trial_key.temperature, trial_key.file_type, trial_key.prompt), {})
     has_format_inconsistency = False
 
     inconsistency_issue_types = {
@@ -419,8 +419,8 @@ def _compute_format_consistency_for_prompt(model_name, temp_value, file_type, pr
         "JSON": "inconsistent_json_format",
         "YAML": "inconsistent_yaml_format",
     }
-    if file_type in inconsistency_issue_types:
-        inconsistency_type = inconsistency_issue_types[file_type]
+    if trial_key.file_type in inconsistency_issue_types:
+        inconsistency_type = inconsistency_issue_types[trial_key.file_type]
         has_format_inconsistency = inconsistency_type in prompt_data and bool(prompt_data[inconsistency_type])
 
     if fc:
@@ -430,26 +430,26 @@ def _compute_format_consistency_for_prompt(model_name, temp_value, file_type, pr
         prompt_data["consistentFormat"] = not has_format_inconsistency
 
 
-def _extract_format_issues_for_prompt(model_name, temp_value, file_type, prompt_name, prompt_data, ctx):
+def _extract_format_issues_for_prompt(trial_key, prompt_data, ctx):
     """Extract format style issues for a prompt."""
-    style_counts = ctx.format_style_counts.get(model_name, {}).get(temp_value, {}).get(file_type, {}).get(prompt_name, {})
+    style_counts = ctx.format_style_counts.get(trial_key.model, {}).get(trial_key.temperature, {}).get(trial_key.file_type, {}).get(trial_key.prompt, {})
     if style_counts:
         prompt_data["formatIssues"] = dict(style_counts)
 
 
-def _extract_cleanup_rules_for_prompt(model_name, temp_value, file_type, prompt_name, prompt_data, ctx):
+def _extract_cleanup_rules_for_prompt(trial_key, prompt_data, ctx):
     """Extract cleanup rules for a prompt."""
-    rules_counter = ctx.cleanup_rules_agg.get(model_name, {}).get(temp_value, {}).get(file_type, {}).get(prompt_name, {})
+    rules_counter = ctx.cleanup_rules_agg.get(trial_key.model, {}).get(trial_key.temperature, {}).get(trial_key.file_type, {}).get(trial_key.prompt, {})
     if rules_counter:
         prompt_data["cleanupRules"] = dict(sorted(rules_counter.items()))
 
 
-def _build_prompt_data_section(model_name, temp_value, file_type, prompt_name, ctx):
+def _build_prompt_data_section(trial_key, ctx):
     """Build quality issues, consistency, formatIssues, and cleanupRules for one prompt."""
-    prompt_data = _extract_quality_issues_for_prompt(model_name, temp_value, file_type, prompt_name, ctx)
-    _compute_format_consistency_for_prompt(model_name, temp_value, file_type, prompt_name, prompt_data, ctx)
-    _extract_format_issues_for_prompt(model_name, temp_value, file_type, prompt_name, prompt_data, ctx)
-    _extract_cleanup_rules_for_prompt(model_name, temp_value, file_type, prompt_name, prompt_data, ctx)
+    prompt_data = _extract_quality_issues_for_prompt(trial_key, ctx)
+    _compute_format_consistency_for_prompt(trial_key, prompt_data, ctx)
+    _extract_format_issues_for_prompt(trial_key, prompt_data, ctx)
+    _extract_cleanup_rules_for_prompt(trial_key, prompt_data, ctx)
     return prompt_data
 
 
@@ -470,8 +470,8 @@ def _build_quality_issues_dict(trial_sets, format_consistency, format_style_coun
 
     # Iterate through trial sets instead of nested dict combos
     for trial_set in trial_sets.values():
-        prompt_data = _build_prompt_data_section(trial_set.model, trial_set.temperature,
-                                                  trial_set.file_type, trial_set.prompt, ctx)
+        tk = TrialKey(trial_set.model, trial_set.temperature, trial_set.file_type, trial_set.prompt)
+        prompt_data = _build_prompt_data_section(tk, ctx)
         quality_issues_dict \
             .setdefault(trial_set.model, {}) \
             .setdefault(trial_set.temperature, {}) \
