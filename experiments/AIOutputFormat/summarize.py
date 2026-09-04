@@ -672,6 +672,50 @@ class ReportOptions:
     verbose: bool
 
 
+@dataclass
+class Trial:
+    """Represents a single trial (result file) with its parsed content and metadata."""
+    filename: str           # e.g., "202602061922-animals-animals_hard-gpt4-0.7-01.json"
+    file_type: str          # e.g., "JSON" (from FORMAT_MAP)
+    extension: str          # e.g., ".json"
+    items: list             # Parsed items from file
+    metadata: dict          # All metadata including model, temperature, prompt, etc.
+
+
+def _create_trial_from_file(file_path, max_item_length, options):
+    """Attempt to create a Trial from a file. Returns Trial or None if file should be skipped.
+
+    Returns (Trial, skip_reason) where skip_reason is None if successful, or a string explaining why skipped.
+    """
+    ext = _should_attempt_result_file(file_path, options.filename_filter, options.format_type)
+    if ext is None:
+        return None, None  # Silent skip (doesn't match filters)
+
+    if ext in SKIP_EXTENSIONS:
+        return None, f"extension {ext} skipped"
+
+    content = _read_result_file_content(file_path)
+    if content is None:
+        return None, f"encoding error"
+
+    if ext not in PARSERS:
+        return None, f"no parser for {ext}"
+
+    items, metadata = _parse_and_build_file_metadata(file_path, content, ext, max_item_length, options)
+    if items is None:
+        return None, None  # Filtered by metadata
+
+    file_type = FORMAT_MAP.get(ext, ext)
+    trial = Trial(
+        filename=file_path.name,
+        file_type=file_type,
+        extension=ext,
+        items=items,
+        metadata=metadata
+    )
+    return trial, None
+
+
 def _parse_and_build_file_metadata(file_path, content, ext, max_item_length, options):
     """Parse file content and build complete metadata. Returns (items, metadata) or (None, None)."""
     parser = PARSERS[ext]
@@ -736,96 +780,80 @@ def _parse_and_build_file_metadata(file_path, content, ext, max_item_length, opt
     return items, metadata
 
 
-def _update_aggregations_from_parsed_file(file_path, items, metadata, ext, state):
-    """Update all aggregation dicts from parsed file data."""
-    model_name = abbreviate_model_name(metadata.get("model", "unknown"))
-    temp_value = metadata.get("temperature", "unknown")
-    file_type = FORMAT_MAP.get(ext, ext)
-    prompt_name = metadata.get("prompt", "unknown")
+def _update_aggregations_from_trial(trial, state):
+    """Update all aggregation dicts from a Trial."""
+    model_name = abbreviate_model_name(trial.metadata.get("model", "unknown"))
+    temp_value = trial.metadata.get("temperature", "unknown")
+    prompt_name = trial.metadata.get("prompt", "unknown")
 
     # Track cleanup rules
-    for rule_name in metadata.get("cleanup", {}).keys():
-        state.cleanup_rules_agg[model_name][str(temp_value)][file_type][prompt_name][rule_name] += 1
+    for rule_name in trial.metadata.get("cleanup", {}).keys():
+        state.cleanup_rules_agg[model_name][str(temp_value)][trial.file_type][prompt_name][rule_name] += 1
 
     # Track case values
-    case_value = metadata.pop("case", "lower")
-    metadata.pop("consistentCase", None)
-    state.case_values_agg[model_name][str(temp_value)][file_type][prompt_name].append((case_value, file_path.name))
+    case_value = trial.metadata.pop("case", "lower")
+    trial.metadata.pop("consistentCase", None)
+    state.case_values_agg[model_name][str(temp_value)][trial.file_type][prompt_name].append((case_value, trial.filename))
 
     # Track cleanup rule sets per format
-    rule_set = frozenset(metadata.get("cleanup", {}).keys())
-    if ext in state.format_aggs:
-        state.format_aggs[ext]['agg'][model_name][str(temp_value)][prompt_name].append((rule_set, file_path.name))
+    rule_set = frozenset(trial.metadata.get("cleanup", {}).keys())
+    if trial.extension in state.format_aggs:
+        state.format_aggs[trial.extension]['agg'][model_name][str(temp_value)][prompt_name].append((rule_set, trial.filename))
 
     # Track format styles
-    state.format_style_counts[model_name][str(temp_value)][file_type][prompt_name][metadata.get("formatStyle", "unknown")] += 1
-    for fs_label in metadata.get("formatIssues", []):
-        state.format_style_counts[model_name][str(temp_value)][file_type][prompt_name][fs_label] += 1
+    state.format_style_counts[model_name][str(temp_value)][trial.file_type][prompt_name][trial.metadata.get("formatStyle", "unknown")] += 1
+    for fs_label in trial.metadata.get("formatIssues", []):
+        state.format_style_counts[model_name][str(temp_value)][trial.file_type][prompt_name][fs_label] += 1
 
     # Track quality issues
-    _track_item_quality_issues(metadata, TrialKey(model_name, temp_value, file_type, prompt_name),
-                                ext, state.quality_issues_output, state.quality_issues_instances, file_path.name)
+    _track_item_quality_issues(trial.metadata, TrialKey(model_name, temp_value, trial.file_type, prompt_name),
+                                trial.extension, state.quality_issues_output, state.quality_issues_instances, trial.filename)
 
     # Track item counts
-    state.item_count_stats[model_name][str(temp_value)][file_type].append(len(items))
+    state.item_count_stats[model_name][str(temp_value)][trial.file_type].append(len(trial.items))
 
     # Add to consolidated
-    state.consolidated[ext].append({
-        "filename": file_path.name,
-        "metadata": metadata,
-        "items": items
+    state.consolidated[trial.extension].append({
+        "filename": trial.filename,
+        "metadata": trial.metadata,
+        "items": trial.items
     })
 
 
 def _scan_and_process_files(filename_filter, format_type, max_item_length, verbose, options, state):
-    """Scan result files, parse them, and populate aggregation state.
+    """Scan result files and process them as trials, populating aggregation state.
     Returns file_count."""
     file_count = 0
 
     # Scan results directory
     for file_path in sorted(RESULTS_DIR.iterdir()):
-        ext = _should_attempt_result_file(file_path, filename_filter, format_type)
-        if ext is None:
-            continue
-
-        if ext in SKIP_EXTENSIONS:
-            state.skipped_trials.append(file_path.name)
-            continue
-
-        content = _read_result_file_content(file_path)
-        if content is None:
-            click.echo(f"Skipping (encoding error): {file_path.name}")
-            state.skipped_trials.append(file_path.name)
-            continue
-
-        if ext not in PARSERS:
-            click.echo(f"Skipping (no parser): {file_path.name}")
-            state.skipped_trials.append(file_path.name)
-            continue
-
         try:
-            items, metadata = _parse_and_build_file_metadata(file_path, content, ext, max_item_length, options)
+            trial, skip_reason = _create_trial_from_file(file_path, max_item_length, options)
 
-            if items is None:
+            if trial is None:
+                if skip_reason:
+                    click.echo(f"Skipping ({skip_reason}): {file_path.name}")
+                    state.skipped_trials.append(file_path.name)
+                # Silent skips (metadata filters) are not reported
                 continue
 
             # Collect source items (only after filtering passes)
-            for item in items:
+            for item in trial.items:
                 if item:
                     state.source_items.add(item)
 
-            if metadata.get("itemCount") == 0:
-                state.zero_item_files.append(file_path.name)
+            if trial.metadata.get("itemCount") == 0:
+                state.zero_item_files.append(trial.filename)
 
-            # Update all aggregations from this file
-            _update_aggregations_from_parsed_file(file_path, items, metadata, ext, state)
+            # Process trial: update all aggregations
+            _update_aggregations_from_trial(trial, state)
 
             file_count += 1
-            click.echo(f"Processed: {file_path.name} ({len(items)} items)")
+            click.echo(f"Processed: {trial.filename} ({len(trial.items)} items)")
 
         except Exception as e:
             import traceback
-            click.echo(f"Error parsing {file_path.name}: {e}")
+            click.echo(f"Error processing {file_path.name}: {e}")
             if verbose:
                 click.echo(traceback.format_exc())
             state.skipped_trials.append(file_path.name)
