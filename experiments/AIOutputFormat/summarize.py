@@ -156,7 +156,7 @@ def _make_format_aggregation_dicts():
     return case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg
 
 
-def _record_case_inconsistencies_for_set(trial_set, inconsistencies, quality_issues_output, quality_issues_examples):
+def _record_case_inconsistencies_for_set(trial_set, inconsistencies, quality_ctx):
     """Record case inconsistencies detected in a trial set into aggregation dicts."""
     if not inconsistencies:
         return
@@ -167,21 +167,19 @@ def _record_case_inconsistencies_for_set(trial_set, inconsistencies, quality_iss
     prompt = trial_set.prompt
 
     for case_val, example_filename in inconsistencies.items():
-        quality_issues_output[model][temp][file_type][prompt]["inconsistent_case"].add(case_val)
-        if case_val not in quality_issues_examples[model][temp][file_type][prompt]["inconsistent_case"]:
-            quality_issues_examples[model][temp][file_type][prompt]["inconsistent_case"][case_val] = example_filename
+        quality_ctx.output[model][temp][file_type][prompt]["inconsistent_case"].add(case_val)
+        if case_val not in quality_ctx.examples[model][temp][file_type][prompt]["inconsistent_case"]:
+            quality_ctx.examples[model][temp][file_type][prompt]["inconsistent_case"][case_val] = example_filename
 
 
-def _flag_case_inconsistencies(trial_sets, quality_issues_output, quality_issues_examples):
+def _flag_case_inconsistencies(trial_sets, quality_ctx):
     """Detect and record case inconsistencies across all trial sets."""
     for trial_set in trial_sets.values():
         inconsistencies = trial_set.detect_case_inconsistencies()
-        _record_case_inconsistencies_for_set(trial_set, inconsistencies,
-                                             quality_issues_output, quality_issues_examples)
+        _record_case_inconsistencies_for_set(trial_set, inconsistencies, quality_ctx)
 
 
-def _record_format_rule_inconsistencies_for_set(trial_set, inconsistencies, quality_issues_output,
-                                                 quality_issues_examples, issue_key):
+def _record_format_rule_inconsistencies_for_set(trial_set, inconsistencies, quality_ctx, issue_key):
     """Record format rule inconsistencies detected in a trial set into aggregation dicts."""
     if not inconsistencies:
         return
@@ -192,20 +190,18 @@ def _record_format_rule_inconsistencies_for_set(trial_set, inconsistencies, qual
     prompt = trial_set.prompt
 
     for rule, example_filename in inconsistencies.items():
-        quality_issues_output[model][temp][file_type][prompt][issue_key].add(rule)
-        if rule not in quality_issues_examples[model][temp][file_type][prompt][issue_key]:
-            quality_issues_examples[model][temp][file_type][prompt][issue_key][rule] = example_filename
+        quality_ctx.output[model][temp][file_type][prompt][issue_key].add(rule)
+        if rule not in quality_ctx.examples[model][temp][file_type][prompt][issue_key]:
+            quality_ctx.examples[model][temp][file_type][prompt][issue_key][rule] = example_filename
 
 
-def _flag_format_inconsistencies(trial_sets, quality_issues_output, quality_issues_examples,
-                                  file_type_label, issue_key):
+def _flag_format_inconsistencies(trial_sets, quality_ctx, file_type_label, issue_key):
     """Detect and record format rule inconsistencies for a specific file type across all trial sets."""
     for trial_set in trial_sets.values():
         if trial_set.file_type != file_type_label:
             continue
         inconsistencies = trial_set.detect_format_rule_inconsistencies()
-        _record_format_rule_inconsistencies_for_set(trial_set, inconsistencies,
-                                                     quality_issues_output, quality_issues_examples, issue_key)
+        _record_format_rule_inconsistencies_for_set(trial_set, inconsistencies, quality_ctx, issue_key)
 
 
 class TrialKey(NamedTuple):
@@ -216,6 +212,13 @@ class TrialKey(NamedTuple):
     temperature: str
     file_type: str
     prompt: str
+
+
+@dataclass
+class QualityContext:
+    """Bundles quality issues output and examples for cohesive passing to functions."""
+    output: dict
+    examples: dict
 
 
 def _print_format_consistency_status(pd, key, format_consistency, treatment_fields, safe_write):
@@ -1154,11 +1157,12 @@ def _compute_quality_and_consistency(consolidated_dict, trial_sets, format_aggs,
     format_consistency = _compute_format_consistency(consolidated_dict, TREATMENT_FIELDS)
 
     # Compute cross-trial case inconsistency using trial sets.
-    _flag_case_inconsistencies(trial_sets, quality_issues_output, quality_issues_examples)
+    quality_ctx = QualityContext(output=quality_issues_output, examples=quality_issues_examples)
+    _flag_case_inconsistencies(trial_sets, quality_ctx)
 
     # Detect format rule inconsistencies for each file type using trial sets.
     for ext, fmt_meta in format_aggs.items():
-        _flag_format_inconsistencies(trial_sets, quality_issues_output, quality_issues_examples,
+        _flag_format_inconsistencies(trial_sets, quality_ctx,
                                       fmt_meta['label'], fmt_meta['issue_key'])
 
     # Build quality_issues_dict from trial sets
