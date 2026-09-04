@@ -1,3 +1,28 @@
+[SSL/TLS Handshake Error in Flask Server] (noted by Claude): 2026-09-04
+
+Incident: "Bad request version" error when accessing Flask development server
+
+Error output:
+code 400, message Bad request version ('¡Ë÷R\x7f\x91øO\x99')
+Garbled binary data indicates TLS ClientHello attempting HTTPS connection to HTTP server
+
+Root cause:
+Flask development server runs on plain HTTP (localhost:5000). Browser or client attempted HTTPS connection, causing protocol mismatch. TLS record header (\x16\x03\x01) indicates SSL/TLS ClientHello being sent to non-HTTPS server.
+
+Typical causes:
+1. Browser auto-upgrading to HTTPS
+2. HSTS policy requiring HTTPS
+3. Client configured for HTTPS only
+
+Resolution:
+1. QUICK FIX: Explicitly use http://localhost:5000 (not https://)
+2. PERMANENT FIX: Add SSL/TLS support to Flask server with self-signed cert
+3. ALTERNATIVE: Use environment variable to disable HTTPS auto-upgrade
+
+Status: Not a code issue - browser/client configuration issue. Server functioning correctly on HTTP.
+
+---
+
 [TypeError: QualityContext field name] (noted by Claude): 2026-09-04
 
 Incident: TypeError when constructing QualityContext in _compute_quality_and_consistency
