@@ -799,6 +799,45 @@ def _create_trial_from_file(file_path, max_item_length, options):
     return trial, None
 
 
+def _merge_cleanup_metadata(metadata, codeblock_cleanups, parser_cleanups):
+    """Merge cleanup information from multiple sources into metadata."""
+    all_cleanups = codeblock_cleanups + parser_cleanups
+    if metadata.get("processingCleanups"):
+        all_cleanups.extend(metadata.pop("processingCleanups"))
+    if all_cleanups:
+        cleanup_dict = parse_cleanup_keys(all_cleanups)
+        if cleanup_dict:
+            metadata["cleanup"] = cleanup_dict
+
+
+def _merge_format_issues(metadata, parser_quality_issues):
+    """Merge format-level issues from multiple sources into metadata."""
+    format_issues = []
+    if parser_quality_issues:
+        format_issues.extend(parser_quality_issues)
+    if metadata.get("processingQualityIssues"):
+        format_issues.extend(metadata.pop("processingQualityIssues"))
+    if format_issues:
+        metadata["formatIssues"] = format_issues
+
+
+def _merge_sidecar_metadata(file_path, metadata):
+    """Load and merge metadata from sidecar .meta.json file if it exists."""
+    meta_path = META_DIR / (file_path.stem + ".meta.json")
+    if not meta_path.exists():
+        return
+
+    try:
+        with open(meta_path, 'r', encoding='utf-8') as mf:
+            file_meta = json.load(mf)
+        if "responseComplete" in file_meta:
+            metadata["responseComplete"] = file_meta["responseComplete"]
+        if "incompleteReason" in file_meta:
+            metadata["incompleteReason"] = file_meta["incompleteReason"]
+    except Exception:
+        pass
+
+
 def _parse_and_build_file_metadata(file_path, content, ext, max_item_length, options):
     """Parse file content and build complete metadata. Returns (items, metadata) or (None, None)."""
     parser = PARSERS[ext]
@@ -821,43 +860,17 @@ def _parse_and_build_file_metadata(file_path, content, ext, max_item_length, opt
     metadata["format"] = FORMAT_MAP.get(ext, "unknown")
     metadata["formatStyle"] = detect_format_style(content, ext)
 
-    # Collect all cleanup strings
-    all_cleanups = codeblock_cleanups + parser_cleanups
-    if metadata.get("processingCleanups"):
-        all_cleanups.extend(metadata.pop("processingCleanups"))
-    if all_cleanups:
-        cleanup_dict = parse_cleanup_keys(all_cleanups)
-        if cleanup_dict:
-            metadata["cleanup"] = cleanup_dict
+    # Merge cleanup and quality issue metadata
+    _merge_cleanup_metadata(metadata, codeblock_cleanups, parser_cleanups)
+    _merge_format_issues(metadata, parser_quality_issues)
 
-    # Collect format-level issues
-    format_issues = []
-    if parser_quality_issues:
-        format_issues.extend(parser_quality_issues)
-    if metadata.get("processingQualityIssues"):
-        format_issues.extend(metadata.pop("processingQualityIssues"))
-    if format_issues:
-        metadata["formatIssues"] = format_issues
-
-    # Merge filename metadata
+    # Merge filename and sidecar metadata
     metadata.update(filename_metadata)
+    _merge_sidecar_metadata(file_path, metadata)
 
     # Track duplicates
     item_counts = Counter(items)
     metadata["duplicates"] = sum(1 for count in item_counts.values() if count > 1)
-
-    # Merge sidecar metadata
-    meta_path = META_DIR / (file_path.stem + ".meta.json")
-    if meta_path.exists():
-        try:
-            with open(meta_path, 'r', encoding='utf-8') as mf:
-                file_meta = json.load(mf)
-            if "responseComplete" in file_meta:
-                metadata["responseComplete"] = file_meta["responseComplete"]
-            if "incompleteReason" in file_meta:
-                metadata["incompleteReason"] = file_meta["incompleteReason"]
-        except Exception:
-            pass
 
     metadata = reorder_metadata(metadata)
     return items, metadata
