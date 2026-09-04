@@ -156,29 +156,28 @@ def _make_format_aggregation_dicts():
     return case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg
 
 
-def _record_case_inconsistencies(model_name, temp_value, file_type, prompt_name, entries,
-                                  quality_issues_output, quality_issues_examples):
-    """Record case inconsistencies for a single trial set."""
-    distinct = set(v for v, _ in entries)
-    if len(distinct) <= 1:
+def _record_case_inconsistencies_for_set(trial_set, inconsistencies, quality_issues_output, quality_issues_examples):
+    """Record case inconsistencies detected in a trial set into aggregation dicts."""
+    if not inconsistencies:
         return
-    for case_val, fname in entries:
-        quality_issues_output[model_name][temp_value][file_type][prompt_name]["inconsistent_case"].add(case_val)
-        if case_val not in quality_issues_examples[model_name][temp_value][file_type][prompt_name]["inconsistent_case"]:
-            quality_issues_examples[model_name][temp_value][file_type][prompt_name]["inconsistent_case"][case_val] = fname
+
+    model = trial_set.model
+    temp = trial_set.temperature
+    file_type = trial_set.file_type
+    prompt = trial_set.prompt
+
+    for case_val, example_filename in inconsistencies.items():
+        quality_issues_output[model][temp][file_type][prompt]["inconsistent_case"].add(case_val)
+        if case_val not in quality_issues_examples[model][temp][file_type][prompt]["inconsistent_case"]:
+            quality_issues_examples[model][temp][file_type][prompt]["inconsistent_case"][case_val] = example_filename
 
 
-def _flag_case_inconsistencies(case_values_agg, quality_issues_output, quality_issues_examples):
-    """Flag trial sets whose case type differs across files (more than one distinct
-    case type observed for the same model/temperature/file_type/prompt). Mutates
-    quality_issues_output and quality_issues_examples in place."""
-    for model_name in case_values_agg:
-        for temp_value in case_values_agg[model_name]:
-            for file_type in case_values_agg[model_name][temp_value]:
-                for prompt_name in case_values_agg[model_name][temp_value][file_type]:
-                    entries = case_values_agg[model_name][temp_value][file_type][prompt_name]
-                    _record_case_inconsistencies(model_name, temp_value, file_type, prompt_name, entries,
-                                                 quality_issues_output, quality_issues_examples)
+def _flag_case_inconsistencies(trial_sets, quality_issues_output, quality_issues_examples):
+    """Detect and record case inconsistencies across all trial sets."""
+    for trial_set in trial_sets.values():
+        inconsistencies = trial_set.detect_case_inconsistencies()
+        _record_case_inconsistencies_for_set(trial_set, inconsistencies,
+                                             quality_issues_output, quality_issues_examples)
 
 
 def _record_format_rule_inconsistencies(model_name, temp_value, file_type_label, prompt_name, entries,
@@ -695,6 +694,28 @@ class TrialSet:
     prompt: str             # Prompt name
     trials: list            # List of Trial objects in this set
 
+    def extract_case_values(self):
+        """Extract (case_value, filename) pairs from all trials in this set."""
+        return [(trial.metadata.get("case", "lower"), trial.filename) for trial in self.trials]
+
+    def detect_case_inconsistencies(self):
+        """Detect if trials in this set have inconsistent case handling.
+
+        Returns: {case_value: [example_filenames]} or {} if consistent.
+        """
+        case_values = self.extract_case_values()
+        distinct_cases = set(v for v, _ in case_values)
+
+        if len(distinct_cases) <= 1:
+            return {}  # Consistent
+
+        # Group filenames by case value
+        issues = {}
+        for case_val, fname in case_values:
+            if case_val not in issues:
+                issues[case_val] = fname
+        return issues
+
 
 def _group_trials_into_sets(trials):
     """Group trials by (model, temperature, file_type, prompt).
@@ -1004,7 +1025,7 @@ def summarize_results(options):
 
     # Compute cross-trial consistency flags and quality issues
     format_consistency, quality_issues_dict = _compute_quality_and_consistency(
-        consolidated_dict, state.case_values_agg, state.format_aggs, state.quality_issues_output,
+        consolidated_dict, trial_sets, state.format_aggs, state.quality_issues_output,
         state.quality_issues_instances, state.format_style_counts, state.cleanup_rules_agg, ISSUE_TYPES)
 
     # Write results and reports
@@ -1016,7 +1037,7 @@ def summarize_results(options):
     return _write_results_and_reports(state, quality_results, options)
 
 
-def _compute_quality_and_consistency(consolidated_dict, case_values_agg, format_aggs,
+def _compute_quality_and_consistency(consolidated_dict, trial_sets, format_aggs,
                                      quality_issues_output, quality_issues_examples,
                                      format_style_counts, cleanup_rules_agg, ISSUE_TYPES):
     """Compute cross-trial consistency flags and build quality issues dict.
@@ -1025,8 +1046,8 @@ def _compute_quality_and_consistency(consolidated_dict, case_values_agg, format_
     TREATMENT_FIELDS = ["formatStyle", "codeblock"]
     format_consistency = _compute_format_consistency(consolidated_dict, TREATMENT_FIELDS)
 
-    # Compute cross-trial case inconsistency.
-    _flag_case_inconsistencies(case_values_agg, quality_issues_output, quality_issues_examples)
+    # Compute cross-trial case inconsistency using trial sets.
+    _flag_case_inconsistencies(trial_sets, quality_issues_output, quality_issues_examples)
 
     # Flag trial sets whose cleanup-rule sets differ across files, per file type.
     for ext, fmt_meta in format_aggs.items():
