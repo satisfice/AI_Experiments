@@ -10,7 +10,7 @@ from pathlib import Path
 from collections import defaultdict, Counter
 
 from config import abbreviate_model_name
-from utils import format_error, is_standard_filename
+from utils import format_error, is_standard_filename, calculate_statistics
 from process_single_file import (
     trim_items, is_alphabetical_order, process_and_track,
     extract_code_block, parse_filename_metadata, parse_cleanup_keys,
@@ -80,40 +80,6 @@ def _make_four_level_defaultdict(innermost_factory):
     )
 
 
-def calculate_statistics(counts):
-    """
-    Calculate statistics for a list of item counts.
-
-    Args:
-        counts: List of integers (item counts)
-
-    Returns:
-        Dictionary with max, min, avg, var, and mode
-    """
-    if not counts:
-        return {"max": 0, "min": 0, "avg": 0, "var": 0, "mode": 0}
-
-    max_count = max(counts)
-    min_count = min(counts)
-    avg_count = sum(counts) / len(counts)
-
-    # Calculate variance (sample variance if n > 1, else 0)
-    if len(counts) > 1:
-        variance = sum((x - avg_count) ** 2 for x in counts) / (len(counts) - 1)
-    else:
-        variance = 0
-
-    # Calculate mode
-    count_freq = Counter(counts)
-    mode_count = count_freq.most_common(1)[0][0]
-
-    return {
-        "max": max_count,
-        "min": min_count,
-        "avg": round(avg_count, 2),
-        "var": round(variance, 2),
-        "mode": mode_count
-    }
 
 
 def _make_issue_output_dicts(issue_types):

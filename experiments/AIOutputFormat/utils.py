@@ -4,6 +4,7 @@ import re
 import sys
 from datetime import datetime
 from pathlib import Path
+from collections import Counter
 
 
 def format_error(program_name: str, message: str) -> str:
@@ -127,3 +128,36 @@ def is_standard_filename(filename):
         return False
 
     return True
+
+
+def calculate_statistics(counts):
+    """Calculate statistics for a list of item counts.
+
+    Args:
+        counts: List of integers (item counts)
+
+    Returns:
+        Dictionary with max, min, avg, var, and mode
+    """
+    if not counts:
+        return {"max": 0, "min": 0, "avg": 0, "var": 0, "mode": 0}
+
+    max_count = max(counts)
+    min_count = min(counts)
+    avg_count = sum(counts) / len(counts)
+
+    if len(counts) > 1:
+        variance = sum((x - avg_count) ** 2 for x in counts) / (len(counts) - 1)
+    else:
+        variance = 0
+
+    count_freq = Counter(counts)
+    mode_count = count_freq.most_common(1)[0][0]
+
+    return {
+        "max": max_count,
+        "min": min_count,
+        "avg": round(avg_count, 2),
+        "var": round(variance, 2),
+        "mode": mode_count
+    }

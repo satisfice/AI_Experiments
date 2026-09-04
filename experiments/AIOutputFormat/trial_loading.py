@@ -13,18 +13,124 @@ from typing import Optional, Tuple, List
 from config import abbreviate_model_name
 from process_single_file import (
     extract_code_block, parse_filename_metadata, parse_cleanup_keys,
-    detect_format_style, reorder_metadata, FORMAT_MAP, PARSERS, process_and_track
+    detect_format_style, reorder_metadata, FORMAT_MAP, PARSERS, process_and_track,
+    is_standard_filename
 )
-from data_models import Trial, QualityContext, AggregationState
-from summarize import (
-    _track_item_quality_issues,
-    _make_issue_output_dicts, _make_format_style_counts, _make_cleanup_rules_agg,
-    _make_four_level_defaultdict, _make_format_aggregation_dicts,
-    SKIP_EXTENSIONS, _read_result_file_content,
-    _should_attempt_result_file, _passes_metadata_filters, META_DIR
-)
+from data_models import Trial, QualityContext, AggregationState, TrialKey
+from cli_helpers import matches_model_pattern
 
 RESULTS_DIR = Path("results")
+META_DIR = RESULTS_DIR / "meta"
+SKIP_EXTENSIONS = {".xlsx", ".log"}
+SKIP_PATTERNS = {"results.json", "quality.json", "unique_items.txt", "unique_source_items.txt", "spreadsheet.csv"}
+
+
+def _matches_format_type(ext, format_type):
+    """Check if file extension matches requested format type."""
+    if not format_type:
+        return True
+    if ext.lstrip('.').lower() == format_type.lower():
+        return True
+    if FORMAT_MAP.get(ext) == format_type:
+        return True
+    return False
+
+
+def _should_attempt_result_file(file_path, filename_filter, format_type):
+    """Pre-filter for result-file scan: return lowercase extension or None if should skip."""
+    if not file_path.is_file():
+        return None
+    if file_path.name in SKIP_PATTERNS:
+        return None
+    if not is_standard_filename(file_path.name):
+        return None
+    if filename_filter and filename_filter not in file_path.name:
+        return None
+    ext = file_path.suffix.lower()
+    if not ext or not _matches_format_type(ext, format_type):
+        return None
+    return ext
+
+
+def _read_result_file_content(file_path):
+    """Read result file content, trying utf-8 then utf-16. Returns None on failure."""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return f.read()
+    except UnicodeDecodeError:
+        try:
+            with open(file_path, 'r', encoding='utf-16') as f:
+                return f.read()
+        except UnicodeDecodeError:
+            return None
+
+
+def _passes_metadata_filters(filename_metadata, file_name, experiment, model, exclude_model, temperature, timestamp):
+    """Check whether file's metadata passes all active filters."""
+    if experiment and filename_metadata.get("experiment") != experiment:
+        return False
+    file_model = filename_metadata.get("model")
+    if model and file_model != model:
+        return False
+    if exclude_model and any(matches_model_pattern(file_model, pattern) for pattern in exclude_model):
+        return False
+    if temperature is not None:
+        try:
+            if filename_metadata.get("temperature") != float(temperature):
+                return False
+        except (ValueError, TypeError):
+            return False
+    if timestamp and Path(file_name).stem.split('-')[0] != timestamp:
+        return False
+    return True
+
+
+def _is_txt1_leading_number_exception(issue_type, ext, instance):
+    """Check if this is txt1 file with leading number (expected, not a quality issue)."""
+    if issue_type != "leading_punctuation" or ext != '.txt1':
+        return False
+    return bool(re.match(r'^\d+[\.\)\-\s]', instance))
+
+
+def _track_item_level_issues(item_issues, issue_type, trial, quality_ctx):
+    """Track a single item-level quality issue."""
+    trial_key = TrialKey(trial.model, trial.temperature, trial.file_type, trial.prompt)
+    instance = item_issues.get(issue_type)
+    if not instance or _is_txt1_leading_number_exception(issue_type, trial.extension, instance):
+        return
+    quality_ctx.output[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][issue_type].add(instance)
+    if instance not in quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][issue_type]:
+        quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][issue_type][instance] = trial.filename
+
+
+def _track_repeated_sequence_issue(item_issues, trial, quality_ctx):
+    """Track repeated_sequence issue using filename as instance."""
+    trial_key = TrialKey(trial.model, trial.temperature, trial.file_type, trial.prompt)
+    if item_issues.get("repeated_sequence"):
+        quality_ctx.output[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt]["repeated_sequence"].add(trial.filename)
+        if trial.filename not in quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt]["repeated_sequence"]:
+            quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt]["repeated_sequence"][trial.filename] = trial.filename
+
+
+def _track_format_level_issues(format_issues, trial, quality_ctx):
+    """Track format-level quality issues from metadata."""
+    trial_key = TrialKey(trial.model, trial.temperature, trial.file_type, trial.prompt)
+    for fs_label in format_issues:
+        quality_ctx.output[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][fs_label].add(trial.filename)
+        if trial.filename not in quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][fs_label]:
+            quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][fs_label][trial.filename] = trial.filename
+
+
+def _track_item_quality_issues(trial, quality_ctx):
+    """Track item-level and format-level quality issues into quality_ctx."""
+    if "itemIssues" in trial.metadata:
+        item_issues = trial.metadata["itemIssues"]
+        for issue_type in ["leading_punctuation", "trailing_punctuation", "internal_punctuation",
+                           "exceeds_max_length", "preamble_leak", "markup_artifact", "repeated_chars"]:
+            _track_item_level_issues(item_issues, issue_type, trial, quality_ctx)
+        _track_repeated_sequence_issue(item_issues, trial, quality_ctx)
+    if "formatIssues" in trial.metadata:
+        _track_format_level_issues(trial.metadata["formatIssues"], trial, quality_ctx)
 
 
 def create_trial_from_file(

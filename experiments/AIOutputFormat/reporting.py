@@ -7,7 +7,7 @@ import sys
 from typing import List, Dict, Any, Tuple
 
 from data_models import TrialKey, QualityContext
-from summarize import calculate_statistics
+from utils import calculate_statistics
 
 
 def _safe_write(text: str) -> None:

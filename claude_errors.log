@@ -1,3 +1,39 @@
+[Missing Dependencies] (noted by Claude): 2026-09-04
+
+Incident: ModuleNotFoundError when running summarize.py directly
+
+Context:
+- User attempted: `python summarize.py`
+- Error: No module named 'click'
+- Click and PyYAML were not installed
+
+Resolution:
+- Created requirements.txt with click>=8.0 and PyYAML>=6.0
+- Installed with: pip install -q click PyYAML
+- All dependencies now available
+
+---
+
+[Circular Import Error - Second Occurrence] (noted by Claude): 2026-09-04 12:05
+
+Incident: Multiple circular import chains after first extraction completed
+
+Context:
+After moving calculate_statistics to utils.py (breaking one circular import), discovered additional circular dependencies:
+1. summarize.py imports from trial_loading.py
+2. trial_loading.py imports from summarize.py (_track_item_quality_issues, file helpers, etc.)
+
+Error:
+ImportError: cannot import name '_track_item_quality_issues' from 'summarize'
+
+Root cause:
+File processing helpers (_read_result_file_content, _should_attempt_result_file, _passes_metadata_filters) and quality tracking (_track_item_quality_issues) were in summarize.py but needed by trial_loading.py, creating bidirectional dependency.
+
+Resolution approach:
+Moving file processing and quality tracking helpers from summarize.py to trial_loading.py where they logically belong (trial lifecycle functions). This eliminates the circular import chain.
+
+---
+
 [Circular Import Error] (noted by Claude): 2026-09-04 12:00
 
 Incident: Circular import between reporting.py and summarize.py
