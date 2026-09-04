@@ -123,6 +123,7 @@
 
         <div class="controls">
             <button class="secondary" onclick="loadDefaults()">Load Defaults</button>
+            <button class="secondary" onclick="saveDefaults()">Save Defaults</button>
             <button class="primary" onclick="generateSummary()" id="generateBtn">Generate Summary</button>
         </div>
 
@@ -195,6 +196,35 @@
                 showStatus('Defaults loaded', 'success');
             } catch (error) {
                 console.log('No saved config found, using defaults');
+            }
+        }
+
+        async function saveDefaults() {
+            try {
+                const experiments = getSelectedCheckboxes('experiments');
+                const modelsToInclude = getSelectedCheckboxes('models');
+                const modelsToExclude = availableData.models.filter(m => !modelsToInclude.includes(m));
+                const temperatures = getSelectedCheckboxes('temperatures');
+
+                const config = {
+                    experiments,
+                    exclude_model: modelsToExclude,
+                    temperatures
+                };
+
+                const response = await fetch('/api/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+
+                if (response.ok) {
+                    showStatus('Defaults saved successfully', 'success');
+                } else {
+                    showStatus('Failed to save defaults', 'error');
+                }
+            } catch (error) {
+                showStatus(`Error saving defaults: ${error.message}`, 'error');
             }
         }
 
