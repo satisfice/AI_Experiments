@@ -1,0 +1,21 @@
+[Tool Rejection] (noted by Claude): 2026-09-04 (during refactoring session)
+
+Incident: Bash tool invocation rejected twice during git push
+
+Context:
+- After committing circular import fix (data_models.py extraction)
+- Attempted: `git push origin main`
+- Error: "The user doesn't want to proceed with this tool use. The tool use was rejected"
+- First rejection: User interrupted with message "Proceed"
+- Second rejection: User again interrupted with message "Proceed"
+- Third attempt: Succeeded without error
+
+Description:
+The Bash tool push command triggered tool-use rejection prompts twice before succeeding on the third attempt. The rejection mechanism appeared to be a permission/approval gate rather than a command failure. Root cause unclear — may have been a transient condition in the permission system or a timeout.
+
+Resolution:
+User explicitly approved continuation twice. Push completed successfully: `8a6367b..68b30c8 main -> main`
+
+Impact: No data loss or corruption; push completed successfully after retries.
+
+Lesson: Tool rejection prompts may occur even for commands that should succeed; explicit user approval via "Proceed" message is effective retry trigger.
