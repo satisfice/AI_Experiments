@@ -156,6 +156,18 @@ def _make_format_aggregation_dicts():
     return case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg
 
 
+def _record_case_inconsistencies(model_name, temp_value, file_type, prompt_name, entries,
+                                  quality_issues_output, quality_issues_examples):
+    """Record case inconsistencies for a single trial set."""
+    distinct = set(v for v, _ in entries)
+    if len(distinct) <= 1:
+        return
+    for case_val, fname in entries:
+        quality_issues_output[model_name][temp_value][file_type][prompt_name]["inconsistent_case"].add(case_val)
+        if case_val not in quality_issues_examples[model_name][temp_value][file_type][prompt_name]["inconsistent_case"]:
+            quality_issues_examples[model_name][temp_value][file_type][prompt_name]["inconsistent_case"][case_val] = fname
+
+
 def _flag_case_inconsistencies(case_values_agg, quality_issues_output, quality_issues_examples):
     """Flag trial sets whose case type differs across files (more than one distinct
     case type observed for the same model/temperature/file_type/prompt). Mutates
@@ -165,13 +177,8 @@ def _flag_case_inconsistencies(case_values_agg, quality_issues_output, quality_i
             for file_type in case_values_agg[model_name][temp_value]:
                 for prompt_name in case_values_agg[model_name][temp_value][file_type]:
                     entries = case_values_agg[model_name][temp_value][file_type][prompt_name]
-                    distinct = set(v for v, _ in entries)
-                    if len(distinct) <= 1:
-                        continue
-                    for case_val, fname in entries:
-                        quality_issues_output[model_name][temp_value][file_type][prompt_name]["inconsistent_case"].add(case_val)
-                        if case_val not in quality_issues_examples[model_name][temp_value][file_type][prompt_name]["inconsistent_case"]:
-                            quality_issues_examples[model_name][temp_value][file_type][prompt_name]["inconsistent_case"][case_val] = fname
+                    _record_case_inconsistencies(model_name, temp_value, file_type, prompt_name, entries,
+                                                 quality_issues_output, quality_issues_examples)
 
 
 def _flag_format_inconsistencies(cleanup_agg, quality_issues_output, quality_issues_examples,
@@ -643,6 +650,21 @@ class AggregationState:
     source_items: set
 
 
+@dataclass
+class QualityAnalysisResults:
+    """Bundles computed quality analysis results to reduce function arguments."""
+    quality_issues_dict: dict
+    format_consistency: dict
+
+
+@dataclass
+class ReportOptions:
+    """Bundles report control flags and metadata."""
+    file_count: int
+    analysis: bool
+    verbose: bool
+
+
 def _parse_and_build_file_metadata(file_path, content, ext, max_item_length, options):
     """Parse file content and build complete metadata. Returns (items, metadata) or (None, None)."""
     parser = PARSERS[ext]
@@ -899,9 +921,12 @@ def summarize_results(options):
         state.quality_issues_instances, state.format_style_counts, state.cleanup_rules_agg, ISSUE_TYPES)
 
     # Write results and reports
-    return _write_results_and_reports(consolidated_dict, quality_issues_dict, file_count, analysis, verbose,
-                                      state.item_count_stats, state.quality_issues_instances, format_consistency,
-                                      state.source_items, state.skipped_trials, state.zero_item_files)
+    quality_results = QualityAnalysisResults(
+        quality_issues_dict=quality_issues_dict,
+        format_consistency=format_consistency
+    )
+    options = ReportOptions(file_count=file_count, analysis=analysis, verbose=verbose)
+    return _write_results_and_reports(state, quality_results, options)
 
 
 def _compute_quality_and_consistency(consolidated_dict, case_values_agg, format_aggs,
@@ -929,26 +954,26 @@ def _compute_quality_and_consistency(consolidated_dict, case_values_agg, format_
     return format_consistency, quality_issues_dict
 
 
-def _write_results_and_reports(consolidated_dict, quality_issues_dict, file_count, analysis, verbose,
-                               item_count_stats, quality_issues_examples, format_consistency,
-                               source_items, skipped_trials, zero_item_files):
+def _write_results_and_reports(state, quality_results, options):
     """Write all result files and reports. Returns True on success, False on error."""
     TREATMENT_FIELDS = ["formatStyle", "codeblock"]
+    consolidated_dict = dict(state.consolidated)
     try:
-        _write_results_and_quality_json(consolidated_dict, quality_issues_dict, file_count, verbose)
-        _print_skip_summary(skipped_trials, zero_item_files)
+        _write_results_and_quality_json(consolidated_dict, quality_results.quality_issues_dict,
+                                        options.file_count, options.verbose)
+        _print_skip_summary(state.skipped_trials, state.zero_item_files)
 
         # Print analysis report for all file types per model and temperature
-        if analysis and verbose:
+        if options.analysis and options.verbose:
             try:
-                _print_analysis_report(item_count_stats, quality_issues_dict,
-                                        quality_issues_examples, format_consistency,
+                _print_analysis_report(state.item_count_stats, quality_results.quality_issues_dict,
+                                        state.quality_issues_instances, quality_results.format_consistency,
                                         TREATMENT_FIELDS)
             except Exception as report_err:
                 click.echo(f"Warning: Could not generate full analysis report ({report_err})")
 
-        _write_unique_items_file(consolidated_dict, verbose)
-        _write_unique_source_items_file(source_items, verbose)
+        _write_unique_items_file(consolidated_dict, options.verbose)
+        _write_unique_source_items_file(state.source_items, options.verbose)
 
         return True
 
