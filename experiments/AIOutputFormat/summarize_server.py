@@ -42,14 +42,40 @@ def index():
         return f.read()
 
 
+def get_format_prompts():
+    """Extract unique prompts and their format hardness levels from results files."""
+    prompts = {}
+    if not RESULTS_DIR.exists():
+        return prompts
+
+    from process_single_file import parse_filename_metadata
+
+    for file_path in RESULTS_DIR.iterdir():
+        if not file_path.is_file() or file_path.name.startswith('.'):
+            continue
+        try:
+            metadata = parse_filename_metadata(file_path.name)
+            if metadata:
+                prompt = metadata.get("prompt", "unknown")
+                hardness = metadata.get("formatHardness", "unknown")
+                if prompt not in prompts:
+                    prompts[prompt] = hardness
+        except Exception:
+            pass
+
+    return prompts
+
+
 @app.route('/api/available-values')
 def available_values():
-    """Get available experiments, models, and temperatures."""
+    """Get available experiments, models, temperatures, and format prompts."""
     experiments, models, temperatures = collect_available_values()
+    format_prompts = get_format_prompts()
     return jsonify({
         "experiments": experiments,
         "models": models,
-        "temperatures": [str(t) for t in temperatures]
+        "temperatures": [str(t) for t in temperatures],
+        "format_prompts": format_prompts
     })
 
 

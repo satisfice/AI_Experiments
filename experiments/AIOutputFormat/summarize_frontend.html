@@ -13,6 +13,29 @@
         }
         .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 30px; }
         h1 { font-size: 28px; margin-bottom: 30px; color: #333; }
+        .formats-section { margin-bottom: 30px; }
+        .formats-section h2 { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: #333; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+            background: #fafafa;
+        }
+        thead { background: #f0f0f0; }
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th { font-weight: 600; color: #333; }
+        td { color: #666; }
+        tbody tr:hover { background: #f5f5f5; }
+        tbody tr:last-child td { border-bottom: none; }
+        .hardness { font-weight: 500; }
+        .hardness.hard { color: #d32f2f; }
+        .hardness.soft { color: #388e3c; }
         .row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px; margin-bottom: 30px; }
         @media (max-width: 1024px) { .row { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 640px) { .row { grid-template-columns: 1fr; } }
@@ -104,6 +127,21 @@
     <div class="container">
         <h1>Summarize Results</h1>
 
+        <div class="formats-section">
+            <h2>Format Prompts</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Prompt</th>
+                        <th>Format Hardness</th>
+                    </tr>
+                </thead>
+                <tbody id="formatsTableBody">
+                    <tr><td colspan="2" style="text-align: center; color: #999;">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
         <div class="row">
             <div class="section">
                 <h2>Experiments to Include</h2>
@@ -135,17 +173,37 @@
     </div>
 
     <script>
-        let availableData = { experiments: [], models: [], temperatures: [] };
+        let availableData = { experiments: [], models: [], temperatures: [], format_prompts: {} };
 
         async function initPage() {
             try {
                 const response = await fetch('/api/available-values');
                 availableData = await response.json();
+                renderFormatsTable();
                 await loadDefaults();
                 renderCheckboxes();
             } catch (error) {
                 showStatus('Failed to load data', 'error');
             }
+        }
+
+        function renderFormatsTable() {
+            const tbody = document.getElementById('formatsTableBody');
+            const prompts = availableData.format_prompts || {};
+
+            if (Object.keys(prompts).length === 0) {
+                tbody.innerHTML = '<tr><td colspan="2" style="text-align: center; color: #999;">No format prompts found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = Object.entries(prompts)
+                .sort((a, b) => a[0].localeCompare(b[0]))
+                .map(([prompt, hardness]) => `
+                    <tr>
+                        <td>${prompt}</td>
+                        <td><span class="hardness ${hardness.toLowerCase()}">${hardness}</span></td>
+                    </tr>
+                `).join('');
         }
 
         function renderCheckboxes() {
