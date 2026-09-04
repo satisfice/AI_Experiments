@@ -243,8 +243,9 @@ def _print_format_issues_breakdown(pd, safe_write):
         safe_write(f"        Format Issues: {issues_str}")
 
 
-def _print_issue_example_items(items, issue_key, model_name, temp_value, file_type, prompt_name, with_example, quality_issues_examples, safe_write):
+def _print_issue_example_items(items, issue_key, with_example, trial_key, quality_issues_examples, safe_write):
     """Print example items for an issue type."""
+    model_name, temp_value, file_type, prompt_name = trial_key
     for item in items[:5]:
         suffix = ""
         if with_example:
@@ -253,20 +254,20 @@ def _print_issue_example_items(items, issue_key, model_name, temp_value, file_ty
         safe_write(f"          - {ascii(item)}{suffix}")
 
 
-def _print_single_issue_type(issue_key, label, with_example, pd, model_name, temp_value, file_type, prompt_name, quality_issues_examples, safe_write):
+def _print_single_issue_type(issue_key, label, with_example, pd, trial_key, quality_issues_examples, safe_write):
     """Print breakdown for a single issue type."""
     items = [e["instance"] for e in pd.get(issue_key, [])]
     if not items:
         return
     safe_write(f"        {label} ({len(items)} unique):")
-    _print_issue_example_items(items, issue_key, model_name, temp_value, file_type, prompt_name, with_example, quality_issues_examples, safe_write)
+    _print_issue_example_items(items, issue_key, with_example, trial_key, quality_issues_examples, safe_write)
     if len(items) > 5:
         safe_write(f"          ... and {len(items) - 5} more")
 
 
 def _print_issue_type_breakdown(pd, key, quality_issues_examples, safe_write):
     """Print per-issue-type breakdown for a prompt."""
-    model_name, temp_value, file_type, prompt_name = key
+    trial_key = key
     issue_display = [
         ("leading_punctuation", "Leading punctuation", True),
         ("trailing_punctuation", "Trailing punctuation", True),
@@ -277,7 +278,7 @@ def _print_issue_type_breakdown(pd, key, quality_issues_examples, safe_write):
         ("repeated_chars", "Repeated characters", False),
     ]
     for issue_key, label, with_example in issue_display:
-        _print_single_issue_type(issue_key, label, with_example, pd, model_name, temp_value, file_type, prompt_name, quality_issues_examples, safe_write)
+        _print_single_issue_type(issue_key, label, with_example, pd, trial_key, quality_issues_examples, safe_write)
 
 
 def _print_prompt_analysis(pd, key, format_consistency, treatment_fields, quality_issues_examples, safe_write):
