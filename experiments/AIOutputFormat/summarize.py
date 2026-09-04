@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from typing import NamedTuple, Optional
 from pathlib import Path
 from collections import defaultdict, Counter
-from fnmatch import fnmatch
+
 from config import abbreviate_model_name
 from utils import format_error, is_standard_filename
 from process_single_file import (
@@ -16,6 +16,11 @@ from process_single_file import (
     extract_code_block, parse_filename_metadata, parse_cleanup_keys,
     detect_format_style, reorder_metadata, FORMAT_MAP, PARSERS,
     extract_first_alpha_string
+)
+from cli_helpers import (
+    matches_model_pattern, parse_selection_input, validate_selection_indices,
+    extract_selection_from_indices, collect_available_values,
+    build_selection_requests
 )
 
 RESULTS_DIR = Path("results")
@@ -1201,118 +1206,59 @@ def _write_results_and_reports(state, quality_results, options):
         return False
 
 
-def matches_model_pattern(model_name, pattern):
-    """
-    Check if model name matches pattern.
-    Supports:
-    - Exact matches: haiku matches claudehaiku4520251001
-    - Wildcards: gpt*, *llama*, t0*
-    - Case-insensitive matching
-    """
-    model_lower = model_name.lower()
-    pattern_lower = pattern.lower()
-
-    # If pattern contains wildcards, use fnmatch
-    if '*' in pattern_lower or '?' in pattern_lower:
-        return fnmatch(model_lower, pattern_lower)
-
-    # Otherwise, check if pattern is contained in model name (case-insensitive substring match)
-    # This allows "haiku" to match "claudehaiku4520251001"
-    return pattern_lower in model_lower
 
 
-def _display_choice_options(title, choices):
-    """Display choice options for user selection."""
-    click.echo(f"\n{title}:")
-    for idx, choice in enumerate(choices, 1):
+def _prompt_for_selection_request(request):
+    """CLI-specific: prompt user for a SelectionRequest.
+    Returns list of selected items, or [] if user selects none."""
+    click.echo(f"\n{request.title}:")
+    if request.description:
+        click.echo(f"  {request.description}")
+    for idx, choice in enumerate(request.choices, 1):
         click.echo(f"  {idx:2d}. {choice}")
-    click.echo(f"   0. (none/skip)")
-
-
-def _parse_selection_input(selection_input, num_choices):
-    """Parse user input into selected indices. Returns tuple (success, indices_or_error_msg)."""
-    if selection_input == '0' or selection_input == '':
-        return True, []
-    try:
-        indices = [int(x) - 1 for x in selection_input.split()]
-        return True, indices
-    except ValueError:
-        return False, "Invalid input. Please enter space-separated numbers."
-
-
-def _validate_selection_indices(indices, num_choices):
-    """Validate selected indices are within range. Returns tuple (valid, error_msg)."""
-    if any(idx < 0 or idx >= num_choices for idx in indices):
-        return False, "Invalid selection. Please enter valid numbers."
-    return True, None
-
-
-def prompt_for_selections(title, choices):
-    """
-    Prompt user to select from a list of choices by number or space-separated numbers.
-    Returns list of selected items.
-    """
-    if not choices:
-        return []
-
-    _display_choice_options(title, choices)
+    if request.allow_none:
+        click.echo(f"   0. (none/skip)")
 
     while True:
         selection = click.prompt("Enter number(s) separated by spaces", default='0').strip()
-        success, result = _parse_selection_input(selection, len(choices))
+        success, indices = parse_selection_input(selection, len(request.choices))
         if not success:
-            click.echo(result)
+            click.echo("Invalid input. Please enter space-separated numbers.")
             continue
 
-        if not result:
+        if not indices:
             return []
 
-        valid, error_msg = _validate_selection_indices(result, len(choices))
+        valid, error_msg = validate_selection_indices(indices, len(request.choices))
         if not valid:
             click.echo(error_msg)
             continue
 
-        return [choices[idx] for idx in result]
+        return extract_selection_from_indices(request.choices, indices)
 
 
-def _extract_metadata_values(metadata, experiments, models, temperatures):
-    """Extract experiment, model, and temperature values from metadata."""
-    if metadata.get("experiment"):
-        experiments.add(metadata["experiment"])
-    if metadata.get("model"):
-        models.add(metadata["model"])
-    if metadata.get("temperature") is not None:
-        temperatures.add(metadata["temperature"])
+def _run_interactive_mode():
+    """Run interactive filter selection mode. Returns dict of selected filters."""
+    click.echo("No filters specified. Starting interactive mode...\n")
+    experiments, models, temperatures = collect_available_values()
+    requests = build_selection_requests(experiments, models, temperatures)
 
-
-def _should_collect_from_file(file_path):
-    """Check if file should be processed for value collection."""
-    if not file_path.is_file():
-        return False
-    if file_path.name in SKIP_PATTERNS:
-        return False
-    if not is_standard_filename(file_path.name):
-        return False
-    return True
-
-
-def collect_available_values():
-    """Scan results directory and collect available experiments, models, temperatures."""
-    experiments = set()
-    models = set()
-    temperatures = set()
-
-    for file_path in RESULTS_DIR.iterdir():
-        if not _should_collect_from_file(file_path):
+    selected_filters = {}
+    for request in requests:
+        selected = _prompt_for_selection_request(request)
+        if not selected:
             continue
 
-        try:
-            metadata = parse_filename_metadata(file_path.name)
-            _extract_metadata_values(metadata, experiments, models, temperatures)
-        except Exception:
-            pass
+        if "Experiment" in request.title:
+            selected_filters["experiment"] = selected[0] if len(selected) == 1 else None
+            if len(selected) > 1:
+                click.echo(f"Selected experiments: {', '.join(selected)}")
+                click.echo("(Note: summarize currently supports filtering by one experiment at a time)")
 
-    return sorted(experiments), sorted(models), sorted(temperatures)
+        elif "Exclude" in request.title:
+            selected_filters["exclude_model"] = tuple(selected)
+
+    return selected_filters
 
 
 @click.command()
@@ -1342,21 +1288,9 @@ def main(filter, experiment, exclude_model, model, format_type, timestamp, tempe
     """Summarize result files into a single JSON by type and parsed items."""
     # If no filters specified and not in --no-prompt mode, offer interactive selection
     if not no_prompt and not any([filter, experiment, exclude_model, model, format_type, timestamp, temperature is not None]):
-        click.echo("No filters specified. Starting interactive mode...\n")
-        experiments, models, temperatures = collect_available_values()
-
-        # Prompt for experiment
-        selected_experiments = prompt_for_selections("Available Experiments", experiments)
-        if selected_experiments:
-            experiment = selected_experiments[0] if len(selected_experiments) == 1 else None
-            if len(selected_experiments) > 1:
-                click.echo(f"Selected experiments: {', '.join(selected_experiments)}")
-                click.echo("(Note: summarize currently supports filtering by one experiment at a time)")
-
-        # Prompt for models to exclude
-        exclude_models_list = prompt_for_selections("Available Models to Exclude", models)
-        if exclude_models_list:
-            exclude_model = tuple(exclude_models_list)
+        interactive_filters = _run_interactive_mode()
+        experiment = interactive_filters.get("experiment", experiment)
+        exclude_model = interactive_filters.get("exclude_model", exclude_model)
 
     success = summarize_results(SummarizeFilters(
         filename_filter=filter, model=model, format_type=format_type, experiment=experiment,
