@@ -859,9 +859,13 @@ def _update_aggregations_from_trial(trial, state):
     })
 
 
-def _scan_and_process_files(filename_filter, format_type, max_item_length, verbose, options, state):
-    """Scan result files and process them as trials, populating aggregation state.
-    Returns file_count."""
+def _collect_trials(max_item_length, verbose, options, state):
+    """Scan result files and load them as Trial objects.
+
+    Returns (trials, file_count, zero_item_files).
+    Tracks skipped files and reports progress.
+    """
+    trials = []
     file_count = 0
 
     # Scan results directory
@@ -876,7 +880,7 @@ def _scan_and_process_files(filename_filter, format_type, max_item_length, verbo
                 # Silent skips (metadata filters) are not reported
                 continue
 
-            # Collect source items (only after filtering passes)
+            # Track source items
             for item in trial.items:
                 if item:
                     state.source_items.add(item)
@@ -884,21 +888,25 @@ def _scan_and_process_files(filename_filter, format_type, max_item_length, verbo
             if trial.metadata.get("itemCount") == 0:
                 state.zero_item_files.append(trial.filename)
 
-            # Process trial: update all aggregations
-            _update_aggregations_from_trial(trial, state)
-
+            trials.append(trial)
             file_count += 1
-            click.echo(f"Processed: {trial.filename} ({len(trial.items)} items)")
+            click.echo(f"Loaded: {trial.filename} ({len(trial.items)} items)")
 
         except Exception as e:
             import traceback
-            click.echo(f"Error processing {file_path.name}: {e}")
+            click.echo(f"Error loading {file_path.name}: {e}")
             if verbose:
                 click.echo(traceback.format_exc())
             state.skipped_trials.append(file_path.name)
             continue
 
-    return file_count
+    return trials, file_count
+
+
+def _process_trial_set(trial_set, state):
+    """Process all trials in a set: update consolidated data and aggregations."""
+    for trial in trial_set.trials:
+        _update_aggregations_from_trial(trial, state)
 
 
 def summarize_results(options):
@@ -983,8 +991,13 @@ def summarize_results(options):
         source_items=source_items
     )
 
-    # Scan and process all result files
-    file_count = _scan_and_process_files(filename_filter, format_type, max_item_length, verbose, options, state)
+    # Collect all trials from result files
+    trials, file_count = _collect_trials(max_item_length, verbose, options, state)
+
+    # Group trials into sets and process each set
+    trial_sets = _group_trials_into_sets(trials)
+    for trial_set in trial_sets.values():
+        _process_trial_set(trial_set, state)
 
     # Convert defaultdict to regular dict for JSON serialization
     consolidated_dict = dict(consolidated)
