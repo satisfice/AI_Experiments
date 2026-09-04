@@ -218,22 +218,15 @@ class TrialKey(NamedTuple):
     prompt: str
 
 
-def _print_prompt_analysis(pd, key, format_consistency, treatment_fields, quality_issues_examples, safe_write):
-    """Print one prompt's quality-issue breakdown within the analysis report."""
+def _print_format_consistency_status(pd, key, format_consistency, treatment_fields, safe_write):
+    """Print format consistency status for a prompt."""
     model_name, temp_value, file_type, prompt_name = key
-    safe_write(f"      {prompt_name}:")
-
-    # Format consistency
     is_consistent = pd.get("consistentFormat", True)
     if is_consistent:
         safe_write(f"        Format: ✓ consistent")
     else:
         fc = format_consistency.get((model_name, str(temp_value), file_type, prompt_name), {})
         varying = [f for f in treatment_fields if len(set(fc.get(f, []))) > 1]
-
-        # Build human-readable description of what varies.
-        # treatment_fields is ["formatStyle", "codeblock"]; list
-        # all distinct formatStyle values when that field varies.
         parts = []
         if "formatStyle" in varying:
             parts.extend(sorted(set(fc.get("formatStyle", []))))
@@ -241,13 +234,18 @@ def _print_prompt_analysis(pd, key, format_consistency, treatment_fields, qualit
             parts.append("codeblock")
         safe_write(f"        Format: ✗ inconsistent ({', '.join(parts)})")
 
-    # Format issues breakdown
+
+def _print_format_issues_breakdown(pd, safe_write):
+    """Print format issues summary for a prompt."""
     format_issue_counts = pd.get("formatIssues", {})
     if format_issue_counts:
         issues_str = ", ".join(f"{i}: {c}" for i, c in sorted(format_issue_counts.items()))
         safe_write(f"        Format Issues: {issues_str}")
 
-    # Per-issue-type breakdown (punctuation types show an example filename; the rest don't)
+
+def _print_issue_type_breakdown(pd, key, quality_issues_examples, safe_write):
+    """Print per-issue-type breakdown for a prompt."""
+    model_name, temp_value, file_type, prompt_name = key
     issue_display = [
         ("leading_punctuation", "Leading punctuation", True),
         ("trailing_punctuation", "Trailing punctuation", True),
@@ -270,6 +268,15 @@ def _print_prompt_analysis(pd, key, format_consistency, treatment_fields, qualit
             safe_write(f"          - {ascii(item)}{suffix}")
         if len(items) > 5:
             safe_write(f"          ... and {len(items) - 5} more")
+
+
+def _print_prompt_analysis(pd, key, format_consistency, treatment_fields, quality_issues_examples, safe_write):
+    """Print one prompt's quality-issue breakdown within the analysis report."""
+    model_name, temp_value, file_type, prompt_name = key
+    safe_write(f"      {prompt_name}:")
+    _print_format_consistency_status(pd, key, format_consistency, treatment_fields, safe_write)
+    _print_format_issues_breakdown(pd, safe_write)
+    _print_issue_type_breakdown(pd, key, quality_issues_examples, safe_write)
 
 
 def _print_analysis_report(item_count_stats, quality_issues_dict, quality_issues_examples,
