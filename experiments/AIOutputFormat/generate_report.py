@@ -122,7 +122,8 @@ _REPORT_HEAD_AND_CSS = """<!DOCTYPE html>
         }
         /* Format and model filter checkboxes with color coding */
         .format-filter,
-        .model-filter {
+        .model-filter,
+        .hardness-filter {
             appearance: none;
             -webkit-appearance: none;
             width: 18px;
@@ -135,7 +136,8 @@ _REPORT_HEAD_AND_CSS = """<!DOCTYPE html>
             position: relative;
         }
         .format-filter:checked,
-        .model-filter:checked {
+        .model-filter:checked,
+        .hardness-filter:checked {
             background-color: currentColor;
         }
         #plots-container {
@@ -388,9 +390,11 @@ _REPORT_HEAD_AND_CSS = """<!DOCTYPE html>
 """
 
 
-def _build_report_footer(x_items_display, combo_y_values, max_y, plot_configs):
+def _build_report_footer(x_items_display, combo_y_values, max_y, plot_configs, combo_hardness=None):
     """Build the closing HTML/JS block (aggregation data + script), with the
     dynamic plot data embedded as JSON."""
+    if combo_hardness is None:
+        combo_hardness = {}
     return """    </div>
     </div>
 
@@ -510,6 +514,7 @@ def _build_report_footer(x_items_display, combo_y_values, max_y, plot_configs):
         const aggregationData = {
             items: """ + json.dumps(x_items_display) + """,
             comboData: """ + json.dumps(combo_y_values) + """,
+            comboHardness: """ + json.dumps(combo_hardness) + """,
             globalMaxY: """ + str(int(max_y)) + """
         };
         const plotConfigs = """ + json.dumps(plot_configs) + """;
@@ -644,6 +649,8 @@ def _build_report_footer(x_items_display, combo_y_values, max_y, plot_configs):
                 .filter(function(cb) { return cb.checked; }).map(function(cb) { return cb.value; }));
             const selectedTemps = new Set(Array.from(primaryContainer.querySelectorAll('.temp-filter'))
                 .filter(function(cb) { return cb.checked; }).map(function(cb) { return cb.value; }));
+            const selectedHardness = new Set(Array.from(primaryContainer.querySelectorAll('.hardness-filter'))
+                .filter(function(cb) { return cb.checked; }).map(function(cb) { return cb.value; }));
 
             // Sum y_values from all matching combos
             const aggregatedY = new Array(aggregationData.items.length).fill(0);
@@ -663,10 +670,12 @@ def _build_report_footer(x_items_display, combo_y_values, max_y, plot_configs):
                     const temp = parts[2];
                     const exp = parts[3];
                     const prompt = parts[4];
+                    const hardness = aggregationData.comboHardness[comboKeyStr] || 'soft';
 
                     // Check if this combo matches all selected filters
                     if (selectedExps.has(exp) && selectedPrompts.has(prompt) &&
-                        selectedFormats.has(fmt) && selectedModels.has(model) && selectedTemps.has(temp)) {
+                        selectedFormats.has(fmt) && selectedModels.has(model) && selectedTemps.has(temp) &&
+                        selectedHardness.has(hardness)) {
                         // Sum y values across all matching combos
                         const yValues = aggregationData.comboData[comboKeyStr];
                         for (let j = 0; j < itemLen; j++) {
@@ -794,12 +803,16 @@ def _build_report_footer(x_items_display, combo_y_values, max_y, plot_configs):
             var selectedTemps = new Set(Array.from(container.querySelectorAll('.temp-filter'))
                 .filter(function(cb) { return cb.checked; }).map(function(cb) { return cb.value; }));
 
+            const selectedHardness = new Set(Array.from(container.querySelectorAll('.hardness-filter'))
+                .filter(function(cb) { return cb.checked; }).map(function(cb) { return cb.value; }));
+
             container.querySelectorAll('.plot-section:not(.aggregated-plot-section)').forEach(function(section) {
                 var shouldShow = selectedExps.has(section.getAttribute('data-experiment')) &&
                                  selectedPrompts.has(section.getAttribute('data-prompt')) &&
                                  selectedFormats.has(section.getAttribute('data-format')) &&
                                  selectedModels.has(section.getAttribute('data-model')) &&
-                                 selectedTemps.has(section.getAttribute('data-temperature'));
+                                 selectedTemps.has(section.getAttribute('data-temperature')) &&
+                                 selectedHardness.has(section.getAttribute('data-hardness'));
                 section.classList.toggle('hidden', !shouldShow);
             });
 
@@ -858,6 +871,21 @@ def _build_report_footer(x_items_display, combo_y_values, max_y, plot_configs):
                 }
             });
 
+            // Style hardness checkboxes: outline with hardness color (red=hard, green=soft), fill on check
+            container.querySelectorAll('.hardness-filter').forEach(function(checkbox) {
+                var color = checkbox.getAttribute('data-color');
+                if (color) {
+                    checkbox.style.borderColor = color;
+                    checkbox.style.color = color;
+                    checkbox.addEventListener('change', function() {
+                        this.style.backgroundColor = this.checked ? color : 'white';
+                    });
+                    if (checkbox.checked) {
+                        checkbox.style.backgroundColor = color;
+                    }
+                }
+            });
+
             // Handle aggregated plot toggle
             container.querySelectorAll('.agg-toggle').forEach(function(aggToggle) {
                 var aggSection = container.querySelector('.aggregated-plot-section');
@@ -890,7 +918,7 @@ def _build_report_footer(x_items_display, combo_y_values, max_y, plot_configs):
             });
 
             // Attach change listeners to all filter checkboxes in this column
-            container.querySelectorAll('.exp-filter, .prompt-filter, .format-filter, .model-filter, .temp-filter')
+            container.querySelectorAll('.exp-filter, .prompt-filter, .format-filter, .model-filter, .temp-filter, .hardness-filter')
                 .forEach(function(checkbox) {
                     checkbox.addEventListener('change', function() {
                         updateColumnVisibility(container);
@@ -1337,11 +1365,12 @@ def _compute_x_items_and_max_y(all_items_sorted, combo_info):
 
 def _generate_combo_figures(combo_info, x_items, x_items_display, max_y):
     """Generate a Plotly bar-chart figure for each combo. Returns (figures_html,
-    figures_metadata, plot_configs, combo_y_values)."""
+    figures_metadata, plot_configs, combo_y_values, combo_hardness)."""
     figures_html = {}
     figures_metadata = {}  # Store metadata for each plot
     plot_configs = []  # Plot data for deferred JavaScript rendering
     combo_y_values = {}  # {combo_key_str: [y_values]} -- for dynamic aggregation in JavaScript
+    combo_hardness = {}  # {combo_key_str: "hard"|"soft"} -- for filtering aggregation by hardness
 
     for combo_key, info in combo_info.items():
         fmt, model, temp, exp, prompt = combo_key
@@ -1351,6 +1380,7 @@ def _generate_combo_figures(combo_info, x_items, x_items_display, max_y):
         # Store for JavaScript dynamic aggregation
         combo_key_str = f"{fmt}|{model}|{temp}|{exp}|{prompt}"
         combo_y_values[combo_key_str] = y_values
+        combo_hardness[combo_key_str] = info.get("formatHardness", "soft")
 
         # Build a simple bar chart with fixed Y axis range
         fig = go.Figure(
@@ -1390,12 +1420,14 @@ def _generate_combo_figures(combo_info, x_items, x_items_display, max_y):
             "formatHardness": info.get("formatHardness", "soft")
         }
 
-    return figures_html, figures_metadata, plot_configs, combo_y_values
+    return figures_html, figures_metadata, plot_configs, combo_y_values, combo_hardness
 
 
-def _build_filter_checkboxes_html(experiments, prompts, formats, models, temperatures):
+def _build_filter_checkboxes_html(experiments, prompts, formats, models, temperatures, format_hardness_values=None):
     """Build the experiment/prompt/format/model/temperature filter-checkbox HTML,
     plus the plots-container opening and aggregated-plot placeholder div."""
+    if format_hardness_values is None:
+        format_hardness_values = []
     html_content = ""
 
     # Add experiment checkboxes
@@ -1434,6 +1466,19 @@ def _build_filter_checkboxes_html(experiments, prompts, formats, models, tempera
 
     html_content += """                <button class="clear-all-btn" data-filter-class="format-filter">Clear All</button>
             </div>
+        </div>
+
+        <div class="filter-section">
+            <h3>Format Hardness</h3>
+            <div class="filter-row" id="format-hardness-filters">
+"""
+
+    # Add format hardness checkboxes
+    for hardness in format_hardness_values:
+        hardness_color = '#d32f2f' if hardness == 'hard' else '#388e3c'
+        html_content += f'                <div class="filter-item"><input type="checkbox" id="filter-hardness-{hardness}" class="hardness-filter" value="{hardness}" checked style="border-color: {hardness_color};" data-hardness="{hardness}" data-color="{hardness_color}"><label for="filter-hardness-{hardness}">{hardness.capitalize()}</label></div>\n'
+
+    html_content += """            </div>
         </div>
 
         <div class="filter-section">
@@ -1650,7 +1695,7 @@ def _build_plot_section_html(combo, metadata, combo_info, figures_html, quality_
     )
 
     return (
-        f'        <div class="plot-section" data-format="{fmt}" data-model="{model}" data-temperature="{temp}" data-prompt="{prompt}" data-experiment="{exp}">\n'
+        f'        <div class="plot-section" data-format="{fmt}" data-model="{model}" data-temperature="{temp}" data-prompt="{prompt}" data-experiment="{exp}" data-hardness="{format_hardness}">\n'
         f'            <div class="plot-title">{title_html}</div>\n'
         f'            <div class="plot-wrapper" style="background-color: {background_color}; border-color: {model_base_color};">\n'
         + figures_html[combo] +
@@ -1675,13 +1720,18 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
     x_items, x_items_display, max_y = _compute_x_items_and_max_y(all_items_sorted, combo_info)
     # Generate a figure for each (format, model, temperature, experiment, prompt) combination.
     # The aggregated plot is rendered entirely by JavaScript after filters are applied.
-    figures_html, figures_metadata, plot_configs, combo_y_values = _generate_combo_figures(
+    figures_html, figures_metadata, plot_configs, combo_y_values, combo_hardness = _generate_combo_figures(
         combo_info, x_items, x_items_display, max_y)
 
     # Build HTML with filters
     html_content = _REPORT_HEAD_AND_CSS
 
-    html_content += _build_filter_checkboxes_html(experiments, prompts, formats, models, temperatures)
+    # Extract unique format hardness values from figures metadata
+    format_hardness_values = sorted(set(
+        metadata.get("formatHardness", "soft") for metadata in figures_metadata.values()
+    ))
+
+    html_content += _build_filter_checkboxes_html(experiments, prompts, formats, models, temperatures, format_hardness_values)
 
     # Group plots by prompt
     plots_by_prompt = defaultdict(list)
@@ -1706,7 +1756,7 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
 
         html_content += '    </div>\n\n'
 
-    html_content += _build_report_footer(x_items_display, combo_y_values, max_y, plot_configs)
+    html_content += _build_report_footer(x_items_display, combo_y_values, max_y, plot_configs, combo_hardness)
 
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html_content)
