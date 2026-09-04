@@ -621,7 +621,7 @@ def _compute_quality_and_consistency(consolidated_dict, trial_sets, format_aggs,
     format_consistency = _compute_format_consistency(consolidated_dict, TREATMENT_FIELDS)
 
     # Compute cross-trial case inconsistency using trial sets.
-    quality_ctx = QualityContext(output=quality_issues_output, examples=quality_issues_instances)
+    quality_ctx = QualityContext(output=quality_issues_output, instances=quality_issues_instances)
     _flag_case_inconsistencies(trial_sets, quality_ctx)
 
     # Detect format rule inconsistencies for each file type using trial sets.

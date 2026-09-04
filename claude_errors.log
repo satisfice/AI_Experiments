@@ -1,3 +1,21 @@
+[TypeError: QualityContext field name] (noted by Claude): 2026-09-04
+
+Incident: TypeError when constructing QualityContext in _compute_quality_and_consistency
+
+Error:
+TypeError: QualityContext.__init__() got an unexpected keyword argument 'examples'
+
+Context:
+Line 624 in summarize.py passed `examples=quality_issues_instances` when constructing QualityContext, but the dataclass field is named `instances`, not `examples`.
+
+Root cause:
+When refactoring semantic naming (renaming examples to instances throughout codebase), missed one call site in _compute_quality_and_consistency.
+
+Resolution:
+Changed line 624 from `examples=quality_issues_instances` to `instances=quality_issues_instances`.
+
+---
+
 [AttributeError: Trial metadata access] (noted by Claude): 2026-09-04
 
 Incident: AttributeError when processing trials during summarize_results
