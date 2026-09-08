@@ -330,7 +330,7 @@ def _build_quality_issues_dict(trial_sets, format_consistency, format_style_coun
 
     # Iterate through trial sets instead of nested dict combos
     for trial_set in trial_sets.values():
-        tk = TrialKey(trial_set.model, trial_set.temperature, trial_set.file_type, trial_set.prompt)
+        tk = trial_set.key
         prompt_data = _build_prompt_data_section(tk, ctx)
         quality_issues_dict \
             .setdefault(trial_set.model, {}) \
@@ -428,67 +428,10 @@ def _passes_metadata_filters(filename_metadata, file_name, experiment, model, ex
         _check_timestamp_filter(file_name, timestamp)
     )
 
-
-def _is_txt1_leading_number_exception(issue_type, ext, instance):
-    """Check if this is a txt1 file with leading number (expected format, not a quality issue)."""
-    if issue_type != "leading_punctuation" or ext != '.txt1':
-        return False
-    return bool(re.match(r'^\d+[\.\)\-\s]', instance))
-
-
-def _track_item_level_issues(item_issues, issue_type, trial, quality_ctx):
-    """Track a single item-level quality issue."""
-    trial_key = TrialKey(trial.model, trial.temperature, trial.file_type, trial.prompt)
-    instance = item_issues.get(issue_type)
-    if not instance:
-        return
-    if _is_txt1_leading_number_exception(issue_type, trial.extension, instance):
-        return
-    quality_ctx.output[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][issue_type].add(instance)
-    if instance not in quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][issue_type]:
-        quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][issue_type][instance] = trial.filename
-
-
-def _track_repeated_sequence_issue(item_issues, trial, quality_ctx):
-    """Track repeated_sequence issue using filename as instance."""
-    trial_key = TrialKey(trial.model, trial.temperature, trial.file_type, trial.prompt)
-    if item_issues.get("repeated_sequence"):
-        quality_ctx.output[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt]["repeated_sequence"].add(trial.filename)
-        if trial.filename not in quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt]["repeated_sequence"]:
-            quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt]["repeated_sequence"][trial.filename] = trial.filename
-
-
-def _track_format_level_issues(format_issues, trial, quality_ctx):
-    """Track format-level quality issues from metadata."""
-    trial_key = TrialKey(trial.model, trial.temperature, trial.file_type, trial.prompt)
-    for fs_label in format_issues:
-        quality_ctx.output[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][fs_label].add(trial.filename)
-        if trial.filename not in quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][fs_label]:
-            quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.prompt][fs_label][trial.filename] = trial.filename
-
-
-def _track_item_quality_issues(trial, quality_ctx):
-    """Track item-level and format-level quality issues from one file's metadata
-    into quality_ctx. Mutates in place."""
-    if "itemIssues" in trial.metadata:
-        item_issues = trial.metadata["itemIssues"]
-        for issue_type in ["leading_punctuation", "trailing_punctuation", "internal_punctuation",
-                           "exceeds_max_length", "preamble_leak",
-                           "markup_artifact", "repeated_chars"]:
-            _track_item_level_issues(item_issues, issue_type, trial, quality_ctx)
-        _track_repeated_sequence_issue(item_issues, trial, quality_ctx)
-    if "formatIssues" in trial.metadata:
-        _track_format_level_issues(trial.metadata["formatIssues"], trial, quality_ctx)
-
-
-
-
-
-
 def _group_trials_into_sets(trials):
-    """Group trials by (model, temperature, file_type, prompt).
+    """Group trials by TrialKey (model, temperature, file_type, prompt).
 
-    Returns a dict: {(model, temp, file_type, prompt): TrialSet}
+    Returns a dict: {TrialKey: TrialSet}
     """
     sets_dict = {}
     for trial in trials:
@@ -496,15 +439,9 @@ def _group_trials_into_sets(trials):
         temp = str(trial.metadata.get("temperature", "unknown"))
         prompt = trial.metadata.get("prompt", "unknown")
 
-        key = (model, temp, trial.file_type, prompt)
+        key = TrialKey(model, temp, trial.file_type, prompt)
         if key not in sets_dict:
-            sets_dict[key] = TrialSet(
-                model=model,
-                temperature=temp,
-                file_type=trial.file_type,
-                prompt=prompt,
-                trials=[]
-            )
+            sets_dict[key] = TrialSet(key=key, trials=[])
         sets_dict[key].trials.append(trial)
 
     return sets_dict

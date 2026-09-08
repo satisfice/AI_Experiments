@@ -37,14 +37,27 @@ class Trial:
 class TrialSet:
     """Represents a set of trials with identical model/temperature/file_type/prompt.
 
-    A trial set is all trials that vary only in iteration number.
-    Example: 3 trials with same model/temp/prompt but iterations 01, 02, 03.
+    A trial set is all trials that share one TrialKey, varying only in iteration
+    number. Example: 3 trials with same model/temp/prompt but iterations 01, 02, 03.
     """
-    model: str              # Abbreviated model name
-    temperature: str        # Temperature value (as string)
-    file_type: str          # File format type (e.g., "JSON", "markdown")
-    prompt: str             # Prompt name
+    key: TrialKey           # Identity shared by every trial in this set
     trials: list            # List of Trial objects in this set
+
+    @property
+    def model(self) -> str:
+        return self.key.model
+
+    @property
+    def temperature(self) -> str:
+        return self.key.temperature
+
+    @property
+    def file_type(self) -> str:
+        return self.key.file_type
+
+    @property
+    def prompt(self) -> str:
+        return self.key.prompt
 
     def extract_case_values(self):
         """Extract (case_value, filename) pairs from all trials in this set."""
