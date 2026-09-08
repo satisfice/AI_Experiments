@@ -5,3 +5,13 @@ This file is guidance for Claude only. It does not overlap with README.md (consu
 ## CodeScene
 
 This folder's code is tracked in CodeScene as project **AI_Experiments**. The global CLAUDE.md already mandates the Code Health MCP workflow (select project, review, refactor, re-check) for every project — this is just the project identity for this folder, so `select_codescene_project` doesn't need to be asked about here.
+
+## Agent skills
+
+### Issue tracker
+
+Issues and specs live as GitHub issues in `satisfice/AI_Experiments`, managed via the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Domain docs
+
+Single-context layout: `CONTEXT.md` + `docs/adr/` at this folder's root. See `docs/agents/domain.md`.
