@@ -152,3 +152,27 @@ User explicitly approved continuation twice. Push completed successfully: `8a636
 Impact: No data loss or corruption; push completed successfully after retries.
 
 Lesson: Tool rejection prompts may occur even for commands that should succeed; explicit user approval via "Proceed" message is effective retry trigger.
+
+---
+
+[Windows charmap Encoding Error] (noted by user): 2026-09-08
+
+Incident: "Warning: Could not generate full analysis report ('charmap' codec can't encode character '✓' in position 16: character maps to <undefined>)"
+
+Context:
+User attempted to run summarize.py with analysis report generation on Windows. The script failed when trying to write output containing a Unicode checkmark character (✓, U+2713).
+
+Error:
+The checkmark character is not representable in Windows's default 'charmap' encoding (CP1252), which only supports ASCII and a limited set of extended characters. The character appears in reporting.py line 28 in the format consistency status output.
+
+Root cause:
+Unicode characters like ✓ (checkmark) and ✗ (cross/X) were used directly in console output without encoding consideration. Windows console defaults to charmap encoding which cannot represent these characters. This is a common issue when cross-platform code doesn't account for Windows encoding limitations.
+
+Resolution:
+1. Replaced ✓ with [OK] in reporting.py line 28
+2. Replaced ✗ with [ERROR] in reporting.py line 37
+3. Both replacements use ASCII-safe characters compatible with all platforms/encodings
+
+Impact: Script now runs successfully on Windows without encoding errors. Output is still clear and readable with [OK]/[ERROR] markers.
+
+Lesson: When writing console output in cross-platform Python code, avoid Unicode characters (especially symbols) that won't encode in Windows charmap. Use ASCII equivalents like [OK], [ERROR], or text descriptions instead.
