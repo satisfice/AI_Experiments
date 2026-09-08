@@ -25,7 +25,7 @@ def print_format_consistency_status(
     """Print format consistency status for a prompt."""
     is_consistent = prompt_data.get("consistentFormat", True)
     if is_consistent:
-        _safe_write(f"        Format: ✓ consistent")
+        _safe_write(f"        Format: [OK] consistent")
     else:
         fc = format_consistency.get((trial_key.model, str(trial_key.temperature), trial_key.file_type, trial_key.prompt), {})
         varying = [f for f in treatment_fields if len(set(fc.get(f, []))) > 1]
@@ -34,7 +34,7 @@ def print_format_consistency_status(
             parts.extend(sorted(set(fc.get("formatStyle", []))))
         if "codeblock" in varying:
             parts.append("codeblock")
-        _safe_write(f"        Format: ✗ inconsistent ({', '.join(parts)})")
+        _safe_write(f"        Format: [ERROR] inconsistent ({', '.join(parts)})")
 
 
 def print_format_issues_breakdown(prompt_data: dict) -> None:

@@ -25,7 +25,7 @@ def load_config():
                 return json.load(f)
         except Exception:
             pass
-    return {"experiments": [], "exclude_model": [], "temperatures": []}
+    return {"experiments": [], "exclude_model": [], "temperatures": [], "prompts": [], "hardness_values": []}
 
 
 def save_config(config):
@@ -42,11 +42,16 @@ def index():
         return f.read()
 
 
-def get_format_prompts():
-    """Extract unique prompts and their format hardness levels from results files."""
-    prompts = {}
+def get_format_prompts_and_hardness():
+    """Extract available prompts and format hardness values from results files.
+    Returns: (prompts_set, hardness_set)
+    where prompts_set is a sorted list of unique prompts,
+    and hardness_set is a sorted list of unique hardness values."""
+    prompts = set()
+    hardness_values = set()
+
     if not RESULTS_DIR.exists():
-        return prompts
+        return sorted(prompts), sorted(hardness_values)
 
     from process_single_file import parse_filename_metadata
 
@@ -56,26 +61,29 @@ def get_format_prompts():
         try:
             metadata = parse_filename_metadata(file_path.name)
             if metadata:
-                prompt = metadata.get("prompt", "unknown")
-                hardness = metadata.get("formatHardness", "unknown")
-                if prompt not in prompts:
-                    prompts[prompt] = hardness
+                prompt = metadata.get("prompt")
+                hardness = metadata.get("formatHardness")
+                if prompt:
+                    prompts.add(prompt)
+                if hardness:
+                    hardness_values.add(hardness)
         except Exception:
             pass
 
-    return prompts
+    return sorted(prompts), sorted(hardness_values)
 
 
 @app.route('/api/available-values')
 def available_values():
-    """Get available experiments, models, temperatures, and format prompts."""
+    """Get available experiments, models, temperatures, prompts, and format hardness values."""
     experiments, models, temperatures = collect_available_values()
-    format_prompts = get_format_prompts()
+    prompts, hardness_values = get_format_prompts_and_hardness()
     return jsonify({
         "experiments": experiments,
         "models": models,
         "temperatures": [str(t) for t in temperatures],
-        "format_prompts": format_prompts
+        "prompts": prompts,
+        "hardness_values": hardness_values
     })
 
 

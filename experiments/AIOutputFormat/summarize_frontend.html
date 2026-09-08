@@ -127,27 +127,24 @@
     <div class="container">
         <h1>Summarize Results</h1>
 
-        <div class="formats-section">
-            <h2>Format Prompts</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Prompt</th>
-                        <th>Format Hardness</th>
-                    </tr>
-                </thead>
-                <tbody id="formatsTableBody">
-                    <tr><td colspan="2" style="text-align: center; color: #999;">Loading...</td></tr>
-                </tbody>
-            </table>
-        </div>
-
         <div class="row">
             <div class="section">
                 <h2>Experiments to Include</h2>
                 <div class="checkboxes" id="experimentsCheckboxes"></div>
             </div>
 
+            <div class="section">
+                <h2>Prompts to Include</h2>
+                <div class="checkboxes" id="promptsCheckboxes"></div>
+            </div>
+
+            <div class="section">
+                <h2>Format Hardness</h2>
+                <div class="checkboxes" id="hardnessCheckboxes"></div>
+            </div>
+        </div>
+
+        <div class="row">
             <div class="section">
                 <h2>Models to Ignore</h2>
                 <div class="checkboxes" id="modelsCheckboxes"></div>
@@ -173,13 +170,12 @@
     </div>
 
     <script>
-        let availableData = { experiments: [], models: [], temperatures: [], format_prompts: {} };
+        let availableData = { experiments: [], models: [], temperatures: [], prompts: [], hardness_values: [] };
 
         async function initPage() {
             try {
                 const response = await fetch('/api/available-values');
                 availableData = await response.json();
-                renderFormatsTable();
                 await loadDefaults();
                 renderCheckboxes();
             } catch (error) {
@@ -187,27 +183,10 @@
             }
         }
 
-        function renderFormatsTable() {
-            const tbody = document.getElementById('formatsTableBody');
-            const prompts = availableData.format_prompts || {};
-
-            if (Object.keys(prompts).length === 0) {
-                tbody.innerHTML = '<tr><td colspan="2" style="text-align: center; color: #999;">No format prompts found</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = Object.entries(prompts)
-                .sort((a, b) => a[0].localeCompare(b[0]))
-                .map(([prompt, hardness]) => `
-                    <tr>
-                        <td>${prompt}</td>
-                        <td><span class="hardness ${hardness.toLowerCase()}">${hardness}</span></td>
-                    </tr>
-                `).join('');
-        }
-
         function renderCheckboxes() {
             renderSection('experimentsCheckboxes', availableData.experiments, 'experiments', false);
+            renderSection('promptsCheckboxes', availableData.prompts || [], 'prompts', true);
+            renderSection('hardnessCheckboxes', availableData.hardness_values || [], 'hardness', true);
             renderSection('modelsCheckboxes', availableData.models, 'models', true);
             renderSection('temperaturesCheckboxes', availableData.temperatures, 'temperatures', true);
         }
@@ -236,6 +215,30 @@
                     // Default to animals_big
                     document.querySelectorAll('[data-section="experiments"]').forEach(cb => {
                         cb.checked = cb.dataset.value === 'animals_big';
+                    });
+                }
+
+                // Set prompts (include mode)
+                if (config.prompts && config.prompts.length > 0) {
+                    document.querySelectorAll('[data-section="prompts"]').forEach(cb => {
+                        cb.checked = config.prompts.includes(cb.dataset.value);
+                    });
+                } else {
+                    // Check all by default
+                    document.querySelectorAll('[data-section="prompts"]').forEach(cb => {
+                        cb.checked = true;
+                    });
+                }
+
+                // Set hardness (include mode)
+                if (config.hardness_values && config.hardness_values.length > 0) {
+                    document.querySelectorAll('[data-section="hardness"]').forEach(cb => {
+                        cb.checked = config.hardness_values.includes(cb.dataset.value);
+                    });
+                } else {
+                    // Check all by default
+                    document.querySelectorAll('[data-section="hardness"]').forEach(cb => {
+                        cb.checked = true;
                     });
                 }
 
@@ -296,6 +299,8 @@
 
             try {
                 const experiments = getSelectedCheckboxes('experiments');
+                const prompts = getSelectedCheckboxes('prompts');
+                const hardnessValues = getSelectedCheckboxes('hardness');
                 const modelsToInclude = getSelectedCheckboxes('models');
                 const temperatures = getSelectedCheckboxes('temperatures');
 
@@ -307,6 +312,8 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         experiments,
+                        prompts,
+                        hardness_values: hardnessValues,
                         exclude_model: modelsToExclude,
                         temperatures
                     })
@@ -318,7 +325,7 @@
 
                 // Save config
                 if (data.success) {
-                    await saveConfig({ experiments, exclude_model: modelsToExclude, temperatures });
+                    await saveConfig({ experiments, prompts, hardness_values: hardnessValues, exclude_model: modelsToExclude, temperatures });
                 }
             } catch (error) {
                 output.value = `Error: ${error.message}`;
