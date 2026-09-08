@@ -176,3 +176,25 @@ Resolution:
 Impact: Script now runs successfully on Windows without encoding errors. Output is still clear and readable with [OK]/[ERROR] markers.
 
 Lesson: When writing console output in cross-platform Python code, avoid Unicode characters (especially symbols) that won't encode in Windows charmap. Use ASCII equivalents like [OK], [ERROR], or text descriptions instead.
+
+---
+
+[Dead Code - Orphaned Duplicate Functions] (noted by Claude): 2026-09-08
+
+Incident: summarize.py retained a dead, buggy duplicate of four quality-tracking functions after a prior refactor moved the live versions elsewhere.
+
+Context:
+While investigating the relationship between TrialKey and TrialSet (data_models.py) for domain modeling, found that summarize.py still defined _is_txt1_leading_number_exception, _track_item_level_issues, _track_repeated_sequence_issue, _track_format_level_issues, and _track_item_quality_issues (lines 432-482). These were exact-named duplicates of functions already living in trial_loading.py.
+
+Error:
+The summarize.py copies constructed TrialKey via trial.model, trial.temperature, trial.prompt -- direct attribute access that Trial (data_models.py) does not support (it only exposes filename, file_type, extension, items, metadata). This is the identical AttributeError bug already logged and fixed on 2026-09-04 ("AttributeError: Trial object has no attribute 'model'"), except that fix was applied only to trial_loading.py's copy.
+
+Root cause:
+The 2026-09-04 refactor that moved these functions from summarize.py to trial_loading.py (to break a circular import) fixed the attribute-access bug in the new location but never deleted the old, broken copies from summarize.py. Confirmed via grep that nothing in the codebase called summarize.py's versions -- trial_loading.py's _track_item_quality_issues was the only one ever invoked (from _process_loaded_trial). The dead copies were unreachable, so they never triggered the AttributeError in practice, but they sat in the file as misleading, incorrect logic.
+
+Resolution:
+Deleted the dead block from summarize.py (previously lines 432-482) during an unrelated domain-modeling task (giving TrialSet a real TrialKey field), at the user's explicit request once the dead code was flagged.
+
+Impact: No functional change (code was unreachable). Removes a source of confusion for future refactoring -- editing the wrong copy would have had no effect.
+
+Lesson: When a refactor moves functions to fix a bug, verify the old copies are deleted, not just superseded. Grep for duplicate function names after any "move code between modules" refactor to catch orphaned copies before they mislead a future edit.
