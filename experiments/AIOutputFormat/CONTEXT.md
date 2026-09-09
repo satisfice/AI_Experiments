@@ -23,11 +23,11 @@ The repetition number of a Trial run against the same TrialKey, used to measure 
 _Avoid_: repeat, run number
 
 **TrialKey**:
-The identity shared by every Trial in a TrialSet: (model, temperature, format, prompt).
+The identity shared by every Trial in a TrialSet: (model, temperature, format, format hardness, prompt).
 _Avoid_: combo, lookup key
 
 **TrialSet**:
-Every Trial that shares one TrialKey — i.e. all Iterations of the same model/temperature/format/prompt combination.
+Every Trial that shares one TrialKey — i.e. all Iterations of the same model/temperature/format/format-hardness/prompt combination.
 _Avoid_: group, batch, run group
 
 ### Format vocabulary
