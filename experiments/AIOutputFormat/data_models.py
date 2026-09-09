@@ -8,15 +8,20 @@ from typing import NamedTuple, Optional, List
 
 
 class TrialKey(NamedTuple):
-    """Identifies one (model, temperature, file_type, format_hardness, prompt)
-    combination. A drop-in replacement for the raw tuple, with named field access.
-    format_hardness sits between file_type and prompt since it qualifies the format
-    request (soft/hard), matching the nesting order used throughout the aggregation
-    dicts keyed by these same fields."""
+    """Identifies one (model, temperature, file_type, format_hardness, experiment,
+    prompt) combination -- the sole identity type for a trial, used everywhere in
+    the codebase (including generate_report.py, which formerly kept its own
+    separate Combo type omitting format_hardness while TrialKey omitted
+    experiment -- the two gaps caused two different silent-collision bugs before
+    being unified here). format_hardness sits next to file_type since it qualifies
+    the format request; experiment sits next to prompt since an experiment is a
+    named batch of prompts. Order matches the nesting used throughout the
+    aggregation dicts keyed by these same fields."""
     model: str
     temperature: str
     file_type: str
     format_hardness: str
+    experiment: str
     prompt: str
 
 
@@ -39,10 +44,9 @@ class Trial:
 
 @dataclass
 class TrialSet:
-    """Represents a set of trials with identical model/temperature/file_type/prompt.
-
-    A trial set is all trials that share one TrialKey, varying only in iteration
-    number. Example: 3 trials with same model/temp/prompt but iterations 01, 02, 03.
+    """Represents a set of trials that share one TrialKey, varying only in
+    iteration number. Example: 3 trials with the same model/temp/format/
+    hardness/experiment/prompt but iterations 01, 02, 03.
     """
     key: TrialKey           # Identity shared by every trial in this set
     trials: list            # List of Trial objects in this set
@@ -62,6 +66,10 @@ class TrialSet:
     @property
     def format_hardness(self) -> str:
         return self.key.format_hardness
+
+    @property
+    def experiment(self) -> str:
+        return self.key.experiment
 
     @property
     def prompt(self) -> str:

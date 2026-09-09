@@ -6,10 +6,10 @@ import sys
 import textwrap
 import click
 from pathlib import Path
-from typing import NamedTuple
 from collections import Counter, defaultdict
 import plotly.graph_objects as go
 from config import abbreviate_model_name, get_model_color, model_supports_temperature, get_format_instruction
+from data_models import TrialKey
 from utils import format_error, print_error, detect_preamble_leak
 
 # Color palette for formats (normalized to lowercase for matching)
@@ -1163,12 +1163,11 @@ def load_results_json(json_path):
 
 def aggregate_items_by_format_and_model(data):
     """
-    For each unique combination of (experiment, format, prompt, model, temperature),
-    count items (filtered) and track number of trials (files).
-    Returns: dict[tuple] -> dict with Counter, trial_count, per_trial_counts, and metadata
-    where tuple is (experiment, format, prompt, model, temperature)
+    For each unique TrialKey (model, temperature, format, format_hardness,
+    experiment, prompt), count items (filtered) and track number of trials (files).
+    Returns: dict[TrialKey] -> dict with Counter, trial_count, per_trial_counts, filenames
     """
-    result = defaultdict(lambda: {"counter": Counter(), "trial_count": 0, "per_trial_counts": [], "filenames": [], "metadata": {}})
+    result = defaultdict(lambda: {"counter": Counter(), "trial_count": 0, "per_trial_counts": [], "filenames": []})
 
     for file_type, entries in data.items():
         # Skip non-file-type entries (like malformedOutput metadata)
@@ -1181,7 +1180,7 @@ def aggregate_items_by_format_and_model(data):
             format_type = metadata['format']
             experiment = metadata.get('experiment', 'unknown')
             prompt = metadata.get('prompt', 'unknown')
-            temperature = metadata.get('temperature', 'default')
+            temperature = str(metadata.get('temperature', 'default'))
             format_hardness = metadata.get('formatHardness', 'unknown')
             items = entry.get('items', [])
 
@@ -1189,7 +1188,7 @@ def aggregate_items_by_format_and_model(data):
             filtered_items = [item for item in items if not detect_preamble_leak(item)]
 
             # Create unique key for this combination
-            key = (experiment, format_type, prompt, model, temperature)
+            key = TrialKey(model, temperature, format_type, format_hardness, experiment, prompt)
 
             # Count items for this combination
             result[key]["counter"].update(filtered_items)
@@ -1199,16 +1198,6 @@ def aggregate_items_by_format_and_model(data):
             result[key]["trial_count"] += 1
             if "filename" in entry:
                 result[key]["filenames"].append(entry["filename"])
-
-            # Store metadata
-            result[key]["metadata"] = {
-                "experiment": experiment,
-                "format": format_type,
-                "prompt": prompt,
-                "model": model,
-                "temperature": temperature,
-                "formatHardness": format_hardness
-            }
 
     return result
 
@@ -1230,7 +1219,7 @@ def _trial_numbers_str(instances):
     return "(" + ", ".join(str(n) for n in sorted(nums)) + ")"
 
 
-def get_cleanup_data_for_combo(quality_data, model, temperature, format_type, format_hardness, prompt):
+def get_cleanup_data_for_combo(quality_data, model, temperature, format_type, format_hardness, experiment, prompt):
     """
     Return (quality_issues, cleanup_rules) for a specific combo.
     quality_issues: list of human-readable issue strings (empty list if none).
@@ -1241,7 +1230,7 @@ def get_cleanup_data_for_combo(quality_data, model, temperature, format_type, fo
         return [], []
 
     abbrev_model = abbreviate_model_name(model)
-    prompt_data = quality_data.get(abbrev_model, {}).get(str(temperature), {}).get(format_type, {}).get(format_hardness, {}).get(prompt, {})
+    prompt_data = quality_data.get(abbrev_model, {}).get(str(temperature), {}).get(format_type, {}).get(format_hardness, {}).get(experiment, {}).get(prompt, {})
     if not prompt_data:
         return [], []
 
@@ -1303,48 +1292,24 @@ def get_unique_items_sorted(data):
     return sorted_items
 
 
-class Combo(NamedTuple):
-    """Identifies one (format, model, temperature, experiment, prompt) combination.
-    A plain, hashable, drop-in tuple replacement -- usable as a dict key exactly
-    like the raw 5-tuple it replaces, but with named field access at call sites
-    that previously had to pass format/model/temperature/experiment/prompt as
-    four or five separate positional arguments."""
-    format: str
-    model: str
-    temperature: str
-    experiment: str
-    prompt: str
-
-
 def _build_combo_info(items_by_format_model):
-    """Build mapping from Combo keys to per-combo metadata and counters.
-    Returns {Combo(format, model, temp_str, experiment, prompt): {...}}."""
+    """Build mapping from TrialKey to per-combo counters and stats.
+    Returns {TrialKey: {...}}."""
     combo_info = {}
-    for key_tuple, value_dict in items_by_format_model.items():
-        experiment, format_type, prompt, model, temperature = key_tuple
-        counter = value_dict["counter"] if isinstance(value_dict, dict) else value_dict
-        trial_count = value_dict.get("trial_count", 0) if isinstance(value_dict, dict) else 0
-        per_trial_counts = value_dict.get("per_trial_counts", []) if isinstance(value_dict, dict) else []
-        metadata = value_dict.get("metadata", {}) if isinstance(value_dict, dict) else {}
-        format_hardness = metadata.get("formatHardness", "soft")  # Default to soft for backward compatibility
+    for key, value_dict in items_by_format_model.items():
+        per_trial_counts = value_dict["per_trial_counts"]
 
         # Calculate max, min, and average items per trial
         max_items = max(per_trial_counts) if per_trial_counts else 0
         min_items = min(per_trial_counts) if per_trial_counts else 0
 
-        combo_key = Combo(format_type, model, str(temperature), experiment, prompt)
-        combo_info[combo_key] = {
-            "counter": counter,
-            "trial_count": trial_count,
+        combo_info[key] = {
+            "counter": value_dict["counter"],
+            "trial_count": value_dict["trial_count"],
             "per_trial_counts": per_trial_counts,
             "max_items": max_items,
             "min_items": min_items,
-            "experiment": experiment,
-            "format": format_type,
-            "prompt": prompt,
-            "model": model,
-            "temperature": str(temperature),
-            "formatHardness": format_hardness
+            "filenames": value_dict.get("filenames", [])
         }
     return combo_info
 
@@ -1366,30 +1331,31 @@ def _compute_x_items_and_max_y(all_items_sorted, combo_info):
 
 
 def _generate_combo_figures(combo_info, x_items, x_items_display, max_y):
-    """Generate a Plotly bar-chart figure for each combo. Returns (figures_html,
-    figures_metadata, plot_configs, combo_y_values, combo_hardness)."""
+    """Generate a Plotly bar-chart figure for each combo (TrialKey). Returns
+    (figures_html, plot_configs, combo_y_values, combo_hardness)."""
     figures_html = {}
-    figures_metadata = {}  # Store metadata for each plot
     plot_configs = []  # Plot data for deferred JavaScript rendering
     combo_y_values = {}  # {combo_key_str: [y_values]} -- for dynamic aggregation in JavaScript
     combo_hardness = {}  # {combo_key_str: "hard"|"soft"} -- for filtering aggregation by hardness
 
     for combo_key, info in combo_info.items():
-        fmt, model, temp, exp, prompt = combo_key
         counter = info["counter"]
         y_values = [counter.get(item, 0) for item in x_items]
 
-        # Store for JavaScript dynamic aggregation
-        combo_key_str = f"{fmt}|{model}|{temp}|{exp}|{prompt}"
+        # Store for JavaScript dynamic aggregation. Hardness is appended as a
+        # trailing segment purely to keep the string unique per combo -- the
+        # JS side still reads hardness from combo_hardness[combo_key_str], not
+        # by parsing this string, so existing parts[0..4] indexing is unaffected.
+        combo_key_str = f"{combo_key.file_type}|{combo_key.model}|{combo_key.temperature}|{combo_key.experiment}|{combo_key.prompt}|{combo_key.format_hardness}"
         combo_y_values[combo_key_str] = y_values
-        combo_hardness[combo_key_str] = info.get("formatHardness", "soft")
+        combo_hardness[combo_key_str] = combo_key.format_hardness
 
         # Build a simple bar chart with fixed Y axis range
         fig = go.Figure(
             data=[go.Bar(
                 x=x_items_display,
                 y=y_values,
-                marker=dict(color=FORMAT_COLORS.get(fmt.lower(), '#636363')),
+                marker=dict(color=FORMAT_COLORS.get(combo_key.file_type.lower(), '#636363')),
                 hovertemplate='<b>%{x}</b><br>Count: %{y}<extra></extra>',
             )]
         )
@@ -1406,23 +1372,18 @@ def _generate_combo_figures(combo_info, x_items, x_items_display, max_y):
             hoverlabel=dict(font=dict(size=16)),
         )
 
-        chart_id = f"{fmt}-{model}-{temp}-{exp}-{prompt}".replace('.', '-').replace('+', '-').replace(' ', '-').replace('_', '-')
+        chart_id = (
+            f"{combo_key.file_type}-{combo_key.model}-{combo_key.temperature}-"
+            f"{combo_key.format_hardness}-{combo_key.experiment}-{combo_key.prompt}"
+        ).replace('.', '-').replace('+', '-').replace(' ', '-').replace('_', '-')
         div_id = f"graph-{chart_id}"
 
         # Collect plot config for deferred JavaScript rendering; embed a bare placeholder div.
         fig_dict = json.loads(fig.to_json())
         plot_configs.append({"divId": div_id, "data": fig_dict["data"], "layout": fig_dict["layout"]})
         figures_html[combo_key] = f'<div id="{div_id}" class="plotly-graph-div" style="height:400px; width:100%;"></div>'
-        figures_metadata[combo_key] = {
-            "format": fmt,
-            "model": model,
-            "temperature": temp,
-            "experiment": exp,
-            "prompt": prompt,
-            "formatHardness": info.get("formatHardness", "soft")
-        }
 
-    return figures_html, figures_metadata, plot_configs, combo_y_values, combo_hardness
+    return figures_html, plot_configs, combo_y_values, combo_hardness
 
 
 def _build_filter_checkboxes_html(experiments, prompts, formats, models, temperatures, format_hardness_values=None):
@@ -1522,12 +1483,12 @@ def _build_filter_checkboxes_html(experiments, prompts, formats, models, tempera
     return html_content
 
 
-def _build_cleanup_indicator(quality_data, combo, format_hardness):
+def _build_cleanup_indicator(quality_data, combo):
     """Build the cleanup indicator span with a rich tooltip (quality issues in
     bold + cleanup rules). Always returned: red if quality problems, #555 if
     cleanup only, #aaa if nothing to clean."""
-    fmt, model, temp, exp, prompt = combo
-    quality_issues, cleanup_rules = get_cleanup_data_for_combo(quality_data, model, temp, fmt, format_hardness, prompt)
+    quality_issues, cleanup_rules = get_cleanup_data_for_combo(
+        quality_data, combo.model, combo.temperature, combo.file_type, combo.format_hardness, combo.experiment, combo.prompt)
     if not (quality_issues or cleanup_rules):
         # No cleanup or quality issues: show grayed-out indicator with no tooltip.
         return ' | <span style="color: #aaa; cursor: default;">Cleanup</span>'
@@ -1552,10 +1513,9 @@ def _build_cleanup_indicator(quality_data, combo, format_hardness):
     )
 
 
-def _build_load_set_button(info, combo, format_hardness):
+def _build_load_set_button(info, combo):
     """Build the clipboard-copy 'Load set' button, using actual filenames when
     recorded or a wildcard pattern as fallback."""
-    fmt, model, temp, exp, prompt = combo
     set_filenames = sorted(info.get("filenames", []))
     if set_filenames:
         load_set_str = "np " + " ".join(set_filenames)
@@ -1563,11 +1523,11 @@ def _build_load_set_button(info, combo, format_hardness):
         # Fallback to wildcard if filenames were not recorded
         # New format: YYYYMMDDHHMMSS-experiment-prompt-hardness-model-tNN-nn.ext
         # Wildcard only the trial number (last two digits before extension)
-        abbr_model = abbreviate_model_name(model)
-        temp_code = "txx" if temp in ("None", None) else f"t{int(float(temp) * 10):02d}"
-        file_ext = get_file_extension(fmt)
-        hardness_code = "fs" if format_hardness == "soft" else "fh"
-        load_set_str = f"np *{exp}-{prompt}-{hardness_code}-{abbr_model}-{temp_code}-*.{file_ext}"
+        abbr_model = abbreviate_model_name(combo.model)
+        temp_code = "txx" if combo.temperature in ("None", None) else f"t{int(float(combo.temperature) * 10):02d}"
+        file_ext = get_file_extension(combo.file_type)
+        hardness_code = "fs" if combo.format_hardness == "soft" else "fh"
+        load_set_str = f"np *{combo.experiment}-{combo.prompt}-{hardness_code}-{abbr_model}-{temp_code}-*.{file_ext}"
 
     return (
         f' | <button '
@@ -1580,10 +1540,9 @@ def _build_load_set_button(info, combo, format_hardness):
     )
 
 
-def _build_item_counts_button(info, combo, format_hardness, format_color, model_base_color):
+def _build_item_counts_button(info, combo, format_color, model_base_color):
     """Build the 'Show Item Counts' button, embedding per-trial data as JSON
     for the client-side histogram popup."""
-    fmt, model, temp, exp, prompt = combo
     _tc_counts = info["per_trial_counts"]
     _tc_filenames = info.get("filenames", [])
     _tc_trials = []
@@ -1600,7 +1559,7 @@ def _build_item_counts_button(info, combo, format_hardness, format_color, model_
         _ts = Path(_tc_filenames[0]).stem.split('-')[0]
         if len(_ts) == 14 and _ts.isdigit():
             _tc_date = f"{_ts[:4]}-{_ts[4:6]}-{_ts[6:8]} {_ts[8:10]}:{_ts[10:12]}"
-    _tc_subtitle = '  '.join(p for p in [_tc_date, exp, prompt, fmt, format_hardness, abbreviate_model_name(model), str(temp)] if p)
+    _tc_subtitle = '  '.join(p for p in [_tc_date, combo.experiment, combo.prompt, combo.file_type, combo.format_hardness, abbreviate_model_name(combo.model), str(combo.temperature)] if p)
     _tc_json_escaped = html_mod.escape(json.dumps({
         "trials": _tc_trials,
         "counts": _tc_counts,
@@ -1621,7 +1580,7 @@ def _build_item_counts_button(info, combo, format_hardness, format_color, model_
 def _build_prompt_tooltip_attr(combo, prompt_texts, format_prompts):
     """Build the prompt tooltip attribute: prompt text + double line break +
     format instruction, wrapped at 80 chars with <br> line breaks."""
-    fmt, prompt = combo.format, combo.prompt
+    fmt, prompt = combo.file_type, combo.prompt
     _prompt_body = (prompt_texts or {}).get(prompt, '')
     _fmt_ext = get_file_extension(fmt)
     _fmt_instruction = (format_prompts or {}).get(_fmt_ext, '')
@@ -1638,24 +1597,19 @@ def _build_prompt_tooltip_attr(combo, prompt_texts, format_prompts):
     return f' class="prompt-indicator" data-tooltip-html="{_escaped}"'
 
 
-def _build_hardness_tooltip_attr(combo, format_hardness):
+def _build_hardness_tooltip_attr(combo):
     """Build the hardness tooltip attribute: format instruction for this hardness."""
-    fmt = combo.format
-    _hardness_instruction = get_format_instruction(fmt, format_hardness)
+    _hardness_instruction = get_format_instruction(combo.file_type, combo.format_hardness)
     if not _hardness_instruction:
         return ''
     _hardness_escaped = html_mod.escape('<br>'.join(textwrap.wrap(_hardness_instruction, width=80)))
     return f' class="hardness-indicator" data-tooltip-html="{_hardness_escaped}"'
 
 
-def _build_plot_section_html(combo, metadata, combo_info, figures_html, quality_data, models, prompt_texts, format_prompts):
+def _build_plot_section_html(combo, combo_info, figures_html, quality_data, models, prompt_texts, format_prompts):
     """Build the HTML for one combo's plot section: title (with cleanup/prompt/
     hardness tooltips, load-set button, item-counts button) plus the figure div."""
-    # metadata's format/model/temperature/experiment/prompt are always identical
-    # to combo's fields by construction (see _generate_combo_figures); formatHardness
-    # is the one piece of information metadata carries that combo doesn't.
-    fmt, model, temp, exp, prompt = combo
-    format_hardness = metadata.get("formatHardness", "soft")
+    model, temp, fmt, format_hardness, exp, prompt = combo
 
     # Get item counts for this specific combination
     info = combo_info[combo]
@@ -1675,11 +1629,11 @@ def _build_plot_section_html(combo, metadata, combo_info, figures_html, quality_
     unique_pct = (unique_items / total_items * 100) if total_items > 0 else 0
     avg_per_trial = total_items / trial_count if trial_count > 0 else 0
 
-    quality_indicator = _build_cleanup_indicator(quality_data, combo, format_hardness)
-    load_set_button = _build_load_set_button(info, combo, format_hardness)
-    item_counts_button = _build_item_counts_button(info, combo, format_hardness, format_color, model_base_color)
+    quality_indicator = _build_cleanup_indicator(quality_data, combo)
+    load_set_button = _build_load_set_button(info, combo)
+    item_counts_button = _build_item_counts_button(info, combo, format_color, model_base_color)
     _prompt_tooltip_attr = _build_prompt_tooltip_attr(combo, prompt_texts, format_prompts)
-    _hardness_tooltip_attr = _build_hardness_tooltip_attr(combo, format_hardness)
+    _hardness_tooltip_attr = _build_hardness_tooltip_attr(combo)
 
     # Build HTML title with colored text (three lines)
     # Line 1: Experiment | Prompt | Format (hardness) | Model | Temperature
@@ -1708,11 +1662,12 @@ def _build_plot_section_html(combo, metadata, combo_info, figures_html, quality_
 
 def generate_html_report_with_filters(items_by_format_model, all_items_sorted, formats, models, temperatures, experiments, prompts, data, output_path, quality_data=None, prompt_texts=None, format_prompts=None):
     """
-    Generate individual charts for each (experiment, format, prompt, model, temperature) combination.
+    Generate individual charts for each TrialKey (model, temperature, format,
+    format_hardness, experiment, prompt) combination.
     Wrap each in divs with CSS classes for filtering based on experiment/prompt/format/model/temperature.
     Uses CSS display:none to show/hide based on checkbox selections.
     data: raw data for counting trials per combination
-    items_by_format_model: dict with 5-tuple keys (experiment, format, prompt, model, temperature)
+    items_by_format_model: dict with TrialKey keys
     quality_data: dict with quality issues by model/temperature/format (from quality.json)
     """
     if quality_data is None:
@@ -1720,26 +1675,23 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
 
     combo_info = _build_combo_info(items_by_format_model)
     x_items, x_items_display, max_y = _compute_x_items_and_max_y(all_items_sorted, combo_info)
-    # Generate a figure for each (format, model, temperature, experiment, prompt) combination.
+    # Generate a figure for each TrialKey combination.
     # The aggregated plot is rendered entirely by JavaScript after filters are applied.
-    figures_html, figures_metadata, plot_configs, combo_y_values, combo_hardness = _generate_combo_figures(
+    figures_html, plot_configs, combo_y_values, combo_hardness = _generate_combo_figures(
         combo_info, x_items, x_items_display, max_y)
 
     # Build HTML with filters
     html_content = _REPORT_HEAD_AND_CSS
 
-    # Extract unique format hardness values from figures metadata
-    format_hardness_values = sorted(set(
-        metadata.get("formatHardness", "soft") for metadata in figures_metadata.values()
-    ))
+    # Extract unique format hardness values directly from the TrialKey combos
+    format_hardness_values = sorted(set(combo_key.format_hardness for combo_key in combo_info.keys()))
 
     html_content += _build_filter_checkboxes_html(experiments, prompts, formats, models, temperatures, format_hardness_values)
 
     # Group plots by prompt
     plots_by_prompt = defaultdict(list)
-    for combo_key, metadata in figures_metadata.items():
-        prompt = metadata["prompt"]
-        plots_by_prompt[prompt].append((combo_key, metadata))
+    for combo_key in combo_info.keys():
+        plots_by_prompt[combo_key.prompt].append(combo_key)
 
     # Get sorted list of unique prompts
     sorted_prompts = sorted(plots_by_prompt.keys())
@@ -1752,9 +1704,9 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
         html_content += f'        <div class="prompt-column-header">{prompt}</div>\n'
 
         # Add all plots for this prompt
-        for combo_key, metadata in plots_by_prompt[prompt]:
+        for combo_key in plots_by_prompt[prompt]:
             html_content += _build_plot_section_html(
-                combo_key, metadata, combo_info, figures_html, quality_data, models, prompt_texts, format_prompts)
+                combo_key, combo_info, figures_html, quality_data, models, prompt_texts, format_prompts)
 
         html_content += '    </div>\n\n'
 

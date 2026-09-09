@@ -56,7 +56,7 @@ def print_issue_instance_items(
     for item in items[:5]:
         suffix = ""
         if with_instance:
-            instance_file = quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.format_hardness][trial_key.prompt][issue_key].get(item)
+            instance_file = quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.file_type][trial_key.format_hardness][trial_key.experiment][trial_key.prompt][issue_key].get(item)
             suffix = f" Instance: {instance_file}" if instance_file else ""
         _safe_write(f"          - {ascii(item)}{suffix}")
 
@@ -113,13 +113,13 @@ def print_prompt_analysis(
 
 
 def print_analysis_report(
-    item_count_stats: Dict[str, Dict[Any, Dict[str, Dict[str, List[int]]]]],
-    quality_issues_dict: Dict[str, Dict[str, Dict[str, Dict[str, Dict[str, Any]]]]],
+    item_count_stats: Dict[str, Dict[Any, Dict[str, Dict[str, Dict[str, List[int]]]]]],
+    quality_issues_dict: Dict[str, Dict[str, Dict[str, Dict[str, Dict[str, Dict[str, Any]]]]]],
     quality_ctx: QualityContext,
     format_consistency: dict,
     treatment_fields: List[str]
 ) -> None:
-    """Print the verbose per-model/temperature/file-type/format-hardness analysis report."""
+    """Print the verbose per-model/temperature/file-type/format-hardness/experiment analysis report."""
     _safe_write("\n" + "="*70)
     _safe_write("DATA ANALYSIS REPORT BY MODEL, TEMPERATURE, AND FILE TYPE")
     _safe_write("="*70)
@@ -130,12 +130,13 @@ def print_analysis_report(
             _safe_write(f"  Temperature {temp_value}:")
             for file_type in sorted(item_count_stats[model_name][temp_value].keys(), key=str.casefold):
                 for hardness in sorted(item_count_stats[model_name][temp_value][file_type].keys()):
-                    counts = item_count_stats[model_name][temp_value][file_type][hardness]
-                    stats = calculate_statistics(counts)
-                    _safe_write(f"    {file_type} ({hardness}) ({len(counts)} files):")
-                    _safe_write(f"      Items: max={stats['max']}, min={stats['min']}, avg={stats['avg']}, var={stats['var']}, mode={stats['mode']}")
+                    for experiment in sorted(item_count_stats[model_name][temp_value][file_type][hardness].keys()):
+                        counts = item_count_stats[model_name][temp_value][file_type][hardness][experiment]
+                        stats = calculate_statistics(counts)
+                        _safe_write(f"    {file_type} ({hardness}) [{experiment}] ({len(counts)} files):")
+                        _safe_write(f"      Items: max={stats['max']}, min={stats['min']}, avg={stats['avg']}, var={stats['var']}, mode={stats['mode']}")
 
-                    prompts_data = quality_issues_dict.get(model_name, {}).get(str(temp_value), {}).get(file_type, {}).get(hardness, {})
-                    for prompt_name in sorted(prompts_data.keys()):
-                        tk = TrialKey(model_name, temp_value, file_type, hardness, prompt_name)
-                        print_prompt_analysis(prompts_data[prompt_name], tk, format_consistency, treatment_fields, quality_ctx)
+                        prompts_data = quality_issues_dict.get(model_name, {}).get(str(temp_value), {}).get(file_type, {}).get(hardness, {}).get(experiment, {})
+                        for prompt_name in sorted(prompts_data.keys()):
+                            tk = TrialKey(model_name, temp_value, file_type, hardness, experiment, prompt_name)
+                            print_prompt_analysis(prompts_data[prompt_name], tk, format_consistency, treatment_fields, quality_ctx)
