@@ -6,6 +6,7 @@ import sys
 import textwrap
 import click
 from pathlib import Path
+from typing import NamedTuple
 from collections import Counter, defaultdict
 import plotly.graph_objects as go
 from config import abbreviate_model_name, get_model_color, model_supports_temperature, get_format_instruction
@@ -1395,7 +1396,7 @@ def _generate_trial_key_figures(trial_key_info, x_items, x_items_display, max_y)
     return figures_html, plot_configs, trial_key_y_values, trial_key_hardness
 
 
-def _build_filter_checkboxes_html(experiments, prompts, formats, models, temperatures, format_hardness_values=None):
+def _build_filter_checkboxes_html(filter_values: FilterValues, format_hardness_values=None):
     """Build the experiment/prompt/format/model/temperature filter-checkbox HTML,
     plus the plots-container opening and aggregated-plot placeholder div."""
     if format_hardness_values is None:
@@ -1403,7 +1404,7 @@ def _build_filter_checkboxes_html(experiments, prompts, formats, models, tempera
     html_content = ""
 
     # Add experiment checkboxes
-    for exp in experiments:
+    for exp in filter_values.experiments:
         safe_id = exp.replace('.', '-').replace('+', '-').replace(' ', '-').replace('_', '-')
         html_content += f'                <div class="filter-item"><input type="checkbox" id="filter-exp-{safe_id}" class="exp-filter" value="{exp}" checked><label for="filter-exp-{safe_id}">{exp}</label></div>\n'
 
@@ -1416,7 +1417,7 @@ def _build_filter_checkboxes_html(experiments, prompts, formats, models, tempera
 """
 
     # Add prompt checkboxes
-    for prompt in prompts:
+    for prompt in filter_values.prompts:
         safe_id = prompt.replace('.', '-').replace('+', '-').replace(' ', '-').replace('_', '-')
         html_content += f'                <div class="filter-item"><input type="checkbox" id="filter-prompt-{safe_id}" class="prompt-filter" value="{prompt}" checked><label for="filter-prompt-{safe_id}">{prompt}</label></div>\n'
 
@@ -1429,7 +1430,7 @@ def _build_filter_checkboxes_html(experiments, prompts, formats, models, tempera
 """
 
     # Add format checkboxes with format-specific colors
-    for fmt in formats:
+    for fmt in filter_values.formats:
         format_color = FORMAT_COLORS.get(fmt.lower(), '#636363')
         html_content += f'                <div class="filter-item"><input type="checkbox" id="filter-format-{fmt}" class="format-filter" value="{fmt}" checked style="border-color: {format_color};" data-format="{fmt}" data-color="{format_color}"><label for="filter-format-{fmt}">{fmt}</label></div>\n'
 
@@ -1459,7 +1460,7 @@ def _build_filter_checkboxes_html(experiments, prompts, formats, models, tempera
 """
 
     # Add model checkboxes with model-specific colors
-    for model in models:
+    for model in filter_values.models:
         safe_id = model.replace('.', '-').replace('+', '-').replace(' ', '-')
         model_color = get_model_color(model)
         html_content += f'                <div class="filter-item"><input type="checkbox" id="filter-model-{safe_id}" class="model-filter" value="{model}" checked style="border-color: {model_color};" data-model="{model}" data-color="{model_color}"><label for="filter-model-{safe_id}">{abbreviate_model_name(model)}</label></div>\n'
@@ -1473,7 +1474,7 @@ def _build_filter_checkboxes_html(experiments, prompts, formats, models, tempera
 """
 
     # Add temperature checkboxes
-    for temp in temperatures:
+    for temp in filter_values.temperatures:
         safe_id = temp.replace('.', '-').replace(' ', '-')
         html_content += f'                <div class="filter-item"><input type="checkbox" id="filter-temp-{safe_id}" class="temp-filter" value="{temp}" checked><label for="filter-temp-{safe_id}">{temp}</label></div>\n'
 
@@ -1682,13 +1683,12 @@ def _build_plot_section_html(trial_key, trial_key_info, figures_html, quality_da
     )
 
 
-def generate_html_report_with_filters(items_by_format_model, all_items_sorted, formats, models, temperatures, experiments, prompts, data, output_path, quality_data=None, prompt_texts=None, format_prompts=None):
+def generate_html_report_with_filters(items_by_format_model, all_items_sorted, filter_values: FilterValues, output_path, quality_data=None, prompt_texts=None, format_prompts=None):
     """
     Generate individual charts for each TrialKey (model, temperature, format,
     format_hardness, experiment, prompt) combination.
     Wrap each in divs with CSS classes for filtering based on experiment/prompt/format/model/temperature.
     Uses CSS display:none to show/hide based on checkbox selections.
-    data: raw data for counting trials per combination
     items_by_format_model: dict with TrialKey keys
     quality_data: dict with quality issues by model/temperature/format (from quality.json)
     """
@@ -1708,7 +1708,7 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
     # Extract unique format hardness values directly from the TrialKeys
     format_hardness_values = sorted(set(trial_key.format_hardness for trial_key in trial_key_info.keys()))
 
-    html_content += _build_filter_checkboxes_html(experiments, prompts, formats, models, temperatures, format_hardness_values)
+    html_content += _build_filter_checkboxes_html(filter_values, format_hardness_values)
 
     # Group plots by prompt
     plots_by_prompt = defaultdict(list)
@@ -1758,10 +1758,20 @@ def _load_quality_data(input_path):
     return load_results_json(quality_path)
 
 
-def _extract_filter_values(data):
+class FilterValues(NamedTuple):
+    """The five independent filter-checkbox dimensions shown in the report's
+    header: distinct formats, models, temperatures, experiments, and prompts
+    found across the dataset."""
+    formats: list
+    models: list
+    temperatures: list
+    experiments: list
+    prompts: list
+
+
+def _extract_filter_values(data) -> FilterValues:
     """Scan every entry for the distinct format/model/temperature/experiment/
-    prompt values used to build the report's filter checkboxes.
-    Returns (formats, models, temperatures, experiments, prompts), each sorted."""
+    prompt values used to build the report's filter checkboxes. Each list is sorted."""
     formats, models, temperatures, experiments, prompts = set(), set(), set(), set(), set()
     for ext, entries in data.items():
         # Skip non-file-type entries (like malformedOutput metadata)
@@ -1774,7 +1784,7 @@ def _extract_filter_values(data):
             temperatures.add(str(metadata.get('temperature', 'default')))
             experiments.add(metadata.get('experiment', 'unknown'))
             prompts.add(metadata.get('prompt', 'unknown'))
-    return sorted(formats), sorted(models), sorted(temperatures), sorted(experiments), sorted(prompts)
+    return FilterValues(sorted(formats), sorted(models), sorted(temperatures), sorted(experiments), sorted(prompts))
 
 
 def _filter_data_by_experiment(data, experiment):
@@ -1832,12 +1842,12 @@ def main(experiment, input, output):
         data = load_results_json(input_path)
         quality_data = _load_quality_data(input_path)
 
-        formats, models, temperatures, experiments, prompts = _extract_filter_values(data)
-        click.echo(f"Found formats: {', '.join(formats)}")
-        click.echo(f"Found models: {', '.join(models)}")
-        click.echo(f"Found temperatures: {', '.join(temperatures)}")
-        click.echo(f"Found experiments: {', '.join(experiments)}")
-        click.echo(f"Found prompts: {', '.join(prompts)}")
+        filter_values = _extract_filter_values(data)
+        click.echo(f"Found formats: {', '.join(filter_values.formats)}")
+        click.echo(f"Found models: {', '.join(filter_values.models)}")
+        click.echo(f"Found temperatures: {', '.join(filter_values.temperatures)}")
+        click.echo(f"Found experiments: {', '.join(filter_values.experiments)}")
+        click.echo(f"Found prompts: {', '.join(filter_values.prompts)}")
 
         if experiment:
             click.echo(f"Filtering for experiment: {experiment}")
@@ -1845,7 +1855,7 @@ def main(experiment, input, output):
 
         script_dir = Path(__file__).parent
         format_prompts = _load_format_prompts(script_dir)
-        prompt_texts = _load_prompt_texts(script_dir, prompts)
+        prompt_texts = _load_prompt_texts(script_dir, filter_values.prompts)
 
         click.echo("Aggregating items by format and model...")
         items_by_format_model = aggregate_items_by_format_and_model(data)
@@ -1856,7 +1866,7 @@ def main(experiment, input, output):
 
         click.echo(f"Writing report to {output_path}...")
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        generate_html_report_with_filters(items_by_format_model, all_items_sorted, formats, models, temperatures, experiments, prompts, data, str(output_path), quality_data, prompt_texts=prompt_texts, format_prompts=format_prompts)
+        generate_html_report_with_filters(items_by_format_model, all_items_sorted, filter_values, str(output_path), quality_data, prompt_texts=prompt_texts, format_prompts=format_prompts)
 
         click.echo(f"Success. Report generated at {output_path}")
 
