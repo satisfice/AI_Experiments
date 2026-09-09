@@ -281,15 +281,11 @@ def update_aggregations_from_trial(trial: Trial, state: AggregationState) -> Non
     for rule_name in trial.metadata.get("cleanup", {}).keys():
         state.cleanup_rules_agg[model_name][str(temp_value)][trial.format][hardness_value][experiment_value][prompt_name][rule_name] += 1
 
-    # Track case values
-    case_value = trial.metadata.pop("case", "lower")
-    trial.metadata.pop("consistentCase", None)
-    state.case_values_agg[model_name][str(temp_value)][trial.format][hardness_value][experiment_value][prompt_name].append((case_value, trial.filename))
-
-    # Track cleanup rule sets per format
-    rule_set = frozenset(trial.metadata.get("cleanup", {}).keys())
-    if trial.extension in state.format_aggs:
-        state.format_aggs[trial.extension]['agg'][model_name][str(temp_value)][prompt_name].append((rule_set, trial.filename))
+    # Note: "case" is deliberately left in trial.metadata here, not stripped --
+    # TrialSet.detect_case_inconsistencies() reads it later, after every trial in
+    # every set has been through this function. It (and "consistentCase") is
+    # stripped from metadata afterward, in _compute_quality_and_consistency,
+    # once detection no longer needs it.
 
     # Track format styles
     state.format_style_counts[model_name][str(temp_value)][trial.format][hardness_value][experiment_value][prompt_name][trial.metadata.get("formatStyle", "unknown")] += 1

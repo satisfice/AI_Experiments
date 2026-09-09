@@ -121,31 +121,6 @@ def _make_cleanup_rules_agg():
     return _make_six_level_defaultdict(Counter)
 
 
-def _make_format_aggregation_dicts():
-    """Create the format-specific cleanup rule aggregation dicts (case, markdown, HTML, JSON, YAML, CSV, txt1).
-
-    Returns:
-        (case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg,
-         csv_cleanup_agg, txt1_cleanup_agg)
-        Used for detecting cross-trial inconsistencies in formatting/casing.
-    """
-    case_values_agg = _make_six_level_defaultdict(list)
-
-    cleanup_agg_template = lambda: defaultdict(
-        lambda: defaultdict(
-            lambda: defaultdict(list)
-        )
-    )
-    md_cleanup_agg = cleanup_agg_template()
-    html_cleanup_agg = cleanup_agg_template()
-    json_cleanup_agg = cleanup_agg_template()
-    yaml_cleanup_agg = cleanup_agg_template()
-    csv_cleanup_agg = cleanup_agg_template()
-    txt1_cleanup_agg = cleanup_agg_template()
-
-    return case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg
-
-
 def _record_case_inconsistencies_for_set(trial_set, inconsistencies, quality_ctx):
     """Record case inconsistencies detected in a trial set into aggregation dicts."""
     if not inconsistencies:
@@ -485,24 +460,24 @@ def _initialize_issue_types_and_aggregations():
     format_style_counts = _make_format_style_counts()
     item_count_stats = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(list)))))
     cleanup_rules_agg = _make_cleanup_rules_agg()
-    case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg = _make_format_aggregation_dicts()
-    return ISSUE_TYPES, quality_issues_output, quality_issues_instances, format_style_counts, item_count_stats, cleanup_rules_agg, case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg
+    return ISSUE_TYPES, quality_issues_output, quality_issues_instances, format_style_counts, item_count_stats, cleanup_rules_agg
 
 
-def _build_format_aggregations(md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg):
-    """Build the format aggregations mapping."""
+def _build_format_aggregations():
+    """Build the format-to-(label, issue_key) mapping used to drive
+    format-rule-inconsistency detection over TrialSets, one extension at a time."""
     return {
-        '.md': {'agg': md_cleanup_agg, 'label': 'markdown', 'issue_key': 'inconsistent_md_format'},
-        '.html': {'agg': html_cleanup_agg, 'label': 'HTML', 'issue_key': 'inconsistent_html_format'},
-        '.json': {'agg': json_cleanup_agg, 'label': 'JSON', 'issue_key': 'inconsistent_json_format'},
-        '.yml': {'agg': yaml_cleanup_agg, 'label': 'YAML', 'issue_key': 'inconsistent_yaml_format'},
-        '.yaml': {'agg': yaml_cleanup_agg, 'label': 'YAML', 'issue_key': 'inconsistent_yaml_format'},
-        '.csv': {'agg': csv_cleanup_agg, 'label': 'CSV', 'issue_key': 'inconsistent_csv_format'},
-        '.txt1': {'agg': txt1_cleanup_agg, 'label': 'numberedText', 'issue_key': 'inconsistent_txt1_format'},
+        '.md': {'label': 'markdown', 'issue_key': 'inconsistent_md_format'},
+        '.html': {'label': 'HTML', 'issue_key': 'inconsistent_html_format'},
+        '.json': {'label': 'JSON', 'issue_key': 'inconsistent_json_format'},
+        '.yml': {'label': 'YAML', 'issue_key': 'inconsistent_yaml_format'},
+        '.yaml': {'label': 'YAML', 'issue_key': 'inconsistent_yaml_format'},
+        '.csv': {'label': 'CSV', 'issue_key': 'inconsistent_csv_format'},
+        '.txt1': {'label': 'numberedText', 'issue_key': 'inconsistent_txt1_format'},
     }
 
 
-def _create_aggregation_state(consolidated, quality_issues_output, quality_issues_instances, format_style_counts, item_count_stats, cleanup_rules_agg, case_values_agg, format_aggs):
+def _create_aggregation_state(consolidated, quality_issues_output, quality_issues_instances, format_style_counts, item_count_stats, cleanup_rules_agg, format_aggs):
     """Create aggregation state object."""
     return AggregationState(
         consolidated=consolidated,
@@ -511,7 +486,6 @@ def _create_aggregation_state(consolidated, quality_issues_output, quality_issue
         format_style_counts=format_style_counts,
         item_count_stats=item_count_stats,
         cleanup_rules_agg=cleanup_rules_agg,
-        case_values_agg=case_values_agg,
         format_aggs=format_aggs,
         skipped_trials=[],
         zero_item_files=[],
@@ -533,9 +507,9 @@ def summarize_results(options):
 
     # Initialize data structures
     consolidated = defaultdict(list)
-    ISSUE_TYPES, quality_issues_output, quality_issues_instances, format_style_counts, item_count_stats, cleanup_rules_agg, case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg = _initialize_issue_types_and_aggregations()
-    format_aggs = _build_format_aggregations(md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg)
-    state = _create_aggregation_state(consolidated, quality_issues_output, quality_issues_instances, format_style_counts, item_count_stats, cleanup_rules_agg, case_values_agg, format_aggs)
+    ISSUE_TYPES, quality_issues_output, quality_issues_instances, format_style_counts, item_count_stats, cleanup_rules_agg = _initialize_issue_types_and_aggregations()
+    format_aggs = _build_format_aggregations()
+    state = _create_aggregation_state(consolidated, quality_issues_output, quality_issues_instances, format_style_counts, item_count_stats, cleanup_rules_agg, format_aggs)
 
     # Display filter parameters
     filters_applied = _describe_active_filters(options)
@@ -575,6 +549,13 @@ def _compute_quality_and_consistency(consolidated_dict, trial_sets, format_aggs,
     # Compute cross-trial case inconsistency using trial sets.
     quality_ctx = QualityContext(output=quality_issues_output, instances=quality_issues_instances)
     _flag_case_inconsistencies(trial_sets, quality_ctx)
+
+    # Case-consistency detection is done with "case"/"consistentCase" now --
+    # strip them so they don't clutter the final results.json metadata.
+    for trial_set in trial_sets.values():
+        for trial in trial_set.trials:
+            trial.metadata.pop("case", None)
+            trial.metadata.pop("consistentCase", None)
 
     # Detect format rule inconsistencies for each format using trial sets.
     for ext, fmt_meta in format_aggs.items():

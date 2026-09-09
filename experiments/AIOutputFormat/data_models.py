@@ -135,7 +135,6 @@ class AggregationState:
     format_style_counts: dict
     item_count_stats: dict
     cleanup_rules_agg: dict
-    case_values_agg: dict
     format_aggs: dict
     skipped_trials: list
     zero_item_files: list
