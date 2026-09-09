@@ -1182,6 +1182,7 @@ def aggregate_items_by_format_and_model(data):
             experiment = metadata.get('experiment', 'unknown')
             prompt = metadata.get('prompt', 'unknown')
             temperature = metadata.get('temperature', 'default')
+            format_hardness = metadata.get('formatHardness', 'unknown')
             items = entry.get('items', [])
 
             # Filter out preamble text
@@ -1205,7 +1206,8 @@ def aggregate_items_by_format_and_model(data):
                 "format": format_type,
                 "prompt": prompt,
                 "model": model,
-                "temperature": temperature
+                "temperature": temperature,
+                "formatHardness": format_hardness
             }
 
     return result
@@ -1228,7 +1230,7 @@ def _trial_numbers_str(instances):
     return "(" + ", ".join(str(n) for n in sorted(nums)) + ")"
 
 
-def get_cleanup_data_for_combo(quality_data, model, temperature, format_type, prompt):
+def get_cleanup_data_for_combo(quality_data, model, temperature, format_type, format_hardness, prompt):
     """
     Return (quality_issues, cleanup_rules) for a specific combo.
     quality_issues: list of human-readable issue strings (empty list if none).
@@ -1239,7 +1241,7 @@ def get_cleanup_data_for_combo(quality_data, model, temperature, format_type, pr
         return [], []
 
     abbrev_model = abbreviate_model_name(model)
-    prompt_data = quality_data.get(abbrev_model, {}).get(str(temperature), {}).get(format_type, {}).get(prompt, {})
+    prompt_data = quality_data.get(abbrev_model, {}).get(str(temperature), {}).get(format_type, {}).get(format_hardness, {}).get(prompt, {})
     if not prompt_data:
         return [], []
 
@@ -1520,12 +1522,12 @@ def _build_filter_checkboxes_html(experiments, prompts, formats, models, tempera
     return html_content
 
 
-def _build_cleanup_indicator(quality_data, combo):
+def _build_cleanup_indicator(quality_data, combo, format_hardness):
     """Build the cleanup indicator span with a rich tooltip (quality issues in
     bold + cleanup rules). Always returned: red if quality problems, #555 if
     cleanup only, #aaa if nothing to clean."""
     fmt, model, temp, exp, prompt = combo
-    quality_issues, cleanup_rules = get_cleanup_data_for_combo(quality_data, model, temp, fmt, prompt)
+    quality_issues, cleanup_rules = get_cleanup_data_for_combo(quality_data, model, temp, fmt, format_hardness, prompt)
     if not (quality_issues or cleanup_rules):
         # No cleanup or quality issues: show grayed-out indicator with no tooltip.
         return ' | <span style="color: #aaa; cursor: default;">Cleanup</span>'
@@ -1673,7 +1675,7 @@ def _build_plot_section_html(combo, metadata, combo_info, figures_html, quality_
     unique_pct = (unique_items / total_items * 100) if total_items > 0 else 0
     avg_per_trial = total_items / trial_count if trial_count > 0 else 0
 
-    quality_indicator = _build_cleanup_indicator(quality_data, combo)
+    quality_indicator = _build_cleanup_indicator(quality_data, combo, format_hardness)
     load_set_button = _build_load_set_button(info, combo, format_hardness)
     item_counts_button = _build_item_counts_button(info, combo, format_hardness, format_color, model_base_color)
     _prompt_tooltip_attr = _build_prompt_tooltip_attr(combo, prompt_texts, format_prompts)

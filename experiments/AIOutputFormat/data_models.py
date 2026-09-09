@@ -8,11 +8,15 @@ from typing import NamedTuple, Optional, List
 
 
 class TrialKey(NamedTuple):
-    """Identifies one (model, temperature, file_type, prompt) combination.
-    A drop-in replacement for the raw tuple, with named field access."""
+    """Identifies one (model, temperature, file_type, format_hardness, prompt)
+    combination. A drop-in replacement for the raw tuple, with named field access.
+    format_hardness sits between file_type and prompt since it qualifies the format
+    request (soft/hard), matching the nesting order used throughout the aggregation
+    dicts keyed by these same fields."""
     model: str
     temperature: str
     file_type: str
+    format_hardness: str
     prompt: str
 
 
@@ -54,6 +58,10 @@ class TrialSet:
     @property
     def file_type(self) -> str:
         return self.key.file_type
+
+    @property
+    def format_hardness(self) -> str:
+        return self.key.format_hardness
 
     @property
     def prompt(self) -> str:

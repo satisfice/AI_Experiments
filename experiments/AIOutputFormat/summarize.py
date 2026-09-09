@@ -68,13 +68,16 @@ _CODEFENCED_FORMATS = frozenset({'JSON', 'HTML', 'CSV', 'YAML'})
 
 # ── Shared low-level helpers ──────────────────────────────────────────────────
 
-def _make_four_level_defaultdict(innermost_factory):
-    """Create a 4-level nested defaultdict: model -> temperature -> file_type -> prompt.
-    innermost_factory: callable that returns the innermost value."""
+def _make_five_level_defaultdict(innermost_factory):
+    """Create a 5-level nested defaultdict: model -> temperature -> file_type ->
+    format_hardness -> prompt. innermost_factory: callable that returns the
+    innermost value."""
     return defaultdict(
         lambda: defaultdict(
             lambda: defaultdict(
-                lambda: defaultdict(innermost_factory)
+                lambda: defaultdict(
+                    lambda: defaultdict(innermost_factory)
+                )
             )
         )
     )
@@ -88,10 +91,10 @@ def _make_issue_output_dicts(issue_types):
     Returns:
         (quality_issues_output, quality_issues_instances) — nested dicts for tracking
         quality issues and their instance source files.
-        Structure: model -> temperature -> file_type -> prompt -> issue_type -> {items|instances}
+        Structure: model -> temperature -> file_type -> format_hardness -> prompt -> issue_type -> {items|instances}
     """
-    quality_issues_output = _make_four_level_defaultdict(lambda: {k: set() for k in issue_types})
-    quality_issues_instances = _make_four_level_defaultdict(lambda: {k: {} for k in issue_types})
+    quality_issues_output = _make_five_level_defaultdict(lambda: {k: set() for k in issue_types})
+    quality_issues_instances = _make_five_level_defaultdict(lambda: {k: {} for k in issue_types})
     return quality_issues_output, quality_issues_instances
 
 
@@ -100,9 +103,9 @@ def _make_format_style_counts():
 
     Returns:
         format_style_counts — nested dict for counting how many files use each format style.
-        Structure: model -> temperature -> file_type -> prompt -> formatStyle -> count
+        Structure: model -> temperature -> file_type -> format_hardness -> prompt -> formatStyle -> count
     """
-    return _make_four_level_defaultdict(lambda: defaultdict(int))
+    return _make_five_level_defaultdict(lambda: defaultdict(int))
 
 
 def _make_cleanup_rules_agg():
@@ -110,10 +113,10 @@ def _make_cleanup_rules_agg():
 
     Returns:
         cleanup_rules_agg — nested Counter dict tracking rule invocation across trials.
-        Structure: model -> temperature -> file_type -> prompt -> Counter(rule_name -> count)
+        Structure: model -> temperature -> file_type -> format_hardness -> prompt -> Counter(rule_name -> count)
         Each count is the number of trials in the set that triggered that rule.
     """
-    return _make_four_level_defaultdict(Counter)
+    return _make_five_level_defaultdict(Counter)
 
 
 def _make_format_aggregation_dicts():
@@ -124,7 +127,7 @@ def _make_format_aggregation_dicts():
          csv_cleanup_agg, txt1_cleanup_agg)
         Used for detecting cross-trial inconsistencies in formatting/casing.
     """
-    case_values_agg = _make_four_level_defaultdict(list)
+    case_values_agg = _make_five_level_defaultdict(list)
 
     cleanup_agg_template = lambda: defaultdict(
         lambda: defaultdict(
@@ -149,12 +152,13 @@ def _record_case_inconsistencies_for_set(trial_set, inconsistencies, quality_ctx
     model = trial_set.model
     temp = trial_set.temperature
     file_type = trial_set.file_type
+    hardness = trial_set.format_hardness
     prompt = trial_set.prompt
 
     for case_val, instance_filename in inconsistencies.items():
-        quality_ctx.output[model][temp][file_type][prompt]["inconsistent_case"].add(case_val)
-        if case_val not in quality_ctx.instances[model][temp][file_type][prompt]["inconsistent_case"]:
-            quality_ctx.instances[model][temp][file_type][prompt]["inconsistent_case"][case_val] = instance_filename
+        quality_ctx.output[model][temp][file_type][hardness][prompt]["inconsistent_case"].add(case_val)
+        if case_val not in quality_ctx.instances[model][temp][file_type][hardness][prompt]["inconsistent_case"]:
+            quality_ctx.instances[model][temp][file_type][hardness][prompt]["inconsistent_case"][case_val] = instance_filename
 
 
 def _flag_case_inconsistencies(trial_sets, quality_ctx):
@@ -172,12 +176,13 @@ def _record_format_rule_inconsistencies_for_set(trial_set, inconsistencies, qual
     model = trial_set.model
     temp = trial_set.temperature
     file_type = trial_set.file_type
+    hardness = trial_set.format_hardness
     prompt = trial_set.prompt
 
     for rule, instance_filename in inconsistencies.items():
-        quality_ctx.output[model][temp][file_type][prompt][issue_key].add(rule)
-        if rule not in quality_ctx.instances[model][temp][file_type][prompt][issue_key]:
-            quality_ctx.instances[model][temp][file_type][prompt][issue_key][rule] = instance_filename
+        quality_ctx.output[model][temp][file_type][hardness][prompt][issue_key].add(rule)
+        if rule not in quality_ctx.instances[model][temp][file_type][hardness][prompt][issue_key]:
+            quality_ctx.instances[model][temp][file_type][hardness][prompt][issue_key][rule] = instance_filename
 
 
 def _flag_format_inconsistencies(trial_sets, quality_ctx, file_type_label, issue_key):
@@ -218,9 +223,8 @@ def _describe_active_filters(options):
 
 def _compute_format_consistency(consolidated_dict, treatment_fields):
     """Detect treatment consistency for each trial set: tracks all fields that
-    indicate how output was structured or cleaned up, grouped by
-    (abbreviated_model, str(temperature), file_type, prompt).
-    Returns {(model, temp, file_type, prompt): {field: [values]}}."""
+    indicate how output was structured or cleaned up, grouped by TrialKey.
+    Returns {TrialKey: {field: [values]}}."""
     format_consistency = {}
     for ext, entries in consolidated_dict.items():
         file_type = FORMAT_MAP.get(ext, ext)
@@ -229,8 +233,9 @@ def _compute_format_consistency(consolidated_dict, treatment_fields):
             prompt = metadata.get("prompt", "unknown")
             model = abbreviate_model_name(metadata.get("model", "unknown"))
             temperature = str(metadata.get("temperature", "unknown"))
+            hardness = metadata.get("formatHardness", "unknown")
 
-            key = (model, temperature, file_type, prompt)
+            key = TrialKey(model, temperature, file_type, hardness, prompt)
             if key not in format_consistency:
                 format_consistency[key] = {field: [] for field in treatment_fields}
 
@@ -255,13 +260,13 @@ class _QualityDataContext:
 def _extract_quality_issues_for_prompt(trial_key, ctx):
     """Extract quality issues with sources for a prompt."""
     prompt_data = {}
-    issues = ctx.quality_issues_output.get(trial_key.model, {}).get(trial_key.temperature, {}).get(trial_key.file_type, {}).get(trial_key.prompt, {})
+    issues = ctx.quality_issues_output.get(trial_key.model, {}).get(trial_key.temperature, {}).get(trial_key.file_type, {}).get(trial_key.format_hardness, {}).get(trial_key.prompt, {})
     for issue_type in ctx.issue_types:
         raw_items = issues.get(issue_type, set())
         if raw_items:
             items_with_source = []
             for item in raw_items:
-                source = ctx.quality_issues_instances[trial_key.model][trial_key.temperature][trial_key.file_type][trial_key.prompt][issue_type].get(item, "unknown")
+                source = ctx.quality_issues_instances[trial_key.model][trial_key.temperature][trial_key.file_type][trial_key.format_hardness][trial_key.prompt][issue_type].get(item, "unknown")
                 items_with_source.append({"instance": item, "source": source})
             items_with_source.sort(key=lambda x: x["instance"].lower())
             prompt_data[issue_type] = items_with_source
@@ -270,7 +275,7 @@ def _extract_quality_issues_for_prompt(trial_key, ctx):
 
 def _compute_format_consistency_for_prompt(trial_key, prompt_data, ctx):
     """Compute format consistency for a prompt."""
-    fc = ctx.format_consistency.get((trial_key.model, trial_key.temperature, trial_key.file_type, trial_key.prompt), {})
+    fc = ctx.format_consistency.get(trial_key, {})
     has_format_inconsistency = False
 
     inconsistency_issue_types = {
@@ -292,14 +297,14 @@ def _compute_format_consistency_for_prompt(trial_key, prompt_data, ctx):
 
 def _extract_format_issues_for_prompt(trial_key, prompt_data, ctx):
     """Extract format style issues for a prompt."""
-    style_counts = ctx.format_style_counts.get(trial_key.model, {}).get(trial_key.temperature, {}).get(trial_key.file_type, {}).get(trial_key.prompt, {})
+    style_counts = ctx.format_style_counts.get(trial_key.model, {}).get(trial_key.temperature, {}).get(trial_key.file_type, {}).get(trial_key.format_hardness, {}).get(trial_key.prompt, {})
     if style_counts:
         prompt_data["formatIssues"] = dict(style_counts)
 
 
 def _extract_cleanup_rules_for_prompt(trial_key, prompt_data, ctx):
     """Extract cleanup rules for a prompt."""
-    rules_counter = ctx.cleanup_rules_agg.get(trial_key.model, {}).get(trial_key.temperature, {}).get(trial_key.file_type, {}).get(trial_key.prompt, {})
+    rules_counter = ctx.cleanup_rules_agg.get(trial_key.model, {}).get(trial_key.temperature, {}).get(trial_key.file_type, {}).get(trial_key.format_hardness, {}).get(trial_key.prompt, {})
     if rules_counter:
         prompt_data["cleanupRules"] = dict(sorted(rules_counter.items()))
 
@@ -335,7 +340,8 @@ def _build_quality_issues_dict(trial_sets, format_consistency, format_style_coun
         quality_issues_dict \
             .setdefault(trial_set.model, {}) \
             .setdefault(trial_set.temperature, {}) \
-            .setdefault(trial_set.file_type, {})[trial_set.prompt] = prompt_data
+            .setdefault(trial_set.file_type, {}) \
+            .setdefault(trial_set.format_hardness, {})[trial_set.prompt] = prompt_data
 
     return quality_issues_dict
 
@@ -428,8 +434,9 @@ def _passes_metadata_filters(filename_metadata, file_name, experiment, model, ex
         _check_timestamp_filter(file_name, timestamp)
     )
 
+
 def _group_trials_into_sets(trials):
-    """Group trials by TrialKey (model, temperature, file_type, prompt).
+    """Group trials by TrialKey (model, temperature, file_type, format_hardness, prompt).
 
     Returns a dict: {TrialKey: TrialSet}
     """
@@ -438,8 +445,9 @@ def _group_trials_into_sets(trials):
         model = abbreviate_model_name(trial.metadata.get("model", "unknown"))
         temp = str(trial.metadata.get("temperature", "unknown"))
         prompt = trial.metadata.get("prompt", "unknown")
+        hardness = trial.metadata.get("formatHardness", "unknown")
 
-        key = TrialKey(model, temp, trial.file_type, prompt)
+        key = TrialKey(model, temp, trial.file_type, hardness, prompt)
         if key not in sets_dict:
             sets_dict[key] = TrialSet(key=key, trials=[])
         sets_dict[key].trials.append(trial)
@@ -468,7 +476,7 @@ def _initialize_issue_types_and_aggregations():
     ]
     quality_issues_output, quality_issues_instances = _make_issue_output_dicts(ISSUE_TYPES)
     format_style_counts = _make_format_style_counts()
-    item_count_stats = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
+    item_count_stats = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(list))))
     cleanup_rules_agg = _make_cleanup_rules_agg()
     case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg = _make_format_aggregation_dicts()
     return ISSUE_TYPES, quality_issues_output, quality_issues_instances, format_style_counts, item_count_stats, cleanup_rules_agg, case_values_agg, md_cleanup_agg, html_cleanup_agg, json_cleanup_agg, yaml_cleanup_agg, csv_cleanup_agg, txt1_cleanup_agg
