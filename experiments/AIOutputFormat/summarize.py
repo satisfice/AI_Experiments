@@ -34,7 +34,7 @@ from trial_loading import (
 )
 from data_models import (
     TrialKey, QualityContext, Trial, TrialSet, AggregationState,
-    QualityAnalysisResults, ReportOptions, SummarizeFilters
+    QualityAnalysisResults, ReportOptions, ReportContext, SummarizeFilters
 )
 
 RESULTS_DIR = Path("results")
@@ -583,9 +583,8 @@ def _write_results_and_reports(state, quality_results, options):
         if options.analysis and options.verbose:
             try:
                 quality_ctx = QualityContext(output=state.quality_issues_output, instances=state.quality_issues_instances)
-                print_analysis_report(state.item_count_stats, quality_results.quality_issues_dict,
-                                        quality_ctx, quality_results.format_consistency,
-                                        TREATMENT_FIELDS)
+                report_ctx = ReportContext(quality_ctx, quality_results.format_consistency, TREATMENT_FIELDS)
+                print_analysis_report(state.item_count_stats, quality_results.quality_issues_dict, report_ctx)
             except Exception as report_err:
                 click.echo(f"Warning: Could not generate full analysis report ({report_err})")
 

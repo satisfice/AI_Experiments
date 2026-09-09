@@ -37,6 +37,38 @@ class QualityContext:
 
 
 @dataclass
+class PromptAnalysisContext:
+    """Bundles one prompt's TrialKey with the cross-cutting context needed to
+    print its quality-issue breakdown (reporting.py), so those functions take
+    one context object instead of a growing list of shared arguments."""
+    trial_key: TrialKey
+    quality_ctx: QualityContext
+    format_consistency: dict
+    treatment_fields: List[str]
+
+
+@dataclass
+class ReportContext:
+    """Bundles the report-wide context that stays fixed across every prompt in
+    print_analysis_report, so it can be passed as one argument and specialized
+    per-prompt via for_trial()."""
+    quality_ctx: QualityContext
+    format_consistency: dict
+    treatment_fields: List[str]
+
+    def for_trial(self, trial_key: TrialKey) -> PromptAnalysisContext:
+        return PromptAnalysisContext(trial_key, self.quality_ctx, self.format_consistency, self.treatment_fields)
+
+
+class IssueDisplaySpec(NamedTuple):
+    """One row of the issue-type breakdown table: which quality-issue key to
+    look up, the label to print, and whether to show per-instance source files."""
+    key: str
+    label: str
+    with_instance: bool
+
+
+@dataclass
 class Trial:
     """Represents a single trial (result file) with its parsed content and metadata."""
     filename: str           # e.g., "202602061922-animals-animals_hard-gpt4-0.7-01.json"

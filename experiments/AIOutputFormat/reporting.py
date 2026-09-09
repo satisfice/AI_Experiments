@@ -6,7 +6,7 @@ Handles printing analysis reports, quality issue breakdowns, and format consiste
 import sys
 from typing import List, Dict, Any, Tuple
 
-from data_models import TrialKey, QualityContext
+from data_models import TrialKey, QualityContext, PromptAnalysisContext, ReportContext, IssueDisplaySpec
 from utils import calculate_statistics
 
 
@@ -16,19 +16,14 @@ def _safe_write(text: str) -> None:
     sys.stdout.flush()
 
 
-def print_format_consistency_status(
-    prompt_data: dict,
-    trial_key: TrialKey,
-    format_consistency: dict,
-    treatment_fields: List[str]
-) -> None:
+def print_format_consistency_status(prompt_data: dict, ctx: PromptAnalysisContext) -> None:
     """Print format consistency status for a prompt."""
     is_consistent = prompt_data.get("consistentFormat", True)
     if is_consistent:
         _safe_write(f"        Format: [OK] consistent")
     else:
-        fc = format_consistency.get(trial_key, {})
-        varying = [f for f in treatment_fields if len(set(fc.get(f, []))) > 1]
+        fc = ctx.format_consistency.get(ctx.trial_key, {})
+        varying = [f for f in ctx.treatment_fields if len(set(fc.get(f, []))) > 1]
         parts = []
         if "formatStyle" in varying:
             parts.extend(sorted(set(fc.get("formatStyle", []))))
@@ -45,71 +40,49 @@ def print_format_issues_breakdown(prompt_data: dict) -> None:
         _safe_write(f"        Format Issues: {issues_str}")
 
 
-def print_issue_instance_items(
-    items: List[str],
-    issue_key: str,
-    with_instance: bool,
-    trial_key: TrialKey,
-    quality_ctx: QualityContext
-) -> None:
+def print_issue_instance_items(items: List[str], issue_key: str, with_instance: bool, ctx: PromptAnalysisContext) -> None:
     """Print instance items for an issue type."""
+    trial_key = ctx.trial_key
     for item in items[:5]:
         suffix = ""
         if with_instance:
-            instance_file = quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.format][trial_key.format_hardness][trial_key.experiment][trial_key.prompt][issue_key].get(item)
+            instance_file = ctx.quality_ctx.instances[trial_key.model][str(trial_key.temperature)][trial_key.format][trial_key.format_hardness][trial_key.experiment][trial_key.prompt][issue_key].get(item)
             suffix = f" Instance: {instance_file}" if instance_file else ""
         _safe_write(f"          - {ascii(item)}{suffix}")
 
 
-def print_single_issue_type(
-    issue_key: str,
-    label: str,
-    with_instance: bool,
-    prompt_data: dict,
-    trial_key: TrialKey,
-    quality_ctx: QualityContext
-) -> None:
+def print_single_issue_type(spec: IssueDisplaySpec, prompt_data: dict, ctx: PromptAnalysisContext) -> None:
     """Print breakdown for a single issue type."""
-    items = [e["instance"] for e in prompt_data.get(issue_key, [])]
+    items = [e["instance"] for e in prompt_data.get(spec.key, [])]
     if not items:
         return
-    _safe_write(f"        {label} ({len(items)} unique):")
-    print_issue_instance_items(items, issue_key, with_instance, trial_key, quality_ctx)
+    _safe_write(f"        {spec.label} ({len(items)} unique):")
+    print_issue_instance_items(items, spec.key, spec.with_instance, ctx)
     if len(items) > 5:
         _safe_write(f"          ... and {len(items) - 5} more")
 
 
-def print_issue_type_breakdown(
-    prompt_data: dict,
-    trial_key: TrialKey,
-    quality_ctx: QualityContext
-) -> None:
+def print_issue_type_breakdown(prompt_data: dict, ctx: PromptAnalysisContext) -> None:
     """Print per-issue-type breakdown for a prompt."""
     issue_display = [
-        ("leading_punctuation", "Leading punctuation", True),
-        ("trailing_punctuation", "Trailing punctuation", True),
-        ("internal_punctuation", "Internal punctuation", True),
-        ("exceeds_max_length", "Exceeds max length", False),
-        ("preamble_leak", "Preamble leaks", False),
-        ("markup_artifact", "Markup artifacts", False),
-        ("repeated_chars", "Repeated characters", False),
+        IssueDisplaySpec("leading_punctuation", "Leading punctuation", True),
+        IssueDisplaySpec("trailing_punctuation", "Trailing punctuation", True),
+        IssueDisplaySpec("internal_punctuation", "Internal punctuation", True),
+        IssueDisplaySpec("exceeds_max_length", "Exceeds max length", False),
+        IssueDisplaySpec("preamble_leak", "Preamble leaks", False),
+        IssueDisplaySpec("markup_artifact", "Markup artifacts", False),
+        IssueDisplaySpec("repeated_chars", "Repeated characters", False),
     ]
-    for issue_key, label, with_instance in issue_display:
-        print_single_issue_type(issue_key, label, with_instance, prompt_data, trial_key, quality_ctx)
+    for spec in issue_display:
+        print_single_issue_type(spec, prompt_data, ctx)
 
 
-def print_prompt_analysis(
-    prompt_data: dict,
-    trial_key: TrialKey,
-    format_consistency: dict,
-    treatment_fields: List[str],
-    quality_ctx: QualityContext
-) -> None:
+def print_prompt_analysis(prompt_data: dict, ctx: PromptAnalysisContext) -> None:
     """Print one prompt's quality-issue breakdown within the analysis report."""
-    _safe_write(f"      {trial_key.prompt}:")
-    print_format_consistency_status(prompt_data, trial_key, format_consistency, treatment_fields)
+    _safe_write(f"      {ctx.trial_key.prompt}:")
+    print_format_consistency_status(prompt_data, ctx)
     print_format_issues_breakdown(prompt_data)
-    print_issue_type_breakdown(prompt_data, trial_key, quality_ctx)
+    print_issue_type_breakdown(prompt_data, ctx)
 
 
 def _walk_leaves(nested: dict, depth: int):
@@ -137,9 +110,7 @@ def _sorted_item_count_groups(item_count_stats):
 def print_analysis_report(
     item_count_stats: Dict[str, Dict[Any, Dict[str, Dict[str, Dict[str, List[int]]]]]],
     quality_issues_dict: Dict[str, Dict[str, Dict[str, Dict[str, Dict[str, Dict[str, Any]]]]]],
-    quality_ctx: QualityContext,
-    format_consistency: dict,
-    treatment_fields: List[str]
+    report_ctx: ReportContext
 ) -> None:
     """Print the verbose per-model/temperature/format/format-hardness/experiment analysis report."""
     _safe_write("\n" + "="*70)
@@ -162,4 +133,4 @@ def print_analysis_report(
         prompts_data = quality_issues_dict.get(model_name, {}).get(str(temp_value), {}).get(format_type, {}).get(hardness, {}).get(experiment, {})
         for prompt_name in sorted(prompts_data.keys()):
             tk = TrialKey(model_name, temp_value, format_type, hardness, experiment, prompt_name)
-            print_prompt_analysis(prompts_data[prompt_name], tk, format_consistency, treatment_fields, quality_ctx)
+            print_prompt_analysis(prompts_data[prompt_name], report_ctx.for_trial(tk))
