@@ -198,3 +198,47 @@ Deleted the dead block from summarize.py (previously lines 432-482) during an un
 Impact: No functional change (code was unreachable). Removes a source of confusion for future refactoring -- editing the wrong copy would have had no effect.
 
 Lesson: When a refactor moves functions to fix a bug, verify the old copies are deleted, not just superseded. Grep for duplicate function names after any "move code between modules" refactor to catch orphaned copies before they mislead a future edit.
+
+---
+
+[Missing Import - NameError on Full Dataset] (noted by Claude): 2026-09-09
+
+Incident: trial_loading.py raised NameError: name 're' is not defined when summarize.py was run against the full results dataset.
+
+Context:
+While verifying a TrialKey refactor (adding format_hardness as an identity field) end-to-end, ran `python summarize.py --no-prompt -v --analysis` with no experiment filter, exercising every experiment in results/. This immediately crashed inside _is_txt1_leading_number_exception, which calls re.match(...) -- but trial_loading.py never imports the re module.
+
+Error:
+NameError: name 're' is not defined, raised from trial_loading.py line 92 (re.match), propagating up through _track_item_level_issues -> _track_item_quality_issues -> update_aggregations_from_trial -> process_trial_set -> summarize_results, uncaught anywhere in that chain.
+
+Root cause:
+This exception path only fires for a .txt1 (numberedText) file whose item carries a "leading_punctuation" issue -- exactly the case the function exists to suppress as expected (numbered lines legitimately start with a digit). A prior verification pass for the 2026-09-08 TrialSet/TrialKey refactor used `--experiment animals_big` only, whose .txt1 files happened not to trigger this exact branch, so the missing import went unnoticed. Likely introduced when this function was written or moved into trial_loading.py without carrying its `re` dependency along.
+
+Resolution:
+Added `import re` to trial_loading.py's import block.
+
+Impact: Full-dataset summarize.py runs (and any narrower run that happens to include a numberedText file with a flagged leading-punctuation item) now complete instead of crashing.
+
+Lesson: A test run scoped to one experiment/filter is not a full verification -- it can miss code paths gated on data characteristics (file type + specific issue combination) that only appear elsewhere in the dataset. Verify refactors against the unfiltered dataset at least once before considering them confirmed.
+
+---
+
+[Silent Wrong Default - formatHardness Dropped From Aggregated Metadata] (noted by Claude): 2026-09-09
+
+Incident: generate_report.py's report.html labeled every trial's format hardness as "soft", including trials that were actually "hard".
+
+Context:
+While threading format_hardness through generate_report.py (part of the same TrialKey identity fix), passed format_hardness into get_cleanup_data_for_combo and verified against report.html. Every deepseekr18b plot-section -- a model whose result files are exclusively hard-hardness (-fh- in the filename) -- rendered data-hardness="soft" and an empty Cleanup tooltip, despite results.json and quality.json both correctly recording "hard" for those same files.
+
+Error:
+aggregate_items_by_format_and_model's per-combo metadata dict (result[key]["metadata"]) was built with only experiment/format/prompt/model/temperature -- formatHardness was never copied in from the source entry's metadata. Every downstream reader (_build_combo_info, _generate_combo_figures, _build_plot_section_html) then read metadata.get("formatHardness", "soft"), which always hit the default.
+
+Root cause:
+This metadata dict was written as an explicit field-by-field literal rather than copying the fields needed from entry['metadata']; formatHardness was added to result files' metadata (parse_filename_metadata) after this dict literal was written, and never backfilled here. A pre-existing bug, not introduced by the current session's edits, but silent and highly visible once looked for: every plot title and cleanup tooltip in every previously-generated report.html has shown "soft" as the format hardness regardless of the trial's actual hardness.
+
+Resolution:
+Added `format_hardness = metadata.get('formatHardness', 'unknown')` and included it as `"formatHardness": format_hardness` in the stored per-combo metadata dict.
+
+Impact: report.html now correctly labels hard-hardness combos and their Cleanup tooltips show real quality data instead of silently reading an always-empty "soft" bucket of quality.json.
+
+Lesson: A dict built as an explicit field-by-field literal from a richer source dict is a recurring risk here -- adding a new field to the source (metadata) does not automatically appear in a literal copy built before the field existed. When a new metadata field is added, grep for existing metadata-to-metadata copy literals that might need to carry it too.
