@@ -104,6 +104,7 @@ python experiment.py -m <model> -f <format> -p <prompt_file> -e <experiment>
 - `-b, --batch-file`: Optional file with multiple prompts (one per line)
 - `--restart`: Force all iterations to regenerate, even if output files already exist
 - `--debug`: Enable debug logging
+- `--format-hardness`: Format prompt hardness -- `soft` (brief) or `hard` (detailed)
 
 **Resuming interrupted experiments:**
 
@@ -137,13 +138,16 @@ python summarize.py [OPTIONS]
 **Parameters:**
 
 - `--filter TEXT`: Filter files by string in filename (legacy)
-- `--model TEXT`: Filter by model name
+- `--model TEXT`: Filter to include ONLY this model
+- `-x, --exclude-model TEXT`: Exclude models by pattern (supports wildcards: `gpt*`, `*llama*`; can specify multiple times)
 - `--format TEXT`: Filter by file format
-- `--experiment TEXT`: Filter by experiment name
+- `-e, --experiment TEXT`: Filter by experiment name
 - `--timestamp TEXT`: Filter by timestamp
 - `--temperature FLOAT`: Filter by temperature
 - `--max-item-length INT`: Maximum allowed item length in characters (default 25)
-- `-a, --analysis`: Generate data analysis report by model and temperature
+- `-a, --analysis`: Generate data analysis report by model and temperature (default on)
+- `--no-prompt`: Skip interactive prompting (use defaults or CLI args only)
+- `-v, --verbose`: Show detailed summary output
 
 **Examples:**
 
@@ -186,8 +190,9 @@ python generate_report.py -i <results.json> -o <report.html>
 
 **Parameters:**
 
+- `--experiment TEXT`: Filter to one experiment name (optional). Output: `results/report_{experiment}.html`
 - `-i, --input`: Path to results.json file (default: results/results.json)
-- `-o, --output`: Output HTML report path (default: results/report.html)
+- `-o, --output`: Output HTML report path (default: results/report.html, or results/report_{experiment}.html if --experiment is set)
 
 **Viewing the report:**
 
@@ -267,13 +272,14 @@ invoked. Currently contains one valid example per supported format:
 
 Output files are named with the pattern:
 ```
-YYYYMMDDHHmmss-experimentname-promptname-modelname-tNN-ii.ext
+YYYYMMDDHHmmss-experimentname-promptname-hardness-modelname-tNN-ii.ext
 ```
 
 Where:
 - `YYYYMMDDHHmmss`: Timestamp with seconds
 - `experimentname`: Experiment name
 - `promptname`: Prompt file name without extension
+- `hardness`: Format hardness -- `fs` (soft) or `fh` (hard); see `--format-hardness` under experiment.py
 - `modelname`: Sanitized model name (e.g., gpt4, llama)
 - `tNN`: Temperature component (2 digits for supported models, "xx" for unsupported)
 - `ii`: Iteration number (01-99)
@@ -281,8 +287,8 @@ Where:
 
 Example:
 ```
-20260216175230-animals5-animals-gpt4-t10-01.json
-20260216175231-animals5-animals-llama-txx-02.txt
+20260216175230-animals5-animals-fs-gpt4-t10-01.json
+20260216175231-animals5-animals-fh-llama-txx-02.txt
 ```
 
 ## Workflow
