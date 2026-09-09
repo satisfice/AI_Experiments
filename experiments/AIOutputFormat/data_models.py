@@ -8,18 +8,22 @@ from typing import NamedTuple, Optional, List
 
 
 class TrialKey(NamedTuple):
-    """Identifies one (model, temperature, file_type, format_hardness, experiment,
+    """Identifies one (model, temperature, format, format_hardness, experiment,
     prompt) combination -- the sole identity type for a trial, used everywhere in
     the codebase (including generate_report.py, which formerly kept its own
     separate Combo type omitting format_hardness while TrialKey omitted
     experiment -- the two gaps caused two different silent-collision bugs before
-    being unified here). format_hardness sits next to file_type since it qualifies
+    being unified here). format_hardness sits next to format since it qualifies
     the format request; experiment sits next to prompt since an experiment is a
     named batch of prompts. Order matches the nesting used throughout the
-    aggregation dicts keyed by these same fields."""
+    aggregation dicts keyed by these same fields.
+
+    Named `format`, not `file_type`, per CONTEXT.md's glossary: Format is the
+    canonical term for the output structure requested (text, JSON, YAML, ...);
+    "file type" is explicitly listed there as a term to avoid."""
     model: str
     temperature: str
-    file_type: str
+    format: str
     format_hardness: str
     experiment: str
     prompt: str
@@ -36,7 +40,7 @@ class QualityContext:
 class Trial:
     """Represents a single trial (result file) with its parsed content and metadata."""
     filename: str           # e.g., "202602061922-animals-animals_hard-gpt4-0.7-01.json"
-    file_type: str          # e.g., "JSON" (from FORMAT_MAP)
+    format: str             # e.g., "JSON" (from FORMAT_MAP)
     extension: str          # e.g., ".json"
     items: list             # Parsed items from file
     metadata: dict          # All metadata including model, temperature, prompt, etc.
@@ -60,8 +64,8 @@ class TrialSet:
         return self.key.temperature
 
     @property
-    def file_type(self) -> str:
-        return self.key.file_type
+    def format(self) -> str:
+        return self.key.format
 
     @property
     def format_hardness(self) -> str:

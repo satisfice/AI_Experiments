@@ -98,7 +98,7 @@ def _trial_key(trial):
     return TrialKey(
         trial.metadata.get("model", "unknown"),
         str(trial.metadata.get("temperature", "unknown")),
-        trial.file_type,
+        trial.format,
         trial.metadata.get("formatHardness", "unknown"),
         trial.metadata.get("experiment", "unknown"),
         trial.metadata.get("prompt", "unknown")
@@ -111,27 +111,27 @@ def _track_item_level_issues(item_issues, issue_type, trial, quality_ctx):
     instance = item_issues.get(issue_type)
     if not instance or _is_txt1_leading_number_exception(issue_type, trial.extension, instance):
         return
-    quality_ctx.output[trial_key.model][trial_key.temperature][trial_key.file_type][trial_key.format_hardness][trial_key.experiment][trial_key.prompt][issue_type].add(instance)
-    if instance not in quality_ctx.instances[trial_key.model][trial_key.temperature][trial_key.file_type][trial_key.format_hardness][trial_key.experiment][trial_key.prompt][issue_type]:
-        quality_ctx.instances[trial_key.model][trial_key.temperature][trial_key.file_type][trial_key.format_hardness][trial_key.experiment][trial_key.prompt][issue_type][instance] = trial.filename
+    quality_ctx.output[trial_key.model][trial_key.temperature][trial_key.format][trial_key.format_hardness][trial_key.experiment][trial_key.prompt][issue_type].add(instance)
+    if instance not in quality_ctx.instances[trial_key.model][trial_key.temperature][trial_key.format][trial_key.format_hardness][trial_key.experiment][trial_key.prompt][issue_type]:
+        quality_ctx.instances[trial_key.model][trial_key.temperature][trial_key.format][trial_key.format_hardness][trial_key.experiment][trial_key.prompt][issue_type][instance] = trial.filename
 
 
 def _track_repeated_sequence_issue(item_issues, trial, quality_ctx):
     """Track repeated_sequence issue using filename as instance."""
     trial_key = _trial_key(trial)
     if item_issues.get("repeated_sequence"):
-        quality_ctx.output[trial_key.model][trial_key.temperature][trial_key.file_type][trial_key.format_hardness][trial_key.experiment][trial_key.prompt]["repeated_sequence"].add(trial.filename)
-        if trial.filename not in quality_ctx.instances[trial_key.model][trial_key.temperature][trial_key.file_type][trial_key.format_hardness][trial_key.experiment][trial_key.prompt]["repeated_sequence"]:
-            quality_ctx.instances[trial_key.model][trial_key.temperature][trial_key.file_type][trial_key.format_hardness][trial_key.experiment][trial_key.prompt]["repeated_sequence"][trial.filename] = trial.filename
+        quality_ctx.output[trial_key.model][trial_key.temperature][trial_key.format][trial_key.format_hardness][trial_key.experiment][trial_key.prompt]["repeated_sequence"].add(trial.filename)
+        if trial.filename not in quality_ctx.instances[trial_key.model][trial_key.temperature][trial_key.format][trial_key.format_hardness][trial_key.experiment][trial_key.prompt]["repeated_sequence"]:
+            quality_ctx.instances[trial_key.model][trial_key.temperature][trial_key.format][trial_key.format_hardness][trial_key.experiment][trial_key.prompt]["repeated_sequence"][trial.filename] = trial.filename
 
 
 def _track_format_level_issues(format_issues, trial, quality_ctx):
     """Track format-level quality issues from metadata."""
     trial_key = _trial_key(trial)
     for fs_label in format_issues:
-        quality_ctx.output[trial_key.model][trial_key.temperature][trial_key.file_type][trial_key.format_hardness][trial_key.experiment][trial_key.prompt][fs_label].add(trial.filename)
-        if trial.filename not in quality_ctx.instances[trial_key.model][trial_key.temperature][trial_key.file_type][trial_key.format_hardness][trial_key.experiment][trial_key.prompt][fs_label]:
-            quality_ctx.instances[trial_key.model][trial_key.temperature][trial_key.file_type][trial_key.format_hardness][trial_key.experiment][trial_key.prompt][fs_label][trial.filename] = trial.filename
+        quality_ctx.output[trial_key.model][trial_key.temperature][trial_key.format][trial_key.format_hardness][trial_key.experiment][trial_key.prompt][fs_label].add(trial.filename)
+        if trial.filename not in quality_ctx.instances[trial_key.model][trial_key.temperature][trial_key.format][trial_key.format_hardness][trial_key.experiment][trial_key.prompt][fs_label]:
+            quality_ctx.instances[trial_key.model][trial_key.temperature][trial_key.format][trial_key.format_hardness][trial_key.experiment][trial_key.prompt][fs_label][trial.filename] = trial.filename
 
 
 def _track_item_quality_issues(trial, quality_ctx):
@@ -173,10 +173,10 @@ def create_trial_from_file(
     if items is None:
         return None, None  # Filtered by metadata
 
-    file_type = FORMAT_MAP.get(ext, ext)
+    format_type = FORMAT_MAP.get(ext, ext)
     trial = Trial(
         filename=file_path.name,
-        file_type=file_type,
+        format=format_type,
         extension=ext,
         items=items,
         metadata=metadata
@@ -279,12 +279,12 @@ def update_aggregations_from_trial(trial: Trial, state: AggregationState) -> Non
 
     # Track cleanup rules
     for rule_name in trial.metadata.get("cleanup", {}).keys():
-        state.cleanup_rules_agg[model_name][str(temp_value)][trial.file_type][hardness_value][experiment_value][prompt_name][rule_name] += 1
+        state.cleanup_rules_agg[model_name][str(temp_value)][trial.format][hardness_value][experiment_value][prompt_name][rule_name] += 1
 
     # Track case values
     case_value = trial.metadata.pop("case", "lower")
     trial.metadata.pop("consistentCase", None)
-    state.case_values_agg[model_name][str(temp_value)][trial.file_type][hardness_value][experiment_value][prompt_name].append((case_value, trial.filename))
+    state.case_values_agg[model_name][str(temp_value)][trial.format][hardness_value][experiment_value][prompt_name].append((case_value, trial.filename))
 
     # Track cleanup rule sets per format
     rule_set = frozenset(trial.metadata.get("cleanup", {}).keys())
@@ -292,16 +292,16 @@ def update_aggregations_from_trial(trial: Trial, state: AggregationState) -> Non
         state.format_aggs[trial.extension]['agg'][model_name][str(temp_value)][prompt_name].append((rule_set, trial.filename))
 
     # Track format styles
-    state.format_style_counts[model_name][str(temp_value)][trial.file_type][hardness_value][experiment_value][prompt_name][trial.metadata.get("formatStyle", "unknown")] += 1
+    state.format_style_counts[model_name][str(temp_value)][trial.format][hardness_value][experiment_value][prompt_name][trial.metadata.get("formatStyle", "unknown")] += 1
     for fs_label in trial.metadata.get("formatIssues", []):
-        state.format_style_counts[model_name][str(temp_value)][trial.file_type][hardness_value][experiment_value][prompt_name][fs_label] += 1
+        state.format_style_counts[model_name][str(temp_value)][trial.format][hardness_value][experiment_value][prompt_name][fs_label] += 1
 
     # Track quality issues
     quality_ctx = QualityContext(output=state.quality_issues_output, instances=state.quality_issues_instances)
     _track_item_quality_issues(trial, quality_ctx)
 
     # Track item counts
-    state.item_count_stats[model_name][str(temp_value)][trial.file_type][hardness_value][experiment_value].append(len(trial.items))
+    state.item_count_stats[model_name][str(temp_value)][trial.format][hardness_value][experiment_value].append(len(trial.items))
 
     # Add to consolidated
     state.consolidated[trial.extension].append({

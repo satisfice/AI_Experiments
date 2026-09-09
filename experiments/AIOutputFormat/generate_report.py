@@ -1169,7 +1169,7 @@ def aggregate_items_by_format_and_model(data):
     """
     result = defaultdict(lambda: {"counter": Counter(), "trial_count": 0, "per_trial_counts": [], "filenames": []})
 
-    for file_type, entries in data.items():
+    for ext, entries in data.items():
         # Skip non-file-type entries (like malformedOutput metadata)
         if not isinstance(entries, list):
             continue
@@ -1277,7 +1277,7 @@ def get_unique_items_sorted(data):
     """
     all_items = Counter()
 
-    for file_type, entries in data.items():
+    for ext, entries in data.items():
         # Skip non-file-type entries (like malformedOutput metadata)
         if not isinstance(entries, list):
             continue
@@ -1346,7 +1346,7 @@ def _generate_combo_figures(combo_info, x_items, x_items_display, max_y):
         # trailing segment purely to keep the string unique per combo -- the
         # JS side still reads hardness from combo_hardness[combo_key_str], not
         # by parsing this string, so existing parts[0..4] indexing is unaffected.
-        combo_key_str = f"{combo_key.file_type}|{combo_key.model}|{combo_key.temperature}|{combo_key.experiment}|{combo_key.prompt}|{combo_key.format_hardness}"
+        combo_key_str = f"{combo_key.format}|{combo_key.model}|{combo_key.temperature}|{combo_key.experiment}|{combo_key.prompt}|{combo_key.format_hardness}"
         combo_y_values[combo_key_str] = y_values
         combo_hardness[combo_key_str] = combo_key.format_hardness
 
@@ -1355,7 +1355,7 @@ def _generate_combo_figures(combo_info, x_items, x_items_display, max_y):
             data=[go.Bar(
                 x=x_items_display,
                 y=y_values,
-                marker=dict(color=FORMAT_COLORS.get(combo_key.file_type.lower(), '#636363')),
+                marker=dict(color=FORMAT_COLORS.get(combo_key.format.lower(), '#636363')),
                 hovertemplate='<b>%{x}</b><br>Count: %{y}<extra></extra>',
             )]
         )
@@ -1373,7 +1373,7 @@ def _generate_combo_figures(combo_info, x_items, x_items_display, max_y):
         )
 
         chart_id = (
-            f"{combo_key.file_type}-{combo_key.model}-{combo_key.temperature}-"
+            f"{combo_key.format}-{combo_key.model}-{combo_key.temperature}-"
             f"{combo_key.format_hardness}-{combo_key.experiment}-{combo_key.prompt}"
         ).replace('.', '-').replace('+', '-').replace(' ', '-').replace('_', '-')
         div_id = f"graph-{chart_id}"
@@ -1488,7 +1488,7 @@ def _build_cleanup_indicator(quality_data, combo):
     bold + cleanup rules). Always returned: red if quality problems, #555 if
     cleanup only, #aaa if nothing to clean."""
     quality_issues, cleanup_rules = get_cleanup_data_for_combo(
-        quality_data, combo.model, combo.temperature, combo.file_type, combo.format_hardness, combo.experiment, combo.prompt)
+        quality_data, combo.model, combo.temperature, combo.format, combo.format_hardness, combo.experiment, combo.prompt)
     if not (quality_issues or cleanup_rules):
         # No cleanup or quality issues: show grayed-out indicator with no tooltip.
         return ' | <span style="color: #aaa; cursor: default;">Cleanup</span>'
@@ -1525,7 +1525,7 @@ def _build_load_set_button(info, combo):
         # Wildcard only the trial number (last two digits before extension)
         abbr_model = abbreviate_model_name(combo.model)
         temp_code = "txx" if combo.temperature in ("None", None) else f"t{int(float(combo.temperature) * 10):02d}"
-        file_ext = get_file_extension(combo.file_type)
+        file_ext = get_file_extension(combo.format)
         hardness_code = "fs" if combo.format_hardness == "soft" else "fh"
         load_set_str = f"np *{combo.experiment}-{combo.prompt}-{hardness_code}-{abbr_model}-{temp_code}-*.{file_ext}"
 
@@ -1559,7 +1559,7 @@ def _build_item_counts_button(info, combo, format_color, model_base_color):
         _ts = Path(_tc_filenames[0]).stem.split('-')[0]
         if len(_ts) == 14 and _ts.isdigit():
             _tc_date = f"{_ts[:4]}-{_ts[4:6]}-{_ts[6:8]} {_ts[8:10]}:{_ts[10:12]}"
-    _tc_subtitle = '  '.join(p for p in [_tc_date, combo.experiment, combo.prompt, combo.file_type, combo.format_hardness, abbreviate_model_name(combo.model), str(combo.temperature)] if p)
+    _tc_subtitle = '  '.join(p for p in [_tc_date, combo.experiment, combo.prompt, combo.format, combo.format_hardness, abbreviate_model_name(combo.model), str(combo.temperature)] if p)
     _tc_json_escaped = html_mod.escape(json.dumps({
         "trials": _tc_trials,
         "counts": _tc_counts,
@@ -1580,7 +1580,7 @@ def _build_item_counts_button(info, combo, format_color, model_base_color):
 def _build_prompt_tooltip_attr(combo, prompt_texts, format_prompts):
     """Build the prompt tooltip attribute: prompt text + double line break +
     format instruction, wrapped at 80 chars with <br> line breaks."""
-    fmt, prompt = combo.file_type, combo.prompt
+    fmt, prompt = combo.format, combo.prompt
     _prompt_body = (prompt_texts or {}).get(prompt, '')
     _fmt_ext = get_file_extension(fmt)
     _fmt_instruction = (format_prompts or {}).get(_fmt_ext, '')
@@ -1599,7 +1599,7 @@ def _build_prompt_tooltip_attr(combo, prompt_texts, format_prompts):
 
 def _build_hardness_tooltip_attr(combo):
     """Build the hardness tooltip attribute: format instruction for this hardness."""
-    _hardness_instruction = get_format_instruction(combo.file_type, combo.format_hardness)
+    _hardness_instruction = get_format_instruction(combo.format, combo.format_hardness)
     if not _hardness_instruction:
         return ''
     _hardness_escaped = html_mod.escape('<br>'.join(textwrap.wrap(_hardness_instruction, width=80)))
@@ -1762,7 +1762,7 @@ def main(experiment, input, output):
         temperatures = set()
         experiments = set()
         prompts = set()
-        for file_type, entries in data.items():
+        for ext, entries in data.items():
             # Skip non-file-type entries (like malformedOutput metadata)
             if not isinstance(entries, list):
                 continue
@@ -1796,16 +1796,16 @@ def main(experiment, input, output):
         if experiment:
             click.echo(f"Filtering for experiment: {experiment}")
             filtered_data = {}
-            for file_type, entries in data.items():
+            for ext, entries in data.items():
                 if not isinstance(entries, list):
-                    filtered_data[file_type] = entries
+                    filtered_data[ext] = entries
                     continue
                 filtered_entries = [
                     entry for entry in entries
                     if entry.get('metadata', {}).get('experiment', '') == experiment
                 ]
                 if filtered_entries:
-                    filtered_data[file_type] = filtered_entries
+                    filtered_data[ext] = filtered_entries
             data = filtered_data
 
         # Load formats.json for format instructions (keyed by extension, e.g. "html", "json")
