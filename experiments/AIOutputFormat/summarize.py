@@ -10,11 +10,11 @@ from pathlib import Path
 from collections import defaultdict, Counter
 
 from config import abbreviate_model_name
-from utils import format_error, is_standard_filename, calculate_statistics
+from utils import format_error, calculate_statistics
 from process_single_file import (
     trim_items, is_alphabetical_order, process_and_track,
     extract_code_block, parse_filename_metadata, parse_cleanup_keys,
-    detect_format_style, reorder_metadata, FORMAT_MAP, PARSERS,
+    detect_format_style, detect_intended_format, reorder_metadata, FORMAT_MAP, PARSERS,
     extract_first_alpha_string
 )
 from cli_helpers import (
@@ -43,8 +43,6 @@ RESULTS_FILE = RESULTS_DIR / "results.json"
 QUALITY_FILE = RESULTS_DIR / "quality.json"
 UNIQUE_ITEMS_FILE = RESULTS_DIR / "unique_items.txt"
 UNIQUE_SOURCE_ITEMS_FILE = RESULTS_DIR / "unique_source_items.txt"
-SKIP_EXTENSIONS = {".xlsx", ".log"}
-SKIP_PATTERNS = {"results.json", "quality.json", "unique_items.txt", "unique_source_items.txt", "spreadsheet.csv"}
 
 # Map file extensions to format types
 FORMAT_MAP = {
@@ -325,48 +323,6 @@ def _build_quality_issues_dict(trial_sets, format_consistency, format_style_coun
             .setdefault(trial_set.experiment, {})[trial_set.prompt] = prompt_data
 
     return quality_issues_dict
-
-
-def _matches_format_type(ext, format_type):
-    """Check if extension matches the requested format type."""
-    if not format_type:
-        return True
-    return ext == f".{format_type}" or ext == format_type
-
-
-def _should_attempt_result_file(file_path, filename_filter, format_type):
-    """Pre-filter for the result-file scan: decide whether to even attempt parsing
-    this file. Returns the lowercase extension if the file should be attempted, or
-    None if it should be silently skipped. (Extension-based skip-list handling is
-    left to the caller, since that case needs to be recorded in skipped_trials.)"""
-    if not file_path.is_file():
-        return None
-    if file_path.name in SKIP_PATTERNS:
-        return None
-    if not is_standard_filename(file_path.name):
-        return None
-    if filename_filter and filename_filter not in file_path.name:
-        return None
-    ext = file_path.suffix.lower()
-    if not ext:
-        return None
-    if not _matches_format_type(ext, format_type):
-        return None
-    return ext
-
-
-def _read_result_file_content(file_path):
-    """Read a result file's content, trying utf-8 then utf-16.
-    Returns None if both encodings fail."""
-    try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            return f.read()
-    except UnicodeDecodeError:
-        try:
-            with open(file_path, 'r', encoding='utf-16') as f:
-                return f.read()
-        except UnicodeDecodeError:
-            return None
 
 
 def _group_trials_into_sets(trials):

@@ -264,3 +264,25 @@ Left "case"/"consistentCase" in trial.metadata during aggregation; moved the str
 Impact: quality.json now contains real inconsistent_case findings (84 in the current dataset, e.g. gpt35turbo producing "lower" case in one trial and "mixed" in another trial of the same set) where it had zero before. report.html's Cleanup tooltip now surfaces "Inconsistent Case" for affected combos. results.json still correctly omits "case"/"consistentCase" from every entry (9,351 of 9,351) -- the strip is deferred, not skipped.
 
 Lesson: A write-only aggregation dict sitting next to a working feature that reads its data from somewhere else entirely is a signal to ask why, not just carry it forward through the next refactor. Also: verify a "detection" feature by checking whether it *ever* fires on real data (grep the output for the flag it's supposed to set), not just that the code path runs without error -- an always-empty result and a broken result look identical from the outside.
+
+---
+
+[Dead Code - Second Instance of the Same Duplicate-Function Pattern] (noted by Claude): 2026-09-09
+
+Incident: summarize.py had a second, unrelated dead duplicate of a function that's actually live in trial_loading.py -- same pattern as the "Dead Code - Orphaned Duplicate Functions" entry from 2026-09-08, found independently this time via CodeScene rather than by hand.
+
+Context:
+Running a CodeScene Code Health pass (prompted by the user asking "Aren't there some codescene analyses to do here?") flagged trial_loading.py's _passes_metadata_filters at cc=13 (Complex Method) and 7 arguments (Excess Arguments). Cross-checking summarize.py's own _passes_metadata_filters finding (also flagged, 7 arguments) revealed summarize.py's version was a *different*, already-decomposed implementation (four small _check_experiment_filter/_check_model_filters/_check_temperature_filter/_check_timestamp_filter helpers ANDed together) -- not the same source shared between files.
+
+Error:
+grep confirmed summarize.py's _passes_metadata_filters and its four helpers were never called from anywhere; only trial_loading.py's monolithic version (called from _parse_and_build_file_metadata) was live. Unlike the 2026-09-08 instance, the dead copy this time was the *better* implementation and the live copy was the messy one CodeScene had just flagged.
+
+Root cause:
+Same root cause as the earlier instance: a refactor (unclear which one) produced a clean decomposition in summarize.py that was never wired up to replace trial_loading.py's original inline version, and never deleted either.
+
+Resolution:
+Verified the two implementations were logically equivalent (each of the four checks against the monolith's four conditions) before swapping. Moved the four helpers plus the clean _passes_metadata_filters into trial_loading.py, replacing the monolith; deleted the dead cluster and the now-unused matches_model_pattern import from summarize.py. Verified byte-identical output for the default run, and separately verified each filter dimension (--model, --temperature, --exclude-model, --experiment, --timestamp) still filters correctly, since this replaced a live implementation rather than deleting only-dead code.
+
+Impact: trial_loading.py's Complex Method finding (cc=13) is gone; Code Health 9.33 -> 9.68.
+
+Lesson: When two files define a same-named private function, don't assume the newer-looking or better-factored one is the live one -- check call sites in both directions. This is the second time this exact "orphaned decomposition, live monolith left in place" pattern has appeared in this codebase; worth a repo-wide grep for duplicate private-function names as a standing check after future refactors, not just when CodeScene happens to flag the live copy.
