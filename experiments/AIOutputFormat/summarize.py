@@ -313,7 +313,7 @@ def _build_quality_issues_dict(trial_sets, format_consistency, format_style_coun
 
     quality_issues_dict = {}
 
-    # Iterate through trial sets instead of nested dict combos
+    # Iterate through trial sets, one TrialKey at a time
     for trial_set in trial_sets.values():
         tk = trial_set.key
         prompt_data = _build_prompt_data_section(tk, ctx)
