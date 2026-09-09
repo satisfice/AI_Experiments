@@ -112,6 +112,28 @@ def print_prompt_analysis(
     print_issue_type_breakdown(prompt_data, trial_key, quality_ctx)
 
 
+def _walk_leaves(nested: dict, depth: int):
+    """Yield (keys_tuple, leaf) for every leaf of a dict nested exactly `depth`
+    levels deep. Keeps nesting shallow regardless of `depth` by recursing
+    instead of stacking one loop per level."""
+    if depth == 0:
+        yield (), nested
+        return
+    for key, sub in nested.items():
+        for sub_keys, leaf in _walk_leaves(sub, depth - 1):
+            yield (key,) + sub_keys, leaf
+
+
+def _sorted_item_count_groups(item_count_stats):
+    """Flatten item_count_stats (5 levels: model, temperature, format,
+    format_hardness, experiment -> counts) into a single sorted list of
+    (model, temperature, format, format_hardness, experiment, counts) tuples,
+    in the same order the original nested-per-level sorts produced."""
+    groups = [keys + (counts,) for keys, counts in _walk_leaves(item_count_stats, 5)]
+    groups.sort(key=lambda g: (g[0], g[1] == "unknown", g[1], g[2].casefold(), g[3], g[4]))
+    return groups
+
+
 def print_analysis_report(
     item_count_stats: Dict[str, Dict[Any, Dict[str, Dict[str, Dict[str, List[int]]]]]],
     quality_issues_dict: Dict[str, Dict[str, Dict[str, Dict[str, Dict[str, Dict[str, Any]]]]]],
@@ -124,19 +146,20 @@ def print_analysis_report(
     _safe_write("DATA ANALYSIS REPORT BY MODEL, TEMPERATURE, AND FORMAT")
     _safe_write("="*70)
 
-    for model_name in sorted(item_count_stats.keys()):
-        _safe_write(f"\n{model_name}:")
-        for temp_value in sorted(item_count_stats[model_name].keys(), key=lambda x: (x == "unknown", x)):
+    last_model, last_temp = None, None
+    for model_name, temp_value, format_type, hardness, experiment, counts in _sorted_item_count_groups(item_count_stats):
+        if model_name != last_model:
+            _safe_write(f"\n{model_name}:")
+            last_model, last_temp = model_name, None
+        if temp_value != last_temp:
             _safe_write(f"  Temperature {temp_value}:")
-            for format_type in sorted(item_count_stats[model_name][temp_value].keys(), key=str.casefold):
-                for hardness in sorted(item_count_stats[model_name][temp_value][format_type].keys()):
-                    for experiment in sorted(item_count_stats[model_name][temp_value][format_type][hardness].keys()):
-                        counts = item_count_stats[model_name][temp_value][format_type][hardness][experiment]
-                        stats = calculate_statistics(counts)
-                        _safe_write(f"    {format_type} ({hardness}) [{experiment}] ({len(counts)} files):")
-                        _safe_write(f"      Items: max={stats['max']}, min={stats['min']}, avg={stats['avg']}, var={stats['var']}, mode={stats['mode']}")
+            last_temp = temp_value
 
-                        prompts_data = quality_issues_dict.get(model_name, {}).get(str(temp_value), {}).get(format_type, {}).get(hardness, {}).get(experiment, {})
-                        for prompt_name in sorted(prompts_data.keys()):
-                            tk = TrialKey(model_name, temp_value, format_type, hardness, experiment, prompt_name)
-                            print_prompt_analysis(prompts_data[prompt_name], tk, format_consistency, treatment_fields, quality_ctx)
+        stats = calculate_statistics(counts)
+        _safe_write(f"    {format_type} ({hardness}) [{experiment}] ({len(counts)} files):")
+        _safe_write(f"      Items: max={stats['max']}, min={stats['min']}, avg={stats['avg']}, var={stats['var']}, mode={stats['mode']}")
+
+        prompts_data = quality_issues_dict.get(model_name, {}).get(str(temp_value), {}).get(format_type, {}).get(hardness, {}).get(experiment, {})
+        for prompt_name in sorted(prompts_data.keys()):
+            tk = TrialKey(model_name, temp_value, format_type, hardness, experiment, prompt_name)
+            print_prompt_analysis(prompts_data[prompt_name], tk, format_consistency, treatment_fields, quality_ctx)

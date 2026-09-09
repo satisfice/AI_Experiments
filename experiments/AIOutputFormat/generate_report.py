@@ -1161,6 +1161,29 @@ def load_results_json(json_path):
         )
 
 
+def _accumulate_entry_counts(result, entry):
+    """Update `result` (a TrialKey -> stats dict, from aggregate_items_by_format_and_model)
+    with the item counts from one results.json entry."""
+    metadata = entry['metadata']
+    model = metadata['model']
+    format_type = metadata['format']
+    experiment = metadata.get('experiment', 'unknown')
+    prompt = metadata.get('prompt', 'unknown')
+    temperature = str(metadata.get('temperature', 'default'))
+    format_hardness = metadata.get('formatHardness', 'unknown')
+    items = entry.get('items', [])
+
+    # Filter out preamble text
+    filtered_items = [item for item in items if not detect_preamble_leak(item)]
+
+    key = TrialKey(model, temperature, format_type, format_hardness, experiment, prompt)
+    result[key]["counter"].update(filtered_items)
+    result[key]["per_trial_counts"].append(len(filtered_items))
+    result[key]["trial_count"] += 1
+    if "filename" in entry:
+        result[key]["filenames"].append(entry["filename"])
+
+
 def aggregate_items_by_format_and_model(data):
     """
     For each unique TrialKey (model, temperature, format, format_hardness,
@@ -1173,31 +1196,8 @@ def aggregate_items_by_format_and_model(data):
         # Skip non-file-type entries (like malformedOutput metadata)
         if not isinstance(entries, list):
             continue
-
         for entry in entries:
-            metadata = entry['metadata']
-            model = metadata['model']
-            format_type = metadata['format']
-            experiment = metadata.get('experiment', 'unknown')
-            prompt = metadata.get('prompt', 'unknown')
-            temperature = str(metadata.get('temperature', 'default'))
-            format_hardness = metadata.get('formatHardness', 'unknown')
-            items = entry.get('items', [])
-
-            # Filter out preamble text
-            filtered_items = [item for item in items if not detect_preamble_leak(item)]
-
-            # Create unique key for this combination
-            key = TrialKey(model, temperature, format_type, format_hardness, experiment, prompt)
-
-            # Count items for this combination
-            result[key]["counter"].update(filtered_items)
-            # Track items per trial
-            result[key]["per_trial_counts"].append(len(filtered_items))
-            # Increment trial count for each file/entry
-            result[key]["trial_count"] += 1
-            if "filename" in entry:
-                result[key]["filenames"].append(entry["filename"])
+            _accumulate_entry_counts(result, entry)
 
     return result
 
@@ -1219,7 +1219,24 @@ def _trial_numbers_str(instances):
     return "(" + ", ".join(str(n) for n in sorted(nums)) + ")"
 
 
-def get_cleanup_data_for_trial_key(quality_data, model, temperature, format_type, format_hardness, experiment, prompt):
+def _labels_for_issue_key(key, value):
+    """Convert one quality-issue key/value pair from prompt_data into its
+    human-readable label(s)."""
+    if key == "parse-failed":
+        # List each failed file individually instead of just the category label.
+        return [f"Parsing failed completely for {entry['instance']}"
+                for entry in sorted(value, key=lambda e: e.get("instance", ""))]
+    if key.startswith("inconsistent_"):
+        # Extract format name from key (e.g., "inconsistent_md_format" -> "md")
+        format_abbrev = key.replace('inconsistent_', '').replace('_format', '')
+        format_display = FORMAT_SHORT_TO_DISPLAY.get(format_abbrev, format_abbrev.title())
+        return [f"Inconsistent {format_display}"]
+    label = key.replace('_', ' ').title()
+    trial_str = _trial_numbers_str(value)
+    return [f"{label} {trial_str}".strip() if trial_str else label]
+
+
+def get_cleanup_data_for_trial_key(quality_data, trial_key):
     """
     Return (quality_issues, cleanup_rules) for a specific TrialKey.
     quality_issues: list of human-readable issue strings (empty list if none).
@@ -1229,8 +1246,8 @@ def get_cleanup_data_for_trial_key(quality_data, model, temperature, format_type
     if not quality_data:
         return [], []
 
-    abbrev_model = abbreviate_model_name(model)
-    prompt_data = quality_data.get(abbrev_model, {}).get(str(temperature), {}).get(format_type, {}).get(format_hardness, {}).get(experiment, {}).get(prompt, {})
+    abbrev_model = abbreviate_model_name(trial_key.model)
+    prompt_data = quality_data.get(abbrev_model, {}).get(str(trial_key.temperature), {}).get(trial_key.format, {}).get(trial_key.format_hardness, {}).get(trial_key.experiment, {}).get(trial_key.prompt, {})
     if not prompt_data:
         return [], []
 
@@ -1243,23 +1260,9 @@ def get_cleanup_data_for_trial_key(quality_data, model, temperature, format_type
     # Non-empty issue lists (skip metadata keys)
     NON_ISSUE_KEYS = {"consistentFormat", "formatIssues", "cleanupRules"}
     for key, value in prompt_data.items():
-        if key in NON_ISSUE_KEYS:
+        if key in NON_ISSUE_KEYS or not value:
             continue
-        if not value:
-            continue
-        if key == "parse-failed":
-            # List each failed file individually instead of just the category label.
-            for entry in sorted(value, key=lambda e: e.get("instance", "")):
-                issues.append(f"Parsing failed completely for {entry['instance']}")
-        elif key.startswith("inconsistent_"):
-            # Extract format name from key (e.g., "inconsistent_md_format" -> "md")
-            format_abbrev = key.replace('inconsistent_', '').replace('_format', '')
-            format_display = FORMAT_SHORT_TO_DISPLAY.get(format_abbrev, format_abbrev.title())
-            issues.append(f"Inconsistent {format_display}")
-        else:
-            label = key.replace('_', ' ').title()
-            trial_str = _trial_numbers_str(value)
-            issues.append(f"{label} {trial_str}".strip() if trial_str else label)
+        issues.extend(_labels_for_issue_key(key, value))
 
     # cleanupRules is a dict {rule: trial_count} in the current format, or a list in the old format.
     raw = prompt_data.get("cleanupRules", {})
@@ -1487,8 +1490,7 @@ def _build_cleanup_indicator(quality_data, trial_key):
     """Build the cleanup indicator span with a rich tooltip (quality issues in
     bold + cleanup rules). Always returned: red if quality problems, #555 if
     cleanup only, #aaa if nothing to clean."""
-    quality_issues, cleanup_rules = get_cleanup_data_for_trial_key(
-        quality_data, trial_key.model, trial_key.temperature, trial_key.format, trial_key.format_hardness, trial_key.experiment, trial_key.prompt)
+    quality_issues, cleanup_rules = get_cleanup_data_for_trial_key(quality_data, trial_key)
     if not (quality_issues or cleanup_rules):
         # No cleanup or quality issues: show grayed-out indicator with no tooltip.
         return ' | <span style="color: #aaa; cursor: default;">Cleanup</span>'
@@ -1540,25 +1542,39 @@ def _build_load_set_button(info, trial_key):
     )
 
 
+def _trial_numbers_from_filenames(filenames, fallback_count):
+    """Extract trial/iteration numbers (the trailing NN before the extension)
+    from a list of result filenames, or fall back to 1..fallback_count if no
+    filenames were recorded."""
+    if not filenames:
+        return list(range(1, fallback_count + 1))
+    trials = []
+    for i, fn in enumerate(filenames):
+        try:
+            trials.append(int(Path(fn).stem.split('-')[-1]))
+        except (ValueError, IndexError):
+            trials.append(i + 1)
+    return trials
+
+
+def _run_date_from_filenames(filenames):
+    """Extract the 'YYYY-MM-DD HH:MM' run date from the first filename's
+    YYYYMMDDHHMMSS timestamp prefix, or '' if unavailable."""
+    if not filenames:
+        return ''
+    ts = Path(filenames[0]).stem.split('-')[0]
+    if len(ts) != 14 or not ts.isdigit():
+        return ''
+    return f"{ts[:4]}-{ts[4:6]}-{ts[6:8]} {ts[8:10]}:{ts[10:12]}"
+
+
 def _build_item_counts_button(info, trial_key, format_color, model_base_color):
     """Build the 'Show Item Counts' button, embedding per-trial data as JSON
     for the client-side histogram popup."""
     _tc_counts = info["per_trial_counts"]
     _tc_filenames = info.get("filenames", [])
-    _tc_trials = []
-    for _i, _fn in enumerate(_tc_filenames):
-        try:
-            _tc_trials.append(int(Path(_fn).stem.split('-')[-1]))
-        except (ValueError, IndexError):
-            _tc_trials.append(_i + 1)
-    if not _tc_trials:
-        _tc_trials = list(range(1, len(_tc_counts) + 1))
-    # Extract run date from first filename timestamp (YYYYMMDDHHMMSS prefix)
-    _tc_date = ''
-    if _tc_filenames:
-        _ts = Path(_tc_filenames[0]).stem.split('-')[0]
-        if len(_ts) == 14 and _ts.isdigit():
-            _tc_date = f"{_ts[:4]}-{_ts[4:6]}-{_ts[6:8]} {_ts[8:10]}:{_ts[10:12]}"
+    _tc_trials = _trial_numbers_from_filenames(_tc_filenames, len(_tc_counts))
+    _tc_date = _run_date_from_filenames(_tc_filenames)
     _tc_subtitle = '  '.join(p for p in [_tc_date, trial_key.experiment, trial_key.prompt, trial_key.format, trial_key.format_hardness, abbreviate_model_name(trial_key.model), str(trial_key.temperature)] if p)
     _tc_json_escaped = html_mod.escape(json.dumps({
         "trials": _tc_trials,
@@ -1716,6 +1732,80 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
         f.write(html_content)
 
 
+def _resolve_paths(experiment, input, output):
+    """Resolve the effective input/output paths for the CLI, applying the
+    default results.json / report.html (or report_{experiment}.html) names."""
+    if input is None:
+        input = 'results/results.json'
+    if output is None:
+        output = f'results/report_{experiment}.html' if experiment else 'results/report.html'
+    return Path(input), Path(output)
+
+
+def _load_quality_data(input_path):
+    """Load quality.json alongside results.json, if it exists."""
+    quality_path = input_path.parent / 'quality.json'
+    if not quality_path.exists():
+        click.echo("Quality data not found (run summarize --analysis to generate)")
+        return {}
+    click.echo("Loading quality data...")
+    return load_results_json(quality_path)
+
+
+def _extract_filter_values(data):
+    """Scan every entry for the distinct format/model/temperature/experiment/
+    prompt values used to build the report's filter checkboxes.
+    Returns (formats, models, temperatures, experiments, prompts), each sorted."""
+    formats, models, temperatures, experiments, prompts = set(), set(), set(), set(), set()
+    for ext, entries in data.items():
+        # Skip non-file-type entries (like malformedOutput metadata)
+        if not isinstance(entries, list):
+            continue
+        for entry in entries:
+            metadata = entry.get('metadata', {})
+            formats.add(metadata.get('format', 'unknown'))
+            models.add(metadata.get('model', 'unknown'))
+            temperatures.add(str(metadata.get('temperature', 'default')))
+            experiments.add(metadata.get('experiment', 'unknown'))
+            prompts.add(metadata.get('prompt', 'unknown'))
+    return sorted(formats), sorted(models), sorted(temperatures), sorted(experiments), sorted(prompts)
+
+
+def _filter_data_by_experiment(data, experiment):
+    """Return a copy of `data` containing only entries for one experiment."""
+    filtered_data = {}
+    for ext, entries in data.items():
+        if not isinstance(entries, list):
+            filtered_data[ext] = entries
+            continue
+        filtered_entries = [
+            entry for entry in entries
+            if entry.get('metadata', {}).get('experiment', '') == experiment
+        ]
+        if filtered_entries:
+            filtered_data[ext] = filtered_entries
+    return filtered_data
+
+
+def _load_format_prompts(script_dir):
+    """Load formats.json for format instructions (keyed by extension, e.g. 'html', 'json')."""
+    formats_json_path = script_dir / 'formats.json'
+    if not formats_json_path.exists():
+        return {}
+    formats_data = json.loads(formats_json_path.read_text(encoding='utf-8'))
+    return {k: v.get('prompt', '') for k, v in formats_data.items()}
+
+
+def _load_prompt_texts(script_dir, prompts):
+    """Load the .prompt file text for each discovered prompt name."""
+    prompt_texts = {}
+    for prompt_name in prompts:
+        prompt_file = script_dir / f'{prompt_name}.prompt'
+        if prompt_file.exists():
+            prompt_texts[prompt_name] = prompt_file.read_text(encoding='utf-8').strip()
+    return prompt_texts
+
+
 @click.command()
 @click.option('--experiment', type=str, default=None,
               help='Experiment name to filter (optional). Output: results/report_{experiment}.html')
@@ -1725,114 +1815,39 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
               help='Override output file path (default: results/report.html or results/report_{experiment}.html if --experiment is set)')
 def main(experiment, input, output):
     """Generate HTML report with bar charts from experiment results"""
-
-    # Construct paths from experiment name if not explicitly provided
-    if input is None:
-        input = 'results/results.json'
-    if output is None:
-        if experiment:
-            output = f'results/report_{experiment}.html'
-        else:
-            output = 'results/report.html'
-
-    input_path = Path(input)
-    output_path = Path(output)
+    input_path, output_path = _resolve_paths(experiment, input, output)
 
     if not input_path.exists():
         click.echo(format_error("generate_report", f"Input file not found: {input_path}"), err=True)
         sys.exit(1)
 
     try:
-        # Load data
         click.echo("Loading results.json...")
         data = load_results_json(input_path)
+        quality_data = _load_quality_data(input_path)
 
-        # Load quality data if available
-        quality_data = {}
-        quality_path = input_path.parent / 'quality.json'
-        if quality_path.exists():
-            click.echo("Loading quality data...")
-            quality_data = load_results_json(quality_path)
-        else:
-            click.echo("Quality data not found (run summarize --analysis to generate)")
-
-        # Extract unique values for filtering
-        formats = set()
-        models = set()
-        temperatures = set()
-        experiments = set()
-        prompts = set()
-        for ext, entries in data.items():
-            # Skip non-file-type entries (like malformedOutput metadata)
-            if not isinstance(entries, list):
-                continue
-
-            for entry in entries:
-                metadata = entry.get('metadata', {})
-                formats.add(metadata.get('format', 'unknown'))
-                models.add(metadata.get('model', 'unknown'))
-                # Temperature might be in metadata or filename
-                temp = metadata.get('temperature', 'default')
-                temperatures.add(str(temp))
-                exp = metadata.get('experiment', 'unknown')
-                experiments.add(exp)
-                prompt = metadata.get('prompt', 'unknown')
-                prompts.add(prompt)
-
-        # Sort for consistent ordering
-        formats = sorted(formats)
-        models = sorted(models)
-        temperatures = sorted(temperatures)
-        experiments = sorted(experiments)
-        prompts = sorted(prompts)
-
+        formats, models, temperatures, experiments, prompts = _extract_filter_values(data)
         click.echo(f"Found formats: {', '.join(formats)}")
         click.echo(f"Found models: {', '.join(models)}")
         click.echo(f"Found temperatures: {', '.join(temperatures)}")
         click.echo(f"Found experiments: {', '.join(experiments)}")
         click.echo(f"Found prompts: {', '.join(prompts)}")
 
-        # Filter data by experiment if specified
         if experiment:
             click.echo(f"Filtering for experiment: {experiment}")
-            filtered_data = {}
-            for ext, entries in data.items():
-                if not isinstance(entries, list):
-                    filtered_data[ext] = entries
-                    continue
-                filtered_entries = [
-                    entry for entry in entries
-                    if entry.get('metadata', {}).get('experiment', '') == experiment
-                ]
-                if filtered_entries:
-                    filtered_data[ext] = filtered_entries
-            data = filtered_data
+            data = _filter_data_by_experiment(data, experiment)
 
-        # Load formats.json for format instructions (keyed by extension, e.g. "html", "json")
-        format_prompts = {}
-        formats_json_path = Path(__file__).parent / 'formats.json'
-        if formats_json_path.exists():
-            formats_data = json.loads(formats_json_path.read_text(encoding='utf-8'))
-            format_prompts = {k: v.get('prompt', '') for k, v in formats_data.items()}
-
-        # Load .prompt files for each discovered prompt name
         script_dir = Path(__file__).parent
-        prompt_texts = {}
-        for prompt_name in prompts:
-            prompt_file = script_dir / f'{prompt_name}.prompt'
-            if prompt_file.exists():
-                prompt_texts[prompt_name] = prompt_file.read_text(encoding='utf-8').strip()
+        format_prompts = _load_format_prompts(script_dir)
+        prompt_texts = _load_prompt_texts(script_dir, prompts)
 
-        # Aggregate items
         click.echo("Aggregating items by format and model...")
         items_by_format_model = aggregate_items_by_format_and_model(data)
 
-        # Get unique items sorted
         click.echo("Sorting items...")
         all_items_sorted = get_unique_items_sorted(data)
         click.echo(f"Found {len(all_items_sorted)} unique items (after filtering preambles)")
 
-        # Export to HTML with filters (generates separate charts for each format)
         click.echo(f"Writing report to {output_path}...")
         output_path.parent.mkdir(parents=True, exist_ok=True)
         generate_html_report_with_filters(items_by_format_model, all_items_sorted, formats, models, temperatures, experiments, prompts, data, str(output_path), quality_data, prompt_texts=prompt_texts, format_prompts=format_prompts)
