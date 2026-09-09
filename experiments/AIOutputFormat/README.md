@@ -311,6 +311,12 @@ Example:
 
 - `experiment.py`: CLI entry point for batch LLM generation using Click
 - `summarize.py`: Parser for output files, consolidates results into JSON with quality analysis
+- `process_single_file.py`: Orchestrates single-file parsing (format detection, per-format parser dispatch via `PARSERS`, item cleanup/quality pipeline, filename metadata extraction)
+- `format_detection.py`: Detects a file's intended format from its extension and validates/detects its actual content style
+- `json_parser.py`, `csv_parser.py`, `yaml_parser.py`, `html_parser.py`, `text_parser.py`, `markdown_parser.py`: Format-specific item extraction, one module per output format
+- `parsing_common.py`: Parsing helpers shared by two or more format parsers (nested-list flattening, single-row/one-per-line extraction)
+- `item_quality.py`: Format-agnostic item-level quality detectors (punctuation, markup artifacts, repeated characters, case)
+- `item_cleanup.py`: Format-agnostic item cleanup transforms (strip punctuation/bullets/numbers/quotes, lowercase)
 - `generate_report.py`: Generates interactive HTML reports using Plotly with dual-column comparison mode
 - `color_picker.py`: Interactive terminal tool for assigning and randomizing model colors in `models.json`
 - `providers.py`: Direct API providers for Ollama (HTTP), OpenAI (SDK), and Anthropic (SDK)

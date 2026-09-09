@@ -286,3 +286,23 @@ Verified the two implementations were logically equivalent (each of the four che
 Impact: trial_loading.py's Complex Method finding (cc=13) is gone; Code Health 9.33 -> 9.68.
 
 Lesson: When two files define a same-named private function, don't assume the newer-looking or better-factored one is the live one -- check call sites in both directions. This is the second time this exact "orphaned decomposition, live monolith left in place" pattern has appeared in this codebase; worth a repo-wide grep for duplicate private-function names as a standing check after future refactors, not just when CodeScene happens to flag the live copy.
+
+---
+
+[Dead Code - Unused Import Surviving Multiple Refactors] (noted by Claude): 2026-09-09
+
+Incident: process_single_file.py imported abbreviate_model_name from config.py but never called it anywhere in the file.
+
+Context:
+While splitting process_single_file.py into format-specific parser modules (json_parser.py, csv_parser.py, yaml_parser.py, html_parser.py, text_parser.py, markdown_parser.py) plus shared modules (parsing_common.py, item_quality.py, item_cleanup.py, format_detection.py), grepped the whole file for every name before deciding which module needed which import, rather than copying the original import block wholesale into the new orchestrator.
+
+Error:
+grep -n "abbreviate_model_name" process_single_file.py matched only the import line itself; the function is genuinely used in summarize.py, trial_loading.py, and generate_report.py, so this was not a case of the function itself being dead -- just this one file's import of it.
+
+Root cause:
+Unknown which past refactor left the call site behind while the import survived; the file had grown to 1818 lines and 102 functions, making a single stale import easy to miss without a targeted grep.
+
+Resolution:
+Did not carry the import forward into the new process_single_file.py orchestrator module.
+
+Lesson: When rewriting a large file from scratch (rather than editing it in place), grep every existing import for actual use before deciding whether to keep it -- a full-file rewrite is a natural point to catch import drift that incremental edits would keep perpetuating.
