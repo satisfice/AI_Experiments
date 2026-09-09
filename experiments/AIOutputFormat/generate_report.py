@@ -1066,7 +1066,56 @@ def hsl_to_rgb(h, s, l):
 
 
 
-def adjust_color_by_temperature(base_color_hex, temperature_str, model_name=None, models_list=None, max_temperature=2.0):
+def _model_supports_temperature_safe(model_name):
+    """Check whether a model supports temperature, defaulting to True
+    (adjust the color) if that can't be determined."""
+    if not model_name:
+        return True
+    try:
+        return model_supports_temperature(model_name)
+    except Exception:
+        return True
+
+
+def _parse_temperature(temperature_str, default=1.0):
+    """Parse a temperature string into a float. Handles the "None" string
+    JSON serialization produces for a None temperature, and falls back to
+    `default` for anything else invalid."""
+    if temperature_str == "None" or temperature_str is None:
+        return default
+    try:
+        return float(temperature_str)
+    except (ValueError, TypeError):
+        return default
+
+
+def _hex_to_rgb(hex_color):
+    """Parse a '#rrggbb' (or 'rrggbb') string into (r, g, b) 0-255 ints."""
+    hex_color = hex_color.lstrip('#')
+    return int(hex_color[0:2], 16), int(hex_color[2:4], 16), int(hex_color[4:6], 16)
+
+
+def _rgb_to_hsl(r, g, b):
+    """Convert 0-255 RGB values to (hue 0-360, saturation 0-1, lightness 0-1)."""
+    r_norm, g_norm, b_norm = r / 255.0, g / 255.0, b / 255.0
+    max_c, min_c = max(r_norm, g_norm, b_norm), min(r_norm, g_norm, b_norm)
+    l = (max_c + min_c) / 2
+
+    if max_c == min_c:
+        return 0, 0, l
+
+    d = max_c - min_c
+    s = d / (2 - max_c - min_c) if l > 0.5 else d / (max_c + min_c)
+    if max_c == r_norm:
+        h = (60 * ((g_norm - b_norm) / d) + 360) % 360
+    elif max_c == g_norm:
+        h = (60 * ((b_norm - r_norm) / d) + 120) % 360
+    else:
+        h = (60 * ((r_norm - g_norm) / d) + 240) % 360
+    return h, s, l
+
+
+def adjust_color_by_temperature(base_color_hex, temperature_str, model_name=None, max_temperature=2.0):
     """
     Adjust color based on temperature if model supports it.
     For models that support temperature: adjust from soft to vivid based on temperature
@@ -1076,62 +1125,19 @@ def adjust_color_by_temperature(base_color_hex, temperature_str, model_name=None
         base_color_hex: color in #rrggbb format
         temperature_str: temperature as string (e.g., "0.0", "1.0", "2.0")
         model_name: name of the model (for checking temperature support)
-        models_list: list of all models (for context)
         max_temperature: temperature value that gives maximum vividness
     """
-    # Check if model supports temperature
-    supports_temp = True
-    if model_name:
-        try:
-            supports_temp = model_supports_temperature(model_name)
-        except:
-            supports_temp = True  # default to adjusting if we can't determine
-
-    # If model doesn't support temperature, increase saturation for the base color
-    if not supports_temp:
-        # Increase saturation of the base color
+    if not _model_supports_temperature_safe(model_name):
+        # Model doesn't support temperature: increase saturation of the base color instead.
         from color_picker import increase_saturation
         return increase_saturation(base_color_hex, factor=1.4)
 
-    try:
-        # Handle "None" string from JSON serialization of None values
-        if temperature_str == "None" or temperature_str is None:
-            temp_value = 1.0
-        else:
-            temp_value = float(temperature_str)
-    except (ValueError, TypeError):
-        temp_value = 1.0
-
+    temp_value = _parse_temperature(temperature_str)
     # Normalize temperature (0.0 to 1.0 scale)
     temp_factor = min(temp_value / max_temperature, 1.0)
 
-    # Parse hex color to RGB
-    hex_color = base_color_hex.lstrip('#')
-    r = int(hex_color[0:2], 16)
-    g = int(hex_color[2:4], 16)
-    b = int(hex_color[4:6], 16)
-
-    # Convert RGB to HSL
-    r_norm = r / 255.0
-    g_norm = g / 255.0
-    b_norm = b / 255.0
-
-    max_c = max(r_norm, g_norm, b_norm)
-    min_c = min(r_norm, g_norm, b_norm)
-    l = (max_c + min_c) / 2
-
-    if max_c == min_c:
-        h = s = 0
-    else:
-        d = max_c - min_c
-        s = d / (2 - max_c - min_c) if l > 0.5 else d / (max_c + min_c)
-
-        if max_c == r_norm:
-            h = (60 * ((g_norm - b_norm) / d) + 360) % 360
-        elif max_c == g_norm:
-            h = (60 * ((b_norm - r_norm) / d) + 120) % 360
-        else:
-            h = (60 * ((r_norm - g_norm) / d) + 240) % 360
+    r, g, b = _hex_to_rgb(base_color_hex)
+    h, _saturation, _lightness = _rgb_to_hsl(r, g, b)
 
     # Adjust saturation and lightness based on temperature
     # Low temp: soft (low saturation, higher lightness)
@@ -1622,7 +1628,7 @@ def _build_hardness_tooltip_attr(trial_key):
     return f' class="hardness-indicator" data-tooltip-html="{_hardness_escaped}"'
 
 
-def _build_plot_section_html(trial_key, trial_key_info, figures_html, quality_data, models, prompt_texts, format_prompts):
+def _build_plot_section_html(trial_key, trial_key_info, figures_html, quality_data, prompt_texts, format_prompts):
     """Build the HTML for one TrialKey's plot section: title (with cleanup/prompt/
     hardness tooltips, load-set button, item-counts button) plus the figure div."""
     model, temp, fmt, format_hardness, exp, prompt = trial_key
@@ -1639,7 +1645,7 @@ def _build_plot_section_html(trial_key, trial_key_info, figures_html, quality_da
     # Get colors
     format_color = FORMAT_COLORS.get(fmt.lower(), '#636363')
     model_base_color = get_model_color(model)
-    background_color = adjust_color_by_temperature(model_base_color, temp, model, models)
+    background_color = adjust_color_by_temperature(model_base_color, temp, model)
 
     # Calculate percentage of unique items and average per trial
     unique_pct = (unique_items / total_items * 100) if total_items > 0 else 0
@@ -1722,7 +1728,7 @@ def generate_html_report_with_filters(items_by_format_model, all_items_sorted, f
         # Add all plots for this prompt
         for trial_key in plots_by_prompt[prompt]:
             html_content += _build_plot_section_html(
-                trial_key, trial_key_info, figures_html, quality_data, models, prompt_texts, format_prompts)
+                trial_key, trial_key_info, figures_html, quality_data, prompt_texts, format_prompts)
 
         html_content += '    </div>\n\n'
 
