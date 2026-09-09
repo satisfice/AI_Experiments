@@ -18,7 +18,7 @@ from process_single_file import (
     extract_first_alpha_string
 )
 from cli_helpers import (
-    matches_model_pattern, parse_selection_input, validate_selection_indices,
+    parse_selection_input, validate_selection_indices,
     extract_selection_from_indices, collect_available_values,
     build_selection_requests
 )
@@ -367,53 +367,6 @@ def _read_result_file_content(file_path):
                 return f.read()
         except UnicodeDecodeError:
             return None
-
-
-def _check_experiment_filter(filename_metadata, experiment):
-    """Check if file's experiment matches filter."""
-    if experiment and filename_metadata.get("experiment") != experiment:
-        return False
-    return True
-
-
-def _check_model_filters(filename_metadata, model, exclude_model):
-    """Check if file's model passes inclusion and exclusion filters."""
-    file_model = filename_metadata.get("model")
-    if model and file_model != model:
-        return False
-    if exclude_model and any(matches_model_pattern(file_model, pattern) for pattern in exclude_model):
-        return False
-    return True
-
-
-def _check_temperature_filter(filename_metadata, temperature):
-    """Check if file's temperature matches filter."""
-    if temperature is None:
-        return True
-    file_temp = filename_metadata.get("temperature")
-    try:
-        temp_filter = float(temperature)
-    except (ValueError, TypeError):
-        return False
-    return file_temp == temp_filter
-
-
-def _check_timestamp_filter(file_name, timestamp):
-    """Check if file's timestamp matches filter."""
-    if not timestamp:
-        return True
-    file_timestamp = Path(file_name).stem.split('-')[0]
-    return file_timestamp == timestamp
-
-
-def _passes_metadata_filters(filename_metadata, file_name, experiment, model, exclude_model, temperature, timestamp):
-    """Check whether a file's parsed filename metadata passes all active filters."""
-    return (
-        _check_experiment_filter(filename_metadata, experiment) and
-        _check_model_filters(filename_metadata, model, exclude_model) and
-        _check_temperature_filter(filename_metadata, temperature) and
-        _check_timestamp_filter(file_name, timestamp)
-    )
 
 
 def _group_trials_into_sets(trials):
