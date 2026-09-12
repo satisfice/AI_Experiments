@@ -11,7 +11,7 @@ def parse_md(content):
     """Parse Markdown file: extract items from lines, skip headers, detect formatting.
     Lines that are entirely bold (**text**) or italic (*text* or _text_) have formatting stripped
     and are kept as items, recorded as Markdown-Strip-Bold-Tags or Markdown-Strip-Italic-Tags.
-    Lines that are both bold and italic (***text*** or **_text_** etc.) are recorded as Markdown-Both-Bold-And-Italic.
+    Lines that are both bold and italic (***text*** or **_text_** etc.) are recorded as Markdown-Strip-Bold-And-Italic.
     Partially bold/italic lines are recorded as quality issues (not cleanup tasks).
     Lines that are headings (#) are skipped.
     Bullet markers and numbered prefixes are left in items for the cleanup pipeline to handle.
@@ -85,7 +85,7 @@ def parse_md(content):
         (counts["header"], cleanups, "MD-Header-Removal"),
         (counts["entirely_bold"], cleanups, "Markdown-Strip-Bold-Tags"),
         (counts["entirely_italic"], cleanups, "Markdown-Strip-Italic-Tags"),
-        (counts["both"], cleanups, "Markdown-Both-Bold-And-Italic"),
+        (counts["both"], cleanups, "Markdown-Strip-Bold-And-Italic"),
         (counts["partial_bold"], quality_issues, "Markdown-Cleanup-Partially-Bold-Line"),
         (counts["partial_italic_star"], quality_issues, "Markdown-Cleanup-Partially-Italic-Star-Line"),
         (counts["partial_italic_under"], quality_issues, "Markdown-Cleanup-Partially-Italic-Underscore-Line"),
