@@ -129,3 +129,9 @@ Incident type: Filter not being enforced during file processing
 Context: Model exclusion testing with -x gpt35turbo flag
 Description: When user specifies -x gpt35turbo to exclude a model, files matching that model pattern are still attempted to be parsed. The _passes_metadata_filters function correctly returns False when tested in isolation, but files are not being skipped during _scan_and_process_files iteration. The exclude_model value is correctly passed to SummarizeFilters but is not preventing file processing.
 Resolution: Investigate _scan_and_process_files to determine why _passes_metadata_filters is not being called or respected, or if exclude_model value is not being passed correctly to the filter check.
+
+[FilterValues Referenced Before Definition] (noted by Michael): 2026-09-25 11:14
+Incident type: NameError at module import — forward reference to a class defined later in the file
+Context: generate_report.py — FilterValues NamedTuple
+Description: A prior session added the FilterValues NamedTuple at line 1761 but used it as a type annotation in two function signatures earlier in the file (_build_filter_checkboxes_html at line 1399, generate_html_report_with_filters at line 1686). Python evaluates parameter annotations at def-time (no `from __future__ import annotations` in this file), so generate_report.py raised NameError: name 'FilterValues' is not defined immediately on import, before any code could run. Not caught before commit because the module wasn't re-run after the class was added.
+Resolution: Moved the FilterValues class definition above its first use, immediately before _build_filter_checkboxes_html. Verified with `python -c "import generate_report"`. When adding a NamedTuple/class used only for type annotations, define it before (or at the top near other shared types with) its first reference, and re-run the module before committing.
