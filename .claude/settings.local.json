@@ -1,5 +1,6 @@
 {
   "permissions": {
+    "blockReadsOutsideWorkingDirectories": true,
     "allow": [
       "Bash(ls:*)",
       "Bash(git add:*)",
@@ -26,7 +27,8 @@
       "Bash(cp results/results.json results/quality.json results/unique_items.txt results/unique_source_items.txt /tmp/baseline_before/)",
       "Read(//tmp/**)",
       "Bash(cp results/quality.json /tmp/run_a_quality.json)",
-      "Bash(cp results/unique_source_items.txt /tmp/run_a_unique_source.txt)"
+      "Bash(cp results/unique_source_items.txt /tmp/run_a_unique_source.txt)",
+      "Bash(git push *)"
     ]
   }
 }
