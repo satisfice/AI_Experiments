@@ -322,3 +322,19 @@ Resolution: Retroactively loaded writing-for-agents and used it to fix real prob
 Impact: No functional damage from the misses this time (the writing-for-agents catches were stylistic; the missed pre-commit gate found nothing when checked informally after the fact), but the pattern -- four misses in one session, none self-caught -- indicates the failure is systemic rather than incidental.
 
 Lesson: A skill's trigger wording is not the bottleneck; the bottleneck is that the trigger-matching step itself does not reliably run for actions that are secondary to the turn's primary framing, feel mechanically simple, or follow an already-invoked skill or an explicit procedural instruction. Memory can raise the odds of the check running but cannot force it, since it competes for the same attention that dropped the check in the first place -- treat any session with more than one skill-routing miss as a signal to re-audit the whole session's actions against the skill listing, not just the one the user happened to notice.
+
+---
+
+[Suggested a Git-Bash-Only Command for the User's PowerShell Session] (noted by Michael): 2026-09-25 12:34
+
+Incident: After `git push` failed with a stale/missing GitHub credential, told the user to run `git-credential-manager github login` themselves via the `! <command>` prefix. That binary is not on the native Windows PATH PowerShell uses, so the command would fail with "not recognized" in the user's actual terminal.
+
+Context: `git-credential-manager.exe` lives in `C:\Program Files\Git\mingw64\bin`, which is on PATH inside the Bash tool's Git Bash session (added by Git Bash's own launch scripts) but not on the underlying Windows PATH. Confirmed via `cmd.exe /c "echo %PATH%"` from within the Bash tool: zero Git-related entries. The session's primary interactive shell is PowerShell (per environment info), so a command that only resolves inside Git Bash's PATH should never have been handed to the user to run via `!`.
+
+Root cause: Verified the command worked when run through the Bash tool itself (git-credential-manager --version, github --help, github list all succeeded) and treated that as proof it would work anywhere, without checking whether the resolution depended on Bash-tool-specific PATH setup rather than being available Windows-wide. Skipped the actual check (comparing the Bash tool's PATH against the native Windows PATH) until the user's correction forced it.
+
+Resolution: The correct fix doesn't need the raw binary name at all -- git.exe resolves its configured credential helper (`credential.helper=manager`, chained from system gitconfig) internally regardless of PATH visibility to the calling shell. Told the user to just run `git push` directly in their own terminal; an interactive session (unlike the Bash tool's non-interactive one, which is also why the very first push attempt got an immediate rejection instead of a login prompt) lets GCM launch its normal browser/device-code login flow.
+
+Impact: No functional damage -- caught before the user wasted more time trying a nonexistent command -- but it's the second env-mismatch class of error this session (the first being the earlier `gh auth login` suggestion, which was wrong for a different reason: it doesn't touch GCM's stored credential at all).
+
+Lesson: Before handing the user a command to run themselves via `!` (which executes in their actual interactive shell, not the Bash tool's own environment), verify the command resolves in that shell specifically -- a command working when Claude Code itself runs it via the Bash tool does not mean it resolves on the user's native PATH. Windows especially: Git Bash injects MSYS/mingw64 PATH entries that a native PowerShell or cmd.exe session does not have.
