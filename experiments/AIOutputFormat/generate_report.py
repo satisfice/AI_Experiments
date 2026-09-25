@@ -1396,6 +1396,17 @@ def _generate_trial_key_figures(trial_key_info, x_items, x_items_display, max_y)
     return figures_html, plot_configs, trial_key_y_values, trial_key_hardness
 
 
+class FilterValues(NamedTuple):
+    """The five independent filter-checkbox dimensions shown in the report's
+    header: distinct formats, models, temperatures, experiments, and prompts
+    found across the dataset."""
+    formats: list
+    models: list
+    temperatures: list
+    experiments: list
+    prompts: list
+
+
 def _build_filter_checkboxes_html(filter_values: FilterValues, format_hardness_values=None):
     """Build the experiment/prompt/format/model/temperature filter-checkbox HTML,
     plus the plots-container opening and aggregated-plot placeholder div."""
@@ -1756,17 +1767,6 @@ def _load_quality_data(input_path):
         return {}
     click.echo("Loading quality data...")
     return load_results_json(quality_path)
-
-
-class FilterValues(NamedTuple):
-    """The five independent filter-checkbox dimensions shown in the report's
-    header: distinct formats, models, temperatures, experiments, and prompts
-    found across the dataset."""
-    formats: list
-    models: list
-    temperatures: list
-    experiments: list
-    prompts: list
 
 
 def _extract_filter_values(data) -> FilterValues:
